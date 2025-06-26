@@ -1,0 +1,106 @@
+// user dashboard greeting
+
+'use client'
+import React, { useEffect, useRef, useState } from 'react'
+import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
+
+import ShowAlertMessage from '@/app/components/alert'
+import { ALERTMSG_addAssetSuccess } from '@/app/pro_utils/stringConstants'
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import LoadingDialog from './PageLoader';
+import { DashboardGreeting } from '../models/userDashboardModel';
+
+const GreetingBlock = () => {
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const { contextClientID, contextCustomerID, setGlobalState } = useGlobalContext();
+    const [greetArray, setGreetData] = useState<DashboardGreeting>({
+        id: '',
+        created_at: '',
+        greeting_topic: '',
+        greeting_msg: '',
+        img_url: '',
+    });
+    const [isLoading, setLoading] = useState(false);
+
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertForSuccess, setAlertForSuccess] = useState(0);
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertStartContent, setAlertStartContent] = useState('');
+    const [alertMidContent, setAlertMidContent] = useState('');
+    const [alertEndContent, setAlertEndContent] = useState('');
+    const [alertValue1, setAlertValue1] = useState('');
+    const [alertvalue2, setAlertValue2] = useState('');
+    useEffect(() => {
+        fetchData();
+        const handleScroll = () => {
+            setScrollPosition(window.scrollY); // Update scroll position
+            const element = document.querySelector('.mainbox');
+            if (window.pageYOffset > 0) {
+                element?.classList.add('sticky');
+            } else {
+                element?.classList.remove('sticky');
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+
+    }, []);
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append("customer_id", contextCustomerID);
+
+            const res = await fetch(`/api/users/dashboardGreeting`, {
+                method: "POST",
+                body: formData,
+            });
+            const response = await res.json();
+            console.log(response);
+
+            if (response.status == 1) {
+                const greetData = response.data[0];
+                setGreetData(greetData)
+                setLoading(false);
+            } else {
+                setLoading(false);
+                setAlertTitle("Error")
+                setAlertStartContent("Failed to load assets");
+                setAlertForSuccess(2)
+            }
+        } catch (error) {
+            setLoading(false);
+            console.error("Error fetching user data:", error);
+            setShowAlert(true);
+            setAlertTitle("Exception")
+            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertForSuccess(2)
+        }
+    };
+
+    return (
+        <div className="new_personalize_greeting_mainbox">
+            <LoadingDialog isLoading={isLoading} />
+            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                        setShowAlert(false)
+                    }} onCloseClicked={function (): void {
+                        setShowAlert(false)
+                    }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
+            <div className="new_personalised_leftbox">
+                <h3>{greetArray.greeting_topic}</h3>
+                <p>{greetArray.greeting_msg}</p>
+            </div>
+            <div className="new_personalised_imgtbox">
+                <img src="/images/user/cake.png" alt="Cake Icon" className="img-fluid" />
+            </div>
+        </div>
+    )
+}
+export default GreetingBlock
