@@ -1,3 +1,4 @@
+
 // user dashboard greeting
 
 'use client'
@@ -25,6 +26,7 @@ const GreetingBlock = () => {
         img_url: '',
     });
     const [isLoading, setLoading] = useState(false);
+    const [fact, setFact] = useState('');
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertForSuccess, setAlertForSuccess] = useState(0);
@@ -36,6 +38,7 @@ const GreetingBlock = () => {
     const [alertvalue2, setAlertValue2] = useState('');
     useEffect(() => {
         fetchData();
+        fetchRandomFact();
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
             const element = document.querySelector('.mainbox');
@@ -51,19 +54,30 @@ const GreetingBlock = () => {
         };
 
     }, []);
-
+    const fetchRandomFact = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch("https://uselessfacts.jsph.pl/random.json?language=en");
+            const data = await response.json();
+            setFact(data.text);
+        } catch (error) {
+            console.error("Error fetching fact:", error);
+            setFact("Couldn't load fact");
+        } finally {
+            setLoading(false);
+        }
+    };
     const fetchData = async () => {
         setLoading(true);
         try {
-            const formData = new FormData();
-            formData.append("customer_id", contextCustomerID);
-
+            
             const res = await fetch(`/api/users/dashboardGreeting`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "customer_id": contextCustomerID
+                }),
             });
             const response = await res.json();
-            console.log(response);
 
             if (response.status == 1) {
                 const greetData = response.data[0];
@@ -89,16 +103,15 @@ const GreetingBlock = () => {
         <div className="new_personalize_greeting_mainbox">
             <LoadingDialog isLoading={isLoading} />
             {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
-                        setShowAlert(false)
-                    }} onCloseClicked={function (): void {
-                        setShowAlert(false)
-                    }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
+                setShowAlert(false)
+            }} onCloseClicked={function (): void { 
+                setShowAlert(false)
+            }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
             <div className="new_personalised_leftbox">
                 <h3>{greetArray.greeting_topic}</h3>
-                <p>{greetArray.greeting_msg}</p>
-            </div>
-            <div className="new_personalised_imgtbox">
-                <img src="/images/user/cake.png" alt="Cake Icon" className="img-fluid" />
+                <div className='breaks_slider_mainbox'>
+                    <p>{fact}</p>
+                </div>
             </div>
         </div>
     )

@@ -637,13 +637,13 @@ export const UserEmployement = () => {
             setManagerArray(managerName);
 
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
 
                 const res = await fetch("/api/users/getProfile", {
                     method: "POST",
-                    body: formData,
+                    body:  JSON.stringify({
+                    "client_id": contextClientID,
+                    "customer_id": contextSelectedCustId
+                }),
                 });
                 console.log(res);
 
@@ -658,14 +658,6 @@ export const UserEmployement = () => {
         }
         fetchData();
     }, []);
-
-    function isReadonly() {
-        if (contextRoleID == "2" || contextRoleID == "3") {
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     return (
         <div className="container" id='employement_id'>

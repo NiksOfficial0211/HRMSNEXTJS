@@ -20,7 +20,6 @@ interface TaskUpdateModel {
 }
 const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddited: boolean, onClose: () => void }) => {
 
-
     const { contextClientID } = useGlobalContext();
     const [isLoading, setLoading] = useState(false);
     const [statusArray, setStatus] = useState<TaskStatus[]>([]);
@@ -42,12 +41,14 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
             const taskStatus = await getStatus();
             setStatus(taskStatus);
             try {
-                const formData = new FormData();
-                formData.append("id", id);
+                // const formData = new FormData();
+                // formData.append("id", id);
 
                 const res = await fetch("/api/users/getTasks", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                    "id": id,
+                }),
                 });
 
                 const response = await res.json();
@@ -59,7 +60,6 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
             }
         }
         fetchData();
-
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -68,13 +68,10 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
         const formData = new FormData();
         formData.append("id", id);
         formData.append("task_details", formValues.task_details);
-        formData.append("task_status", formValues.task_status);
-
         try {
             const response = await fetch("/api/users/updateTask", {
                 method: "POST",
                 body: formData,
-
             });
             // console.log(response);
 
@@ -118,7 +115,9 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
                         <div className="nw_user_offcanvas_listing">
                             <div className="nw_user_offcanvas_listing_lable">Details</div>
                             <div className="nw_user_offcanvas_listing_content">
-                                <input type="text" className="form-control" value={taskData?.task_details} readOnly={taskData?.task_status === 3} name="task_details" onChange={(e) => setFormValues((prev) => ({ ...prev, ['task_details']: e.target.value }))} id="task_details" placeholder="Task description" />
+                                {isToBeEddited ?
+                                    <textarea style={{ fontSize: "13px", minHeight: "100px" }} className="form-control" value={formValues?.task_details} name="task_details" onChange={(e) => setFormValues((prev) => ({ ...prev, ['task_details']: e.target.value }))} id="task_details" placeholder="Details"></textarea>
+                                    : <div className="col-lg-8 mb-3">{taskData?.task_details}</div>}
                             </div>
                         </div>
                         <div className="nw_user_offcanvas_listing">
@@ -273,7 +272,8 @@ async function getStatus() {
         .from('leap_task_status')
         .select()
         .neq("id", 5)
-        .neq("id", 6);
+        .neq("id", 6)
+        .eq("is_deleted", false);
 
     const { data, error } = await query;
     if (error) {

@@ -353,7 +353,6 @@ const UserAttendanceTimer = ({ data }: { data: AttendanceTimer }) => {
     const [alertEndContent, setAlertEndContent] = useState('');
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
-
     const [isLoading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -419,13 +418,11 @@ const UserAttendanceTimer = ({ data }: { data: AttendanceTimer }) => {
         return `${hrs}h ${mins}m`;
     };
     const { netMinutes } = getTotalWorkedMinutes(
-       data && data.in_time? data.in_time : "",
-        data && data.out_time? data.out_time : "",
-        parseInt(data && data.paused_duration?data.paused_duration : '0') || 0
+        attendanceData.in_time,
+        attendanceData.out_time,
+        parseInt(attendanceData.paused_duration || '0') || 0
     );
-
     // const calculateWorkedMinutes = () => {
-    
     //     if (!attendanceData.in_time || !attendanceData.out_time) return 0;
     //     return calculateTimeDuration(attendanceData.in_time, attendanceData.out_time);
     // };
@@ -471,14 +468,15 @@ const UserAttendanceTimer = ({ data }: { data: AttendanceTimer }) => {
                                     <path d="M21.78 25.04a1.13 1.13 0 0 1-.8-.33l-5.65-5.65a1.13 1.13 0 0 1-.33-.8v-7.91a1.13 1.13 0 0 1 2.26 0v7.443l5.318 5.318a1.13 1.13 0 0 1-.798 1.93z" data-original="#424242" />
                                     <path fill="#0f0" d="M11.61 19.39H1.44a1.13 1.13 0 0 1 0-2.26h10.17a1.13 1.13 0 0 1 0 2.26z" data-original="#fbc02d" />
                                     <path fill="#0f0" d="M8.22 22.78a1.13 1.13 0 0 1-.8-1.929l2.592-2.59-2.591-2.592a1.13 1.13 0 0 1 1.597-1.598l3.39 3.39a1.13 1.13 0 0 1 0 1.598l-3.39 3.39a1.13 1.13 0 0 1-.798.331z" data-original="#fbc02d" />
-                                    <path d="M18.39 2.44h-4.52a1.13 1.13 0 0 1 0-2.26h4.52a1.13 1.13 0 0 1 0 2.26z" data-original="#424242" /></svg>
+                                    <path d="M18.39 2.44h-4.52a1.13 1.13 0 0 1 0-2.26h4.52a1.13 1.13 0 0 1 0 2.26z" data-original="#424242" />
+                                </svg>
                             </div>
                             <div className="new_attendancebox_middlebox_first_listing_rightbox">
                                 <div className="new_attendancebox_middlebox_first_listing_heading">In time</div>
                                 <div className="new_attendancebox_middlebox_first_listing_time">
-                                    {data && data.in_time ? (
+                                    {attendanceData.in_time! ? (
                                         <span>
-                                            {new Date(data.in_time).toLocaleTimeString('en-US', {
+                                            {new Date(attendanceData.in_time).toLocaleTimeString('en-US', {
                                                 hour: '2-digit',
                                                 minute: '2-digit',
                                                 hour12: true,
@@ -514,10 +512,8 @@ const UserAttendanceTimer = ({ data }: { data: AttendanceTimer }) => {
                             })}
                         />
                     </div>
-
                 </div>
             </div>
-
 
             {/* ---- */}
             <div className="new_attendancebox_middlebox_secondbox">
@@ -553,7 +549,7 @@ const UserAttendanceTimer = ({ data }: { data: AttendanceTimer }) => {
                     {attendanceData != null && attendanceData.pause_start_time ? <>
                         {attendanceData.pause_start_time.map((breakTime, index) =>
                             <SwiperSlide key={index}>
-                                <div className="breaks_slider_mainbox">
+                                <div className="breaks_slider_mainbox" >
                                     <div className="new_attendancebox_middlebox_second_heading">
                                         <span>
                                             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 128 128">

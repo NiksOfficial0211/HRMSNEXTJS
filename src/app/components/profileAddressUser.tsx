@@ -460,7 +460,7 @@ import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 export const UserAddress = () => {
     // const [userData, setUserData] = useState<Address>();
     const router = useRouter();
- const { contextClientID, contextRoleID, contextSelectedCustId } = useGlobalContext();
+    const { contextClientID, contextRoleID, contextSelectedCustId } = useGlobalContext();
     const [isLoading, setLoading] = useState(false)
     const [emergencyContactRelation, setEmergencyRelation] = useState<LeapRelations[]>([]);
     const [currentAdd, setcurrent] = useState<CustomerAddress>({
@@ -516,16 +516,14 @@ export const UserAddress = () => {
             setEmergencyRelation(relationsType);
 
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
-
 
                 const res = await fetch("/api/users/getProfile/getEmployeeAddress", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "customer_id": contextSelectedCustId
+                    }),
                 });
-                console.log(res);
 
                 const response = await res.json();
 
@@ -597,7 +595,7 @@ export const UserAddress = () => {
     //     console.log("Form values updated:", userData);
     //     // setUserData((prev) => ({ ...prev, [name]: value }));
     // };
-   
+
 
 
     function isReadonly() {
@@ -698,8 +696,8 @@ export const UserAddress = () => {
                     </div>
                 </div>
             </div>
-            
-                {/* <div className="container">
+
+            {/* <div className="container">
                     <div className="row">
                         <div className="col-lg-12 mb-5">
 
@@ -794,9 +792,9 @@ export const UserAddress = () => {
                         </div>
                     </div>
                 </div> */}
-                {/* AddressDetails details 2 */}
+            {/* AddressDetails details 2 */}
 
-                {/* <div className="container">
+            {/* <div className="container">
                     <div className="row">
                         <div className="col-lg-12 mb-5">
                             <div className="grey_box">
@@ -894,7 +892,7 @@ export const UserAddress = () => {
                 </div> */}
 
 
-                {/* <div className="container">
+            {/* <div className="container">
                     <div className="row">
                         <div className="col-lg-12 mb-5">
                             <div className="grey_box">
@@ -962,7 +960,7 @@ export const UserAddress = () => {
                         </div>
                     </div>
                 </div> */}
-           
+
         </>
     )
 }

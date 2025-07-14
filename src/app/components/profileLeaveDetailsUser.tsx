@@ -18,14 +18,14 @@ export const UserProfileLeaveDetails = () => {
         const fetchData = async () => {
 
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
-                formData.append("branch_id", contaxtBranchID);
 
                 const res = await fetch("/api/users/getAppliedLeaves", {
                     method: "POST",
-                    body: formData,
+                    body:JSON.stringify({
+                        "client_id": contextClientID,
+                        "customer_id": contextSelectedCustId,
+                        "branch_id": contaxtBranchID
+                    }),
                 });
 
                 const response = await res.json();

@@ -587,14 +587,14 @@ export const UserBankDetails = () => {
         const fetchData = async () => {
 
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
-                formData.append("role_id", contextRoleID);
 
                 const res = await fetch("/api/users/getProfile/getEmpSalaryDetails", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "customer_id": contextSelectedCustId,
+                        "role_id": contextRoleID
+                    }),
                 });
 
                 const response = await res.json();
@@ -750,15 +750,7 @@ export const UserBankDetails = () => {
         })
 
     }
-    function isReadonly() {
-        if (contextRoleID == "2") {
-            return false;
-        } else if (contextRoleID == "3") {
-            return false;
-        } else {
-            return true;
-        }
-    }
+   
     return (
         <>
             <div className="container" id='bank_id'>
@@ -1107,5 +1099,4 @@ async function getEmployeeBranch(client_id: any, customer_id: any) {
     }
 
 }
-
 
