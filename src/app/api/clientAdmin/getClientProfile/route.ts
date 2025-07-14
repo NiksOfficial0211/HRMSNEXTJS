@@ -6,11 +6,11 @@ import {  funSendApiException } from "@/app/pro_utils/constant";
 export async function POST(request: NextRequest) {
     
     try{
-      const formData = await request.formData();
+      const {client_id} = await request.json();
       let query = supabase
           .from("leap_client")
           .select(`*,leap_client_branch_details(*),leap_sector_type(*),leap_client_basic_info(*)`)
-          .eq('client_id', formData.get('client_id'))
+          .eq('client_id', client_id)
           const {data:clientData,error:clientError}=await query;
           if(clientError){
             return NextResponse.json({status: 0, message: apiwentWrong ,error:clientError}, { status: apiStatusFailureCode });

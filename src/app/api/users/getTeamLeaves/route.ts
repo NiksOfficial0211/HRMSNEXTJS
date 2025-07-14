@@ -12,15 +12,15 @@ export async function POST(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || ""); 
     const pageSize = parseInt(searchParams.get("limit") || ""); 
 
-    const formData = await request.formData();
-    const fdata = {
-      clientId: formData.get('client_id'),
-      managerId: formData.get('manager_id')
-    }
+    const {client_id, manager_id, end_Date, start_date, customer_id, leave_status } = await request.json();
+    // const fdata = {
+    //   clientId: formData.get('client_id'),
+    //   managerId: formData.get('manager_id')
+    // }
    
     let leaveBalances;
 
-    if (!fdata.managerId) {
+    if (!manager_id) {
       return NextResponse.json({ status: 0, message: "Manager ID is required" }, { status: apiStatusFailureCode });
     }
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const { data: teamMembers, error: teamError } = await supabase
       .from("leap_customer")
       .select("customer_id")
-      .eq("manager_id", fdata.managerId)
+      .eq("manager_id", manager_id)
       .order('updated_at', {ascending:false})
 
     if (teamError) {
@@ -51,18 +51,18 @@ export async function POST(request: NextRequest) {
       .order("updated_at", { ascending: false })
       .range(start, end);
 
-        if(formData.get('customer_id') && formData.get('customer_id')!="0"){
-                query=query.eq('customer_id',formData.get('customer_id'));
-                leaveBalances = await funGetMyLeaveBalance(fdata.clientId, formData.get('customer_id'), 5);
+        if(customer_id && customer_id!="0"){
+                query=query.eq('customer_id', customer_id);
+                leaveBalances = await funGetMyLeaveBalance(client_id, customer_id, 5);
               }
-        if(formData.get('leave_status') && parseInt(formData.get('leave_status')+'')>0){
-        query=query.eq('leave_status',formData.get('leave_status'));
+        if(leave_status && parseInt(leave_status+'')>0){
+        query=query.eq('leave_status',leave_status);
         }
-        if(funISDataKeyPresent(formData.get('start_date')) && funISDataKeyPresent(formData.get('end_Date'))!){
-          query=query.gte('from_date',formData.get('start_date')).lte('to_date',formData.get('start_date'));
+        if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_Date)!){
+          query=query.gte('from_date',start_date).lte('to_date',start_date);
         }
-        if(funISDataKeyPresent(formData.get('start_date') && funISDataKeyPresent(formData.get('end_Date')))){
-          query=query.lte('from_date',formData.get('end_date')).gte('to_date',formData.get('start_date'));
+        if(funISDataKeyPresent(start_date && funISDataKeyPresent(end_Date))){
+          query=query.lte('from_date',end_Date).gte('to_date',start_date);
         }
         
         if(start || end){

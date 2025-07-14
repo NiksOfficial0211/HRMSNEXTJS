@@ -10,8 +10,8 @@ export async function POST(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1", 10); 
     const pageSize = parseInt(searchParams.get("limit") || "50", 10); 
 
-    const formData = await request.formData();
-    const managerId = formData.get('manager_id'); 
+    const {manager_id, client_id, task_status, task_date, customer_id, project_id, sub_project_id, id } = await request.json();
+    const managerId = manager_id; 
 
     if (!managerId) {
       return NextResponse.json({ status: 0, message: "Manager ID is required" }, { status: apiStatusFailureCode });
@@ -44,26 +44,26 @@ export async function POST(request: NextRequest) {
       .order("updated_at", { ascending: false })
       // .range(start, end);
        
-        if (funISDataKeyPresent(formData.get('client_id'))) {
-            query = query.eq('client_id', formData.get('client_id'))
+        if (funISDataKeyPresent(client_id)) {
+            query = query.eq('client_id', client_id)
         }
-        if (funISDataKeyPresent(formData.get('task_status'))) {
-            query = query.eq('task_status', formData.get('task_status'))
+        if (funISDataKeyPresent(task_status)) {
+            query = query.eq('task_status', task_status)
         }
-        if (funISDataKeyPresent(formData.get('task_date'))) {
-            query = query.eq('task_date', formData.get('task_date'))
+        if (funISDataKeyPresent(task_date)) {
+            query = query.eq('task_date', task_date)
         }
-        if (funISDataKeyPresent(formData.get('customer_id'))) {
-            query = query.eq('customer_id', formData.get('customer_id'))
+        if (funISDataKeyPresent(customer_id)) {
+            query = query.eq('customer_id', customer_id)
         }
-        if (funISDataKeyPresent(formData.get('project_id'))) {
-            query = query.eq('project_id', formData.get('project_id'))
+        if (funISDataKeyPresent(project_id)) {
+            query = query.eq('project_id', project_id)
         }
-        if (funISDataKeyPresent(formData.get('sub_project_id'))) {
-            query = query.eq('sub_project_id', formData.get('sub_project_id'))
+        if (funISDataKeyPresent(sub_project_id)) {
+            query = query.eq('sub_project_id', sub_project_id)
         }
-        if (funISDataKeyPresent(formData.get('id')))  {
-            query = query.eq('id', formData.get('id'))
+        if (funISDataKeyPresent(id))  {
+            query = query.eq('id', id)
         }
     const { data: task, error: taskError } = await query;
 
@@ -77,4 +77,3 @@ export async function POST(request: NextRequest) {
     return funSendApiException(error);
   }
 }
-

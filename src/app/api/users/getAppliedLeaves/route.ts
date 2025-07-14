@@ -12,41 +12,41 @@ export async function POST(request: NextRequest) {
     const pageSize = parseInt(searchParams.get("limit") || ""); // Default: 20 per page
 
     let leaveBalances;
-    const formData = await request.formData();
-    const fdata = {
-      clientId: formData.get('client_id'),
-      branchId: formData.get('branch_id'),
-      start_date: formData.get('start_date'),
-      end_Date: formData.get('end_Date'),
-      id: formData.get('id'),
-
-    }
+    const {client_id, branch_id, start_date, end_Date, id, leave_status, customer_id } = await request.json();
+    // const fdata = {
+    //   clientId: formData.get('client_id'),
+    //   branchId: formData.get('branch_id'),
+    //   start_date: formData.get('start_date'),
+    //   end_Date: formData.get('end_Date'),
+    //   id: formData.get('id'),
+    // }
      
-    const start = (page -1) * pageSize;
+    const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
 
     let query = supabase
       .from("leap_customer_apply_leave")
       .select(`*,leap_approval_status(approval_type),leap_client_leave(leave_name),leap_customer(name)`)
-      .eq('client_id', fdata.clientId)
+      .eq('client_id', client_id)
+      .eq('branch_id', branch_id)
       .order('updated_at', {ascending:false})
      
-      if (fdata.id) {
-        query = query.eq("id", fdata.id);
+      if (id) {
+        query = query.eq("id", id);
       }
-      if(formData.get('leave_status') && parseInt(formData.get('leave_status')+'')>0){
-        query=query.eq('leave_status',formData.get('leave_status'));
+      if(leave_status && parseInt(leave_status +'')>0){
+        query=query.eq('leave_status',leave_status);
       }
-      if(formData.get('customer_id') && formData.get('customer_id')!="0"){
-        query=query.eq('customer_id',formData.get('customer_id'));
-        leaveBalances = await funGetMyLeaveBalance(fdata.clientId, formData.get('customer_id'), 5);
+      if(customer_id && customer_id!="0"){
+        query=query.eq('customer_id',customer_id);
+        leaveBalances = await funGetMyLeaveBalance(client_id, customer_id, 5);
       }
-      if(funISDataKeyPresent(formData.get('start_date')) && funISDataKeyPresent(formData.get('end_Date'))!){
-                query=query.gte('from_date',formData.get('start_date')).lte('to_date',formData.get('start_date'));
-              }
-              if(funISDataKeyPresent(formData.get('start_date') && funISDataKeyPresent(formData.get('end_Date')))){
-                query=query.lte('from_date',formData.get('end_date')).gte('to_date',formData.get('start_date'));
-              }
+      if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_Date)!){
+            query=query.gte('from_date',start_date).lte('to_date',start_date);
+          }
+          if(funISDataKeyPresent(start_date && funISDataKeyPresent(end_Date))){
+            query=query.lte('from_date',end_Date).gte('to_date',start_date);
+          }
      
       if(start || end){
          query=query.range(start, end);
@@ -56,19 +56,22 @@ export async function POST(request: NextRequest) {
       
     if (error) {
       return NextResponse.json({status:0, message: apiwentWrong, error: error }, { status: apiStatusFailureCode });
-    }else if(leaves.length==0 && (formData.get('start_date')|| formData.get('end_date'))){
+    }else if(leaves.length==0 && (start_date|| end_Date)){
       if(page==1){
-        return NextResponse.json({ message: "start date present ifcondition", status : 1, page:page,leavedata:[] }, { status: apiStatusSuccessCode });
+        return NextResponse.json({ message: "start date present if condition", status : 1, page:page,leavedata:[] }, { status: apiStatusSuccessCode });
       }else{
         return NextResponse.json({ message: allLeavesData, status : 0, page:page-1 }, { status: apiStatusSuccessCode });
       }
     }
-    else if(leaves.length==0 && !formData.get('start_date') && page){
+    else if(leaves.length==0 && !start_date && page){
+      return NextResponse.json({ message: allLeavesData, status : 0, page:page-1 }, { status: apiStatusSuccessCode });
+    }
+    else if(leaves.length==0 && !leave_status && page){
       return NextResponse.json({ message: allLeavesData, status : 0, page:page-1 }, { status: apiStatusSuccessCode });
     }
     else {
       if(!leaveBalances){
-        leaveBalances = await funGetMyLeaveBalance(fdata.clientId, leaves[0].customer_id, 5);
+        leaveBalances = await funGetMyLeaveBalance(client_id, leaves[0].customer_id, 5);
       }
       return NextResponse.json({ message: allLeavesData,leavedata:leaves, status : 1, emp_leave_Balances: leaveBalances }, { status: apiStatusSuccessCode });
     }

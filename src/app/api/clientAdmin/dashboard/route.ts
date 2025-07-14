@@ -18,117 +18,118 @@ export async function POST(request: NextRequest) {
     //     { status: 401 }
     //   );
     // }
-    const formData = await request.formData();
-    const fdata = {
-      clientId: formData.get('client_id'),
-      customerId: formData.get('customer_id'),
-      roleId: formData.get('role_id') as string,
-      platform:formData.get('platform'),
-      authToken:formData.get('auth_token'),
-      version:formData.get('version')
-    }
-    if(fdata.platform && fdata.customerId && fdata.authToken){
-    if(!await isAuthTokenValid(fdata.platform,fdata.customerId,fdata.authToken)){
+    const {client_id, customer_id, branch_id, role_id, platform, auth_token, version } = await request.json();
+    // const fdata = {
+    //   clientId: formData.get('client_id'),
+    //   customerId: formData.get('customer_id'),
+    //   branchId: formData.get('branch_id'),
+    //   roleId: formData.get('role_id') as string,
+    //   platform:formData.get('platform'),
+    //   authToken:formData.get('auth_token'),
+    //   version:formData.get('version')
+    // }
+    if(platform && customer_id && auth_token){
+    if(!await isAuthTokenValid(platform,customer_id,auth_token)){
       return funloggedInAnotherDevice()
     }
     }
-    const getCustomerInfo = await funGetCustomer(fdata.customerId)
+    const getCustomerInfo = await funGetCustomer(customer_id)
     if (getCustomerInfo == null) {
       return funSendApiException("Customer fetch failed")
     }
-    // return funGetEmployeeLeaveRequestforManager(fdata.clientId, null, new Date(), null,fdata.customerId, false  );
+    // return funGetEmployeeLeaveRequestforManager(client_id, null, new Date(), null,customer_id, false  );
     // const getRoles=await getUserRoles()
     // if(getRoles==null){
     //  return funSendApiException("Roles fetch went wrong")
     // }
-    if(fdata.roleId! && fdata.roleId == "1"){
+    if(role_id! && role_id == "1"){
       return NextResponse.json({
         message: allEmployeeListData,
         clientList: await funGetClientList(),
         customerList: 
-                      await funGetClientCustomerList(fdata.clientId) ,
+                      await funGetClientCustomerList(client_id) ,
         employeeSummary:  null,    
-        employees: await funGetClientEmployeeList(fdata.clientId,0,parseInt(fdata.roleId),true),
+        employees: await funGetClientEmployeeList(client_id,0,parseInt(role_id),true),
         leaveRequest:  null,
         employeeAttendance: null,
-        holidayList: await funGetClientHolidayList(fdata.clientId, null,fdata.platform),
-        upcommingHolidays: await funGetClientUpCommingHolidayList(fdata.clientId,null,fdata.platform),
+        holidayList: await funGetClientHolidayList(client_id, null,platform),
+        upcommingHolidays: await funGetClientUpCommingHolidayList(client_id,null,platform),
         myattendance: null,
       },
         { status: apiStatusSuccessCode });
     }
-    else if(fdata.roleId! && fdata.roleId == "2"){
+    else if(role_id! && role_id == "2"){
       return NextResponse.json({
         message: allEmployeeListData,
         clientList: null,
-        // customerList: await funGetClientCustomerList(fdata.clientId),
-        midShortcutsList:await funGetMidShortCutsList(fdata.clientId),
-        shortCutOne:await funGetShortCutsOneList(fdata.clientId),
-        employeeSummary:   await funGetClientEmployeeSummary(fdata.clientId),    
-        employees: await funGetClientEmployeeList(fdata.clientId,5,parseInt(fdata.roleId),true),
-        // leaveRequest: await funGetClientEmployeeLeaveRequest(fdata.clientId, null, new Date(), null, false),
-        employeeAttendance: await funGetClientEmployeeAttendance(fdata.clientId, new Date()) ,
-        instantNotify: await getDashboardAllActivitiesOfUsers(fdata.clientId,null),
-        // holidayList: await funGetClientHolidayList(fdata.clientId, null),
-        // upcommingHolidays: await funGetClientUpCommingHolidayList(fdata.clientId,null),
-        // myattendance: await getMyAttendance(fdata.customerId, fdata.clientId, new Date()),
+        // customerList: await funGetClientCustomerList(client_id),
+        midShortcutsList:await funGetMidShortCutsList(client_id),
+        shortCutOne:await funGetShortCutsOneList(client_id),
+        employeeSummary:   await funGetClientEmployeeSummary(client_id),    
+        employees: await funGetClientEmployeeList(client_id,5,parseInt(role_id),true),
+        // leaveRequest: await funGetClientEmployeeLeaveRequest(client_id, null, new Date(), null, false),
+        employeeAttendance: await funGetClientEmployeeAttendance(client_id, new Date()) ,
+        instantNotify: await getDashboardAllActivitiesOfUsers(client_id,null),
+        // holidayList: await funGetClientHolidayList(client_id, null),
+        // upcommingHolidays: await funGetClientUpCommingHolidayList(client_id,null),
+        // myattendance: await getMyAttendance(customer_id, client_id, new Date()),
       },
         { status: apiStatusSuccessCode });
     }
-    else if(fdata.roleId! && fdata.roleId == "3"){
+    else if(role_id! && role_id == "3"){
       return NextResponse.json({
         message: allEmployeeListData,
         clientList: null,
         customerList: null,
         employeeSummary: null,    
-        employees: await funGetClientEmployeeList(fdata.clientId,0,parseInt(fdata.roleId),true),
+        employees: await funGetClientEmployeeList(client_id,0,parseInt(role_id),true),
                     
         leaveRequest:
-          await funGetClientEmployeeLeaveRequest(fdata.clientId, null, new Date(), null, false),
+          await funGetClientEmployeeLeaveRequest(client_id, null, new Date(), null, false),
           
         employeeAttendance: 
-        await funGetClientEmployeeAttendance(fdata.clientId, new Date()),
+        await funGetClientEmployeeAttendance(client_id, new Date()),
         
-        holidayList: await funGetClientHolidayList(fdata.clientId, null,fdata.platform),
-        upcommingHolidays: await funGetClientUpCommingHolidayList(fdata.clientId,null,fdata.platform),
-        myattendance: await getMyAttendance(fdata.customerId, fdata.clientId, new Date()),
+        holidayList: await funGetClientHolidayList(client_id, null,platform),
+        upcommingHolidays: await funGetClientUpCommingHolidayList(client_id,null,platform),
+        myattendance: await getMyAttendance(customer_id, client_id, new Date()),
       },
         { status: apiStatusSuccessCode });
-    }else if(fdata.roleId! && (fdata.roleId == "4"|| fdata.roleId == "9")){
+    }else if(role_id! && (role_id == "4"|| role_id == "9")){
       return NextResponse.json({
         message: allEmployeeListData,
            
-        employees: funGetClientEmployeeListForManager(fdata.clientId,fdata.customerId),
+        employees: funGetClientEmployeeListForManager(client_id,customer_id),
         leaveRequest: 
-            await funGetEmployeeLeaveRequestforManager(fdata.clientId, null, new Date(), null,  fdata.customerId,false),
+            await funGetEmployeeLeaveRequestforManager(client_id, null, new Date(), null,  customer_id,false),
         
-        upcommingHolidays: await funGetClientUpCommingHolidayList(fdata.clientId,null,fdata.platform),
-        myattendance: await getMyAttendance(fdata.customerId, fdata.clientId, new Date()),
-        my_documents: await getMyDocumentsList(fdata.customerId),
-        my_leave_requests:await funGetEmployeeLeaveRequest(fdata.customerId,0),
-        myLeaveBalances:await funGetMyLeaveBalance(fdata.clientId,fdata.customerId,0),
-        announcements:await funGetAnnouncements(fdata.clientId,fdata.customerId,fdata.roleId),
-        birthdays:await funGetEmpBirthdayList(fdata.clientId,fdata.customerId,false),
-        mypresentTeam:await getMyPresentTeam(fdata.clientId,fdata.customerId),
+        upcommingHolidays: await funGetClientUpCommingHolidayList(client_id,null,platform),
+        myattendance: await getMyAttendance(customer_id, client_id, new Date()),
+        my_documents: await getMyDocumentsList(customer_id),
+        my_leave_requests:await funGetEmployeeLeaveRequest(customer_id,0),
+        myLeaveBalances:await funGetMyLeaveBalance(client_id,customer_id,0),
+        announcements:await funGetAnnouncements(client_id,customer_id,role_id),
+        birthdays:await funGetEmpBirthdayList(client_id,customer_id,false),
+        mypresentTeam:await getMyPresentTeam(client_id,customer_id),
 
 
       },
         { status: apiStatusSuccessCode });
     }
-    else if(fdata.roleId! && fdata.roleId == "5"){
+    else if(role_id! && role_id == "5"){
 
     return NextResponse.json({
       message: allEmployeeListData,
       
       leaveRequest: null,
       employeeAttendance: null,
-      upcommingHolidays: await funGetClientUpCommingHolidayList(fdata.clientId,null,fdata.platform),
-      myattendance: await getMyAttendance(fdata.customerId, fdata.clientId, new Date()),
-      my_documents: await getMyDocumentsList(fdata.customerId),
-      my_leave_requests:await funGetEmployeeLeaveRequest(fdata.customerId,0),
-      myLeaveBalances:await funGetMyLeaveBalance(fdata.clientId,fdata.customerId,0),
-      announcements:await funGetAnnouncements(fdata.clientId,fdata.customerId,fdata.roleId),
-      birthdays:await funGetEmpBirthdayList(fdata.clientId,fdata.customerId,false),
+      upcommingHolidays: await funGetClientUpCommingHolidayList(client_id,branch_id,platform),
+      myattendance: await getMyAttendance(customer_id, client_id, new Date()),
+      my_documents: await getMyDocumentsList(customer_id),
+      my_leave_requests:await funGetEmployeeLeaveRequest(customer_id,0),
+      myLeaveBalances:await funGetMyLeaveBalance(client_id,customer_id,0),
+      announcements:await funGetAnnouncements(client_id,customer_id,role_id),
+      birthdays:await funGetEmpBirthdayList(client_id,customer_id,false),
 
       mypresentTeam:null,
 
@@ -139,6 +140,5 @@ export async function POST(request: NextRequest) {
     return funSendApiException(error);
   }
 }
-
 
 

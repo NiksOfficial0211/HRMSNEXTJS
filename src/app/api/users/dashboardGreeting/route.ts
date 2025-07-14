@@ -6,13 +6,12 @@ import supabase from "@/app/api/supabaseConfig/supabase";
 
 export async function POST(request: NextRequest) {
     try {
-        const formData = await request.formData();
-        const customerID = formData.get('customer_id');
+        const {customer_id} = await request.json();
 
         const { data: dobData, error: dobError } = await supabase
             .from('leap_customer')
             .select('dob')
-            .eq('customer_id', customerID)
+            .eq('customer_id', customer_id)
             .single(); 
 
         if (dobError) {

@@ -16,12 +16,12 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const formData = await request.formData();
+        const {customer_id, role_id, client_id  } = await request.json();
     
         
           let bankQuery = supabase
           .from("leap_customer_bank_details")
-          .select('*').eq('customer_id',formData.get('customer_id'));
+          .select('*').eq('customer_id',customer_id);
           
           const {data:bankDetails,error:bankError}=await bankQuery;
           
@@ -32,14 +32,14 @@ export async function POST(request: NextRequest) {
           }
 
           
-          if(formData.get('role_id')){
-            if(formData.get('role_id')=="2"){
+          if(role_id){
+            if(role_id=="2"){
               let salaryDataQuery = supabase
           .from("leap_client_employee_salary")
-          .select('*,leap_client_salary_components(salary_component_id,leap_salary_components(id,salary_component_name))').eq('client_id',formData.get('client_id'));
+          .select('*,leap_client_salary_components(salary_component_id,leap_salary_components(id,salary_component_name))').eq('client_id',client_id);
           
-          if(formData.get('customer_id')){
-            salaryDataQuery=salaryDataQuery.eq('customer_id',formData.get('customer_id'))
+          if(customer_id){
+            salaryDataQuery=salaryDataQuery.eq('customer_id',customer_id)
           }
           const {data:salaryDetails,error:salaryError}=await salaryDataQuery;
           if(salaryError){
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
           }
               let totalSalayQuery = supabase
           .from("leap_employee_total_salary")
-          .select('*').eq('customer_id',formData.get('customer_id'));
+          .select('*').eq('customer_id',customer_id);
           
           
           const {data:totalSalaryDetails,error:totalSalaryError}=await totalSalayQuery;

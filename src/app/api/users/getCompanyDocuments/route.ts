@@ -17,28 +17,28 @@ export async function POST(request: NextRequest) {
     //     { status: 401 }
     //   );
     // }
-    const formData = await request.formData();
-    const fdata = {
-      clientId: formData.get('client_id') ,
-      branch_id: formData.get('branch_id') ,
-      customer_id: formData.get('customer_id') ,
-      platform: formData.get('platform') ,
-      version: formData.get('version') ,
-      authToken: formData.get('auth_token') ,
+    const {client_id, branch_id, customer_id, platform, version, auth_token } = await request.json();
+    // const fdata = {
+    //   clientId: formData.get('client_id') ,
+    //   branch_id: formData.get('branch_id') ,
+    //   customer_id: formData.get('customer_id') ,
+    //   platform: formData.get('platform') ,
+    //   version: formData.get('version') ,
+    //   authToken: formData.get('auth_token') ,
       
-    }
+    // }
 
-    if (!await isAuthTokenValid(fdata.platform, fdata.customer_id, fdata.authToken)) {
+    if (!await isAuthTokenValid(platform, customer_id, auth_token)) {
                 return funloggedInAnotherDevice()
             }
             let query = supabase
             .from('leap_document_type')
             .select('*,leap_client_documents(*)')
             .eq("document_type_id",1)
-            .eq("leap_client_documents.client_id",fdata.clientId);
+            .eq("leap_client_documents.client_id",client_id);
 
-            if(fdata.branch_id){
-              query=query.eq("leap_client_documents.branch_id",fdata.branch_id);
+            if(branch_id){
+              query=query.eq("leap_client_documents.branch_id",branch_id);
             }
     
             const { data, error } = await query;

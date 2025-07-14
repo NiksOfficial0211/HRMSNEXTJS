@@ -9,35 +9,25 @@ export async function POST(request: NextRequest) {
 
     try {
         
-        const formData = await request.formData();
-        const fdata = {
-
-            clientID: formData.get('client_id'),
-            branchID: formData.get('branch_id'),
-            customer_id: formData.get('customer_id'),
-            holidayID: formData.get('id'),
-            platform: formData.get('platform') as string,
-            authToken: formData.get('auth_token'),
-            version: formData.get('version'),
-            yearID: formData.get('holiday_year'),
-        };
-        if (fdata.authToken && fdata.customer_id) {
-            if (!await isAuthTokenValid(fdata.platform, fdata.customer_id, fdata.authToken)) {
+        const {client_id, branch_id, customer_id, id, platform, auth_token, version, holiday_year } = await request.json();
+        
+        if (auth_token && customer_id) {
+            if (!await isAuthTokenValid(platform, customer_id, auth_token)) {
                 return funloggedInAnotherDevice()
             }
         }
         let query = supabase.from("leap_holiday_list")
             .select(`*,leap_holiday_types(*),leap_client_branch_details(branch_number)`)
-            .eq('client_id', fdata.clientID);
+            .eq('client_id', client_id);
 
-        if (fdata.branchID ) {
-            query = query.eq('branch_id', fdata.branchID);
+        if (branch_id ) {
+            query = query.eq('branch_id', branch_id);
         }
-        if (fdata.holidayID ) {
-            query = query.eq('id', fdata.holidayID);
+        if (id ) {
+            query = query.eq('id', id);
         }
-        if (fdata.yearID ) {
-            query = query.eq('holiday_year', fdata.yearID);
+        if (holiday_year ) {
+            query = query.eq('holiday_year', holiday_year);
         }
         query = query.gte('date', formatDateYYYYMMDD(getFirstDateOfYear())) // `to_date` must be >= `fromDate`
             .lte('date', formatDateYYYYMMDD(getLastDateOfYear())).order('date', { ascending: true });
@@ -48,6 +38,14 @@ export async function POST(request: NextRequest) {
         if (error) {
             return funSendApiErrorMessage("Failed to fetsch Holidays", error);
         }
+        // let upcomingQuery = supabase.from("leap_holiday_list")
+        //     .select(`id`)
+        //     .eq('client_id', fdata.clientID);
+        // if (branch_id) {
+        //     upcomingQuery = query.eq('branch_id', branch_id);
+        // }
+        // upcomingQuery = query.gte('date', formatDateYYYYMMDD(new Date())).limit(1);
+       
 
 
         const { data: holidayList, error: holidayError } = await query;
@@ -68,7 +66,7 @@ export async function POST(request: NextRequest) {
             month: month,
             holidays: holidaysByMonth[month],
           }));
-        return NextResponse.json({ status: 1, message: "All Holiday List", data: { totalHolidays: holidayData.length, holidays: fdata.platform &&(fdata.platform.toLowerCase()=="android"||fdata.platform=="ios")?formattedHolidays:holidayData } },
+        return NextResponse.json({ status: 1, message: "All Holiday List", data: { totalHolidays: holidayData.length, holidays: platform &&(platform.toLowerCase()=="android"||platform=="ios")?formattedHolidays:holidayData } },
             { status: apiStatusSuccessCode });
 
     } catch (error) {
@@ -79,4 +77,3 @@ export async function POST(request: NextRequest) {
     }
 
 }
-

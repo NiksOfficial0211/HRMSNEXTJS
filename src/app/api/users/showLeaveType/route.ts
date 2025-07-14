@@ -8,22 +8,17 @@ export async function POST(request: NextRequest) {
     try{
         
 
-        const formData = await request.formData();
-        const fdata = {
-            clientId: formData.get('client_id'),
-            branchID: formData.get('branch_id'),
-            leaveID: formData.get('leave_id') as string
-
-        };
+        const {client_id, branch_id, leave_id } = await request.json();
+      
         
           let query = supabase
           .from("leap_client_leave")
           .select(`*,leap_leave_type_icon_and_color(*)`)
-          .eq('client_id', fdata.clientId)
-          .eq('branch_id', fdata.branchID);
+          .eq('client_id', client_id)
+          .eq('branch_id', branch_id);
 
-          if(fdata.leaveID){
-            query = query.eq("leave_id", fdata.leaveID);
+          if(leave_id){
+            query = query.eq("leave_id", leave_id);
         }
         
           const {data:leaveData,error} = await query;

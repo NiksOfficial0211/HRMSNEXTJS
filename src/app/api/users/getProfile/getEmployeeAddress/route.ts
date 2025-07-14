@@ -16,35 +16,32 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const formData = await request.formData();
-    
+        const {client_id, branch_id, customer_id} = await request.json();
         
           let query = supabase
           .from("leap_customer_address")
-          .select('*').eq('client_id',formData.get('client_id'));
+          .select('*').eq('client_id',client_id);
           
-          
-          if(formData.get('branch_id')){
-            query=query.eq('branch_id',formData.get('branch_id'))
+          if(branch_id){
+            query=query.eq('branch_id',branch_id)
           }
-          if(formData.get('customer_id')){
-            query=query.eq('customer_id',formData.get('customer_id'))
+          if(customer_id){
+            query=query.eq('customer_id',customer_id)
           }
           const {data:customerAddress,error:addressError}=await query;
           
           if(addressError){
             return NextResponse.json({ message: apiwentWrong ,error:addressError}, 
                   { status: apiStatusFailureCode });
-
           }
           let emergencyCon = supabase
           .from("leap_customer")
-          .select('emergency_contact,contact_name,relation,leap_relations(*)').eq('client_id',formData.get('client_id'));
-          if(formData.get('branch_id')){
-            emergencyCon=emergencyCon.eq('branch_id',formData.get('branch_id'))
+          .select('emergency_contact,contact_name,relation,leap_relations(*)').eq('client_id',client_id);
+          if(branch_id){
+            emergencyCon=emergencyCon.eq('branch_id',branch_id)
           }
-          if(formData.get('customer_id')){
-            emergencyCon=emergencyCon.eq('customer_id',formData.get('customer_id'))
+          if(customer_id){
+            emergencyCon=emergencyCon.eq('customer_id',customer_id)
           }
           const {data:emergencyContact,error:contactError}=await emergencyCon;
           if(contactError){

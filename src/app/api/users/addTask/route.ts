@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
     try {
         // const { data: user, error: userError } = await supabase.auth.getUser();
 
-
         // // Handle case where the user is not authenticated
         // if (userError || !user) {
         //   return NextResponse.json(
@@ -18,36 +17,25 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const formData = await request.formData();
-        const fdata = {
-
-            clientID: formData.get('client_id'),
-            customerId: formData.get('customer_id'),
-            projectId: formData.get('project_id'),
-            subProjectId: formData.get('sub_project_id'),
-            taskTypeId: formData.get('task_type_id'),
-            totalHours: formData.get('total_hours'),
-            totalMinutes: formData.get('total_minutes'),
-            taskDetails: formData.get('task_details'),
-            taskDate: formData.get('task_date'),
-        }
+        const {client_id, customer_id, project_id, sub_project_id, task_type_id, total_hours, total_minutes, task_details, task_date } = await request.json();
+       
         const { data: TaskData, error: taskError } = await supabase.from('leap_customer_project_task')
             .insert({
-                client_id: fdata.clientID,
-                customer_id: fdata.customerId,
-                project_id: fdata.projectId,
-                sub_project_id: fdata.subProjectId,
-                task_type_id: fdata.taskTypeId,
-                total_hours: fdata.totalHours,
-                total_minutes: fdata.totalMinutes,
-                task_details: fdata.taskDetails,
-                task_date: fdata.taskDate,
+                client_id: client_id,
+                customer_id: customer_id,
+                project_id: project_id,
+                sub_project_id: sub_project_id,
+                task_type_id: task_type_id,
+                total_hours: total_hours,
+                total_minutes: total_minutes,
+                task_details: task_details,
+                task_date: task_date,
                 created_at: new Date().toISOString()
             }).select("id");
         if (taskError) {
             return funSendApiErrorMessage(taskError, "Failed to add task");
         }
-        const addActivity= await addUserActivities(fdata.clientID,fdata.customerId,"","Work task",fdata.taskDetails,TaskData[0].id);
+        const addActivity= await addUserActivities(client_id,customer_id,"","Work task",task_details,TaskData[0].id);
             if(addActivity=="1"){
               return funSendApiErrorMessage(addActivity, "Customer Task Activity Insert Issue");
             }

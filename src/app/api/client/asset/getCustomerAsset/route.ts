@@ -6,19 +6,16 @@ import {  funSendApiException } from "@/app/pro_utils/constant";
 export async function POST(request: NextRequest) {
     
     try{
-        const formData = await request.formData();
-        const fdata = {
-            clientId: formData.get('client_id'),
-            customerID: formData.get('customer_id')
-        }
+        const {client_id, customer_id } = await request.json();
+        
           let query = supabase
           .from("leap_customer_asset")
           .select(`*,leap_asset(*, leap_asset_type(*))`)
-          .eq('client_id', fdata.clientId)
+          .eq('client_id', client_id)
           .order('date_given', {ascending: false})
           
-          if(fdata.customerID){
-            query = query.eq("customer_id", fdata.customerID);
+          if(customer_id){
+            query = query.eq("customer_id", customer_id);
         }
           const {data:assetData,error:assetError} = await query;
           if(assetError){
@@ -32,4 +29,3 @@ export async function POST(request: NextRequest) {
         return funSendApiException(error);
     }
 }
-

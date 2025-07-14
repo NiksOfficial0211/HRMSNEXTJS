@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const formData = await request.formData();
+        const {client_id, branch_id, customer_id }  = await request.json();
     
         
           let query = supabase
@@ -24,14 +24,14 @@ export async function POST(request: NextRequest) {
           .select(`
             *,
             leap_client_branch_details(*),leap_client(*),leap_client_designations(*),leap_client_departments(*),leap_working_type(*),leap_employement_type(*)
-          `).eq('client_id',formData.get('client_id'));
+          `).eq('client_id',client_id);
           
           
-          if(formData.get('branch_id')){
-            query=query.eq('branch_id',formData.get('branch_id'))
+          if(branch_id){
+            query=query.eq('branch_id',branch_id)
           }
-          if(formData.get('customer_id')){
-            query=query.eq('customer_id',formData.get('customer_id'))
+          if(customer_id){
+            query=query.eq('customer_id',customer_id)
           }
           const {data:customerProfile,error:clientError}=await query;
           

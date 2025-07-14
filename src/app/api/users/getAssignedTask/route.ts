@@ -6,40 +6,39 @@ import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
 export async function POST(request: NextRequest) {
 
     try {
-        const formData = await request.formData();
-        const fdata = {
-            clientID: formData.get('client_id'),
-            assigned_to: formData.get('assigned_to'),
-            projectId: formData.get('project_id'),
-            task_date: formData.get('task_date'),
-            task_status: formData.get('task_status'),
-            id: formData.get('id')
-            
-        }
+        const {client_id, assigned_to, project_id, task_date, task_status, id, branch_id } = await request.json();
+        // const fdata = {
+        //     clientID: formData.get('client_id'),
+        //     assigned_to: formData.get('assigned_to'),
+        //     projectId: formData.get('project_id'),
+        //     task_date: formData.get('task_date'),
+        //     task_status: formData.get('task_status'),
+        //     id: formData.get('id')
+        // }
         let query = supabase.from('leap_customer_project_task_assignment')
             .select('*, leap_task_priority_level(*), leap_task_status(*), leap_client_sub_projects(sub_project_name,leap_client_project(project_name)),leap_project_task_types(task_type_name),  leap_customer!leap_task_assignment_assigned_by_fkey(name)')
             .order('updated_at', {ascending:false});
 
-        if (funISDataKeyPresent(formData.get('client_id'))) {
-            query = query.eq('client_id', formData.get('client_id'))
+        if (funISDataKeyPresent(client_id)) {
+            query = query.eq('client_id', client_id)
         }
-        if (funISDataKeyPresent(formData.get('branch_id'))) {
-            query = query.eq('branch_id', formData.get('branch_id'))
+        if (funISDataKeyPresent(branch_id)) {
+            query = query.eq('branch_id', branch_id)
         }
-        if (funISDataKeyPresent(formData.get('assigned_to'))) {
-            query = query.eq('assigned_to', formData.get('assigned_to'))
+        if (funISDataKeyPresent(assigned_to)) {
+            query = query.eq('assigned_to', assigned_to)
         }
-        if (funISDataKeyPresent(formData.get('project_id'))) {
-            query = query.eq('project_id', formData.get('project_id'))
+        if (funISDataKeyPresent(project_id)) {
+            query = query.eq('project_id', project_id)
         }
-        if (funISDataKeyPresent(formData.get('task_date'))) {
-            query = query.eq('task_date', formData.get('task_date'))
+        if (funISDataKeyPresent(task_date)) {
+            query = query.eq('task_date', task_date)
         }
-        if (funISDataKeyPresent(formData.get('id')))  {
-            query = query.eq('id', formData.get('id'))
+        if (funISDataKeyPresent(id))  {
+            query = query.eq('id', id)
         }
-        if (funISDataKeyPresent(formData.get('task_status')))  {
-            query = query.eq('task_status', formData.get('task_status'))
+        if (funISDataKeyPresent(task_status))  {
+            query = query.eq('task_status', task_status)
         }
         console.log(query);
 
