@@ -7,14 +7,6 @@ export async function POST(request: NextRequest) {
 
     try {
         const {client_id, customer_id, project_id, sub_project_id, id, task_status, task_date, to_date, from_date } = await request.json();
-        // const fdata = {
-        //     clientID: formData.get('client_id'),
-        //     customerId: formData.get('customer_id'),
-        //     projectId: formData.get('project_id'),
-        //     subProjectId: formData.get('sub_project_id'),
-        //     // task_date: formData.get('task_date'),
-        //     id: formData.get('id'),
-        // }
 
         let query = supabase.from('leap_customer_project_task')
             .select('*,leap_project_task_types(task_type_name),leap_client_sub_projects(sub_project_name,leap_client_project(project_name)), leap_task_status(*), leap_approval_status(*)')
@@ -58,11 +50,7 @@ export async function POST(request: NextRequest) {
         }
         return NextResponse.json({ status: 1, message: "All Tasks", data: TaskData }, { status: apiStatusSuccessCode })
 
-
     } catch (error) {
-
-
         return funSendApiException(error);
-
     }
 }

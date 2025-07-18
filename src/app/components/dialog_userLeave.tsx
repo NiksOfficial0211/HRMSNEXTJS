@@ -18,13 +18,13 @@ const UserLeaveStatus = ({ onClose, id}: { onClose: (fetchData: boolean) => void
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const formData = new FormData();
+                formData.append("client_id", contextClientID);
+                formData.append("branch_id", contaxtBranchID);
+                formData.append("id", id);
                 const res = await fetch(`/api/users/getAppliedLeaves`, {
                     method: "POST",
-                    body: JSON.stringify({
-                    "client_id": contextClientID,
-                    "branch_id": contaxtBranchID,
-                    "id": id
-                }),
+                    body: formData,
                 });
                 const response = await res.json();
                 const user = response.leavedata[0];

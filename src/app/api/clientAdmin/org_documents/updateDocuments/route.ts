@@ -25,8 +25,9 @@ export async function POST(request: NextRequest) {
         }
         const uploadedFile = files.file[0];
                 const fileBuffer = await fs.readFile(uploadedFile.path);
-                const fileBlob = new Blob([fileBuffer], { type: uploadedFile.headers["content-type"] });
-                const formData = new FormData();
+const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
+            type: uploadedFile.headers["content-type"]
+          });                const formData = new FormData();
                 formData.append("client_id", fields.client_id[0]);
                 formData.append("branch_id", fields.branch_id[0]);
                 formData.append("docType", "company");

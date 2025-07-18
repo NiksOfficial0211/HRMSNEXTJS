@@ -83,7 +83,7 @@ const EmpAttendancePage = () => {
             img_attachment: '',
             pause_end_time: [],
             approval_status: '',
-            paused_duration: '',
+            paused_duration: 0,
             working_type_id: '',
             attendanceStatus: 0,
             pause_start_time: [],

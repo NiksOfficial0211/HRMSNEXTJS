@@ -48,15 +48,19 @@ const AnnouncementListing = () => {
         setLoading(true);
         try {
             const formData = new FormData();
-            formData.append("client_id", contextClientID);
-            // formData.append("customer_id", contextCustomerID);
-            formData.append("branch_id", contaxtBranchID);
-            formData.append("role_id", contextRoleID);
+            // formData.append("client_id", contextClientID);
+            // // formData.append("customer_id", contextCustomerID);
+            // formData.append("branch_id", contaxtBranchID);
+            // formData.append("role_id", contextRoleID);
 
             const res = await fetch(`/api/clientAdmin/getAnnouncementList`, {
                 cache: "no-store",
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "client_id": contextClientID,
+                    "branch_id": contaxtBranchID,
+                    "role_id": contextRoleID
+                }),
             });
             if (res.ok) {
                 const response = await res.json();
@@ -104,8 +108,8 @@ const AnnouncementListing = () => {
                         </div>
                     </div>&nbsp;
                         <div className="row">
-                            {announcementList && announcementList.length > 0 ? (announcementList.map((announcement) => (
-                                <div className="col-md-3 text-center col-sm-6 mb-3" key={announcement.leap_client_announcements.announcement_id} >
+                            {announcementList && announcementList.length > 0 ? (announcementList.map((announcement, index) => (
+                                <div className="col-md-3 text-center col-sm-6 mb-3" key={index} >
                                     <div className='announcement_list'>
                                         <div className="row">
                                             <div className="col-lg-12 mb-3">
@@ -120,7 +124,7 @@ const AnnouncementListing = () => {
                                 </div>
                             ))): 
                                 <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
-                                    <PageErrorCenterContent content={"None Available"}/>
+                                    <PageErrorCenterContent content={"No recent Announcement"}/>
                                 </div>
                             }
                         </div>

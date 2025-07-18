@@ -109,8 +109,8 @@ const GreetingBlock = () => {
             }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
             <div className="new_personalised_leftbox">
                 <h3>{greetArray.greeting_topic}</h3>
-                <div className='breaks_slider_mainbox'>
-                    <p>{fact}</p>
+                <div className='user_greating_box_para'>
+                    <p className='m-0'>{fact}</p>
                 </div>
             </div>
         </div>

@@ -132,13 +132,13 @@ const { contaxtBranchID, contextClientID, contextRoleID,
                 <div className="row">
                     <div className="grid grid-cols-1 p-0">
                         {/* "/images/dashboard-logo.png" */}
-                        <div className="dash_logo"><img src={getImageApiURL +"/"+ contextLogoURL} className="header-logo" style={{cursor:"pointer"}}onClick={()=>{navigateToDashboard()}}/></div>
+                        <div className="dash_logo"><img src={contextLogoURL?getImageApiURL +"/"+ contextLogoURL:staticIconsBaseURL+"images/user.png"} className="header-logo" style={{cursor:"pointer"}}onClick={()=>{navigateToDashboard()}}/></div>
                         {/* <div className="dash_logo"><img src="/images/dashboard-logo.png" className="img-fluid" /></div> */}
                         <div className="dash_topbox">
 
                             <div className="welcome_text">
 
-                                {subTitle}<span>{title} {contextUserName}</span>
+                                {subTitle}<span>{title} {contextUserName?contextUserName:""}</span>
                                 <div style={{display:"none"}}>{contextLogoURL}</div>
                             </div>
                             <div className="dash_topotherbox">

@@ -3,12 +3,9 @@ import { addDays, dashedDateYYYYMMDD, formatDateYYYYMMDD, funSendApiErrorMessage
 import supabase from "../../supabaseConfig/supabase";
 import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
 
-
 export async function POST(request: NextRequest) {
-
     try {
         // const { data: user, error: userError } = await supabase.auth.getUser();
-
 
         // // Handle case where the user is not authenticated
         // if (userError || !user) {
@@ -17,45 +14,37 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const formData = await request.formData();
-        if(formData.get('role_id')! && formData.get('role_id')=="1" ||formData.get('role_id')=="2" || formData.get('role_id')=="3"){
-            return sendAllAnnouncements(formData)  
-            
+        const {role_id, client_id, branch_id} = await request.json();
+        if(role_id! && role_id=="1" ||role_id=="2" || role_id=="3"){
+            return sendAllAnnouncements (client_id, branch_id)    
         }else{
-            return  sendUsersAnnouncement(formData)
+            return  sendUsersAnnouncement (role_id, branch_id)
         }
-
     } catch (error) {
-
-
         return funSendApiException(error);
-
     }
-
 }
 
-
-async function sendAllAnnouncements(formData:FormData){
+async function sendAllAnnouncements(client_id: any, branch_id: any){
     let query =  supabase.from('leap_client_announcements')
     .select('*,leap_show_announcement_users(announcement_id, role_id)')
-    .eq('client_id', formData.get('client_id'))
-    .eq('branch_id', formData.get('branch_id'));
+    .eq('client_id', client_id)
+    .eq('branch_id', branch_id);
 
     const { data: TaskData, error: taskError } =await query;
     if (taskError) {
         return funSendApiErrorMessage(taskError, "Failed to get announcement");
     }
     return NextResponse.json({ status: 1, message: "All Announcement", data: TaskData }, { status: apiStatusSuccessCode })
- 
 }
 
-async function  sendUsersAnnouncement(formData:FormData) {
+async function  sendUsersAnnouncement(roleid: any, branchid: any) {
     let alldata: any[]=[];
 
-        const role_id=formData.get('role_id');
-        const branch_id=formData.get('branch_id');
+        const role_id=roleid;
+        const branch_id=branchid;
 
-            // const orCondition = `leap_show_announcement_users.designation_id.eq.${designationId},leap_show_announcement_users.department_id.eq.${departmentID}`;
+            // const orCondition = `leap_show_announcement_users.designation_id.eq.${designationId},  leap_show_announcement_users.department_id.eq.${departmentID}`;
             // let designationQuery=null;
             // let departmentQuery=null;
             let today = dashedDateYYYYMMDD(new Date());
@@ -73,13 +62,10 @@ async function  sendUsersAnnouncement(formData:FormData) {
                 { foreignTable: 'leap_client_announcements' }
             )           
             .order('validity_date', { foreignTable: 'leap_client_announcements', ascending: true });
-
             
             if (desError) {
                 return funSendApiErrorMessage(desError, "Failed to get announcement");
             }
-            
-        
         
         // console.log("api announcement departmentID",departmentID);
         // if(departmentID){
@@ -113,6 +99,5 @@ async function  sendUsersAnnouncement(formData:FormData) {
         //   });
 
         return NextResponse.json({ status: 1, message: "User Announcement", data: designationData }, { status: apiStatusSuccessCode })
-        
-    
+
 }

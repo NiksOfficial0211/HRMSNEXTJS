@@ -12,12 +12,10 @@ import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
 import { AssignedTask, LeapClientSubProjects, LeapTaskStatus, Task } from '@/app/models/TaskModel'
 import { pageURL_userFillTask, pageURL_userAssignTask } from '@/app/pro_utils/stringRoutes'
 import Select from "react-select";
-// import TaskUpdate from '@/app/components/dialog_taskUpdate'
 import moment from 'moment'
 import LeftPannel from '@/app/components/leftPannel'
 import { staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import PageErrorCenterContent from '@/app/components/pageError'
-
 import ShowAlertMessage from '@/app/components/alert'
 import { ALERTMSG_addAssetSuccess } from '@/app/pro_utils/stringConstants'
 import EmployeeTaskData from '@/app/components/dialog_userTaskDetails'
@@ -101,24 +99,52 @@ const EmployeeLeaveList = () => {
 
     const fetchTasks = async (filterID: any, value: any) => {
         try {
-            const formData = new FormData();
-
-            formData.append("client_id", "3");
-            formData.append("customer_id", contextCustomerID);
+            let formData = {
+                "client_id": contextClientID,
+                "customer_id": contextCustomerID,
+                "task_date": formatDateYYYYMMDD(new Date()),
+                "sub_project_id": "",
+                "task_status": ""
+            }
+            if (filterID == 1) {
+                let taskDate = filters.date.length > 0 && filters.date == value ? filters.date : value;
+                formData = {
+                    ...formData,
+                    "task_date": taskDate
+                }
+            }
+            if (filterID == 2) {
+                let subproject = filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value
+                formData = {
+                    ...formData,
+                    "sub_project_id": subproject
+                }
+            }
+            if (filterID == 3) {
+                let status = filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value
+                formData = {
+                    ...formData,
+                    "task_status": status
+                }
+            }
+            // formData.append("client_id", "3");
+            // formData.append("customer_id", contextCustomerID);
             // formData.append("task_date", "24-03-2024");
             // if (filterID == 1) formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
-            if (filterID == 1) { formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value); }
-            else {
-                formData.append("task_date", formatDateYYYYMMDD(new Date()));
-            }
-            if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
-            if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
-            for (const [key, value] of formData.entries()) {
-                console.log(`${key}: ${value}`);
-            }
+            // if (filterID == 1) { formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value); }
+            // else {
+            //     formData.append("task_date", formatDateYYYYMMDD(new Date()));
+            // }
+            // if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
+            // if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
+            // for (const [key, value] of formData.entries()) {
+            //     console.log(`${key}: ${value}`);
+            // }
             const res = await fetch(`/api/users/getTasks`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                   formData
+                }),
             });
             const response = await res.json();
             console.log(response);
@@ -143,19 +169,47 @@ const EmployeeLeaveList = () => {
     };
     const fetchAssignedTasks = async (filterID: any, value: any) => {
         try {
-            const formData = new FormData();
-            formData.append("assigned_to", contextCustomerID);
-            // if (filterID == 1) formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
-            if (filterID == 1) { formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value); }
-            else {
-                formData.append("task_date", new Date().toISOString());
-
+            let formData = {
+                "assigned_to": contextCustomerID,
+                "task_date": formatDateYYYYMMDD(new Date()),
+                "sub_project_id": "",
+                "task_status": ""
             }
-            if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
-            if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
+            if (filterID == 1) {
+                let taskDate = filters.date.length > 0 && filters.date == value ? filters.date : value;
+                formData = {
+                    ...formData,
+                    "task_date": taskDate
+                }
+            }
+            if (filterID == 2) {
+                let subproject = filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value
+                formData = {
+                    ...formData,
+                    "sub_project_id": subproject
+                }
+            }
+            if (filterID == 3) {
+                let status = filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value
+                formData = {
+                    ...formData,
+                    "task_status": status
+                }
+            }
+            // formData.append("assigned_to", contextCustomerID);
+            // if (filterID == 1) formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
+            // if (filterID == 1) { formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value); }
+            // else {
+            //     formData.append("task_date", new Date().toISOString());
+
+            // }
+            // if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
+            // if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
             const res = await fetch(`/api/users/getAssignedTask`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    formData
+                }),
             });
             const response = await res.json();
             console.log(response);
@@ -181,25 +235,60 @@ const EmployeeLeaveList = () => {
     };
     const fetchTeamTasks = async (filterID: any, value: any) => {
         try {
-            const formData = new FormData();
-            formData.append("manager_id", contextCustomerID);
-            // if (filterID == 1) formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
-            if (filterID == 1) {
-                formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
-            } else {
-                formData.append("task_date", new Date().toISOString());
-
+           let formData = {
+                "manager_id": contextCustomerID,
+                "task_date": formatDateYYYYMMDD(new Date()),
+                "customer_id": 0,
+                "sub_project_id": "",
+                "task_status": ""
             }
-            if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
-            if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
-            if (filterID == 4) formData.append("customer_id", filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value);
+            if (filterID == 1) {
+                let taskDate = filters.date.length > 0 && filters.date == value ? filters.date : value;
+                formData = {
+                    ...formData,
+                    "task_date": taskDate
+                }
+            }
+            if (filterID == 2) {
+                let subproject = filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value
+                formData = {
+                    ...formData,
+                    "sub_project_id": subproject
+                }
+            }
+            if (filterID == 3) {
+                let status = filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value
+                formData = {
+                    ...formData,
+                    "task_status": status
+                }
+            }
+            if (filterID == 4) {
+                let customerID = filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value
+                formData = {
+                    ...formData,
+                    "customer_id": customerID
+                }
+            }
+            // formData.append("manager_id", contextCustomerID);
+            // if (filterID == 1) formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
+            // if (filterID == 1) {
+            //     formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
+            // } else {
+            //     formData.append("task_date", new Date().toISOString());
+            // }
+            // if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
+            // if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
+            // if (filterID == 4) formData.append("customer_id", filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value);
 
             const res = await fetch(`/api/users/getTeamTasks`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    formData
+                }),
             });
             const response = await res.json();
-            console.log(response);
+            // console.log(response);
 
             const taskData = response.taskdata;
             if (response.status == 1 || []) {
@@ -220,23 +309,58 @@ const EmployeeLeaveList = () => {
         }
         setLoadingCursor(false);
     };
-
     const fetchProjectTasks = async (filterID: any, value: any) => {
         try {
-            const formData = new FormData();
-            formData.append("project_manager_id", contextCustomerID);
-            if (filterID == 1) { formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value); }
-            else {
-                formData.append("task_date", new Date().toISOString());
-
+            let formData = {
+                "project_manager_id": contextCustomerID,
+                "task_date": formatDateYYYYMMDD(new Date()),
+                "customer_id": 0,
+                "sub_project_id": "",
+                "task_status": ""
             }
-            if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
-            if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
-            if (filterID == 4) formData.append("customer_id", filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value);
+            if (filterID == 1) {
+                let taskDate = filters.date.length > 0 && filters.date == value ? filters.date : value;
+                formData = {
+                    ...formData,
+                    "task_date": taskDate
+                }
+            }
+            if (filterID == 2) {
+                let subproject = filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value
+                formData = {
+                    ...formData,
+                    "sub_project_id": subproject
+                }
+            }
+            if (filterID == 3) {
+                let status = filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value
+                formData = {
+                    ...formData,
+                    "task_status": status
+                }
+            }
+            if (filterID == 4) {
+                let customerID = filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value
+                formData = {
+                    ...formData,
+                    "customer_id": customerID
+                }
+            }
+            // formData.append("project_manager_id", contextCustomerID);
+            // if (filterID == 1) { formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value); }
+            // else {
+            //     formData.append("task_date", new Date().toISOString());
+
+            // }
+            // if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
+            // if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
+            // if (filterID == 4) formData.append("customer_id", filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value);
 
             const res = await fetch(`/api/users/getProjectTasks`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    
+                }),
             });
             const response = await res.json();
             console.log(response);
@@ -454,7 +578,7 @@ const EmployeeLeaveList = () => {
                                                                 <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
                                                                     <option value="">Project:</option>
                                                                     {projectarray.map((id, index) => (
-                                                                        <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
+                                                                        <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
                                                                     ))}
                                                                 </select>
                                                             </div>
@@ -462,21 +586,21 @@ const EmployeeLeaveList = () => {
                                                                 <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
                                                                     <option value="">Status:</option>
                                                                     {statusarray.map((id, index) => (
-                                                                        <option value={id.id} key={id.id}>{id.status}</option>
+                                                                        <option value={id.id} key={index}>{id.status}</option>
                                                                     ))}
                                                                 </select>
                                                             </div>
                                                             <div className="nw_filter_form_group">
                                                                 <div className="nw_filter_submit_btn">
                                                                     <a onClick={() => resetFilter("fetchTasks")}>
-                                                                        <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                        <img src={staticIconsBaseURL+"/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                     </a>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                        <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
+                                                        <img src={staticIconsBaseURL+"/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
                                                     </div>
                                                 </div>
                                                 <div className="my_task_tabbing_content">
@@ -492,8 +616,8 @@ const EmployeeLeaveList = () => {
                                                                         <div className="col-lg-1 text-center"><div className="label">Status</div></div>
                                                                     </div>
                                                                     {taskarray.length > 0 ? (
-                                                                        taskarray?.map((list) => (
-                                                                            <div className="list_listbox" key={list.id}>
+                                                                        taskarray?.map((list, index) => (
+                                                                            <div className="list_listbox" key={index}>
                                                                                 <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                     <div className="row">
                                                                                         <div className="col-lg-2 text-center">{list.task_date}</div>
@@ -506,9 +630,9 @@ const EmployeeLeaveList = () => {
                                                                                             <><div className="col-lg-1 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
                                                                                         }
                                                                                         <div className="col-lg-1 text-center">
-                                                                                            {list.leap_task_status.status == "Completed" ? <img src="/images/ic_eye.png" style={{ width: "20px", paddingBottom: "5px", alignItems: "center"  }} alt="Search Icon" onClick={() => {setEditTaskId(list.id); setShowDialog(true);  setisToBeEdited(false) }} /> : 
-                                                                                            <img src="/images/edit.png" className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => {setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(true) }} /> 
-                                                                                                
+                                                                                            {list.leap_task_status.status == "Completed" ? <img src={staticIconsBaseURL+"/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(false) }} /> :
+                                                                                                <img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(true) }} />
+
                                                                                             }
                                                                                         </div>
                                                                                     </div>
@@ -539,7 +663,7 @@ const EmployeeLeaveList = () => {
                                                                     <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
                                                                         <option value="">Project:</option>
                                                                         {projectarray.map((id, index) => (
-                                                                            <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
+                                                                            <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
                                                                         ))}
                                                                     </select>
                                                                 </div>
@@ -547,21 +671,21 @@ const EmployeeLeaveList = () => {
                                                                     <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
                                                                         <option value="">Status:</option>
                                                                         {statusarray.map((id, index) => (
-                                                                            <option value={id.id} key={id.id}>{id.status}</option>
+                                                                            <option value={id.id} key={index}>{id.status}</option>
                                                                         ))}
                                                                     </select>
                                                                 </div>
                                                                 <div className="nw_filter_form_group">
                                                                     <div className="nw_filter_submit_btn">
                                                                         <a onClick={() => resetFilter("fetchAssignedTasks")}>
-                                                                            <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                            <img src={staticIconsBaseURL+"/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                         </a>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                            <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
+                                                            <img src={staticIconsBaseURL+"/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
                                                         </div>
                                                     </div>
                                                     <div className="my_task_tabbing_content">
@@ -580,8 +704,8 @@ const EmployeeLeaveList = () => {
                                                                             <div className="col-lg-2 text-center"><div className="label">Assigned By</div></div>
                                                                         </div>
                                                                         {assignedTaskarray.length > 0 ? (
-                                                                            assignedTaskarray?.map((list) => (
-                                                                                <div className="list_listbox" key={list.id}>
+                                                                            assignedTaskarray?.map((list, index) => (
+                                                                                <div className="list_listbox" key={index}>
                                                                                     <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                         <div className="row">
                                                                                             <div className="col-lg-2 text-center">{list.task_date}</div>
@@ -591,14 +715,9 @@ const EmployeeLeaveList = () => {
                                                                                             {/* <div className="col-lg-2 text-center">{list.assigned_by}</div> */}
                                                                                             <div className="col-lg-2 text-center" style={{ color: "red" }}>{list.deadline ? list.deadline : "--"}</div>
                                                                                             <div className="col-lg-2 text-center">{list.leap_customer.name}</div>
-                                                                                            <div className="col-lg-1 text-center ">
-                                                                                                <img src={staticIconsBaseURL + "/images/superadmin/view.svg"} className="img-fluid edit-icon " alt="Search Icon" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }}
-                                                                                                    onClick={() => {
-                                                                                                        setNumId(list.id)
-                                                                                                        setNumId(1)
-                                                                                                        setShowDialog1(true)
-                                                                                                    }}
-                                                                                                />
+                                                                                            <div className="col-lg-1 text-center">
+                                                                                                <img src={staticIconsBaseURL+"/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(1); setShowDialog(true); setisToBeEdited(false) }} />
+
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -618,7 +737,7 @@ const EmployeeLeaveList = () => {
                                                 </>
                                                 : viewIndex == 2 ?
                                                     // Team members task
-                                                    <>
+                                                    <>~~
                                                         <div className="nw_user_filter_mainbox">
                                                             <div className="filter_whitebox" id="filter_whitebox">
                                                                 <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_four">
@@ -629,7 +748,7 @@ const EmployeeLeaveList = () => {
                                                                         <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
                                                                             <option value="">Project:</option>
                                                                             {projectarray.map((id, index) => (
-                                                                                <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
+                                                                                <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
                                                                             ))}
                                                                         </select>
                                                                     </div>
@@ -650,21 +769,21 @@ const EmployeeLeaveList = () => {
                                                                         <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
                                                                             <option value="">Status:</option>
                                                                             {statusarray.map((id, index) => (
-                                                                                <option value={id.id} key={id.id}>{id.status}</option>
+                                                                                <option value={id.id} key={index}>{id.status}</option>
                                                                             ))}
                                                                         </select>
                                                                     </div>
                                                                     <div className="nw_filter_form_group">
                                                                         <div className="nw_filter_submit_btn">
                                                                             <a onClick={() => resetFilter("fetchTeamTasks")}>
-                                                                                <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                                <img src={staticIconsBaseURL+"/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                             </a>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                                <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
+                                                                <img src={staticIconsBaseURL+"/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
                                                             </div>
                                                         </div>
                                                         <div className="my_task_tabbing_content">
@@ -680,8 +799,8 @@ const EmployeeLeaveList = () => {
                                                                                 <div className="col-lg-2 text-center"><div className="label">Status</div></div>
                                                                             </div>
                                                                             {teamTaskarray.length > 0 ? (
-                                                                                teamTaskarray?.map((list) => (
-                                                                                    <div className="list_listbox" key={list.id}>
+                                                                                teamTaskarray?.map((list, index) => (
+                                                                                    <div className="list_listbox" key={index}>
                                                                                         <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                             <div className="row">
                                                                                                 <div className="col-lg-2 text-center">{list.leap_customer.name}</div>
@@ -694,13 +813,10 @@ const EmployeeLeaveList = () => {
                                                                                                     <><div className="col-lg-2 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
                                                                                                 }
                                                                                                 <div className="col-lg-1 text-center">
-                                                                                                    <img src={staticIconsBaseURL + "/images/superadmin/view.svg"} className="img-fluid edit-icon " alt="Search Icon" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }}
-                                                                                                        onClick={() => {
-                                                                                                            setNumId(list.id)
-                                                                                                            setNumId(2)
-                                                                                                            setShowDialog1(true)
-                                                                                                        }}
-                                                                                                    />
+                                                                                                    {list.leap_approval_status.approval_type == "Pending" ?
+                                                                                                        <img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
+                                                                                                        <img src={staticIconsBaseURL+"/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog(true); setisToBeEdited(false) }} />
+                                                                                                    }
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -731,7 +847,7 @@ const EmployeeLeaveList = () => {
                                                                             <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
                                                                                 <option value="">Project:</option>
                                                                                 {projectarray.map((id, index) => (
-                                                                                    <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
+                                                                                    <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
                                                                                 ))}
                                                                             </select>
                                                                         </div>
@@ -752,21 +868,21 @@ const EmployeeLeaveList = () => {
                                                                             <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
                                                                                 <option value="">Status:</option>
                                                                                 {statusarray.map((id, index) => (
-                                                                                    <option value={id.id} key={id.id}>{id.status}</option>
+                                                                                    <option value={id.id} key={index}>{id.status}</option>
                                                                                 ))}
                                                                             </select>
                                                                         </div>
                                                                         <div className="nw_filter_form_group">
                                                                             <div className="nw_filter_submit_btn">
                                                                                 <a onClick={() => resetFilter("fetchProjectTasks")}>
-                                                                                    <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                                    <img src={staticIconsBaseURL+"/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                                 </a>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                                    <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
+                                                                    <img src={staticIconsBaseURL+"/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
                                                                 </div>
                                                             </div>
                                                             <div className="my_task_tabbing_content">
@@ -782,8 +898,8 @@ const EmployeeLeaveList = () => {
                                                                                     <div className="col-lg-2 text-center"><div className="label">Status</div></div>
                                                                                 </div>
                                                                                 {projectTaskarray.length > 0 ? (
-                                                                                    projectTaskarray?.map((list) => (
-                                                                                        <div className="list_listbox" key={list.id}>
+                                                                                    projectTaskarray?.map((list, index) => (
+                                                                                        <div className="list_listbox" key={index}>
                                                                                             <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                                 <div className="row">
                                                                                                     <div className="col-lg-2 text-center">{list.leap_client_sub_projects.leap_client_project.project_name}</div>
@@ -797,13 +913,10 @@ const EmployeeLeaveList = () => {
                                                                                                         <><div className="col-lg-2 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
                                                                                                     }
                                                                                                     <div className="col-lg-1 text-center ">
-                                                                                                        <img src={staticIconsBaseURL + "/images/superadmin/view.svg"} className="img-fluid edit-icon " alt="Search Icon" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }}
-                                                                                                            onClick={() => {
-                                                                                                                setNumId(list.id)
-                                                                                                                setNumId(3)
-                                                                                                                setShowDialog1(true)
-                                                                                                            }}
-                                                                                                        />
+                                                                                                        {list.leap_approval_status.approval_type == "Pending" ?
+                                                                                                            <img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
+                                                                                                            <img src={staticIconsBaseURL+"/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog(true); setisToBeEdited(false) }} />
+                                                                                                        }
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -832,13 +945,13 @@ const EmployeeLeaveList = () => {
                         <div className={showDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
                             {showDialog && <EmployeeTaskData id={editTaskId} isToBeEddited={isToBeEdited} onClose={() => {
                                 setShowDialog(false)
-                                , resetFilter(""), fetchTasks("", "")
+                                    , resetFilter(""), fetchTasks("", "")
                             }} />}
                         </div>
                     </div>
                     <div className="nw_user_offcanvas">
                         <div className={showDialog1 ? "rightpoup rightpoupopen" : "rightpoup"}>
-                            {showDialog1 && <TeamTaskData id={editTaskId} num={numId} onClose={() => { setShowDialog1(false), resetFilter(""), fetchTasks("", "") }} />}
+                            {showDialog1 && <TeamTaskData id={editTaskId} num={numId} isToBeEddited={isToBeEdited} onClose={() => { setShowDialog1(false), resetFilter(""), fetchTasks("", "") }} />}
                         </div>
                     </div>
                     {/* ----------------------------- */}

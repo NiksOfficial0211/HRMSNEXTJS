@@ -12,6 +12,7 @@ import { AssetList, AssetType } from '@/app/models/AssetModel'
 import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
 import { leftMenuAssetsPageNumbers } from '@/app/pro_utils/stringRoutes'
 import BackButton from '@/app/components/BackButton'
+import Select from "react-select";
 
 
 interface AssetForm {
@@ -36,6 +37,7 @@ const AddAsset : React.FC = () => {
   const [deptArray, setDept] = useState<DepartmentTableModel[]>([]);
   const {contaxtBranchID,contextClientID,contextCustomerID}=useGlobalContext();
   const [selectedAssetType, setSelectedAssetType] = useState<string>("");
+  const [employeeName, setEmployeeNames] = useState([{ value: '', label: '' }]);
 
   const handleAssetTypeChange = async (e: ChangeEvent<HTMLSelectElement>) => {
       const value = e.target.value;
@@ -54,6 +56,17 @@ const AddAsset : React.FC = () => {
         setAssetType(assetType);
         const emp = await getEmployee();
         setEmp(emp);
+        let name: any[] = []
+            for (let i = 0; i < emp.length; i++) {
+
+                name.push({
+                    value: emp[i].customer_id,
+                    label: emp[i].name,
+                })
+            }
+            console.log(name);
+
+            setEmployeeNames(name);
         const dept = await getDepartment();
         setDept(dept);
 
@@ -97,7 +110,11 @@ if (window.pageYOffset > 0) {
     }
         
   }
+const handleEmpSelectChange = async (values: any) => {
+        setFormValues((prev) => ({ ...prev, ["customerID"]: values.value }));
+        
 
+    };
     const formData = new FormData();
     const [errors, setErrors] = useState<Partial<AssetForm>>({});
  
@@ -203,19 +220,23 @@ if (window.pageYOffset > 0) {
                             <div className="row">
                                 <div className="col-md-4">
                                     <div className="form_box mb-3">
-                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Employee:</label>
-                                            <select id="customerID" name="customerID" onChange={handleInputChange}>
-                                                <option value="">Select</option>
-                                                {empArray.map((type, index) => (
-                                                    <option value={type.customer_id} key={type.customer_id}>{type.emp_id} : {type.name} </option>
-                                                ))}
-                                            </select> 
+                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Employee<span className='req_text'>*</span>:</label>
+                                            <Select
+                                                            className="custom-select"
+                                                            classNamePrefix="custom"
+                                                            options={employeeName}
+                                                            onChange={(selectedOption) =>
+                                                                handleEmpSelectChange(selectedOption)
+                                                            }
+                                                            placeholder="Search Employee"
+                                                            isSearchable
+                                                        />
                                             {errors.customerID && <span className="error" style={{color: "red"}}>{errors.customerID}</span>}                                   
                                     </div>
                                 </div>
                                 <div className="col-md-4">
                                     <div className="form_box mb-3">
-                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Asset Type:</label>
+                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Asset Type<span className='req_text'>*</span>:</label>
                                             <select id="assetTypeID" name="assetTypeID" onChange={handleAssetTypeChange}>
                                                 <option value="">Select</option>
                                                 {assetTypeArray.map((type, index) => (
@@ -226,7 +247,7 @@ if (window.pageYOffset > 0) {
                                 </div>
                                 <div className="col-md-4">
                                     <div className="form_box mb-3">
-                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Asset:</label>
+                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Asset<span className='req_text'>*</span>:</label>
                                         <select id="assetID" name="assetID" onChange={handleInputChange}>
                                             <option value="">Select</option>
                                                 {assetArray.length > 0 ? (
@@ -248,7 +269,7 @@ if (window.pageYOffset > 0) {
                             <div className="row">
                                 <div className="col-md-12">
                                     <div className="form_box mb-3">
-                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Remark:  </label>
+                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Remark<span className='req_text'>*</span>:  </label>
                                         <input type="text" className="form-control" value={formValues.remark} name="remark" onChange={handleInputChange} id="remark" placeholder="" />
                                         {errors.remark && <span className="error" style={{color: "red"}}>{errors.remark}</span>}
                                     </div>
@@ -257,14 +278,14 @@ if (window.pageYOffset > 0) {
                             <div className="row" style={{alignItems: 'center'}}>
                             <div className="col-md-4">
                                     <div className="form_box mb-3">
-                                        <label htmlFor="formFile" className="form-label">Date of Allotment: </label>
+                                        <label htmlFor="formFile" className="form-label">Date of Allotment<span className='req_text'>*</span>: </label>
                                         <input type="date" id="givenDate" name="givenDate" value={formValues.givenDate} onChange={handleInputChange} />
                                         {errors.givenDate && <span className='error' style={{color: "red"}}>{errors.givenDate}</span>}
                                     </div>
                                 </div>
                               <div className="col-lg-8">
                                 <div className="row">
-                                    <div className="col-lg-12 mb-1">Upload asset picture: </div>
+                                    <div className="col-lg-12 mb-1">Upload Asset Picture: </div>
                                 </div>
                                 <div className="upload_list">
                                     <div className="row">

@@ -89,17 +89,17 @@ const SupportRequestForm: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
     setLoadingCursor(true);
-    console.log("handle submit called");
-    formData.append("client_id", contextClientID );
-    formData.append("customer_id", contextCustomerID );
-    formData.append("branch_id", contaxtBranchID );
-    formData.append("type_id", formValues.type_id);
-    formData.append("description", formValues.description);
-    formData.append("priority_level", formValues.priority_level);
     try {
       const response = await fetch("/api/users/support/raiseSupport", {
         method: "POST",
-        body: formData,
+        body: JSON.stringify({
+          "client_id": contextClientID ,
+          "customer_id": contextCustomerID,
+          "branch_id": contaxtBranchID,
+          "type_id": formValues.type_id,
+          "description": formValues.description,
+          "priority_level": formValues.priority_level
+        }),
       });
       if (response.ok) {
         setLoadingCursor(false);
@@ -155,7 +155,7 @@ const SupportRequestForm: React.FC = () => {
                         <select id="type_id" name="type_id" onChange={handleInputChange} className="form-select">
                           <option value="">Request Type *</option>
                           {masterArray.map((type, index) => (
-                            <option value={type.id} key={type.id}>{type.type_name}</option>
+                            <option value={type.id} key={index}>{type.type_name}</option>
                           ))}
                         </select>
                         {errors.type_id && <span className="error" style={{ color: "red" }}>{errors.type_id}</span>}
@@ -164,27 +164,27 @@ const SupportRequestForm: React.FC = () => {
                         <select id="priority_level" name="priority_level" onChange={handleInputChange} className="form-select">
                           <option value="">Priority *</option>
                           {priorityArray.map((type, index) => (
-                            <option value={type.id} key={type.id}>{type.priority_name}</option>
+                            <option value={type.id} key={index}>{type.priority_name}</option>
                           ))}
                         </select>
                         {errors.priority_level && <span className="error" style={{ color: "red" }}>{errors.priority_level}</span>}
                       </div>
                       <div className="form_group_support">
-                        <textarea className="form-control" rows={1} id="description" name="description" value={formValues.description} onChange={handleInputChange} placeholder='Description'/>
+                        <textarea className="form-control" rows={2} id="description" name="description" value={formValues.description} onChange={handleInputChange} placeholder='Description'/>
                         {errors.description && <span className="error" style={{ color: "red" }}>{errors.description}</span>}
                       </div>
                       {/* <div className="form_group_support_upload">
                         <input type="file" name="file" id="file" className='new_upload_btn_input' />
                         <label htmlFor="file" className='new_upload_btn'><span><img src="/images/user/upload.gif" alt="Upload Icon" className="img-fluid" /></span>Upload File</label>
                       </div> */}
-                      <div className="form_group_support_btns">
-                        <BackButton isCancelText={true} />
-                        <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
-                      </div>
+                      <div className="new_leave_formgoup_btn new_leave_formgoup_back_btn">
+                          <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
+                          <BackButton isCancelText={true} />
+                        </div>
                     </form>
                   </div>
                   <div className="new_support_rightbox">
-                    <img src="/images/user/support-image.webp" alt="Support image" className="img-fluid" />
+                    <img src={staticIconsBaseURL + "/images/user/support-image.webp"} alt="Support image" className="img-fluid" />
                   </div>
                 </div>
               </div>
@@ -207,7 +207,8 @@ async function getPriority() {
 
   let query = supabase
     .from('leap_request_priority')
-    .select();
+    .select()
+    .neq('is_deleted', true);
 
   const { data, error } = await query;
   if (error) {

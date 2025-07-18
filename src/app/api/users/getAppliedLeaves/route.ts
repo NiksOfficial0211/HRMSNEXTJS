@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const pageSize = parseInt(searchParams.get("limit") || ""); // Default: 20 per page
 
     let leaveBalances;
-    const {client_id, branch_id, start_date, end_Date, id, leave_status, customer_id } = await request.json();
+    const {client_id, branch_id, start_date, end_date, id, leave_status, customer_id } = await request.json();
     // const fdata = {
     //   clientId: formData.get('client_id'),
     //   branchId: formData.get('branch_id'),
@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
      
     const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
+console.log("---: ",start_date);
 
     let query = supabase
       .from("leap_customer_apply_leave")
@@ -41,11 +42,11 @@ export async function POST(request: NextRequest) {
         query=query.eq('customer_id',customer_id);
         leaveBalances = await funGetMyLeaveBalance(client_id, customer_id, 5);
       }
-      if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_Date)!){
+      if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_date)!){
             query=query.gte('from_date',start_date).lte('to_date',start_date);
           }
-          if(funISDataKeyPresent(start_date && funISDataKeyPresent(end_Date))){
-            query=query.lte('from_date',end_Date).gte('to_date',start_date);
+          if(funISDataKeyPresent(start_date && funISDataKeyPresent(end_date))){
+            query=query.lte('from_date',end_date).gte('to_date',start_date);
           }
      
       if(start || end){
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
       
     if (error) {
       return NextResponse.json({status:0, message: apiwentWrong, error: error }, { status: apiStatusFailureCode });
-    }else if(leaves.length==0 && (start_date|| end_Date)){
+    }else if(leaves.length==0 && (start_date|| end_date)){
       if(page==1){
         return NextResponse.json({ message: "start date present if condition", status : 1, page:page,leavedata:[] }, { status: apiStatusSuccessCode });
       }else{

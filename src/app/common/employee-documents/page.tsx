@@ -144,7 +144,7 @@ const OrganizationalDocuments = () => {
 
                                     {/* <div className="col-lg-12"> */}
 
-                                    <div className="col-lg-8">
+                                    <div className="col-lg-7">
                                             <div className="form_box mb-2">
                                                 <div className="row d-flex align-items-center">
                                                     <div className="col-lg-12 search_select_element">
@@ -164,7 +164,7 @@ const OrganizationalDocuments = () => {
                                             </div> 
                                         
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-5">
                                         <a className="red_button" onClick={() => { setShowUploadDialog(true) }}>Add Document</a>&nbsp;
                                     </div>
                                     {/* </div> */}

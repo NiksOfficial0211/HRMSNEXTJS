@@ -1,5 +1,6 @@
 'use client'
-
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -17,6 +18,45 @@ export default function Home() {
       
   // );
   
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      const firebaseConfig = { /* same config */ };
+      let app;
+      if (!getApps().length) {
+        app = initializeApp(firebaseConfig);
+      } else {
+        app = getApp(); // use existing app
+      }
+      navigator.serviceWorker
+        .register("/firebase-messaging-sw.js")
+        .then(async (registration) => {
+          console.log("Service Worker registered:", registration);
+          const messaging = getMessaging(app);
+    
+          try {
+            const token = await getToken(messaging, {
+              vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY, // <- required for web push
+              serviceWorkerRegistration: registration,
+            });
+    
+            if (token) {
+              console.log("FCM Token:", token);
+            } else {
+              console.warn("No registration token available. Request permission to generate one.");
+            }
+          } catch (err) {
+            console.error("An error occurred while retrieving token. ", err);
+          }
+    
+          onMessage(messaging, (payload) => {
+            console.log("Message received in foreground:", payload);
+          });
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
+    }
+  }, []);
   return (
     <div>
     {/* Banner Section */}

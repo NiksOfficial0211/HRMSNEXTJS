@@ -100,18 +100,22 @@ const Dashboard = () => {
     const fetchData = async () => {
 
         try {
-            const formData = new FormData();
-            formData.append("client_id", contextClientID);
-            formData.append("customer_id", contextCustomerID);
-            formData.append("role_id", contextRoleID);
-            // formData.append("client_id", "3");
-            // formData.append("customer_id", "3");
-            // formData.append("role_id", "2");
+            // const formData = new FormData();
+            // formData.append("client_id", contextClientID);
+            // formData.append("customer_id", contextCustomerID);
+            // formData.append("role_id", contextRoleID);
+            // // formData.append("client_id", "3");
+            // // formData.append("customer_id", "3");
+            // // formData.append("role_id", "2");
 
-            const res = await fetch(`/api/clientAdmin/dashboard`, {
+             const res = await fetch(`/api/clientAdmin/dashboard`, {
                 cache: "no-store",
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "client_id": contextClientID,
+                    "customer_id": contextCustomerID,
+                    "role_id": contextRoleID
+            }),
             });
             if (res.ok) {
                 const response = await res.json();
@@ -346,20 +350,20 @@ const Dashboard = () => {
                                                                 <div className="col-lg-8">
 
                                                                     <div className="row">
-                                                                        {branchData.map((branch, index) => (
-                                                                            <div className={`col-lg-12 mb-3 ${loadingCursor ? "cursorLoading" : ""}`} key={branch.branchId} onClick={(e) => { setLoadingCursor(true), e.preventDefault(); changePieData(index) }}>
-                                                                                <a href="#" className={branchSelectedIndex == index ? "summery_whitelist_selected" : "summery_whitelist"}>
-                                                                                    Branch: <br></br><span>{branch.branchNumber}</span>
-                                                                                </a>
+                                                                        <div className="col-lg-12">
+                                                                            <div style={{ width: "100%", padding: "0 10px", height: "400px", overflowY: "scroll", scrollbarColor: "rgb(212, 170, 112) rgb(228, 228, 228)", scrollbarWidth: "thin", overflowX: "clip" }}>
+                                                                                <div className="row">
+                                                                                    {branchData.map((branch, index) => (
+                                                                                        <div className={`col-lg-12 mb-3 ${loadingCursor ? "cursorLoading" : ""}`} key={branch.branchId} onClick={(e) => { setLoadingCursor(true), e.preventDefault(); changePieData(index) }}>
+                                                                                            <a href="#" className={branchSelectedIndex == index ? "summery_whitelist_selected" : "summery_whitelist"}>
+                                                                                                Branch: <br></br><span>{branch.branchNumber}</span>
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    ))}
+
+                                                                                </div>
                                                                             </div>
-                                                                        ))}
-
-
-
-                                                                    </div>
-
-                                                                    <div className="row">
-                                                                        <div className="col-lg-12"></div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>

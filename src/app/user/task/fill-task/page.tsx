@@ -376,7 +376,7 @@ const AssignLeave: React.FC = () => {
   useEffect(() => {
     setLoadingCursor(true);
       const fetchData = async () => {
-        const project = await getProject(contextClientID, contaxtBranchID);
+        const project = await getProject(3, contaxtBranchID);
         setProject(project);
         const task = await getTaskTypes();
         setTask(task);
@@ -433,19 +433,28 @@ const AssignLeave: React.FC = () => {
     if (!validate()) return;
     setLoadingCursor(true);
     console.log("handle submit called");
-    formData.append("client_id", contextClientID);
-    formData.append("customer_id", contextCustomerID);
-    formData.append("project_id", formValues.project_id);
-    formData.append("sub_project_id", formValues.sub_project_id);
-    formData.append("task_type_id", formValues.task_type_id);
-    formData.append("task_details", formValues.task_details);
-    formData.append("task_date", formValues.task_date);
-    formData.append("task_status", formValues.task_status);
+    // formData.append("client_id", contextClientID);
+    // formData.append("customer_id", contextCustomerID);
+    // formData.append("project_id", formValues.project_id);
+    // formData.append("sub_project_id", formValues.sub_project_id);
+    // formData.append("task_type_id", formValues.task_type_id);
+    // formData.append("task_details", formValues.task_details);
+    // formData.append("task_date", formValues.task_date);
+    // formData.append("task_status", formValues.task_status);
 
     try {
       const response = await fetch("/api/users/addTask", {
         method: "POST",
-        body: formData,
+        body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "customer_id": contextCustomerID,
+                        "project_id": formValues.project_id,
+                        "sub_project_id": formValues.sub_project_id,
+                        "task_type_id": formValues.task_type_id,
+                        "task_details": formValues.task_details,
+                        "task_date": formValues.task_date,
+                        "task_status": formValues.task_status
+                    }),
       });
       if (response.ok) {
         setLoadingCursor(false);

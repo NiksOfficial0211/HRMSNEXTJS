@@ -11,8 +11,7 @@ export async function POST(request: NextRequest) {
        
         let query = supabase.from('leap_client_employee_requests')
             .select('*, leap_request_master(*), leap_request_priority(priority_name), leap_customer(name), leap_request_status(status),leap_client_employee_requests_updates(*,leap_customer(name),leap_request_status(status))');
-            
-            
+               
         if (funISDataKeyPresent(client_id)) {
             query = query.eq('client_id', client_id)
         }

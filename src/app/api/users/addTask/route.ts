@@ -17,21 +17,23 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const {client_id, customer_id, project_id, sub_project_id, task_type_id, total_hours, total_minutes, task_details, task_date } = await request.json();
+        const {client_id, customer_id, project_id, task_status, branch_id, sub_project_id, task_type_id, total_hours, total_minutes, task_details, task_date } = await request.json();
        
         const { data: TaskData, error: taskError } = await supabase.from('leap_customer_project_task')
             .insert({
                 client_id: client_id,
+                branch_id: branch_id,
                 customer_id: customer_id,
-                project_id: project_id,
+                // project_id: project_id,
                 sub_project_id: sub_project_id,
                 task_type_id: task_type_id,
-                total_hours: total_hours,
-                total_minutes: total_minutes,
+                task_status: task_status,
+                // total_hours: total_hours,
+                // total_minutes: total_minutes,
                 task_details: task_details,
                 task_date: task_date,
                 created_at: new Date().toISOString()
-            }).select("id");
+            }).select();
         if (taskError) {
             return funSendApiErrorMessage(taskError, "Failed to add task");
         }

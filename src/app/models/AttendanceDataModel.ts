@@ -59,7 +59,7 @@
     img_attachment: string
     pause_end_time: string[]
     approval_status: any
-    paused_duration: string
+    paused_duration: number
     working_type_id: any
     attendanceStatus: number
     pause_start_time: string[]

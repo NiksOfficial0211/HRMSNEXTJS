@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || ""); 
     const pageSize = parseInt(searchParams.get("limit") || ""); 
 
-    const {client_id, manager_id, end_Date, start_date, customer_id, leave_status } = await request.json();
+    const {client_id, manager_id, end_date, start_date, customer_id, leave_status } = await request.json();
     // const fdata = {
     //   clientId: formData.get('client_id'),
     //   managerId: formData.get('manager_id')
@@ -58,11 +58,11 @@ export async function POST(request: NextRequest) {
         if(leave_status && parseInt(leave_status+'')>0){
         query=query.eq('leave_status',leave_status);
         }
-        if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_Date)!){
+        if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_date)!){
           query=query.gte('from_date',start_date).lte('to_date',start_date);
         }
-        if(funISDataKeyPresent(start_date && funISDataKeyPresent(end_Date))){
-          query=query.lte('from_date',end_Date).gte('to_date',start_date);
+        if(funISDataKeyPresent(start_date && funISDataKeyPresent(end_date))){
+          query=query.lte('from_date',end_date).gte('to_date',start_date);
         }
         
         if(start || end){

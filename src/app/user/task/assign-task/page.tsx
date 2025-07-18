@@ -414,7 +414,6 @@ import { ALERTMSG_addAssetTypeError, deleteDataTypeAsset, ALERTMSG_exceptionStri
 import ShowAlertMessage from '@/app/components/alert'
 
 interface AssignTaskForm {
-    client_id: string,
     assigned_to: string,
     project_id: string,
     sub_project_id: string,
@@ -423,7 +422,6 @@ interface AssignTaskForm {
     task_date: string,
     task_priority: string,
     deadline: string,
-    assigned_by: string,
 }
 
 const AssignLeave: React.FC = () => {
@@ -467,7 +465,7 @@ const AssignLeave: React.FC = () => {
             setStatus(taskStatus);
             const priorityType = await getPriority();
             setPriority(priorityType);
-            const emp = await getEmployee(contextCustomerID || "4");
+            const emp = await getEmployee(contextCustomerID );
             setEmp(emp);
             setLoadingCursor(false);
         };
@@ -488,7 +486,6 @@ const AssignLeave: React.FC = () => {
     }, [])
 
     const [formValues, setFormValues] = useState<AssignTaskForm>({
-        client_id: "",
         assigned_to: "",
         project_id: "",
         sub_project_id: "",
@@ -497,7 +494,6 @@ const AssignLeave: React.FC = () => {
         task_date: "",
         task_priority: "",
         deadline: "",
-        assigned_by: "",
     });
 
     const handleInputChange = async (e: any) => {
@@ -525,22 +521,32 @@ const AssignLeave: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
     setLoadingCursor(true);
-    console.log("handle submit called");
-     formData.append("client_id", contextClientID);
-     formData.append("assigned_by", contextCustomerID);
-     formData.append("assigned_to", formValues.assigned_to);
-     formData.append("project_id", formValues.project_id);
-     formData.append("sub_project_id", formValues.sub_project_id);
-     formData.append("task_type_id", formValues.task_type_id);
-     formData.append("task_details", formValues.task_details);
-    //  formData.append("task_date", formValues.task_date);
-     formData.append("task_priority", formValues.task_priority);
-     formData.append("deadline", formValues.deadline);
+    // console.log("handle submit called");
+    //  formData.append("client_id", contextClientID);
+    //  formData.append("assigned_by", contextCustomerID);
+    //  formData.append("assigned_to", formValues.assigned_to);
+    //  formData.append("project_id", formValues.project_id);
+    //  formData.append("sub_project_id", formValues.sub_project_id);
+    //  formData.append("task_type_id", formValues.task_type_id);
+    //  formData.append("task_details", formValues.task_details);
+    // //  formData.append("task_date", formValues.task_date);
+    //  formData.append("task_priority", formValues.task_priority);
+    //  formData.append("deadline", formValues.deadline);
 
     try {
       const response = await fetch("/api/users/assignTask", {
           method: "POST",
-          body: formData,
+          body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "assigned_by": contextCustomerID,
+                        "assigned_to": formValues.assigned_to,
+                        "project_id": formValues.project_id,
+                        "sub_project_id": formValues.sub_project_id,
+                        "task_type_id": formValues.task_type_id,
+                        "task_details": formValues.task_details,
+                        "task_priority": formValues.task_priority,
+                        "deadline": formValues.deadline
+                    }),
       });
       if (response.ok) {
         setLoadingCursor(false);
@@ -595,84 +601,84 @@ const AssignLeave: React.FC = () => {
                                         </div>
                                         <div className="nw_user_inner_content_box">
                                             <div className="fill_task_mainbox">
-                    <div className="fill_task_formbox">
-                        <div className="form_new_group">
-                            <label htmlFor="exampleFormControlInput1" className="form-label" >Employee<span className='req_text'>*</span></label>
-                            <select id="assigned_to" name="assigned_to" onChange={handleInputChange} className='form-select'>
-                                <option value="">Select</option>
-                                {empArray.length > 0 ? (
-                                    empArray.map((type) => (
-                                        <option value={type.customer_id} key={type.customer_id}>{type.emp_id} : {type.name}</option>
+                                                <div className="fill_task_formbox">
+                                                    <div className="form_new_group">
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Employee<span className='req_text'>*</span></label>
+                                                        <select id="assigned_to" name="assigned_to" onChange={handleInputChange} className='form-select'>
+                                                            <option value="">Select</option>
+                                                            {empArray.length > 0 ? (
+                                                                empArray.map((type) => (
+                                                                    <option value={type.customer_id} key={type.customer_id}>{type.emp_id} : {type.name}</option>
 
-                                    ))
-                                ) : (
-                                    <option value="" disabled>Employee does not exists</option>
-                                )}
+                                                                ))
+                                                            ) : (
+                                                                <option value="" disabled>Employee does not exists</option>
+                                                            )}
 
-                            </select>
-                            {errors.assigned_to && <span className="error" style={{ color: "red" }}>{errors.assigned_to}</span>}
-                        </div>
-                        <div className="form_new_group">
-                            <label htmlFor="exampleFormControlInput1" className="form-label" >Project Name<span className='req_text'>*</span>  </label>
-                            <select id="project_id" name="project_id" onChange={handleProjectTypeChange} className='form-select'>
-                                <option value="">Select</option>
-                                {projectarray.map((type, index) => (
-                                    <option value={type.project_id} key={type.project_id}>{type.project_name}</option>
-                                ))}
-                            </select>
-                            {/* {errors.project_id && <span className="error" style={{color: "red"}}>{errors.project_id}</span>} */}
-                        </div>
-                        <div className="form_new_group">
-                            <label htmlFor="exampleFormControlInput1" className="form-label" >Sub Project Name<span className='req_text'>*</span>  </label>
-                            <select id="sub_project_id" name="sub_project_id" onChange={handleInputChange} className='form-select'>
-                                <option value="">Select</option>
-                                {subProjectarray.length > 0 ? (
-                                    subProjectarray.map((type, index) => (
-                                        <option value={type.subproject_id} key={type.subproject_id}>{type.sub_project_name}</option>
-                                    ))
-                                ) : (
-                                    <option value="" disabled>No Sub project exists for this project</option>
-                                )
-                                }
-                            </select>
-                            {errors.sub_project_id && <span className="error" style={{ color: "red" }}>{errors.sub_project_id}</span>}
-                        </div>
-                        <div className="form_new_group">
-                            <label htmlFor="exampleFormControlInput1" className="form-label" >Task Type<span className='req_text'>*</span>  </label>
-                            <select id="task_type_id" name="task_type_id" onChange={handleInputChange} className='form-select'>
-                                <option value="">Select</option>
-                                {taskArray.map((type, index) => (
-                                    <option value={type.task_type_id} key={type.task_type_id}>{type.task_type_name}</option>
-                                ))}
-                            </select>
-                            {errors.task_type_id && <span className="error" style={{ color: "red" }}>{errors.task_type_id}</span>}
-                        </div>
-                        <div className="form_new_group">
-                            <label htmlFor="exampleFormControlInput1" className="form-label" >Deadline<span className='req_text'>*</span>  </label>
-                            <input type="date" id="deadline" name="deadline" value={formValues.deadline} onChange={handleInputChange} className='form-control'/>
-                            {errors.deadline && <span className="error" style={{ color: "red" }}>{errors.deadline}</span>}
-                        </div>
-                        <div className="form_new_group">
-                            <label htmlFor="exampleFormControlInput1" className="form-label" >Priority<span className='req_text'>*</span>  </label>
-                            <select id="task_priority" name="task_priority" onChange={handleInputChange} className='form-select'>
-                                <option value="">Select</option>
-                                {priorityArray.map((type, index) => (
-                                    <option value={type.id} key={type.id}>{type.priority_type}</option>
-                                ))}
-                            </select>
-                            {errors.task_priority && <span className="error" style={{ color: "red" }}>{errors.task_priority}</span>}
-                        </div>
-                        <div className="form_new_group">
-                            <label htmlFor="exampleFormControlInput1" className="form-label" >Task Details<span className='req_text'>*</span>  </label>
-                            <input type='text' id="task_details" name="task_details" value={formValues.task_details} onChange={handleInputChange} className='form-control'/>
-                            {errors.task_details && <span className="error" style={{ color: "red" }}>{errors.task_details}</span>}
-                        </div>
-                        <div className="form_new_group form_new_group_btn">
-                            <BackButton isCancelText={true} />
-                            <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
-                        </div>
-                    </div>
-                </div>
+                                                        </select>
+                                                        {errors.assigned_to && <span className="error" style={{ color: "red" }}>{errors.assigned_to}</span>}
+                                                    </div>
+                                                    <div className="form_new_group">
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Project Name<span className='req_text'>*</span>  </label>
+                                                        <select id="project_id" name="project_id" onChange={handleProjectTypeChange} className='form-select'>
+                                                            <option value="">Select</option>
+                                                            {projectarray.map((type, index) => (
+                                                                <option value={type.project_id} key={type.project_id}>{type.project_name}</option>
+                                                            ))}
+                                                        </select>
+                                                        {/* {errors.project_id && <span className="error" style={{color: "red"}}>{errors.project_id}</span>} */}
+                                                    </div>
+                                                    <div className="form_new_group">
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Sub Project Name<span className='req_text'>*</span>  </label>
+                                                        <select id="sub_project_id" name="sub_project_id" onChange={handleInputChange} className='form-select'>
+                                                            <option value="">Select</option>
+                                                            {subProjectarray.length > 0 ? (
+                                                                subProjectarray.map((type, index) => (
+                                                                    <option value={type.subproject_id} key={type.subproject_id}>{type.sub_project_name}</option>
+                                                                ))
+                                                            ) : (
+                                                                <option value="" disabled>No Sub project exists for this project</option>
+                                                            )
+                                                            }
+                                                        </select>
+                                                        {errors.sub_project_id && <span className="error" style={{ color: "red" }}>{errors.sub_project_id}</span>}
+                                                    </div>
+                                                    <div className="form_new_group">
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Task Type<span className='req_text'>*</span>  </label>
+                                                        <select id="task_type_id" name="task_type_id" onChange={handleInputChange} className='form-select'>
+                                                            <option value="">Select</option>
+                                                            {taskArray.map((type, index) => (
+                                                                <option value={type.task_type_id} key={type.task_type_id}>{type.task_type_name}</option>
+                                                            ))}
+                                                        </select>
+                                                        {errors.task_type_id && <span className="error" style={{ color: "red" }}>{errors.task_type_id}</span>}
+                                                    </div>
+                                                    <div className="form_new_group">
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Deadline<span className='req_text'>*</span>  </label>
+                                                        <input type="date" id="deadline" name="deadline" value={formValues.deadline} onChange={handleInputChange} className='form-control'/>
+                                                        {errors.deadline && <span className="error" style={{ color: "red" }}>{errors.deadline}</span>}
+                                                    </div>
+                                                    <div className="form_new_group">
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Priority<span className='req_text'>*</span>  </label>
+                                                        <select id="task_priority" name="task_priority" onChange={handleInputChange} className='form-select'>
+                                                            <option value="">Select</option>
+                                                            {priorityArray.map((type, index) => (
+                                                                <option value={type.id} key={type.id}>{type.priority_type}</option>
+                                                            ))}
+                                                        </select>
+                                                        {errors.task_priority && <span className="error" style={{ color: "red" }}>{errors.task_priority}</span>}
+                                                    </div>
+                                                    <div className="form_new_group">
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Task Details<span className='req_text'>*</span>  </label>
+                                                        <input type='text' id="task_details" name="task_details" value={formValues.task_details} onChange={handleInputChange} className='form-control'/>
+                                                        {errors.task_details && <span className="error" style={{ color: "red" }}>{errors.task_details}</span>}
+                                                    </div>
+                                                    <div className="form_new_group form_new_group_btn">
+                                                        <BackButton isCancelText={true} />
+                                                        <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -755,6 +761,7 @@ async function getStatus() {
     let query = supabase
         .from('leap_task_status')
         .select()
+        .neq('is_deleted', true);
     // .eq("asset_status",1);
 
     const { data, error } = await query;
@@ -770,6 +777,7 @@ async function getPriority() {
     let query = supabase
         .from('leap_task_priority_level')
         .select()
+        .neq('is_deleted', true);
     // .eq("asset_status",1);
 
     const { data, error } = await query;

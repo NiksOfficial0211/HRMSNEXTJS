@@ -16,15 +16,15 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const formData = await request.formData();
-        const fdata = {
+        const {client_id, branch_id, start_date, end_date, customer_id } = await request.json();
+        // const fdata = {
 
-            clientID: formData.get('client_id'),
-            branchID: formData.get('branch_id'),
-            start_date: formData.get('start_date'),
-            end_date: formData.get('end_date'),
-            customer_id: formData.get('customer_id'),
-        };
+        //     clientID: formData.get('client_id'),
+        //     branchID: formData.get('branch_id'),
+        //     start_date: formData.get('start_date'),
+        //     end_date: formData.get('end_date'),
+        //     customer_id: formData.get('customer_id'),
+        // };
         // console.log(fdata);
 
         let attendanceRecord;
@@ -38,27 +38,21 @@ export async function POST(request: NextRequest) {
                 leap_customer_attendance_geolocation(*),leap_working_type(*)
                 )`
             )
-            .eq("client_id", fdata.clientID)
+            .eq("client_id", client_id)
             .eq("employment_status", true)
             .neq("user_role",2)
-            .gte("leap_customer_attendance.date", formatDateYYYYMMDD(fdata.start_date))
-            .lte("leap_customer_attendance.date", formatDateYYYYMMDD(fdata.end_date))
+            .gte("leap_customer_attendance.date", formatDateYYYYMMDD(start_date))
+            .lte("leap_customer_attendance.date", formatDateYYYYMMDD(end_date))
             // .order('name', { ascending: true });
-        if(fdata.customer_id){
-            query=query.eq('customer_id', fdata.customer_id);
+        if(customer_id){
+            query=query.eq('customer_id', customer_id);
         }
-
         console.log(query);
-
         const { data: attendance, error } = await query;
-        
-        
         if (error) {
-            console.log(error);
-            
+            console.log(error);   
             return funSendApiErrorMessage(error, "Unable to fetch users");
         }
-
         if(attendance.length==0){
             console.log("record not present");
             
@@ -70,7 +64,7 @@ export async function POST(request: NextRequest) {
                 leap_client_departments(*)    
                 )`
             )
-            .eq("client_id", fdata.clientID)
+            .eq("client_id", client_id)
             
             .neq("user_role",2)
             
@@ -80,8 +74,8 @@ export async function POST(request: NextRequest) {
         // }
 
         console.log("attendance not present so query",query);
-        if(fdata.customer_id){
-            query=query.eq('customer_id', fdata.customer_id);
+        if(customer_id){
+            query=query.eq('customer_id', customer_id);
         }
 
         const { data, error } = await query;
@@ -98,16 +92,16 @@ export async function POST(request: NextRequest) {
 
     const { data: holidayData, error:holidayFetchError } = await supabase.from("leap_holiday_list")
     .select(`*`)
-    .eq('client_id', fdata.clientID).eq('branch_id', fdata.branchID)
-    .gte('date', fdata.start_date).lte("date",fdata.end_date).order("date",{ascending:true});
+    .eq('client_id', client_id).eq('branch_id', branch_id)
+    .gte('date', start_date).lte("date",end_date).order("date",{ascending:true});
      if(holidayFetchError){
         return funSendApiErrorMessage("Holiday fetch error :- ", holidayFetchError);
 
      }
      let leaveQuery = supabase
      .from("leap_customer_apply_leave")
-     .select(`*,leap_approval_status(approval_type),leap_client_leave(leave_name)`).eq('client_id', fdata.clientID).eq('customer_id', fdata.customer_id)
-     .gte("from_date",dashedDateYYYYMMDD(fdata.start_date)).lte("to_date",fdata.end_date);
+     .select(`*,leap_approval_status(approval_type),leap_client_leave(leave_name)`).eq('client_id', client_id).eq('customer_id', customer_id)
+     .gte("from_date",dashedDateYYYYMMDD(start_date)).lte("to_date",end_date);
      console.log(leaveQuery);
      
      const { data: appliedLeavedata, error: appliedLeaveError } =await leaveQuery;

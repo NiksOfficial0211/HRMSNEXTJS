@@ -41,14 +41,12 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
             const taskStatus = await getStatus();
             setStatus(taskStatus);
             try {
-                // const formData = new FormData();
-                // formData.append("id", id);
+                const formData = new FormData();
+                formData.append("id", id);
 
                 const res = await fetch("/api/users/getTasks", {
                     method: "POST",
-                    body: JSON.stringify({
-                    "id": id,
-                }),
+                    body: formData,
                 });
 
                 const response = await res.json();

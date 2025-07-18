@@ -7,25 +7,26 @@ import { generate16BitAlphanumericToken } from '@/app/pro_utils/helpers';
 export async function POST(request: Request) {
   try {
     const supabase =await createClient();
-    const formData = await request.formData();
-    const requestEmail = String(formData.get('email'));
-    const reqPassword = String(formData.get('password'));
-    const loginType = String(formData.get('loginType'));
-    const isSocialLogin = String(formData.get('social_login'));
-    const fcmToken = String(formData.get('fcm_token'));
+    // console.log( await request.json());
+    const {semail, spassword, loginType, social_login, platform } = await request.json();
+    // const requestEmail = String(formData.get('email'));
+    // const reqPassword = String(formData.get('password'));
+    // const loginType = String(formData.get('loginType'));
+    // const isSocialLogin = String(formData.get('social_login'));
 
     let email,password="";
     if (loginType == 'email') {
-      email=requestEmail;
-      password=reqPassword;
+      email=semail;
+      password=spassword;
       
     } else if (loginType == "empID") {
       // email based on loginType
       const { data: userData, error: userError } = await supabase
         .from("leap_customer")
         .select("email_id")
-        .eq('emp_id',requestEmail)
+        .eq('emp_id',semail)
         .limit(1);
+
 
       if (userError || !userData) {
         
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
         return NextResponse.json({status: 0,error:userError?.message || "Invalid input or user not found."});
       }
       email=userData[0].email_id;
-      password=reqPassword;
+      password=spassword;
 
     }
 
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
     // console.log("this is the session in the api------------------    ",await supabase.auth.getSession());
     // return Response.json({"data":data});
     const authID = data.user.id;
-    return authUserDetails(authID,formData.get("platform"),fcmToken);
+    return authUserDetails(authID,platform);
 
   }
   catch (error) {
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
   }
 }
 
-async function authUserDetails(authUUID: any,platform:any,fcmToken:any) {
+async function authUserDetails(authUUID: any,platform:any) {
   const supabase =await createClient();
   if(platform=="ios" || platform=="android"){
     const { data:cust,error:custFetchError } = await supabase
@@ -79,25 +80,8 @@ async function authUserDetails(authUUID: any,platform:any,fcmToken:any) {
           if(error){
           return funSendApiErrorMessage(custFetchError,"Unable to update token");
           }
-
-      if(fcmToken){
-      const { error:insertFCM } = await supabase
-      .from("leap_customer_fcm_tokens").upsert({
-            "customer_id":cust[0].customer_id,
-            "fcm_token":fcmToken,
-            "platform":platform,
-      }, { onConflict: 'customer_id' })
-      
-      if(insertFCM){
-        console.log(insertFCM);
-        
-        return funSendApiErrorMessage(custFetchError,"Unable to update FCM token");
-      }    
-    }
   }
   
-
-
   const { data, error } = await supabase
     .from("leap_customer")
     .select("*,leap_client(company_name,company_email,company_website_url,company_number,leap_client_basic_info(*))")
@@ -114,8 +98,10 @@ async function authUserDetails(authUUID: any,platform:any,fcmToken:any) {
   return NextResponse.json({
     status: 1,
     message: "Data Fetched Successfully",
-    client_data: data,
+    client_data: data[0],
   }, { status: 200 });
+
+
 }
 
 

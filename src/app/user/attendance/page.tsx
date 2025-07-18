@@ -188,6 +188,7 @@ const EmpAttendancePage = () => {
             formData.append("client_id", contextClientID);
             formData.append("branch_id", contaxtBranchID);
             formData.append('customer_id', contextCustomerID);
+            
             formData.append('start_date', filterValues.start_date || formatDateYYYYMMDD(new Date()));
             const endDate = filterValues.start_date != filterValues.end_date ? filterValues.end_date : formatDateYYYYMMDD(new Date())
             formData.append('end_date', endDate);
@@ -204,8 +205,7 @@ const EmpAttendancePage = () => {
 
                 setEmpAttendanceData(apiResponse.data);
                 setHolidayList(apiResponse.holidaylist);
-                setEmpLeaveList(apiResponse.leaveList);
-
+                setEmpLeaveList(apiResponse.leaveList);          
 
                 const dateRanges = generateDateRange(filterValues.start_date || formatDateYYYYMMDD(new Date()), filterValues.end_date || formatDateYYYYMMDD(new Date()))
 

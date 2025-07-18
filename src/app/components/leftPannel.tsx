@@ -100,7 +100,7 @@ const LeftPannel = ({ menuIndex,subMenuIndex, showLeftPanel, rightBoxUI }: LeftP
             });
         }
         setSelectedLeftMenuItemIndex(index); // Update the state correctly
-        setLoadingCursor(true);
+        // setLoadingCursor(true);
     };
     const handleSubMenuClick = (index: any,pageURL:string) => {
         setLoadingCursor(true);

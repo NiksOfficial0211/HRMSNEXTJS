@@ -42,3 +42,52 @@ export interface DashboardGreeting {
     created_at: any
     type: string
   }
+
+  export interface TeamMembersModel {
+  status: number
+  message: string
+  data: TeamDetails
+}
+export interface TeamDetails {
+  manager: ManagerData
+  teamMembers: TeamMember[]
+  subordinates: Subordinate[]
+}
+export interface ManagerData {
+  name: string
+  contact_number: string
+  email_id: string
+  profile_pic: any
+  designation_id: number
+  leap_client_designations: LeapClientDesignations
+}
+
+export interface LeapClientDesignations {
+  designation_name: string
+}
+
+export interface TeamMember {
+  name: string
+  contact_number: string
+  email_id: string
+  profile_pic: any
+  designation_id: number
+  leap_client_designations: LeapClientDesignations2
+}
+
+export interface LeapClientDesignations2 {
+  designation_name: string
+}
+
+export interface Subordinate {
+  name: string
+  contact_number: string
+  email_id: string
+  profile_pic?: string
+  designation_id: number
+  leap_client_designations: LeapClientDesignations3
+}
+
+export interface LeapClientDesignations3 {
+  designation_name: string
+}

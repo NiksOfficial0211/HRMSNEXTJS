@@ -52,7 +52,7 @@ const AssignLeave: React.FC = () => {
   useEffect(() => {
     setLoadingCursor(true);
     const fetchData = async () => {
-      const leavetype = await getLeave();
+      const leavetype = await getLeave(contextClientID, contaxtBranchID );
       setLeave(leavetype);
       setLoadingCursor(false);
     };
@@ -234,7 +234,7 @@ const AssignLeave: React.FC = () => {
                           {errors.from_date && <span className="error" style={{ color: "red" }}>{errors.from_date}</span>}
                         </div>
                         <div className="new_leave_formgoup">
-                          <textarea placeholder='Leave reason' rows={1} id="leave_reason" name="leave_reason" value={formValues.leave_reason} onChange={handleInputChange} className='form-control' />
+                          <textarea placeholder='Leave reason' rows={2} id="leave_reason" name="leave_reason" value={formValues.leave_reason} onChange={handleInputChange} className='form-control' />
                           {errors.leave_reason && <span className="error" style={{ color: "red" }}>{errors.leave_reason}</span>}
                         </div>
                         <div className="new_leave_formgoup_radio">
@@ -253,9 +253,9 @@ const AssignLeave: React.FC = () => {
                           </div>
                           {errors.duration && <span className="error" style={{ color: "red" }}>{errors.duration}</span>}
                         </div>
-                        <div className="new_leave_formgoup_btn">
-                          <BackButton isCancelText={true} />
+                        <div className="new_leave_formgoup_btn new_leave_formgoup_back_btn">
                           <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
+                          <BackButton isCancelText={true} />
                         </div>
                       
                     </div>
@@ -363,12 +363,13 @@ const AssignLeave: React.FC = () => {
 export default AssignLeave
 
 
-async function getLeave() {
+async function getLeave(clientID: string, branchID: string) {
 
   let query = supabase
     .from('leap_client_leave')
     .select()
-  // .eq("asset_status",1);
+   .eq("client_id",clientID)
+   .eq("branch_id",branchID);
 
   const { data, error } = await query;
   if (error) {

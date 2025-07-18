@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
     let fileUploadResponse;
     if (files && files.file && files.file[0] )  {
           const uploadedFile = files.file[0];
-         const fileBuffer = await fs.readFile(uploadedFile.path);
-        const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
+          const fileBuffer = await fs.readFile(uploadedFile.path);
+          const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
             type: uploadedFile.headers["content-type"]
           });
           const formData = new FormData();

@@ -16,7 +16,6 @@ import LeftPannel from '@/app/components/leftPannel'
 import DialogUploadDocument from '@/app/components/dialog_addDocument'
 import { ALERTMSG_addAssetSuccess, employeeDocUpload, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import PageErrorCenterContent from '@/app/components/pageError'
-import LoadingDialog from '@/app/components/PageLoader'
 import ShowAlertMessage from '@/app/components/alert'
 
 const EmployeeDocuments = () => {
@@ -62,16 +61,16 @@ const EmployeeDocuments = () => {
         try {
             const formData = new FormData();
 
-            formData.append("client_id", contextClientID);
-            formData.append("branch_id", contaxtBranchID)
-            formData.append("customer_id", contextCustomerID);
-
-            for (const [key, value] of formData.entries()) {
-                console.log(`${key}: ${value}`);
-            }
+            // for (const [key, value] of formData.entries()) {
+            //     console.log(`${key}: ${value}`);
+            // }
             const res = await fetch(`/api/users/getCompanyDocuments`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "client_id": contextClientID,
+                    "branch_id": contaxtBranchID,
+                    "customer_id": contextCustomerID
+                }),
             });
             const response = await res.json();
             console.log(response);
@@ -102,19 +101,23 @@ const EmployeeDocuments = () => {
     const fetchEmployeeDoc = async () => {
         try {
             const formData = new FormData();
-            formData.append("client_id", contextClientID);
-            // formData.append("branch_id", contaxtBranchID )
-            formData.append("customer_id", contextCustomerID);
+            // formData.append("client_id", contextClientID);
+            // // formData.append("branch_id", contaxtBranchID )
+            // formData.append("customer_id", contextCustomerID);
             
             for (const [key, value] of formData.entries()) {
                 console.log(`${key}: ${value}`);
             }
             const res = await fetch(`/api/users/getEmployeeDocuments`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "client_id": contextClientID,
+                    // "branch_id": contaxtBranchID,
+                    "customer_id": contextCustomerID
+                }),
             });
             const response = await res.json();
-            console.log(response);
+            // console.log(response);
             const empOrgDoc = response.organization_specific;
             const empPerDoc = response.employee_personal;
 
@@ -177,7 +180,6 @@ const EmployeeDocuments = () => {
                     }} onCloseClicked={function (): void {
                         setShowAlert(false)
                     }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
-
                     {/* ---------------------- */}
                     <div className='container'>
                         <div className="row">
@@ -267,7 +269,7 @@ const EmployeeDocuments = () => {
                                                                 return (
                                                                     <div className="user_document_right_card_listing" key={index}>
                                                                         <div className="user_document_right_card_icon">
-                                                                            <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
+                                                                            <img src={staticIconsBaseURL+"/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
                                                                         </div>
                                                                         <div className="user_document_right_card_content">
                                                                             <div className="user_document_right_card_heading">
@@ -302,7 +304,7 @@ const EmployeeDocuments = () => {
                                                                     return (
                                                                         <div className="user_document_right_card_listing" key={index}>
                                                                             <div className="user_document_right_card_icon">
-                                                                                <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
+                                                                                <img src={staticIconsBaseURL+"/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
                                                                             </div>
                                                                             <div className="user_document_right_card_content">
                                                                                 <div className="user_document_right_card_heading">
@@ -340,7 +342,7 @@ const EmployeeDocuments = () => {
                                                                         return (
                                                                             <div className="user_document_right_card_listing" key={index}>
                                                                                 <div className="user_document_right_card_icon">
-                                                                                    <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
+                                                                                    <img src={staticIconsBaseURL+"/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
                                                                                 </div>
                                                                                 <div className="user_document_right_card_content">
                                                                                     <div className="user_document_right_card_heading">

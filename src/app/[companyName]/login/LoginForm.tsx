@@ -11,7 +11,7 @@ import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext';
 import { createClient } from '../../../../utils/supabase/client';
 import { pageURL_dashboard, pageURL_ForgotPassword, pageURL_userEmpDashboard } from '@/app/pro_utils/stringRoutes';
 import { ALERTMSG_exceptionString, staticIconsBaseURL } from '@/app/pro_utils/stringConstants';
-// import { requestPushNotification } from '../../../../utils/pushNotification';
+import { requestPushNotification } from '../../../../utils/pushNotification';
 import ShowAlertMessage from '@/app/components/alert';
 import LoadingDialog from '@/app/components/PageLoader';
 
@@ -126,10 +126,10 @@ const LoginForm = () => {
         setAlertForSuccess(2)
         return;
       }
-      // const webFcmToken = await requestPushNotification();
-      // const { error: fcmUpdateError } = await supabase
-      //   .from("fcm_tokens")
-      //   .upsert({ customer_id: userData[0].customer_id, web_fcm_tokens: webFcmToken }, { onConflict: "customer_id" });
+      const webFcmToken = await requestPushNotification();
+      const { error: fcmUpdateError } = await supabase
+        .from("leap_customer_fcm_tokens")
+        .upsert({ customer_id: userData[0].customer_id, web_fcm_tokens: webFcmToken }, { onConflict: "customer_id" });
       if (error) {
         console.error("Supabase error:", error);
 

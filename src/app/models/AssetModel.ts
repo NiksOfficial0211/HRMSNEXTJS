@@ -97,7 +97,7 @@ export interface CustomerAssetList {
   client_id: string
   branch_id: string
   remark: any
-  asset_pic: []
+  asset_pic: File | null
   leap_asset: LeapAsset
 }
 

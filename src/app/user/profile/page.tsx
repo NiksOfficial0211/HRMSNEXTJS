@@ -13,7 +13,7 @@ import { UserEmployement } from '@/app/components/profileEmployementUser';
 import { UserAddress } from '@/app/components/profileAddressUser';
 import { UserBankDetails } from '@/app/components/profileBankDetailsUser';
 import { UserPersonalDetails } from '@/app/components/profilePersonalDetailsUser';
-import { clientAdminDashboard, employeeProfileDetails } from '@/app/pro_utils/stringConstants';
+import { clientAdminDashboard, employeeProfileDetails, staticIconsBaseURL } from '@/app/pro_utils/stringConstants';
 import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext';
 import { UserProfileLeaveDetails } from '@/app/components/profileLeaveDetailsUser';
 
@@ -90,13 +90,13 @@ const EmployeeProfile = () => {
             setEmergencyRelation(relationsType);
 
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
 
                 const res = await fetch("/api/users/getProfile", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "customer_id": contextSelectedCustId,
+                    }),
                 });
                 console.log(res);
 
@@ -149,28 +149,28 @@ const EmployeeProfile = () => {
                                                 <li><a href="#employement_id">
                                                     <div className='' onClick={(e) => { setViewIndex(0) }}>
                                                         <div className={viewIndex == 0 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"}>
-                                                        <span><img src="/images/user/user-profile-tabbing-1.svg" alt="" className="img-fluid" /></span><span> Employement Details</span>
+                                                            <span><img src={staticIconsBaseURL+"/images/user/user-profile-tabbing-1.svg"} alt="" className="img-fluid" /></span><span> Employement Details</span>
                                                         </div>
                                                     </div></a>
                                                 </li>
                                                 <li><a href="#address_id">
                                                     <div className='' onClick={(e) => { setViewIndex(1) }}>
                                                         <div className={viewIndex == 1 ? "profile_selected_tab" : "profile_unselected_tab"}>
-                                                        <span><img src="/images/user/user-profile-tabbing-2.svg" alt="" className="img-fluid" /></span><span> Address</span>
+                                                            <span><img src={staticIconsBaseURL+"/images/user/user-profile-tabbing-2.svg"} alt="" className="img-fluid" /></span><span> Address</span>
                                                         </div>
                                                     </div></a>
                                                 </li>
                                                 <li><a href="#bank_id">
                                                     <div className='' onClick={(e) => { setViewIndex(2) }}>
                                                         <div className={viewIndex == 2 ? "profile_selected_tab" : "profile_unselected_tab"}>
-                                                        <span><img src="/images/user/user-profile-tabbing-3.svg" alt="" className="img-fluid" /></span><span> Bank Details</span>
+                                                            <span><img src={staticIconsBaseURL+"/images/user/user-profile-tabbing-3.svg"} alt="" className="img-fluid" /></span><span> Bank Details</span>
                                                         </div>
                                                     </div></a>
                                                 </li>
                                                 <li><a href="#leave_id">
                                                     <div className='' onClick={(e) => { setViewIndex(3) }}>
                                                         <div className={viewIndex == 3 ? "profile_selected_tab" : "profile_unselected_tab"}>
-                                                        <span><img src="/images/user/user-profile-tabbing-4.svg" alt="" className="img-fluid" /></span><span> Leave Details</span>
+                                                            <span><img src={staticIconsBaseURL+"/images/user/user-profile-tabbing-4.svg"} alt="" className="img-fluid" /></span><span> Leave Details</span>
                                                         </div>
                                                     </div></a>
                                                 </li>

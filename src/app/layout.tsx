@@ -9,28 +9,15 @@ import 'react-date-range/dist/theme/default.css';
 
 import "./globals.css";
 import { GlobalProvider } from "./contextProviders/loggedInGlobalContext";
-// import NotificationListener from "./components/PushNotificationListener";
+import NotificationListener from "./components/PushNotificationListener";
 
-// const OutfitBlack = localFont({
-//   src: "./fonts/Outfit-Black.ttf",
-//   variable: "--Outfit-Black",
-//   weight: "100 900",
-// });
-// const OutfitBold = localFont({
-//   src: "./fonts/Outfit-Bold.ttf",
-//   variable: "--Outfit-Bold",
-//   weight: "100 900",
-// });
+
 const OutfitExtraBold = localFont({
   src: "./fonts/Outfit-ExtraBold.otf",//5
   variable: "--Outfit-ExtraBold",
   weight: "100 900",
 });
-// const OutfitExtraLight = localFont({
-//   src: "./fonts/Outfit-ExtraLight.ttf",
-//   variable: "--Outfit-ExtraLight",
-//   weight: "100 900",
-// });
+
 const OutfitLight = localFont({
   src: "./fonts/Outfit-Light.otf",//4
   variable: "--Outfit-Light",
@@ -84,7 +71,7 @@ export default function RootLayout({
 
       >
            <GlobalProvider>
-              {/* <NotificationListener /> */}
+              <NotificationListener />
               {children}
           </GlobalProvider>
       </body>
