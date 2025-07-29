@@ -92,15 +92,15 @@ const Support = () => {
                 "end_date": ""
             }
             if (filterID == 1) {
-                let activeStatus =  filters.active_status.length > 0 && filters.active_status == value ? filters.active_status : value;
-                formData= {
+                let activeStatus = filters.active_status.length > 0 && filters.active_status == value ? filters.active_status : value;
+                formData = {
                     ...formData,
                     "active_status": activeStatus
                 }
             }
             if (filterID == 2) {
-                let priorityLevel =  filters.priority_level.length > 0 && filters.priority_level == value ? filters.priority_level : value;
-                formData= {
+                let priorityLevel = filters.priority_level.length > 0 && filters.priority_level == value ? filters.priority_level : value;
+                formData = {
                     ...formData,
                     "priority_level": priorityLevel
                 }
@@ -140,6 +140,9 @@ const Support = () => {
 
             const res = await fetch(`/api/users/support/supportList?page=${pageNumber}&limit=${10}`, {
                 method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 body: JSON.stringify(
                     formData
                 ),
@@ -217,7 +220,7 @@ const Support = () => {
         }
     };
     const [showCalendar, setShowCalendar] = useState(false);
-    const ref = useRef(null);
+
     const [state, setState] = useState<Range[]>([
         {
             startDate: new Date() || null,
@@ -244,7 +247,7 @@ const Support = () => {
         return parsedDate.format('YYYY-MM-DD');
     };
     return (
-        <div className='mainbox'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -334,6 +337,7 @@ const Support = () => {
                                             </ul>
                                         </div>
                                     </div>
+
                                     <div className="nw_user_inner_content_box" style={{ minHeight: '60vh' }}>
                                         {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                                             setShowAlert(false)

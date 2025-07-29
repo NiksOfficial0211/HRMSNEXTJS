@@ -1,0 +1,70 @@
+import { NextRequest, NextResponse } from "next/server";
+import supabase from "../../supabaseConfig/supabase";
+import {apiStatusFailureCode, apiStatusSuccessCode,apiwentWrong} from "@/app/pro_utils/stringConstants";
+import { funSendApiException } from "@/app/pro_utils/constant";
+
+export async function POST(request: NextRequest) {
+  try {
+    const { customer_id } = await request.json();
+
+    if (!customer_id) {
+      return NextResponse.json({ status: 0, message: "Customer ID is required" }, { status: apiStatusFailureCode });
+    }
+
+    //current users to get manager_id
+    const { data: userData, error: userError } = await supabase
+      .from("leap_customer")
+      .select("manager_id")
+      .eq("customer_id", customer_id)
+      .single();
+
+    if (userError || !userData) {
+      return NextResponse.json({ status: 0, message: "User not found", error: userError }, { status: apiStatusFailureCode });
+    }
+
+    const { manager_id } = userData;
+
+    //manager details
+    let managerDetails = null;
+    if (manager_id) {
+      const { data: managerData, error: managerError } = await supabase
+        .from("leap_customer")
+        .select("customer_id, name, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
+        .eq("customer_id", manager_id)
+        .single();
+
+      if (!managerError && managerData) {
+        managerDetails = managerData;
+      }
+    }
+
+    //team members employees under the same manager, excluding current user
+    const { data: teamMembers, error: teamError } = await supabase
+      .from("leap_customer")
+      .select("customer_id, name, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
+      .eq("manager_id", manager_id)
+      .neq("customer_id", customer_id);
+
+    if (teamError) {
+      return NextResponse.json({ status: 0, message: "Error fetching team members", error: teamError }, { status: apiStatusFailureCode });
+    }
+
+    //if this user is also a manager to anyone
+    const { data: subordinates, error: subError } = await supabase
+      .from("leap_customer")
+      .select("name, customer_id, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
+      .eq("manager_id", customer_id);
+
+    if (subError) {
+      return NextResponse.json({ status: 0, message: "Error fetching subordinates", error: subError }, { status: apiStatusFailureCode });
+    }
+
+    return NextResponse.json({ status: 1, message: "Team hierarchy fetched successfully",
+      data: {manager: managerDetails,
+      teamMembers: teamMembers || [],
+      subordinates: subordinates || []} }, { status: apiStatusSuccessCode });
+
+  } catch (error) {
+    return funSendApiException(error);
+  }
+}

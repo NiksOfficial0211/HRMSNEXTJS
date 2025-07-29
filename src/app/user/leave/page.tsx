@@ -166,17 +166,14 @@ const EmployeeLeaveList = () => {
     }
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
-        console.log("this is the name ", name);
-        console.log("this is the value", value);
+        // console.log("this is the name ", name);
+        // console.log("this is the value", value);
 
         if (name == "approvedID") {
             setFilters((prev) => ({ ...prev, ['approvedID']: value }));
             fetchUsers(1, value, selectedPage, '', '');
         }
-        if (name == "customerID") {
-            setFilters((prev) => ({ ...prev, ['customerID']: value }));
-            fetchUsers(2, value, selectedPage, '', '');
-        }
+       
     };
     function filter_whitebox() {
         const x = document.getElementById("filter_whitebox");
@@ -233,7 +230,7 @@ const EmployeeLeaveList = () => {
         return result;
     }
     return (
-        <div className='mainbox'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -294,8 +291,14 @@ const EmployeeLeaveList = () => {
                                                             </div>
                                                         </div>
                                                         <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                            <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
+                                                            <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
+                                                            <img src="/images/user/filter-icon-red.svg" alt="Filter icon" className="img-fluid new_filter_color_change_red" />
+                                                            <div className="new_filter_tooltip_box">
+                                                                Filter
+                                                            </div>
+
                                                         </div>
+                                                        
                                                     </div>
                                                 </li>
                                                 <li>
@@ -339,7 +342,7 @@ const EmployeeLeaveList = () => {
 
                                             <div className="my_task_tabbing_content">
                                                 {leavearray! && leavearray.length > 0 ?
-                                                    <div className="row mt-4">
+                                                    <div className="row mt-4 mb-5">
                                                         <div className="col-lg-12">
                                                             <div className="row list_label mb-2">
                                                                 {/* <div className="col-lg-2 text-center"><div className="label">Employee</div></div> */}
@@ -431,25 +434,29 @@ const EmployeeLeaveList = () => {
                                                                 </div>
                                                             ))}
                                                             <div className="row mt-4">
-                                                                <div className="col-lg-6 mb-1" style={{ textAlign: "left" }}>
-                                                                    {/* <BackButton isCancelText={false} /> */}
-                                                                </div>
-                                                                <div className="col-lg-6" style={{ textAlign: "right" }}>
-                                                                    <div className="page_changer new_page_changer_pagination">
-                                                                        {selectedPage > 1 ? <div className="new_pagination_svg" onClick={() => { changePage(-1) }}>
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
-                                                                                <g transform="matrix(-1.4400000000000002,1.763491390772189e-16,-1.763491390772189e-16,-1.4400000000000002,156.16000000000003,156.16015357971196)">
-                                                                                    <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ed2024" opacity="1" data-original="#000000"></path>
-                                                                                </g>
-                                                                            </svg>
-                                                                        </div> : <></>}
-                                                                        <div className="font15Medium">{selectedPage}</div>
-                                                                        <div className="new_pagination_svg" onClick={() => { changePage(1) }}>
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
-                                                                                <g transform="matrix(1.4400000000000002,0,0,1.4400000000000002,-28.16000000000001,-28.16002769470215)">
-                                                                                    <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ed2024" opacity="1" data-original="#000000"></path>
-                                                                                </g>
-                                                                            </svg>
+                                                                <div className="col-lg-12">
+                                                                    <div className="my_new_paggination_box">
+                                                                        <div className="my_new_paggination_left_box">
+                                                                            <BackButton isCancelText={false} />
+                                                                        </div>
+                                                                        <div className="my_new_paggination_right_box">
+                                                                            <div className="page_changer new_page_changer_pagination">
+                                                                                {selectedPage > 1 ? <div className="new_pagination_svg" onClick={() => { changePage(-1) }}>
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
+                                                                                        <g transform="matrix(-1.4400000000000002,1.763491390772189e-16,-1.763491390772189e-16,-1.4400000000000002,156.16000000000003,156.16015357971196)">
+                                                                                            <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ED2024" opacity="1" data-original="#000000"></path>
+                                                                                        </g>
+                                                                                    </svg>
+                                                                                </div> : <></>}
+                                                                                <div className="font15Medium">{selectedPage}</div>
+                                                                                <div className="new_pagination_svg" onClick={() => { changePage(1) }}>
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
+                                                                                        <g transform="matrix(1.4400000000000002,0,0,1.4400000000000002,-28.16000000000001,-28.16002769470215)">
+                                                                                            <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ED2024" opacity="1" data-original="#000000"></path>
+                                                                                        </g>
+                                                                                    </svg>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>

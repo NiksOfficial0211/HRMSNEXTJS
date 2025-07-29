@@ -247,7 +247,7 @@ const AssetTypeList = () => {
     const [showDialog, setShowDialog] = useState(false);
     const [editAssetTypeId, setEditAssetTypeId] = useState(0);
     const [isLoading,setLoading]=useState(false);
-
+    const [addTypeError,setAddTypeError] = useState("")
     const [showAlert,setShowAlert]=useState(false);
     const [alertForSuccess,setAlertForSuccess]=useState(0);
     const [alertTitle,setAlertTitle]=useState('');
@@ -326,17 +326,22 @@ const AssetTypeList = () => {
     }
 
     const AddAssetType = async(e: React.FormEvent) => {
-        setLoading(true);
         e.preventDefault();
+        if(!formValues.assetType || !formValues.assetType.trim()) {
+            setAddTypeError("required")
+            return ;
+        }
+        
         formData.append("asset_type", formValues.assetType);
         formData.append("client_id", contextClientID );
-
+        setLoading(true);
         try {
             const response = await fetch("/api/client/asset/addAssetType", {
                 method: "POST",
                 body: formData,
             });
             if (response.ok) {
+                setFormValues({assetType:"",clientID:contextClientID})
                 setLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Success");
@@ -371,7 +376,9 @@ const AssetTypeList = () => {
                 <div>
                 <LoadingDialog isLoading={isLoading} /> 
                 {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length>0?alertMidContent: "added successfully."} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                        if(alertForSuccess==1){
                         fetchData()
+                        }
                         setShowAlert(false)
                     } } onCloseClicked={function (): void {
                         setShowAlert(false)
@@ -438,11 +445,13 @@ const AssetTypeList = () => {
 
                                                             <div className="row">
                                                                 <div className="row">
-                                                                    <div className="col-lg-12 mb-2">Asset Type Name:</div>
+                                                                    <div className="col-lg-12 mb-2">Asset Type Name<span className='req_text'>*</span>:</div>
                                                                 </div>
                                                                 <div className="row">
                                                                     <div className="col-lg-9">
                                                                         <input type="text" className="form-control" value={formValues.assetType} name="assetType" onChange={handleInputChange}  id="assetType" placeholder="Type name" />
+                                                                        {addTypeError && <span className="error" style={{ color: "red" }}>{addTypeError}</span>}
+
                                                                     </div>
                                                                     <div className="col-lg-3">
                                                                         <input type='submit' value="Add" className="red_button"  />

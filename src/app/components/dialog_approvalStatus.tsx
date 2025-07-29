@@ -440,7 +440,14 @@ const LeaveStatusUpdate = ({ onClose, id, selectedShortCutID, isToBeEddited }: {
 
                 const res = await fetch(`/api/users/getAppliedLeaves`, {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify(
+                        {
+                            "client_id": contextClientID,
+                            "branch_id": contaxtBranchID,
+                            "id": id
+
+                        }
+                    ),
                 });
 
                 const response = await res.json();

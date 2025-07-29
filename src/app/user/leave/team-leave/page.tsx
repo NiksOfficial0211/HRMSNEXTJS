@@ -244,7 +244,7 @@ const EmployeeLeaveList = () => {
         return parsedDate.format('YYYY-MM-DD');
     };
     return (
-        <div className='mainbox'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>

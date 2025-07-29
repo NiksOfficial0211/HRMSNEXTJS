@@ -1,3 +1,7 @@
+
+
+// User dashboard
+
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
 import LeapHeader from '../../components/header'
@@ -24,9 +28,9 @@ import UserAttendanceTimer from '@/app/components/userAttendanceTimer';
 import { CustomerLeavePendingCount } from '@/app/models/leaveModel';
 import moment from 'moment';
 import { pageURL_userAnnouncement, pageURL_userApplyLeaveForm, pageURL_userAsset, pageURL_userDoc, pageURL_userFillTask, pageURL_userSupportForm, pageURL_userTeamLeave } from '@/app/pro_utils/stringRoutes';
-import { AttendanceTimer, ManagerData, Subordinate, TeamDetails, TeamMember, TeamMembersModel } from '@/app/models/userDashboardModel';
+import { AttendanceTimer, ManagerData, Subordinate, TeamMember } from '@/app/models/userDashboardModel';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
-import { Task } from '@/app/models/TaskModel';
+import { AssignedTask, Task } from '@/app/models/TaskModel';
 
 const Dashboard = () => {
     const router = useRouter();
@@ -36,11 +40,11 @@ const Dashboard = () => {
     const [isLoading, setLoading] = useState(false);
     const [balancearray, setBalanceLeave] = useState<CustomerLeavePendingCount[]>([]);
     const [holidays, setHolidays] = useState<any[]>([]);
-    const [empSalarySlip, setSalarySlip] = useState<LeapCustomerDocument[]>([]);
     const [permissionData, setPermissionData] = useState<userPermissionModel[]>();
     const { contaxtBranchID, contextClientID, contextRoleID, contextCustomerID, setGlobalState } = useGlobalContext();
-    const [announcementData, setAnnouncementData] = useState<userPermissionModel[]>();
     const [taskarray, setTask] = useState<Task[]>([]);
+    const [assignedTaskarray, setAssignedTask] = useState<AssignedTask[]>([]);
+    const [firstName, setName] = useState<any[]>([]);
     const [managerData, setManagerData] = useState<ManagerData>();
     const [teamArray, setTeam] = useState<TeamMember[]>([]);
     const [subordinateArray, setSubArray] = useState<Subordinate[]>([]);
@@ -61,7 +65,6 @@ const Dashboard = () => {
     useEffect(() => {
 
         fetchDashboard();
-        fetchTasks();
         fetchTeamMembers();
         // const intervalId = setInterval(() => {
         //     // fetchActivities();
@@ -96,13 +99,17 @@ const Dashboard = () => {
                     "role_id": contextRoleID
                 }),
             });
-            if (res.ok) {
-                const response = await res.json();
+            const response = await res.json();
+            if (response.status === 1) {
+                
                 // console.log("branch",contaxtBranchID);
                 setHolidays(response.upcommingHolidays.holidays);
                 setBalanceLeave(response.myLeaveBalances.customerLeavePendingCount);
                 // setSalarySlip(response.my_documents[0]);
                 setAttendanceData(response.myattendance[0]);
+                setTask(response.my_tasks.tasks);
+                setAssignedTask(response.assigned_tasks.taskData);
+                setName(response.my_name.firstName)
                 // setAnnouncementData(response.announcements[0]);
             } else {
                 setLoading(false);
@@ -120,39 +127,7 @@ const Dashboard = () => {
             setAlertForSuccess(2)
         }
     };
-    const fetchTasks = async () => {
-        // formatDateYYYYMMDD
-        try {
 
-            const res = await fetch(`/api/users/getTasks`, {
-                method: "POST",
-                body: JSON.stringify({
-                    "client_id": contextClientID,
-                    "customer_id": contextCustomerID,
-                    "task_date": new Date()
-                }),
-            });
-            const response = await res.json();
-            // console.log(response);
-            const leaveListData = response.data;
-            if (response.status === 1) {
-                setTask(leaveListData)
-            } else {
-                setTask([]);
-                setShowAlert(true);
-                setAlertTitle("Error")
-                setAlertStartContent("Failed to load task");
-                setAlertForSuccess(2)
-            }
-            setLoadingCursor(false);
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-            setShowAlert(true);
-            setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
-            setAlertForSuccess(2)
-        }
-    };
     const fetchTeamMembers = async () => {
         try {
             const res = await fetch(`/api/users/getTeamMembers`, {
@@ -176,7 +151,7 @@ const Dashboard = () => {
                 setSubArray([]);
                 setShowAlert(true);
                 setAlertTitle("Error")
-                setAlertStartContent("Failed to load task");
+                setAlertStartContent("Failed to load team members");
                 setAlertForSuccess(2)
             }
             setLoadingCursor(false);
@@ -184,7 +159,7 @@ const Dashboard = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent("Error loading data");
             setAlertForSuccess(2)
         }
     };
@@ -207,7 +182,7 @@ const Dashboard = () => {
         return result;
     }
     return (
-        <div className='mainbox'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title={clientAdminDashboard} />
             </header>
@@ -225,7 +200,7 @@ const Dashboard = () => {
                                 <div className="new_user_dashbord_leftbox">
                                     <div className="new_user_left_firstmainbox">
                                         < GreetingBlock />
-                                        {attendanceData && < UserAttendanceTimer data={attendanceData} />}
+                                        {attendanceData && < UserAttendanceTimer data={attendanceData} name={firstName} />}
                                     </div>
                                     {/* {checkPermission(permission_m_leave_7) && */}
                                     <div className="new_user_left_fourthmainbox">
@@ -325,7 +300,7 @@ const Dashboard = () => {
                                     {/* } */}
                                     <div className="new_user_btns">
                                         <a href={pageURL_userAnnouncement}>
-                                            <div className="new_user_btnlist "> 
+                                            <div className="new_user_btnlist ">
                                                 {/* new_user_btnlist_announcement */}
                                                 <div className="new_user_btnlist_left">
                                                     <img src={staticIconsBaseURL + "/images/user/megaphone.gif"} alt="Assets Icon" className="img-fluid" />
@@ -447,7 +422,7 @@ const Dashboard = () => {
                                                             <div className="row">
                                                                 <div className="col-lg-12">
                                                                     <div className="new_home_team_member_mainbox">
-                                                                        <div className="new_home_team_member_listing" >
+                                                                        {managerData ? <div className="new_home_team_member_listing" >
                                                                             <div className="new_home_team_member_img">
                                                                                 <img src={staticIconsBaseURL + "/images/user/40_profile13182025112.jpeg"} alt="Member image" className="img-fluid" />
                                                                             </div>
@@ -458,7 +433,7 @@ const Dashboard = () => {
                                                                                 {managerData?.leap_client_designations.designation_name}
                                                                             </div>
                                                                             <div className="new_home_team_member_email">
-                                                                                <a href={"mailto:"+managerData?.email_id}>{managerData?.email_id}</a>
+                                                                                <a href={"mailto:" + managerData?.email_id}>{managerData?.email_id}</a>
                                                                             </div>
                                                                             <div className="new_home_team_member_number">
                                                                                 <div className="new_home_team_member_number_icon">
@@ -469,10 +444,10 @@ const Dashboard = () => {
                                                                                     </svg>
                                                                                 </div>
                                                                                 <div className="new_home_team_member_number_text">
-                                                                                    <a href={"tel:"+managerData?.contact_number}>{managerData?.contact_number}</a>
+                                                                                    <a href={"tel:" + managerData?.contact_number}>{managerData?.contact_number}</a>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
+                                                                        </div> : <>No members alloted yet</>}
                                                                         {teamArray && teamArray.length > 0 ?
                                                                             teamArray?.map((details, index) =>
                                                                                 <div className="new_home_team_member_listing" key={index}>
@@ -486,7 +461,7 @@ const Dashboard = () => {
                                                                                         {details.leap_client_designations.designation_name}
                                                                                     </div>
                                                                                     <div className="new_home_team_member_email">
-                                                                                        <a href={"mailto:"+details.email_id}>{details.email_id}</a>
+                                                                                        <a href={"mailto:" + details.email_id}>{details.email_id}</a>
                                                                                     </div>
                                                                                     <div className="new_home_team_member_number">
                                                                                         <div className="new_home_team_member_number_icon">
@@ -497,7 +472,7 @@ const Dashboard = () => {
                                                                                             </svg>
                                                                                         </div>
                                                                                         <div className="new_home_team_member_number_text">
-                                                                                            <a href={"tel:"+details.contact_number}>{details.contact_number}</a>
+                                                                                            <a href={"tel:" + details.contact_number}>{details.contact_number}</a>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -517,7 +492,7 @@ const Dashboard = () => {
                                                                                         {details.leap_client_designations.designation_name}
                                                                                     </div>
                                                                                     <div className="new_home_team_member_email">
-                                                                                        <a href={"mailto:"+details.email_id}>{details.email_id}</a>
+                                                                                        <a href={"mailto:" + details.email_id}>{details.email_id}</a>
                                                                                     </div>
                                                                                     <div className="new_home_team_member_number">
                                                                                         <div className="new_home_team_member_number_icon">
@@ -528,7 +503,7 @@ const Dashboard = () => {
                                                                                             </svg>
                                                                                         </div>
                                                                                         <div className="new_home_team_member_number_text">
-                                                                                            <a href={"tel:"+details.contact_number}>{details.contact_number}</a>
+                                                                                            <a href={"tel:" + details.contact_number}>{details.contact_number}</a>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -539,7 +514,7 @@ const Dashboard = () => {
                                                                 </div>
                                                             </div>
                                                         </>
-                                                    
+
                                                         : tabSelectedIndex == 1 ?
                                                             // Task
                                                             <>
@@ -642,7 +617,22 @@ const Dashboard = () => {
                                                                         </div>
                                                                     ) : <> Fill your daily tasks!</>
                                                                     }
-                                                                </div>
+                                                                    {assignedTaskarray?.map((data, index) =>
+                                                                        <div className="new_home_task_mainbox" key={index}>
+                                                                            <> <div className="new_home_task_listing new_home_task_type_assigned">
+                                                                                <div className="new_home_task_project_namebox">
+                                                                                    <div className="new_home_task_project">{data.leap_client_sub_projects.sub_project_name}</div>
+                                                                                    <div className="new_home_task_description">
+                                                                                        {data.task_details}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="new_home_task_type">
+                                                                                    {data.leap_project_task_types.task_type_name}
+                                                                                </div>
+                                                                            </div> </>
+                                                                        </div>
+                                                                    )}                                                                
+                                                                    </div>
                                                             </>
                                                             : <div />
                                                 }
@@ -687,21 +677,24 @@ const Dashboard = () => {
                                             </div>
                                             <div className="new_user_notification_heading"> Holiday List</div>
                                         </div>
-                                        <div className="new_user_notification_listing_scroll">
-                                            {holidays.map((holiday, index) => (
-                                                <div className="new_user_notification_listing" key={index}>
-                                                    <div className="monthely_holiday_listing" >
-                                                        <div className="nw_holiday_table_calender_box">
-                                                            <div className="nw_calender_monthBox">{moment(holiday.date).format("MMMM")}</div>
-                                                            <div className="nw_calender_dateBox">{moment(holiday.date).format("Do")}</div>
-                                                        </div>
-                                                        <div className="monthely_holiday_rightbox">
-                                                            {holiday.holiday_name}
+                                        {holidays && holidays.length > 0 ? (
+                                            <div className="new_user_notification_listing_scroll">
+                                                {holidays.map((holiday, index) => (
+                                                    <div className="new_user_notification_listing" key={index}>
+                                                        <div className="monthely_holiday_listing" >
+                                                            <div className="nw_holiday_table_calender_box">
+                                                                <div className="nw_calender_monthBox">{moment(holiday.date).format("MMMM")}</div>
+                                                                <div className="nw_calender_dateBox">{moment(holiday.date).format("Do")}</div>
+                                                            </div>
+                                                            <div className="monthely_holiday_rightbox">
+                                                                {holiday.holiday_name}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
-                                        </div>
+                                                ))}</div>) : <>
+                                                <div className="new_user_notification_listing py-4">No Holidays this month!</div>
+                                                </>
+                                        }
                                     </div>
                                     {/* } */}
                                     <div className="new_user_meeting_mainbox">

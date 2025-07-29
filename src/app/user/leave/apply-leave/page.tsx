@@ -18,7 +18,7 @@ import { DateRange, RangeKeyDict } from 'react-date-range';
 import { format } from 'date-fns'
 import { Range } from 'react-date-range';
 
-import { ALERTMSG_addAssetSuccess, staticIconsBaseURL, ALERTMSG_FormExceptionString, raiseSupportTitle } from '@/app/pro_utils/stringConstants'
+import {  ALERTMSG_FormExceptionString} from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
 
 interface AssignEmpLeave {
@@ -182,7 +182,7 @@ const AssignLeave: React.FC = () => {
   const formattedRange = state[0].startDate! == state[0].endDate! ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
 
   return (
-    <div className='mainbox'>
+    <div className='mainbox user_mainbox_new_design'>
       <header>
         <LeapHeader title={createLeaveTitle} />
       </header>
@@ -246,7 +246,6 @@ const AssignLeave: React.FC = () => {
                             <label htmlFor="fhalf">1st half</label>
                             <input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="1st half day" onChange={handleInputChange} />
                           </div>
-                          
                           <div className="new_leave_btn_radio">
                             <label htmlFor="shalf">2nd half</label>
                             <input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="2nd half day" onChange={handleInputChange} />
@@ -257,7 +256,6 @@ const AssignLeave: React.FC = () => {
                           <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
                           <BackButton isCancelText={true} />
                         </div>
-                      
                     </div>
                     <div className="new_apply_leave_rightbox">
                       <img src="/images/user/apply-leave.webp" alt="Apply leave image" className="img-fluid" />

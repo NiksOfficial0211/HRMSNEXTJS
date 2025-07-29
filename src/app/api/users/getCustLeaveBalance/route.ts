@@ -16,16 +16,16 @@ export async function POST(request: NextRequest) {
     //     { status: 401 }
     //   );
     // }
-    const formData = await request.formData();
-    const fdata = {
-      clientId: formData.get('client_id') as string,
-      customerId: formData.get('customer_id'),
-    }
+    const {client_id, branch_id, customer_id} = await request.json();
+    // const fdata = {
+    //   clientId: formData.get('client_id') as string,
+    //   customerId: formData.get('customer_id'),
+    // }
 
     //getCustomer Data
     const { data: customerData, error: customerError } = await supabase
       .from("leap_customer")
-      .select(`*`).eq('client_id', fdata.clientId).eq('customer_id', fdata.customerId);
+      .select(`*`).eq('client_id', client_id).eq('customer_id', customer_id);
     if (customerError) {
       return funSendApiErrorMessage("Customer fetch error", customerError);
     }
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     //get client leave types which has leave policy i.e number of days WRT the leave type
     const { data: custleaveData, error: custleaveError } = await supabase
       .from("leap_client_leave")
-      .select(`*`).eq('client_id', fdata.clientId);
+      .select(`*`).eq('client_id', client_id).eq('branch_id', branch_id);
     if (custleaveError) {
       return funSendApiErrorMessage("Unable to fetch customer leave", custleaveError);
     }
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     //get client applied Leave Data with respect to customer
     const { data: appliedLeavedata, error: appliedLeaveError } = await supabase
       .from("leap_customer_apply_leave")
-      .select(`*`).eq('client_id', fdata.clientId).eq('customer_id', fdata.customerId);
+      .select(`*`).eq('client_id', client_id).eq('customer_id', customer_id);
 
     if (appliedLeaveError) {
 

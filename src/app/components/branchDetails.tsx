@@ -410,7 +410,7 @@ interface spesificBranchData{
 
             const res = await fetch("/api/clientAdmin/getClientProfile", {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({"client_id":selectedClientCustomerID.length>0?selectedClientCustomerID: contextClientID}),
             });
             const response = await res.json();
             if(res.ok){
@@ -441,14 +441,38 @@ interface spesificBranchData{
             window.removeEventListener('scroll', handleScroll);
           };
     }, []);
-    const [errors, setErrors] = useState<Partial<Client>>({});
- 
+    const [errors, setErrors] = useState<Partial<spesificBranchData>>({});
+     const validate = () => {
+        const newErrors: Partial<spesificBranchData> = {};
+        if (!branchesArray[branchIndex].branch_number) newErrors.branch_number = "required"; 
+        
+        
+
+      if (!branchesArray[branchIndex].branch_number) newErrors.branch_number = "required";
+      if (!branchesArray[branchIndex].branch_address) newErrors.branch_address = "required";
+      if (!branchesArray[branchIndex].branch_city) newErrors.branch_city = "required";
+      if (!branchesArray[branchIndex].contact_details) newErrors.contact_details = "required";
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!branchesArray[branchIndex].branch_email || !emailRegex.test(branchesArray[branchIndex].branch_email)) {
+            newErrors.branch_email = "Valid email is required";
+        }
+    //   if (!formValues.branch_email) newErrors.branch_email = "required";
+    //   if (!formValues.time_zone_id) newErrors.time_zone_id = "required";
+      if (!branchesArray[branchIndex].is_main_branch) newErrors.is_main_branch = "required";
+      if (!branchesArray[branchIndex].is_active) newErrors.is_active = "required";
+
+
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+
+
+    }
 
     const formData = new FormData();
 
     const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // if (!validate()) return;
+    if (!validate()) return;
 
     formData.append("client_id", selectedClientCustomerID.length>0?selectedClientCustomerID:contextClientID );
     formData.append("id", branchesArray[branchIndex].id);
@@ -549,7 +573,7 @@ interface spesificBranchData{
                                             <div className="add_form_inner">
                                                 <div className="row">
                                                     <div className="col-lg-12 mb-4 inner_heading25">
-                                                        Branch Details
+                                                        Branch Details 
                                                     </div>
                                                 </div>
                                                 <div className="row">
@@ -563,7 +587,7 @@ interface spesificBranchData{
                                                     </div>
                                                     <div className="col-md-6 mb-4">
                                                         <div className="col-lg-12">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Email address: </label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Email Address: </label>
                                                         </div>
                                                         <div className="col-lg-12">
                                                             <input type="text" className="form-control" id="branch_email" value={branchesArray[branchIndex]?.branch_email || ""} name="branch_email" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))} />
@@ -571,34 +595,40 @@ interface spesificBranchData{
                                                     </div>
                                                     <div className="col-md-6 mb-4">
                                                         <div className="col-lg-12">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Branch City:  </label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Branch City<span className='req_text'>*</span>:  </label>
                                                         </div>
                                                         <div className="col-lg-12">
                                                             <input type="text" className="form-control" id="branch_city" value={branchesArray[branchIndex]?.branch_city || ""} name="branch_city" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))} />
+                                                            {errors.branch_city && <span className="error" style={{color: "red"}}>{errors.branch_city}</span>}
+
                                                         </div>
                                                     </div>
                                                     <div className="col-md-6 mb-4">
                                                         <div className="col-lg-12">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Address:</label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Address<span className='req_text'>*</span>:</label>
                                                         </div>
                                                         <div className="col-lg-12">
                                                             <input type="text" className="form-control" id="branch_address" value={branchesArray[branchIndex]?.branch_address || ""} name="branch_address" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))} />
+                                                            {errors.branch_address && <span className="error" style={{color: "red"}}>{errors.branch_address}</span>}
+
                                                         </div>
                                                     </div>
                                                     <div className="col-md-6 mb-4">
                                                         <div className="col-lg-12">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Contact Details:  </label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Contact Details<span className='req_text'>*</span>:  </label>
                                                         </div>
                                                         <div className="col-lg-12">
                                                             <input type="text" className="form-control" id="contact_details" value={branchesArray[branchIndex]?.contact_details || ""} name="contact_details" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))} />
+                                                            {errors.contact_details && <span className="error" style={{color: "red"}}>{errors.contact_details}</span>}
+
                                                         </div>
                                                     </div>
                                                     <div className="col-md-6 mb-4">
                                                         <div className="col-lg-12">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Is main branch:</label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Is Main Branch<span className='req_text'>*</span>:</label>
                                                         </div>
                                                         <div className="col-lg-12 form_box">
-                                                            <select id="is_main_branch" name="is_main_branch" value={branchesArray[branchIndex]?.is_main_branch} onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
+                                                            <select id="is_main_branch" name="is_main_branch" value={branchesArray[branchIndex]?.is_main_branch||branchesArray[branchIndex]?.is_main_branch=="TRUE"?"TURE":"FALSE"} onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
                                                                 {/* <option value={branchesArray[branchIndex]?.is_main_branch}>{branchesArray[branchIndex]?.is_main_branch}</option> */}
                                                                 <option value="TRUE">TRUE</option>
                                                                 <option value="FALSE">FALSE</option>
@@ -607,7 +637,7 @@ interface spesificBranchData{
                                                     </div>
                                                     <div className="col-md-6 mb-4">
                                                         <div className="col-lg-12">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Time zone:</label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Time Zone:</label>
                                                         </div>
                                                         <div className="col-lg-12 form_box">
                                                             <select id="time_zone_id" name="time_zone_id" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
@@ -620,10 +650,10 @@ interface spesificBranchData{
                                                     </div>
                                                     <div className="col-md-6 mb-4">
                                                         <div className="col-lg-12">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Is active:</label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Is Active<span className='req_text'>*</span>:</label>
                                                         </div>
                                                         <div className="col-lg-12 form_box">
-                                                            <select id="is_active" name="is_active" value={branchesArray[branchIndex]?.is_active} onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
+                                                            <select id="is_active" name="is_active" value={branchesArray[branchIndex]?.is_active || branchesArray[branchIndex]?.is_active=="TRUE"?"TRUE":"FALSE"} onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
                                                                 {/* <option value={branchesArray[branchIndex]?.is_active}>{branchesArray[branchIndex]?.is_active}</option> */}
                                                                 <option value="TRUE">TRUE</option>
                                                                 <option value="FALSE">FALSE</option>

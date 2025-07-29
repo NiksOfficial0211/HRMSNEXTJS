@@ -127,7 +127,7 @@ const SupportRequestForm: React.FC = () => {
   }
 
   return (
-    <div className='mainbox'>
+    <div className='mainbox user_mainbox_new_design'>
       <header>
         <LeapHeader title={raiseSupportTitle} />
       </header>

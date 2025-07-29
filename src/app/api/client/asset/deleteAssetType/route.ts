@@ -15,7 +15,10 @@ export async function DELETE(request: NextRequest) {
         return NextResponse.json({ error: "Asset ID needed" },{ status: apiStatusInvalidDataCode }
         );
       }
-
+    const {data:hasAsset,error:errAssetAsigned}=await supabase
+      .from('leap_asset').select('*')
+      .eq('asset_type', fdata.id)
+    if(hasAsset && hasAsset?.length>0){  
     const { error } = await supabase
       .from('leap_asset_type')
       .update({ 
@@ -30,6 +33,12 @@ export async function DELETE(request: NextRequest) {
       {status:1, message: assetDeletedSuccess}, 
       { status: apiStatusSuccessCode }
     );
+  }else{
+    return NextResponse.json(
+      {status:0, message: "Cannot delete type as assets are already assigned under this category type"}, 
+      { status: apiStatusSuccessCode }
+    );
+  }
     
   } catch (error) {
     return funSendApiException(error);

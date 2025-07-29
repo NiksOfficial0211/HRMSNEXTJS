@@ -50,7 +50,12 @@ const AnnouncementListing = () => {
             const res = await fetch(`/api/clientAdmin/getAnnouncementList`, {
                 cache: "no-store",
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "client_id": contextClientID,
+                    "customer_id": contextCustomerID,
+                    "branch_id": contaxtBranchID,
+                    "role_id": contaxtBranchID
+                }),
             });
             if (res.ok) {
                 const response = await res.json();

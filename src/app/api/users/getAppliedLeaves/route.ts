@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
      
     const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
-console.log("---: ",start_date);
+// console.log("---: ",start_date);
 
     let query = supabase
       .from("leap_customer_apply_leave")
@@ -35,16 +35,16 @@ console.log("---: ",start_date);
       if (id) {
         query = query.eq("id", id);
       }
-      if(leave_status && parseInt(leave_status +'')>0){
+      if(leave_status && leave_status !== "0"){
         query=query.eq('leave_status',leave_status);
       }
       if(customer_id && customer_id!="0"){
         query=query.eq('customer_id',customer_id);
-        leaveBalances = await funGetMyLeaveBalance(client_id, customer_id, 5);
+        leaveBalances = await funGetMyLeaveBalance(client_id, branch_id, customer_id, 5);
       }
-      if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_date)!){
-            query=query.gte('from_date',start_date).lte('to_date',start_date);
-          }
+      // if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_date)!){
+      //       query=query.gte('from_date',start_date).lte('to_date',start_date);
+      //     }
           if(funISDataKeyPresent(start_date && funISDataKeyPresent(end_date))){
             query=query.lte('from_date',end_date).gte('to_date',start_date);
           }
@@ -52,7 +52,7 @@ console.log("---: ",start_date);
       if(start || end){
          query=query.range(start, end);
       }
-      console.log(query);
+      // console.log(query);
       const { data: leaves, error }=await query;
       
     if (error) {
@@ -72,7 +72,7 @@ console.log("---: ",start_date);
     }
     else {
       if(!leaveBalances){
-        leaveBalances = await funGetMyLeaveBalance(client_id, leaves[0].customer_id, 5);
+        leaveBalances = await funGetMyLeaveBalance(client_id, branch_id, leaves[0].customer_id, 5);
       }
       return NextResponse.json({ message: allLeavesData,leavedata:leaves, status : 1, emp_leave_Balances: leaveBalances }, { status: apiStatusSuccessCode });
     }

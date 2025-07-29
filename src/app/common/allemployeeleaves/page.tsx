@@ -130,30 +130,59 @@ const EmployeeLeaveList = () => {
     const fetchUsers = async (filterID: any, value: any, pageNumber: number,startDate:any,endDate:any) => {
         setLoading(true);
         try {
-            const formData = new FormData();
-            formData.append("client_id", contextClientID);
-            formData.append("branch_id", contaxtBranchID);
-            if (filterID == 1 || filters.approvedID.length > 0) formData.append("leave_status", filters.approvedID.length > 0 && filters.approvedID == value  ? filters.approvedID : value);
-            if (filterID == 2 || filters.customerID.length >0) formData.append("customer_id", filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value);
-            if(startDate || filters.start_date) formData.append("start_date", formatDateYYYYMMDD(startDate|| filters.start_date));
-            if(endDate || filters.end_date) formData.append("end_date", formatDateYYYYMMDD(endDate || filters.end_date));
-            if (filterID == 3) {
-                if (filters.approvedID) {
-                    formData.append("leave_status", filters.approvedID);
-                }
-                if (filters.customerID) {
-                    formData.append("customer_id", filters.customerID);
-                }
-            }
+            // const formData = new FormData();
+            // formData.append("client_id", contextClientID);
+            // formData.append("branch_id", contaxtBranchID);
+            // if (filterID == 1 || filters.approvedID.length > 0) formData.append("leave_status", filters.approvedID.length > 0 && filters.approvedID == value  ? filters.approvedID : value);
+            // if (filterID == 2 || filters.customerID.length >0) formData.append("customer_id", filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value);
+            // if(startDate || filters.start_date) formData.append("start_date", formatDateYYYYMMDD(startDate|| filters.start_date));
+            // if(endDate || filters.end_date) formData.append("end_date", formatDateYYYYMMDD(endDate || filters.end_date));
+            // if (filterID == 3) {
+            //     if (filters.approvedID) {
+            //         formData.append("leave_status", filters.approvedID);
+            //     }
+            //     if (filters.customerID) {
+            //         formData.append("customer_id", filters.customerID);
+            //     }
+            // }
+
+            const payload: { [key: string]: any } = {
+  client_id: contextClientID,
+  branch_id: contaxtBranchID,
+};
+
+// Dynamic conditions
+if (filterID == 1 || filters.approvedID.length > 0) {
+  payload.leave_status = (filters.approvedID.length > 0 && filters.approvedID == value) ? filters.approvedID : value;
+}
+
+if (filterID == 2 || filters.customerID.length > 0) {
+  payload.customer_id = (filters.customerID.length > 0 && filters.customerID == value) ? filters.customerID : value;
+}
+
+if (startDate || filters.start_date) {
+  payload.start_date = formatDateYYYYMMDD(startDate || filters.start_date);
+}
+
+if (endDate || filters.end_date) {
+  payload.end_date = formatDateYYYYMMDD(endDate || filters.end_date);
+}
+
+if (filterID == 3) {
+  if (filters.approvedID) {
+    payload.leave_status = filters.approvedID;
+  }
+  if (filters.customerID) {
+    payload.customer_id = filters.customerID;
+  }
+}
 
 
-            for (const [key, value] of formData.entries()) {
-                console.log(`${key}: ${value}`);
-            }
+            
 
             const res = await fetch(`/api/users/getAppliedLeaves?page=${pageNumber}&limit=${10}`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify(payload),
             });
             const response = await res.json();
             console.log(response);

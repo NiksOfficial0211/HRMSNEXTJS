@@ -79,8 +79,8 @@ const EmployeeLeaveList = () => {
         }
         fetchData();
         fetchTasks("", "");
-        fetchTeamTasks("", "");
-        fetchProjectTasks("", "");
+        // fetchTeamTasks("", "");
+        // fetchProjectTasks("", "");
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
             const element = document.querySelector('.mainbox');
@@ -102,7 +102,7 @@ const EmployeeLeaveList = () => {
             let formData = {
                 "client_id": contextClientID,
                 "customer_id": contextCustomerID,
-                "task_date": formatDateYYYYMMDD(new Date()),
+                "task_date": "",
                 "sub_project_id": "",
                 "task_status": ""
             }
@@ -153,7 +153,7 @@ const EmployeeLeaveList = () => {
                 setTask(leaveListData)
             } else {
                 setTask([]);
-                setShowAlert(true);
+                // setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("Failed to load task");
                 setAlertForSuccess(2)
@@ -171,7 +171,7 @@ const EmployeeLeaveList = () => {
         try {
             let formData = {
                 "assigned_to": contextCustomerID,
-                "task_date": formatDateYYYYMMDD(new Date()),
+                "task_date": "",
                 "sub_project_id": "",
                 "task_status": ""
             }
@@ -219,7 +219,7 @@ const EmployeeLeaveList = () => {
                 setAssignedTask(taskData);
             } else {
                 setAssignedTask([]);
-                setShowAlert(true);
+                // setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("Failed to load tasks");
                 setAlertForSuccess(2)
@@ -237,7 +237,7 @@ const EmployeeLeaveList = () => {
         try {
            let formData = {
                 "manager_id": contextCustomerID,
-                "task_date": formatDateYYYYMMDD(new Date()),
+                "task_date": "",
                 "customer_id": 0,
                 "sub_project_id": "",
                 "task_status": ""
@@ -291,11 +291,11 @@ const EmployeeLeaveList = () => {
             // console.log(response);
 
             const taskData = response.taskdata;
-            if (response.status == 1 || []) {
+            if (response.status == 1 ) {
                 setTeamTask(taskData);
             } else {
                 setTeamTask([]);
-                setShowAlert(true);
+                // setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("Failed to load Tasks");
                 setAlertForSuccess(2)
@@ -313,7 +313,7 @@ const EmployeeLeaveList = () => {
         try {
             let formData = {
                 "project_manager_id": contextCustomerID,
-                "task_date": formatDateYYYYMMDD(new Date()),
+                "task_date": "",
                 "customer_id": 0,
                 "sub_project_id": "",
                 "task_status": ""
@@ -366,11 +366,11 @@ const EmployeeLeaveList = () => {
             console.log(response);
 
             const taskData = response.taskdata;
-            if (response.status == 1 || []) {
+            if (response.status == 1) {
                 setProjectTask(taskData);
             } else {
                 setProjectTask([]);
-                setShowAlert(true);
+                // setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("Failed to load Tasks");
                 setAlertForSuccess(2)
@@ -451,7 +451,7 @@ const EmployeeLeaveList = () => {
         }
     }
     return (
-        <div className='mainbox'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -464,11 +464,11 @@ const EmployeeLeaveList = () => {
                             <div className="col-lg-12">
                                 <div className="nw_user_inner_mainbox">
                                     <div className="nw_user_inner_heading_tabbox">
-                                        <div className="heading25">
-                                            Task <span> Manager</span>
+                                        <div className="heading25 pt-3">
+                                            Task Manager
                                         </div>
-                                        <div className="nw_user_inner_tabs">
-                                            <ul>
+                                        <div className="nw_user_inner_tabs nw_user_inner_right_tabs new_righ_two_tabs">
+                                            <ul className='new_righ_four_tabs'>
                                                 <li className={viewIndex === 0 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"} key={0}>
                                                     <a onClick={(e) => { setViewIndex(0), setLoadingCursor(true), resetFilter(""), fetchTasks("", "") }} className={viewIndex === 0 ? "nw_user_selected" : "new_list_view_heading"}>
                                                         <div className="nw_user_tab_icon">
@@ -532,9 +532,50 @@ const EmployeeLeaveList = () => {
                                                     </li>
                                                 }
                                             </ul>
-                                            <ul>
+                                            <ul className='new_righ_sub_two_tabs'>
+                                                <li className='filter_relative_li'>
+                                                    <div className="nw_user_filter_mainbox width_450">
+                                                        <div className="filter_whitebox" id="filter_whitebox">
+                                                            <div className="nw_filter_form_group_mainbox">
+                                                                <div className="nw_filter_form_group">
+                                                                    <input type="date" className='form-control' name="date" value={filters.date} onChange={handleTaskFilter} />
+                                                                </div>
+                                                                <div className="nw_filter_form_group">
+                                                                    <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
+                                                                        <option value="">Project</option>
+                                                                        {projectarray.map((id, index) => (
+                                                                            <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </div>
+                                                                <div className="nw_filter_form_group">
+                                                                    <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
+                                                                        <option value="">Status</option>
+                                                                        {statusarray.map((id, index) => (
+                                                                            <option value={id.id} key={id.id}>{id.status}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </div>
+                                                                <div className="nw_filter_form_group">
+                                                                    <div className="nw_filter_submit_btn">
+                                                                        <a onClick={() => resetFilter("fetchTasks")}>
+                                                                            <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="nw_filter_icon" onClick={filter_whitebox}>
+                                                            <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
+                                                            <img src="/images/user/filter-icon-red.svg" alt="Filter icon" className="img-fluid new_filter_color_change_red" />
+                                                            <div className="new_filter_tooltip_box">
+                                                                Filter
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
                                                 <li>
-                                                    {contextRoleID != "5" &&
+                                                    {viewIndex == 2 || viewIndex== 3 &&
                                                         <a href={pageURL_userAssignTask}>
                                                             <div className="nw_user_tab_icon">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512" className="">
@@ -550,7 +591,8 @@ const EmployeeLeaveList = () => {
                                                     }
                                                 </li>
                                                 <li>
-                                                    <a href={pageURL_userFillTask}>
+                                                    {viewIndex != 2 && viewIndex!=3 &&
+                                                        <a href={pageURL_userFillTask}>
                                                         <div className="nw_user_tab_icon">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
                                                                 <path className='red_to_white' fill="#ed2024" d="M12 .12A11.88 11.88 0 1 0 23.88 12 11.894 11.894 0 0 0 12 .12zm5.4 12.96h-4.32v4.32a1.08 1.08 0 0 1-2.16 0v-4.32H6.6a1.08 1.08 0 0 1 0-2.16h4.32V6.6a1.08 1.08 0 0 1 2.16 0v4.32h4.32a1.08 1.08 0 0 1 0 2.16z" data-name="Layer 2" data-original="#000000" />
@@ -559,52 +601,17 @@ const EmployeeLeaveList = () => {
                                                         <div className="nw_user_tab_name">
                                                             Add
                                                         </div>
-                                                    </a>
+                                                    </a>}
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
-                                    <div className="nw_user_inner_content_box">
+                                    <div className="nw_user_inner_content_box" style={{ minHeight: '60vh' }}>
                                         {viewIndex == 0 ?
                                             // my task
                                             <>
-                                                <div className="nw_user_filter_mainbox">
-                                                    <div className="filter_whitebox" id="filter_whitebox">
-                                                        <div className="nw_filter_form_group_mainbox">
-                                                            <div className="nw_filter_form_group">
-                                                                <input type="date" className='form-control' name="date" value={filters.date} onChange={handleTaskFilter} />
-                                                            </div>
-                                                            <div className="nw_filter_form_group">
-                                                                <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
-                                                                    <option value="">Project:</option>
-                                                                    {projectarray.map((id, index) => (
-                                                                        <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </div>
-                                                            <div className="nw_filter_form_group">
-                                                                <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
-                                                                    <option value="">Status:</option>
-                                                                    {statusarray.map((id, index) => (
-                                                                        <option value={id.id} key={index}>{id.status}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </div>
-                                                            <div className="nw_filter_form_group">
-                                                                <div className="nw_filter_submit_btn">
-                                                                    <a onClick={() => resetFilter("fetchTasks")}>
-                                                                        <img src={staticIconsBaseURL+"/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                        <img src={staticIconsBaseURL+"/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
-                                                    </div>
-                                                </div>
                                                 <div className="my_task_tabbing_content">
-                                                    <div className="row">
+                                                    <div className="row mt-4">
                                                         <div className="col-lg-12">
                                                             <div className="row">
                                                                 <div className="col-lg-12">
@@ -616,8 +623,8 @@ const EmployeeLeaveList = () => {
                                                                         <div className="col-lg-1 text-center"><div className="label">Status</div></div>
                                                                     </div>
                                                                     {taskarray.length > 0 ? (
-                                                                        taskarray?.map((list, index) => (
-                                                                            <div className="list_listbox" key={index}>
+                                                                        taskarray?.map((list) => (
+                                                                            <div className="list_listbox" key={list.id}>
                                                                                 <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                     <div className="row">
                                                                                         <div className="col-lg-2 text-center">{list.task_date}</div>
@@ -630,8 +637,8 @@ const EmployeeLeaveList = () => {
                                                                                             <><div className="col-lg-1 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
                                                                                         }
                                                                                         <div className="col-lg-1 text-center">
-                                                                                            {list.leap_task_status.status == "Completed" ? <img src={staticIconsBaseURL+"/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(false) }} /> :
-                                                                                                <img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(true) }} />
+                                                                                            {list.leap_task_status.status == "Completed" ? <img src="/images/ic_eye.png" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(false) }} /> :
+                                                                                                <img src="/images/edit.png" className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(true) }} />
 
                                                                                             }
                                                                                         </div>
@@ -663,7 +670,7 @@ const EmployeeLeaveList = () => {
                                                                     <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
                                                                         <option value="">Project:</option>
                                                                         {projectarray.map((id, index) => (
-                                                                            <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
+                                                                            <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
                                                                         ))}
                                                                     </select>
                                                                 </div>
@@ -671,21 +678,21 @@ const EmployeeLeaveList = () => {
                                                                     <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
                                                                         <option value="">Status:</option>
                                                                         {statusarray.map((id, index) => (
-                                                                            <option value={id.id} key={index}>{id.status}</option>
+                                                                            <option value={id.id} key={id.id}>{id.status}</option>
                                                                         ))}
                                                                     </select>
                                                                 </div>
                                                                 <div className="nw_filter_form_group">
                                                                     <div className="nw_filter_submit_btn">
                                                                         <a onClick={() => resetFilter("fetchAssignedTasks")}>
-                                                                            <img src={staticIconsBaseURL+"/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
+                                                                            <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
                                                                         </a>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                            <img src={staticIconsBaseURL+"/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
+                                                            <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
                                                         </div>
                                                     </div>
                                                     <div className="my_task_tabbing_content">
@@ -704,8 +711,8 @@ const EmployeeLeaveList = () => {
                                                                             <div className="col-lg-2 text-center"><div className="label">Assigned By</div></div>
                                                                         </div>
                                                                         {assignedTaskarray.length > 0 ? (
-                                                                            assignedTaskarray?.map((list, index) => (
-                                                                                <div className="list_listbox" key={index}>
+                                                                            assignedTaskarray?.map((list) => (
+                                                                                <div className="list_listbox" key={list.id}>
                                                                                     <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                         <div className="row">
                                                                                             <div className="col-lg-2 text-center">{list.task_date}</div>
@@ -716,7 +723,7 @@ const EmployeeLeaveList = () => {
                                                                                             <div className="col-lg-2 text-center" style={{ color: "red" }}>{list.deadline ? list.deadline : "--"}</div>
                                                                                             <div className="col-lg-2 text-center">{list.leap_customer.name}</div>
                                                                                             <div className="col-lg-1 text-center">
-                                                                                                <img src={staticIconsBaseURL+"/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(1); setShowDialog(true); setisToBeEdited(false) }} />
+                                                                                                <img src="/images/ic_eye.png" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(1); setShowDialog(true); setisToBeEdited(false) }} />
 
                                                                                             </div>
                                                                                         </div>
@@ -737,7 +744,7 @@ const EmployeeLeaveList = () => {
                                                 </>
                                                 : viewIndex == 2 ?
                                                     // Team members task
-                                                    <>~~
+                                                    <>
                                                         <div className="nw_user_filter_mainbox">
                                                             <div className="filter_whitebox" id="filter_whitebox">
                                                                 <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_four">
@@ -748,7 +755,7 @@ const EmployeeLeaveList = () => {
                                                                         <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
                                                                             <option value="">Project:</option>
                                                                             {projectarray.map((id, index) => (
-                                                                                <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
+                                                                                <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
                                                                             ))}
                                                                         </select>
                                                                     </div>
@@ -769,21 +776,21 @@ const EmployeeLeaveList = () => {
                                                                         <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
                                                                             <option value="">Status:</option>
                                                                             {statusarray.map((id, index) => (
-                                                                                <option value={id.id} key={index}>{id.status}</option>
+                                                                                <option value={id.id} key={id.id}>{id.status}</option>
                                                                             ))}
                                                                         </select>
                                                                     </div>
                                                                     <div className="nw_filter_form_group">
                                                                         <div className="nw_filter_submit_btn">
                                                                             <a onClick={() => resetFilter("fetchTeamTasks")}>
-                                                                                <img src={staticIconsBaseURL+"/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
+                                                                                <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
                                                                             </a>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                                <img src={staticIconsBaseURL+"/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
+                                                                <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
                                                             </div>
                                                         </div>
                                                         <div className="my_task_tabbing_content">
@@ -799,8 +806,8 @@ const EmployeeLeaveList = () => {
                                                                                 <div className="col-lg-2 text-center"><div className="label">Status</div></div>
                                                                             </div>
                                                                             {teamTaskarray.length > 0 ? (
-                                                                                teamTaskarray?.map((list, index) => (
-                                                                                    <div className="list_listbox" key={index}>
+                                                                                teamTaskarray?.map((list) => (
+                                                                                    <div className="list_listbox" key={list.id}>
                                                                                         <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                             <div className="row">
                                                                                                 <div className="col-lg-2 text-center">{list.leap_customer.name}</div>
@@ -814,8 +821,8 @@ const EmployeeLeaveList = () => {
                                                                                                 }
                                                                                                 <div className="col-lg-1 text-center">
                                                                                                     {list.leap_approval_status.approval_type == "Pending" ?
-                                                                                                        <img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
-                                                                                                        <img src={staticIconsBaseURL+"/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog(true); setisToBeEdited(false) }} />
+                                                                                                        <img src="/images/edit.png" className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
+                                                                                                        <img src="/images/ic_eye.png" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog(true); setisToBeEdited(false) }} />
                                                                                                     }
                                                                                                 </div>
                                                                                             </div>
@@ -847,7 +854,7 @@ const EmployeeLeaveList = () => {
                                                                             <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
                                                                                 <option value="">Project:</option>
                                                                                 {projectarray.map((id, index) => (
-                                                                                    <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
+                                                                                    <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
                                                                                 ))}
                                                                             </select>
                                                                         </div>
@@ -868,21 +875,21 @@ const EmployeeLeaveList = () => {
                                                                             <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
                                                                                 <option value="">Status:</option>
                                                                                 {statusarray.map((id, index) => (
-                                                                                    <option value={id.id} key={index}>{id.status}</option>
+                                                                                    <option value={id.id} key={id.id}>{id.status}</option>
                                                                                 ))}
                                                                             </select>
                                                                         </div>
                                                                         <div className="nw_filter_form_group">
                                                                             <div className="nw_filter_submit_btn">
                                                                                 <a onClick={() => resetFilter("fetchProjectTasks")}>
-                                                                                    <img src={staticIconsBaseURL+"/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
+                                                                                    <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
                                                                                 </a>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                                    <img src={staticIconsBaseURL+"/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
+                                                                    <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
                                                                 </div>
                                                             </div>
                                                             <div className="my_task_tabbing_content">
@@ -898,8 +905,8 @@ const EmployeeLeaveList = () => {
                                                                                     <div className="col-lg-2 text-center"><div className="label">Status</div></div>
                                                                                 </div>
                                                                                 {projectTaskarray.length > 0 ? (
-                                                                                    projectTaskarray?.map((list, index) => (
-                                                                                        <div className="list_listbox" key={index}>
+                                                                                    projectTaskarray?.map((list) => (
+                                                                                        <div className="list_listbox" key={list.id}>
                                                                                             <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                                 <div className="row">
                                                                                                     <div className="col-lg-2 text-center">{list.leap_client_sub_projects.leap_client_project.project_name}</div>
@@ -914,8 +921,8 @@ const EmployeeLeaveList = () => {
                                                                                                     }
                                                                                                     <div className="col-lg-1 text-center ">
                                                                                                         {list.leap_approval_status.approval_type == "Pending" ?
-                                                                                                            <img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
-                                                                                                            <img src={staticIconsBaseURL+"/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog(true); setisToBeEdited(false) }} />
+                                                                                                            <img src="/images/edit.png" className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
+                                                                                                            <img src="/images/ic_eye.png" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog(true); setisToBeEdited(false) }} />
                                                                                                         }
                                                                                                     </div>
                                                                                                 </div>

@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         contact_details: fdata.contact_details || null,
         branch_email: fdata.branch_email || null,
         branch_number: fdata.branch_number || null,
-        time_zone_id: fdata.time_zone_id || null,
+        time_zone_id: fdata.time_zone_id || 0,
         is_main_branch: fdata.is_main_branch || null,
         is_active: fdata.is_active || null,
         updated_at: new Date(),  

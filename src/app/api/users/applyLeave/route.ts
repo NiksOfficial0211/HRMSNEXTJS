@@ -16,9 +16,8 @@ export async function POST(request: NextRequest) {
     if (files && files.file && files.file[0] )  {
       const uploadedFile = files.file[0];
       const fileBuffer = await fs.readFile(uploadedFile.path);
-const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
-            type: uploadedFile.headers["content-type"]
-          });      const formData = new FormData();
+      const fileBlob = new Blob([fileBuffer], { type: uploadedFile.headers["content-type"] });
+      const formData = new FormData();
       formData.append("client_id", fields.client_id[0]);
       formData.append("customer_id", fields.customer_id[0]);
       formData.append("docType", "leave_docs");
@@ -49,7 +48,7 @@ const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
         leave_reason: fields.leave_reason[0],
         duration:fields.duration[0] || "Full day",
         created_at: new Date()
-      }).select("id");
+      }).select();
 
     const { data,error } = await query;
     if (error) {
@@ -60,12 +59,10 @@ const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
     const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],fields.branch_id[0],"Leave",fields.leave_type[0],data[0].id);
     if(addActivity=="1"){
       return funSendApiErrorMessage(addActivity, "Customer Leave Activity Insert Issue");
-
     }
     else {
       return funDataAddedSuccessMessage("Leave Applied Successfully");
     }
-
   } catch (error) {
     console.log(error);
     return funSendApiException(error);

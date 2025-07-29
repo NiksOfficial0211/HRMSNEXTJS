@@ -956,7 +956,9 @@ input.new_upload_btn_input {
 .form_new_group .req_text {
   color: red;
 }
-
+.req_text {
+  color: red;
+}
 .form_new_group_btn {
   grid-column: 1/2;
 }

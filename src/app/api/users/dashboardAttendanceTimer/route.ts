@@ -17,15 +17,12 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const formData = await request.formData();
-        const customer_id=formData.get('customer_id');
-        const date=formData.get('date');
-        const clientID=formData.get('client_id');
+        const {customer_id, date, client_id} = await request.json();
 
         const { data: clientData, error: clientError } = await supabase
         .from('leap_client')
         .select(`fullday_working_hours`)
-        .eq("client_id", clientID)
+        .eq("client_id", client_id)
         .single(); 
 
         const working_hour = clientData?.fullday_working_hours;

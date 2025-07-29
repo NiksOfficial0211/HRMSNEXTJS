@@ -90,11 +90,11 @@ const AnnouncementListing = () => {
     };
     
     return (
-        <div className='mainbox'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title={announcementListingPage} />
             </header>
-            <LeftPannel menuIndex={leftMenuUserAnnouncement} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
+            <LeftPannel menuIndex={29} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
                 <div className='container'>
                     <LoadingDialog isLoading={isLoading} />
                     {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {

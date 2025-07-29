@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || ""); 
     const pageSize = parseInt(searchParams.get("limit") || ""); 
 
-    const {client_id, manager_id, end_date, start_date, customer_id, leave_status } = await request.json();
+    const {client_id, manager_id, end_date, start_date, customer_id, leave_status, branch_id } = await request.json();
     // const fdata = {
     //   clientId: formData.get('client_id'),
     //   managerId: formData.get('manager_id')
@@ -49,11 +49,11 @@ export async function POST(request: NextRequest) {
       .select(`*, leap_approval_status(approval_type), leap_client_leave(leave_name), leap_customer(name)`)
       .in("customer_id", employeeIds)
       .order("updated_at", { ascending: false })
-      .range(start, end);
+      // .range(start, end);
 
         if(customer_id && customer_id!="0"){
                 query=query.eq('customer_id', customer_id);
-                leaveBalances = await funGetMyLeaveBalance(client_id, customer_id, 5);
+                leaveBalances = await funGetMyLeaveBalance(client_id, branch_id,  customer_id, 5);
               }
         if(leave_status && parseInt(leave_status+'')>0){
         query=query.eq('leave_status',leave_status);

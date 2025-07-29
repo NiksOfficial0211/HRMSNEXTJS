@@ -19,7 +19,8 @@ import { formatInTimeZone } from 'date-fns-tz';
 
 import { ALERTMSG_exceptionString } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
-import {  EmployeeLeave_Approval_LeaveType } from '@/app/models/leaveModel'
+import { EmployeeLeave_Approval_LeaveType } from '@/app/models/leaveModel'
+import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
 // import AttendanceMap from '@/app/components/trackerMap'
 // const AttendanceMap = dynamic(() => import('@/app/components/trackerMap'), { ssr: false });
 
@@ -53,16 +54,16 @@ interface selectedAttendance {
 const EmpAttendancePage = () => {
 
     const [showAlert, setShowAlert] = useState(false);
-        const [alertForSuccess, setAlertForSuccess] = useState(0);
-        const [alertTitle, setAlertTitle] = useState('');
-        const [alertStartContent, setAlertStartContent] = useState('');
-        const [alertMidContent, setAlertMidContent] = useState('');
-        const [alertEndContent, setAlertEndContent] = useState('');
-        const [alertValue1, setAlertValue1] = useState('');
-        const [alertvalue2, setAlertValue2] = useState('');
+    const [alertForSuccess, setAlertForSuccess] = useState(0);
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertStartContent, setAlertStartContent] = useState('');
+    const [alertMidContent, setAlertMidContent] = useState('');
+    const [alertEndContent, setAlertEndContent] = useState('');
+    const [alertValue1, setAlertValue1] = useState('');
+    const [alertvalue2, setAlertValue2] = useState('');
 
     const [scrollPosition, setScrollPosition] = useState(0);
-    const { contaxtBranchID, contextClientID, contextCustomerID, dashboard_notify_cust_id,contextRoleID, setGlobalState } = useGlobalContext();
+    const { contaxtBranchID, contextClientID, contextCustomerID, dashboard_notify_cust_id, contextRoleID, setGlobalState } = useGlobalContext();
     const [loadingCursor, setLoadingCursor] = useState(false);
     const [isLoading, setLoading] = useState(true);
     const [showMap, setShowMap] = useState(false);
@@ -90,7 +91,7 @@ const EmpAttendancePage = () => {
             img_attachment: '',
             pause_end_time: [],
             approval_status: '',
-            paused_duration: '',
+            paused_duration: 0,
             working_type_id: '',
             attendanceStatus: 0,
             pause_start_time: [],
@@ -180,15 +181,15 @@ const EmpAttendancePage = () => {
     }
 
     const fetchData = async () => {
-        console.log("start date selecte in fetch data", filterValues.start_date);
-        console.log("end date selecte in fetch data", filterValues.end_date);
+        // console.log("start date selecte in fetch data", filterValues.start_date);
+        // console.log("end date selecte in fetch data", filterValues.end_date);
         setLoading(true);
         try {
             const formData = new FormData();
             formData.append("client_id", contextClientID);
             formData.append("branch_id", contaxtBranchID);
             formData.append('customer_id', contextCustomerID);
-            
+
             formData.append('start_date', filterValues.start_date || formatDateYYYYMMDD(new Date()));
             const endDate = filterValues.start_date != filterValues.end_date ? filterValues.end_date : formatDateYYYYMMDD(new Date())
             formData.append('end_date', endDate);
@@ -205,7 +206,7 @@ const EmpAttendancePage = () => {
 
                 setEmpAttendanceData(apiResponse.data);
                 setHolidayList(apiResponse.holidaylist);
-                setEmpLeaveList(apiResponse.leaveList);          
+                setEmpLeaveList(apiResponse.leaveList);
 
                 const dateRanges = generateDateRange(filterValues.start_date || formatDateYYYYMMDD(new Date()), filterValues.end_date || formatDateYYYYMMDD(new Date()))
 
@@ -215,15 +216,15 @@ const EmpAttendancePage = () => {
                     let isHoliday = -1;
                     let wasonLeave = -1;
                     console.log();
-                    if(apiResponse.data[0].leap_customer_attendance){
-                    for (let j = 0; j < apiResponse.data[0].leap_customer_attendance.length; j++) {
-                        if (dateRanges[i].actual_date == apiResponse.data[0].leap_customer_attendance[j].date) {
-                            isPresent = j;
-                        }
+                    if (apiResponse.data[0].leap_customer_attendance) {
+                        for (let j = 0; j < apiResponse.data[0].leap_customer_attendance.length; j++) {
+                            if (dateRanges[i].actual_date == apiResponse.data[0].leap_customer_attendance[j].date) {
+                                isPresent = j;
+                            }
 
+                        }
                     }
-                    }
-                    if (apiResponse.holidaylist && apiResponse.holidaylist.length>0) {
+                    if (apiResponse.holidaylist && apiResponse.holidaylist.length > 0) {
                         for (let k = 0; k < apiResponse.holidaylist.length; k++) {
                             if (dateRanges[i].actual_date == apiResponse.holidaylist[k].date) {
                                 isHoliday = k;
@@ -315,10 +316,10 @@ const EmpAttendancePage = () => {
                 setLoading(false);
             } else {
                 setLoading(false);
-            setShowAlert(true);
-            setAlertTitle("Exception");
-            setAlertStartContent(ALERTMSG_exceptionString);
-            setAlertForSuccess(2);
+                setShowAlert(true);
+                setAlertTitle("Exception");
+                setAlertStartContent(ALERTMSG_exceptionString);
+                setAlertForSuccess(2);
 
             }
 
@@ -369,270 +370,491 @@ const EmpAttendancePage = () => {
         }
     };
     const formattedRange = formatDateYYYYMMDD(state[0].startDate) == formatDateYYYYMMDD(state[0].endDate) ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
+    function filter_whitebox() {
+        const x = document.getElementById("filter_whitebox");
+        if (x!.className === "filter_whitebox") {
+            x!.className += " filter_whitebox_open";
+        } else {
+            x!.className = "filter_whitebox";
+        }
+    }
+    const calculateTimeDuration = (startDate: any, endDate: any) => {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffMs = end.getTime() - start.getTime(); // in milliseconds
+        const diffMinutes = Math.floor(diffMs / (1000 * 60))
+        return diffMinutes;
+    }
+    const WORKING_MINUTES = 480;
+
+    function getTotalWorkedMinutes(
+        inTime: string,
+        outTime: string | null,
+        pauseDurationMinutes: number
+    ): { totalMinutes: number; netMinutes: number } {
+        const now = new Date();
+        const start = new Date(inTime);
+        const end = outTime ? new Date(outTime) : now;
+
+        const totalMinutes = (end.getTime() - start.getTime()) / 1000 / 60;
+        const netMinutes = totalMinutes - pauseDurationMinutes;
+        return {
+            totalMinutes: Math.max(0, Math.floor(totalMinutes)),
+            netMinutes: Math.max(0, Math.floor(netMinutes)),
+        };
+    }
+    const formatMinutesToHours = (minutes: number) => {
+        const hrs = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hrs}h ${mins}m`;
+    };
+    // const { netMinutes } = getTotalWorkedMinutes(
+    // dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time,
+    // dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time
+    // // attendanceData.in_time,
+    // // attendanceData.out_time,
+    // parseInt(attendanceData.paused_duration || '0') || 0
+    // );
+    const calculateProgressPercentage = () => {
+        // const worked = calculateWorkedMinutes();
+        // const percent = Math.min(55, 100); // Cap at 100%
+        // const percent = Math.min((netMinutes / WORKING_MINUTES) * 100, 100); // Cap at 100%
+        // return Math.round(percent);
+    };
+
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const toggleText = () => {
+        setIsExpanded(prev => !prev);
+    };
 
     return (
-        <div className='mainbox'>
+        <div className="mainbox user_mainbox_new_design">
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
-            <LeftPannel menuIndex={leftMenuAttendancePageNumbers} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
-
-                <div className="container">
-                    <LoadingDialog isLoading={isLoading} />
-                    {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
-                            setShowAlert(false)
-                        }} onCloseClicked={function (): void {
-                            setShowAlert(false)
-                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
-                    <div className="row pt-2 mb-5">
-                        
-                        <div className="col-lg-6 heading25">
-                              My <span>Attendance</span>
-                        </div>
-                        {contextRoleID != "5" && <div className="col-lg-6" style={{textAlign: "right"}}>
-                            <a href={pageURL_userTeamAttendanceList} className="red_button red_button2">My team</a>&nbsp;
-                        </div>}
-                        <div className="row" style={{ marginBottom: "20px" }}>
-                            <div className="col-lg-12">
-                                <div className="filter_whitebox filter_whitebox_open" id="filter_whitebox_open">
-                                    <div className="row" style={{ alignItems: "center" }}>
-
-                                        <div className="col-lg-3">
-
-                                            <div className="form_box mb-2">
-
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    value={formattedRange}
-                                                    readOnly
-                                                    onClick={() => setShowCalendar(!showCalendar)}
-                                                />
-                                                {showCalendar && (
-                                                    <div style={{ position: 'absolute', zIndex: 1000 }}>
-                                                        <DateRange
-                                                            editableDateInputs={true}
-                                                            onChange={handleDateChange}
-                                                            moveRangeOnFirstSelection={false}
-                                                            ranges={state}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="col-lg-3">
-                                            <div className="form_box mb-2 mt-2">
-                                                <a className={`red_button filter_submit_btn ${loadingCursor ? "loading" : ""}`} onClick={() => { setLoadingCursor(true), fetchData() }}>Submit</a>&nbsp;
-                                                <a className="red_button filter_submit_btn" onClick={() => resetFilter()}>Reset</a>&nbsp;
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-lg-4">
+            <LeftPannel
+                menuIndex={leftMenuAttendancePageNumbers}
+                subMenuIndex={0}
+                showLeftPanel={true}
+                rightBoxUI={
+                    <>
+                        {/* ========= New structure start ============ */}
+                        <div className="container">
                             <div className="row">
-                                {dateRangeAttendanceData.map((dates, index) =>
-                                    <div className="col-lg-12" key={index} onClick={() => {
-
-                                        if (dates.employeeAttendance != null) {
-                                            setShowMap(true);
-                                            setSelectedAttendenceIndex(index)
-                                            setShowAttendance(
-                                                dates!.employeeAttendance.attendance_id,
-                                                dates.actualDate,
-                                                empAttendanceData[0].emp_id,
-                                                empAttendanceData[0].name,
-                                                empAttendanceData[0].leap_client_designations != null ? empAttendanceData[0].leap_client_designations!.designation_name : "--",
-                                                empAttendanceData[0].leap_client_departments != null ? empAttendanceData[0].leap_client_departments!.department_name : "--")
-                                        }
-                                    }
-                                    }>
-                                        <div className="att_detail_whitelist" style={{backgroundColor:dates.isHoliday?"#adebad":dates.wasOnLeave?"#ffd699":"#FFFFFF"}}>
-                                            <div className="row">
-                                                <div className="col-lg-3">
-                                                    <div className="att_detail_datebox">
-                                                        {dates.date} <span>{dates.month_year}</span>
-                                                    </div>
-                                                </div>
-                                                {dates.isHoliday ?
-                                                    // here is the hoilday display 
-                                                    <div className="col-lg-9">
-                                                        <div className="row mb-2 pb-2" style={{ borderBottom: "1px solid #ebeff2" }}>
-                                                            <div className="col-lg-6">
-                                                                Holiday
-                                                            </div>
-                                                            
-                                                        </div>
-                                                        <div className="row">
-                                                                <div className="col-lg-12">
-                                                                    {dates.holidayName}
-                                                                </div>
-                                                            </div>
-                                                    </div>
-                                                    // here is the on leve display section
-                                                    : dates.wasOnLeave ? <div className="col-lg-9">
-                                                        <div className="row mb-2 pb-2" style={{ borderBottom: "1px solid #ebeff2" }}>
-                                                            <div className="col-lg-12">
-                                                                Leave Type:{dates.leaveTypeName}
-
-                                                            </div>
-
-                                                            
-                                                        </div>
-                                                        <div className="row">
-                                                                <div className="col-lg-12">
-                                                                    Approval Status:{dates.leaveApprovalStatus}
-                                                                </div>
-                                                            </div>
-
-                                                    </div> :
-
-
-                                                        <div className="col-lg-9">
-                                                            <div className="row mb-2 pb-2" style={{ borderBottom: "1px solid #ebeff2" }}>
-                                                                <div className="col-lg-6">
-                                                                    Start Time:<br></br>
-
-                                                                    {dates.employeeAttendance != null && dates.employeeAttendance.in_time ? formatInTimeZone(new Date(dates.employeeAttendance.in_time), 'UTC', 'hh:mm a') : "--"}
-                                                                </div>
-                                                                <div className="col-lg-6">
-                                                                    End Time:<br></br>
-                                                                    {dates.employeeAttendance != null && dates.employeeAttendance.out_time ? formatInTimeZone(new Date(dates.employeeAttendance.out_time), 'UTC', 'hh:mm a') : "--"}
-                                                                </div>
-                                                            </div>
-                                                            <div className="row">
-                                                                <div className="col-lg-12">Work Location: {dates.employeeAttendance != null && dates.employeeAttendance.leap_working_type && dates.employeeAttendance.leap_working_type.type ? dates.employeeAttendance.leap_working_type.type : "--"}</div>
-                                                            </div>
-                                                        </div>}
+                                <div className="col-lg-12">
+                                    <div className="nw_user_inner_mainbox">
+                                        <div className="nw_user_inner_heading_tabbox new_user_attendance_heading_tabbox">
+                                            <div className="heading25">
+                                                My Attendance
                                             </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                            </div>
-                        </div>
-                        <div className="col-lg-8">
-                            <div className="row">
-                                <div className="col-lg-12 mb-4">
-                                    <div className="att_detail_profilebox">
-                                        <div className="row">
-                                            <div className="col-lg-4">
-                                                <div className="row text-center" style={{ fontSize: "19px" }}>
-                                                    <div className="col-lg-12 mb-3"><img src={
-                                                        dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance != null &&
-                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment ?
-                                                            `${process.env.NEXT_PUBLIC_BASE_URL}/api/uploads?imagePath=${dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment}` :
-                                                            `${process.env.NEXT_PUBLIC_BASE_URL}/images/attendance_profile_img.png`} className="img-fluid" alt="Search Icon" style={{ width: "200px", margin: "-40px 0 0 0" }} /></div>
-
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-8">
-                                                <div className="row pb-3 mb-4 text-center" style={{ borderBottom: "1px solid #ececec" }}>
-                                                    <div className="col-lg-4" style={{ borderRight: "1px solid #ccc" }}>
-                                                        Start Time: <br></br>
-                                                        {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance != null &&
-                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time ?
-                                                            formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time), 'UTC', 'hh:mm a') : "--"}
-                                                    </div>
-                                                    <div className="col-lg-4" style={{ borderRight: "1px solid #ccc" }}>
-                                                        End Time: <br></br>
-                                                        {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance != null &&
-                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time ?
-                                                            formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time), 'UTC', 'hh:mm a') : "--"}
-
-                                                    </div>
-                                                    <div className="col-lg-4">
-                                                        Working Type: <br></br>
-                                                        {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance != null &&
-                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.leap_working_type ?
-                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.leap_working_type.type : "--"}
-
-                                                    </div>
-                                                </div>
-                                                {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance != null && dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.pause_start_time &&
-                                                    <div className="row">
-                                                        <div className="col-lg-12 mb-2" style={{ fontFamily: "Outfit-Medium", fontSize: "18px" }}>Breaks:</div>
-                                                    </div>}
-
-                                                <div className="row">
-
-                                                    <div className="col-lg-9">
-                                                        {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance != null && dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.pause_start_time &&
-                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.pause_start_time.map((breakTime, index) =>
-                                                                <div className='breaks_list' key={index}>
-                                                                    <div className="breaks_timebox">
-                                                                        Duration <span> {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index] ? claculateTimeDuration(breakTime, dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index]) : "--"}
-                                                                            min</span>
+                                            <div className="nw_user_inner_tabs nw_user_inner_right_tabs">
+                                                <ul>
+                                                    <li className="filter_relative_li">
+                                                        <div className="nw_user_filter_mainbox width_300">
+                                                            <div className="filter_whitebox" id="filter_whitebox">
+                                                                <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_two">
+                                                                    <div className="nw_filter_form_group">
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            value={formattedRange}
+                                                                            readOnly
+                                                                            onClick={() => setShowCalendar(!showCalendar)}
+                                                                        />
+                                                                        {showCalendar && (
+                                                                            <div style={{ position: 'absolute', zIndex: 1000 }}>
+                                                                                <DateRange
+                                                                                    editableDateInputs={true}
+                                                                                    onChange={handleDateChange}
+                                                                                    moveRangeOnFirstSelection={false}
+                                                                                    ranges={state}
+                                                                                />
+                                                                            </div>
+                                                                        )}
                                                                     </div>
-                                                                    <div className="breaks_rightbox">
-                                                                        <div className="row">
-                                                                            <div className="col-lg-12 pb-1 mb-1" style={{ borderBottom: "1px solid #dae2e9" }}>{dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons[index] ? dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons[index] : ""}</div>
-                                                                            <div className="col-lg-12">{formatInTimeZone(new Date(breakTime), 'UTC', 'hh:mm a')} To {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index] ? formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index]), 'UTC', 'hh:mm a') : "--"}</div>
+                                                                    <div className="nw_filter_form_group">
+                                                                        <a
+                                                                            className={`red_button filter_submit_btn ${loadingCursor ? 'loading' : ''}`}
+                                                                            onClick={() => {
+                                                                                setLoadingCursor(true);
+                                                                                fetchData();
+                                                                            }}
+                                                                        >
+                                                                            Submit
+                                                                        </a>
+                                                                    </div>
+                                                                    <div className="nw_filter_submit_btn">
+                                                                        <a onClick={() => resetFilter()}>
+                                                                            <img src="/images/user/undo.svg" alt="Undo Filter" className="img-fluid" />
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="nw_filter_icon" onClick={filter_whitebox}>
+                                                                <img
+                                                                    src="/images/user/filter-icon.svg"
+                                                                    alt="Filter icon"
+                                                                    className="img-fluid new_filter_color_change_blue"
+                                                                />
+                                                                <img
+                                                                    src="/images/user/filter-icon-red.svg"
+                                                                    alt="Filter icon"
+                                                                    className="img-fluid new_filter_color_change_red"
+                                                                />
+                                                                <div className="new_filter_tooltip_box">Filter</div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        {contextRoleID !== '5' && (
+                                                            <a href={pageURL_userTeamAttendanceList}>
+                                                                <div className="nw_user_tab_icon">
+                                                                    <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
+                                                                        <g>
+                                                                            <g fill="#3cdb7f">
+                                                                                <path d="M5.5 11.25a4.073 4.073 0 0 0-4.019 3.377l-.218 1.244a.753.753 0 0 0 .125.56c.152.219 1.075 1.319 4.112 1.319s3.96-1.1 4.114-1.319a.753.753 0 0 0 .125-.56l-.218-1.244A4.073 4.073 0 0 0 5.5 11.25zM22.521 14.627A4.073 4.073 0 0 0 18.5 11.25a4.073 4.073 0 0 0-4.019 3.377l-.218 1.244a.753.753 0 0 0 .125.56c.154.219 1.077 1.319 4.114 1.319s3.96-1.1 4.114-1.319a.753.753 0 0 0 .125-.56z" fill="#ffffff" opacity="0.7098039215686275" data-original="#3cdb7f"></path>
+                                                                                <circle cx="5.5" cy="8" r="2.75" fill="#ffffff" opacity="0.7098039215686275" data-original="#3cdb7f"></circle>
+                                                                                <circle cx="18.5" cy="8" r="2.75" fill="#ffffff" opacity="0.7098039215686275" data-original="#3cdb7f"></circle>
+                                                                            </g>
+                                                                            <path fill="#ffffff" d="M17.233 15.328a4.773 4.773 0 0 0-4.7-4.078h-1.064a4.773 4.773 0 0 0-4.7 4.078l-.51 3.566a.75.75 0 0 0 .213.636c.2.2 1.427 1.22 5.53 1.22s5.327-1.016 5.53-1.22a.75.75 0 0 0 .213-.636z" opacity="1" data-original="#42a5f5">
+                                                                            </path>
+                                                                            <circle cx="12" cy="7" r="3.75" fill="#ffffff" opacity="1" data-original="#42a5f5"></circle>
+                                                                        </g>
+                                                                    </svg>
+                                                                </div>
+                                                                <div className="nw_user_tab_name">My Team</div>
+                                                            </a>
+                                                        )}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        {/* Main Content Box */}
+                                        <div className="nw_user_inner_content_box new_user_attendance_contentbox" style={{ minHeight: '60vh' }}>
+                                            <div className="row mt-4">
+                                                {/* Attendance List */}
+                                                <div className="col-xl-5 col-xxl-4">
+                                                    <div className="new_user_attendance_scrollbox">
+                                                        <div className="row">
+                                                            {dateRangeAttendanceData.map((dates, index) => (
+                                                                <div
+                                                                    className="col-lg-12"
+                                                                    key={index}
+                                                                    onClick={() => {
+                                                                        if (dates.employeeAttendance != null) {
+                                                                            setShowMap(true);
+                                                                            setSelectedAttendenceIndex(index);
+                                                                            setShowAttendance(
+                                                                                dates.employeeAttendance.attendance_id,
+                                                                                dates.actualDate,
+                                                                                empAttendanceData[0].emp_id,
+                                                                                empAttendanceData[0].name,
+                                                                                empAttendanceData[0].leap_client_designations?.designation_name || '--',
+                                                                                empAttendanceData[0].leap_client_departments?.department_name || '--'
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <div className="att_detail_whitelist new_user_att_detail_whitelist">
+                                                                        <div className="row align-items-center">
+                                                                            <div className="col-lg-3">
+                                                                                <div className="att_detail_datebox new_user_small_leftbox">
+                                                                                    {dates.date} <span>{dates.month_year}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="col-lg-9">
+                                                                                <div className="new_user_attendance_small_mainbox">
+                                                                                    {dates.isHoliday ? (
+                                                                                        <>
+                                                                                            <div className="new_small_holidy_box">
+                                                                                                <div className="new_small_holidy_heading">Holiday</div>
+                                                                                                <div className="new_small_holidy_name">
+                                                                                                    {dates.holidayName}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </>
+                                                                                    )
+                                                                                        : dates.wasOnLeave ? (
+                                                                                            <>
+                                                                                                <div className="new_small_leave_box">
+                                                                                                    <div className="new_small_leave_first_box">
+                                                                                                        <div className="my_attendance_start_time_name">Leave:</div>
+                                                                                                        <div className="my_attendance_start_time">{dates.leaveTypeName}</div>
+                                                                                                    </div>
+                                                                                                    <div className="new_small_leave_secound_box">
+                                                                                                        <div className="my_attendance_start_time_name">Status:</div>
+                                                                                                        <div className="new_small_leave_statusbox">
+                                                                                                            <div className="new_small_leave_pending"></div>
+                                                                                                            {/* <div className="new_small_leave_approved"></div>
+                                                                                            <div className="new_small_leave_disapproved"></div> */}
+                                                                                                            <div className="new_small_leave_status">{dates.leaveApprovalStatus}</div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </>
+                                                                                        ) : (
+                                                                                            <>
+                                                                                                <div className="new_small_timing_box new_small_timing_present">
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-6">
+                                                                                                            <div className="my_attendance_start_time_box_listing">
+                                                                                                                <div className="my_attendance_start_time_name">Start Time</div>
+                                                                                                                <div className="my_attendance_start_time">
+                                                                                                                    {dates.employeeAttendance?.in_time
+                                                                                                                        ? formatInTimeZone(new Date(dates.employeeAttendance.in_time), 'UTC', 'hh:mm a')
+                                                                                                                        : '--'}
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        <div className="col-lg-6">
+                                                                                                            <div className="my_attendance_start_time_box_listing">
+                                                                                                                <div className="my_attendance_start_time_name">End Time</div>
+                                                                                                                <div className="my_attendance_start_time">
+                                                                                                                    {dates.employeeAttendance?.out_time
+                                                                                                                        ? formatInTimeZone(new Date(dates.employeeAttendance.out_time), 'UTC', 'hh:mm a')
+                                                                                                                        : '--'}
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-12">
+                                                                                                            <div className="my_attendance_start_time_box_listing_last">
+                                                                                                                <div className="my_attendance_start_time_name">Work Location:</div>
+                                                                                                                <div className="my_attendance_start_time">
+                                                                                                                    {' '}
+                                                                                                                    {dates.employeeAttendance?.leap_working_type?.type || '--'}
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </>
+                                                                                        )}
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>)}
-                                                        {/* <div className='breaks_list'>
-                                                            <div className="breaks_timebox">
-                                                                Duration <span>45 min</span>
-                                                            </div>
-                                                            <div className="breaks_rightbox">
-                                                                <div className="row">
-                                                                    <div className="col-lg-12 pb-1 mb-1" style={{ borderBottom:"1px solid #dae2e9"}}>Paused Reason</div>
-                                                                    <div className="col-lg-12">11:15am To  12:00pm</div>
                                                                 </div>
-                                                            </div>                                                            
-                                                        </div> */}
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="row">
-                                                    <div className="col-lg-12"></div>
+                                                {/* Profile Box */}
+                                                <div className="col-xl-7 col-xxl-8">
+                                                    <div className="row">
+                                                        <div className="col-lg-12 mb-4">
+                                                            <div className="att_detail_profilebox user_att_detail_profilebox">
+                                                                <div className="row">
+                                                                    <div className="col-lg-3 text-center">
+                                                                        <div className="my_attendance_right_mainbox">
+                                                                            <div className="my_attendance_right_imgbox">
+                                                                                <img
+                                                                                    // src={
+                                                                                    //     dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.img_attachment
+                                                                                    //         ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/uploads?imagePath=${dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment}`
+                                                                                    //         : `${process.env.NEXT_PUBLIC_BASE_URL}/images/attendance_profile_img.png`
+                                                                                    // }
+                                                                                    src="/images/user/40_profile13182025112.jpeg" className="img-fluid" alt="Profile"
+                                                                                />
+                                                                            </div>
+                                                                            <div className="my_attendance_right_name_id_box">
+                                                                                <div className="my_attendance_right_name">
+                                                                                    Rahul Rathod
+                                                                                </div>
+                                                                                <div className="my_attendance_right_id">
+                                                                                    Emp Code: <span>61</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-lg-9 text-center">
+                                                                        <div className="my_attendance_start_time_mainbox">
+                                                                            <div className="row">
+                                                                                <div className="col-lg-4">
+                                                                                    <div className="my_attendance_start_time_box_listing">
+                                                                                        <div className="my_attendance_start_time_name">Start Time</div>
+                                                                                        <div className="my_attendance_start_time">
+                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time
+                                                                                                ? formatInTimeZone(
+                                                                                                    new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time),
+                                                                                                    'UTC',
+                                                                                                    'hh:mm a'
+                                                                                                )
+                                                                                                : '--'}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-lg-4">
+                                                                                    <div className="my_attendance_start_time_box_listing my_attendance_start_time_box_listing_middle">
+                                                                                        <div className="my_attendance_start_time_name">End Time</div>
+                                                                                        <div className="my_attendance_start_time">
+                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time
+                                                                                                ? formatInTimeZone(
+                                                                                                    new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time),
+                                                                                                    'UTC',
+                                                                                                    'hh:mm a'
+                                                                                                )
+                                                                                                : '--'}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-lg-4">
+                                                                                    <div className="my_attendance_start_time_box_listing">
+                                                                                        <div className="my_attendance_start_time_name">Working Type</div>
+                                                                                        <div className="my_attendance_start_time">
+                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.leap_working_type?.type ||
+                                                                                                '--'}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        {/* Breaks */}
+                                                                        {/* {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_start_time && ( */}
+                                                                        <>
+                                                                            <div className="row">
+                                                                                <div className="col-lg-9">
+                                                                                    <div className="my_user_attendance_break_mainbox">
+                                                                                        <div className="my_user_attendance_break_heading">Breaks</div>
+                                                                                        <div className="my_user_attendance_breakbox">
+                                                                                            <div className="my_user_attendance_breakbox_left">
+                                                                                                <div className="my_user_attendance_breakbox_left_heading">Duration</div>
+                                                                                                <div className="my_user_attendance_breakbox_left_content">10 min</div>
+                                                                                            </div>
+                                                                                            <div className="my_user_attendance_breakbox_right">
+                                                                                                <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
+                                                                                                <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        {isExpanded && (
+                                                                                            <span className="moretext">
+                                                                                                {' '}
+                                                                                                <div className="my_user_attendance_breakbox">
+                                                                                                    <div className="my_user_attendance_breakbox_left">
+                                                                                                        <div className="my_user_attendance_breakbox_left_heading">Duration</div>
+                                                                                                        <div className="my_user_attendance_breakbox_left_content">10 min</div>
+                                                                                                    </div>
+                                                                                                    <div className="my_user_attendance_breakbox_right">
+                                                                                                        <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
+                                                                                                        <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className="my_user_attendance_breakbox">
+                                                                                                    <div className="my_user_attendance_breakbox_left">
+                                                                                                        <div className="my_user_attendance_breakbox_left_heading">Duration</div>
+                                                                                                        <div className="my_user_attendance_breakbox_left_content">10 min</div>
+                                                                                                    </div>
+                                                                                                    <div className="my_user_attendance_breakbox_right">
+                                                                                                        <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
+                                                                                                        <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className="my_user_attendance_breakbox">
+                                                                                                    <div className="my_user_attendance_breakbox_left">
+                                                                                                        <div className="my_user_attendance_breakbox_left_heading">Duration</div>
+                                                                                                        <div className="my_user_attendance_breakbox_left_content">10 min</div>
+                                                                                                    </div>
+                                                                                                    <div className="my_user_attendance_breakbox_right">
+                                                                                                        <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
+                                                                                                        <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className="my_user_attendance_breakbox">
+                                                                                                    <div className="my_user_attendance_breakbox_left">
+                                                                                                        <div className="my_user_attendance_breakbox_left_heading">Duration</div>
+                                                                                                        <div className="my_user_attendance_breakbox_left_content">10 min</div>
+                                                                                                    </div>
+                                                                                                    <div className="my_user_attendance_breakbox_right">
+                                                                                                        <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
+                                                                                                        <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </span>
+                                                                                        )}
+                                                                                    </div>
+                                                                                    <div onClick={toggleText} className="user_attendance_readmore_iconbox">
+                                                                                        {isExpanded ?
+                                                                                            <div className="read_leass_svg">
+                                                                                                <svg width="25" height="25" x="0" y="0" viewBox="0 0 24 24">
+                                                                                                    <circle r="12" cx="12" cy="12" fill="#ffffff" transform="matrix(0.68,0,0,0.68,3.84,3.84)" />
+                                                                                                    <g transform="matrix(-1.0799999999999994,1.3226185430791412e-16,-1.3226185430791412e-16,-1.0799999999999994,24.959999999999983,24.959999999999983)"><path d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm5.707 9.707-5 5a1 1 0 0 1-1.414 0l-5-5a1 1 0 0 1 1.414-1.414L12 13.586l4.293-4.293a1 1 0 0 1 1.414 1.414z" data-name="Layer 2" fill="#cbd6de" opacity="1" data-original="#000000"></path>
+                                                                                                    </g>
+                                                                                                </svg>
+                                                                                            </div>
+                                                                                            :
+                                                                                            <div className="read_more_svg">
+                                                                                                <svg width="25" height="25" x="0" y="0" viewBox="0 0 24 24">
+                                                                                                    <circle r="12" cx="12" cy="12" fill="#ffffff" transform="matrix(0.68,0,0,0.68,3.84,3.84)" />
+                                                                                                    <g transform="matrix(1.0799999999999994,-4.930380657631324e-32,4.930380657631324e-32,1.0799999999999994,-0.960000000000008,-0.9600000000000044)"><path d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm5.707 9.707-5 5a1 1 0 0 1-1.414 0l-5-5a1 1 0 0 1 1.414-1.414L12 13.586l4.293-4.293a1 1 0 0 1 1.414 1.414z" data-name="Layer 2" fill="#cbd6de" opacity="1" data-original="#000000"></path>
+                                                                                                    </g>
+                                                                                                </svg>
+                                                                                            </div>
+                                                                                        }
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </>
+                                                                        {/* )} */}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="user_attendance_timer_box">
+                                                                    <div className="new_attendancebox_lastbox">
+                                                                        <div className="dial_container">
+                                                                            <div className="dial_overlay_office">
+                                                                                Total Hours
+                                                                            </div>
+                                                                            <CircularProgressbar
+                                                                                value={80}//{calculateProgressPercentage()} //
+                                                                                text="9.55"//{formatMinutesToHours(netMinutes)}
+                                                                                background
+                                                                                // backgroundPadding={6}
+                                                                                strokeWidth={10}
+                                                                                styles={buildStyles({
+                                                                                    backgroundColor: "transparent",
+                                                                                    textColor: "#000",
+                                                                                    pathColor: "#5DC600",
+                                                                                    trailColor: "#CECECE",
+                                                                                    textSize: "14px",
+
+                                                                                })}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Optional Map Component */}
+                                                    {/* {showMap && (
+                                                    <AttendanceMap
+                                                        attendanceID={selectedData.selected_attendanceID}
+                                                        date={selectedData.selected_date}
+                                                        empName={selectedData.selected_empName}
+                                                        empID={selectedData.selected_empID}
+                                                        empDesignation={selectedData.selected_empDesignation}
+                                                        empDepartment={selectedData.selected_empDepartment}
+                                                    />
+                                                    )} */}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {/* <div className="row">
-                                <div className="col-lg-12"><div className="col-lg-8 mr-5">
-                                    {showMap ?
-                                        <AttendanceMap attendanceID={selectedData.selected_attendanceID}
-                                            date={selectedData.selected_date}
-                                            empName={selectedData.selected_empName}
-                                            empID={selectedData.selected_empID}
-                                            empDesignation={selectedData.selected_empDesignation}
-                                            empDepartment={selectedData.selected_empDepartment}
-                                        /> : <></>
-                                    }
-                                </div></div>
-                            </div> */}
                         </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-lg-12"></div>
-                    </div>
-                    <div className="row">
-                        <div className="col-lg-12"></div>
-                    </div>
-                </div>
-
-            }
+                        {/* ========= New structure ends ============= */}
+                    </>
+                }
             />
-
-
-
-
-
             <Footer />
         </div>
+    );
 
-    )
 }
-
 export default EmpAttendancePage;
 
 const generateDateRange = (start: string, end: string) => {
@@ -657,8 +879,8 @@ const generateDateRange = (start: string, end: string) => {
 
         currentDate.setDate(currentDate.getDate() + 1); // safely increment
     }
-    
-    
+
+
     return tempDates;
 
 };

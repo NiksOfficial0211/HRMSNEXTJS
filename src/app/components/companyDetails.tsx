@@ -485,12 +485,11 @@ interface spesificBranchData{
             setSector(sector);
 
             try{
-                const formData = new FormData();
-                formData.append("client_id", '3');
+                
 
             const res = await fetch("/api/clientAdmin/getClientProfile", {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({"client_id":contextClientID}),
             });
             const response = await res.json();
 
@@ -527,16 +526,16 @@ interface spesificBranchData{
     const validate = () => {
       const newErrors: Partial<Client> = {};
 
-      if (!compData.company_name) newErrors.company_name = "required";
+    //   if (!compData.company_name) newErrors.company_name = "required";
       if (!compData.company_email) newErrors.company_email = "required";
       if (!compData.company_website_url) newErrors.company_website_url = "required";
-      if (!compData.company_number) newErrors.company_number = "required";
+    //   if (!compData.company_number) newErrors.company_number = "required";
       if (!compData.company_location) newErrors.company_location = "required";
       if (!compData.sector_type) newErrors.sector_type = "required";
-      if (!compData.number_of_branches) newErrors.number_of_branches = "required";
-      if (!compData.total_weekend_days) newErrors.total_weekend_days = "required";
-      if (!compData.fullday_working_hours) newErrors.fullday_working_hours = "required";
-      if (!compData.halfday_working_hours) newErrors.halfday_working_hours = "required";      
+    //   if (!compData.number_of_branches) newErrors.number_of_branches = "required";
+    //   if (!compData.total_weekend_days) newErrors.total_weekend_days = "required";
+    //   if (!compData.fullday_working_hours) newErrors.fullday_working_hours = "required";
+    //   if (!compData.halfday_working_hours) newErrors.halfday_working_hours = "required";      
 
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
@@ -639,32 +638,36 @@ interface spesificBranchData{
 
                                                 <div className="col-lg-12">
                                                     <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Email: </label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Email<span className='req_text'>*</span>: </label>
                                                     </div>
                                                 </div>
 
                                                 <div className="col-lg-12">
                                                     <div className="form_box mb-3">
                                                     <input type="text" className="form-control" id="company_email" value={compData?.company_email || ""} name="company_email" onChange={(e)=>setCompData((prev) => ({ ...prev, ['company_email']: e.target.value }))} />
+                                                     {errors.company_email && <span className='error' style={{ color: "red" }}>{errors.company_email}</span>}
+
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="row" style={{alignItems: "center"}}>
                                                 <div className="col-lg-12">
                                                     <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Website:  </label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Website<span className='req_text'>*</span>:  </label>
                                                     </div>
                                                 </div>
                                                 <div className="col-lg-12">
                                                     <div className="form_box mb-3">
                                                     <input type="text" className="form-control" id="company_website_url" value={compData?.company_website_url || ""} name="company_website_url" onChange={(e)=>setCompData((prev) => ({ ...prev, ['company_website_url']: e.target.value }))} />
+                                                                                                         {errors.company_email && <span className='error' style={{ color: "red" }}>{errors.company_email}</span>}
+
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="row" style={{alignItems: "center"}}>
                                                 <div className="col-lg-12">
                                                     <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Contact number:</label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Contact Number:</label>
                                                     </div>
                                                 </div>
 
@@ -678,7 +681,7 @@ interface spesificBranchData{
                                             <div className="row" style={{alignItems: "center"}}>
                                                 <div className="col-lg-12">
                                                     <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Location:  </label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Location<span className='req_text'>*</span>:  </label>
 
                                                     </div>
                                                 </div>
@@ -690,7 +693,7 @@ interface spesificBranchData{
                                             <div className="row" style={{alignItems: "center"}}>
                                                 <div className="col-lg-12">
                                                     <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Sector:</label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Sector<span className='req_text'>*</span>:</label>
                                                     </div>
                                                 </div>
 
@@ -705,56 +708,7 @@ interface spesificBranchData{
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* <div className="row" style={{alignItems: "center"}}>
-                                                <div className="col-lg-12">
-                                                    <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Branches:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-lg-12">
-                                                    <div className="form_box mb-3">
-                                                    <input type="text" className="form-control" id="number_of_branches"  value={compData?.number_of_branches || ""} name="number_of_branches" readOnly />
-                                                    </div>
-                                                </div>
-                                                </div>
-                                                <div className="row">
-                                                <div className="col-lg-12">
-                                                    <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Total weekdays working:</label>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-lg-12">
-                                                    <div className="form_box mb-3">
-                                                    <input type="text" className="form-control" id="total_weekend_days" value={compData?.total_weekend_days || ""} name="total_weekend_days" onChange={(e)=>setCompData((prev) => ({ ...prev, ['total_weekend_days']: e.target.value }))} />                                                                                                                    
-                                                    </div>
-                                                </div>
-                                            </div>       
-                                            <div className="row" style={{alignItems: "center"}}>
-                                                <div className="col-lg-12">
-                                                    <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Full day working hours:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-lg-12">
-                                                    <div className="form_box mb-3">
-                                                    <input type="text" className="form-control" id="fullday_working_hours"  value={compData?.fullday_working_hours || ""} name="fullday_working_hours"  onChange={(e)=>setCompData((prev: any) => ({ ...prev, ['fullday_working_hours']: e.target.value }))} />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="row" style={{alignItems: "center"}}>
-                                                <div className="col-lg-12">
-                                                    <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Full day working hours:</label>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-lg-12">
-                                                    <div className="form_box mb-3">
-                                                    <input type="text" className="form-control" id="halfday_working_hours" value={compData?.halfday_working_hours || ""} name="halfday_working_hours" onChange={(e)=>setCompData((prev) => ({ ...prev, ['halfday_working_hours']: e.target.value }))} />                                                            
-                                                    </div>
-                                                </div>
-                                            </div> */}
+                                            
 
                                         </div>
                                     </div>

@@ -227,7 +227,7 @@ const AddAsset: React.FC = () => {
       <LeftPannel menuIndex={leftMenuAssetsPageNumbers} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
         <div >
           <LoadingDialog isLoading={loadingCursor} />
-          {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : "added successfully."} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+          {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
             router.push(pageURL_assetListing);
             setShowAlert(false)
           }} onCloseClicked={function (): void {
@@ -289,7 +289,7 @@ const AddAsset: React.FC = () => {
                             <div className="col-md-4">
                               <div className="form_box mb-3">
                                 <label htmlFor="formFile" className="form-label">Warranty Date<span className='req_text'>*</span>: </label>
-                                <input type="date" id="warranty_date" name="warranty_date" value={formValues.warranty_date} onChange={handleInputChange} />
+                                <input type="date" id="warranty_date" name="warranty_date" value={formValues.warranty_date} min={formValues.purchased_at} onChange={handleInputChange} />
                                 {errors.warranty_date && <span className='error' style={{ color: "red" }}>{errors.warranty_date}</span>}
                               </div>
                             </div>
@@ -302,7 +302,8 @@ const AddAsset: React.FC = () => {
                                     <option value={condi.id} key={condi.id}>{condi.condition}</option>
                                   ))}
                                 </select>
-                                <div style={{ float: "left", margin: "5px 0 0 0", fontSize: "13px" }}>(at the time of purchase)</div>
+                                {/* float: "left", */}
+                                <div style={{  margin: "5px 0 0 0", fontSize: "13px" }}>(at the time of purchase)</div>
                                 {errors.condition && <span className="error" style={{ color: "red" }}>{errors.condition}</span>}
                               </div>
                             </div>
@@ -311,7 +312,7 @@ const AddAsset: React.FC = () => {
                           <div className="row">
                             <div className="col-md-12">
                               <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >Configuration<span className='req_text'>*</span>:  </label>
+                                <label htmlFor="exampleFormControlInput1" className="form-label" >Configuration:  </label>
                                 <textarea className="form-control" value={formValues.configuration} name="configuration" onChange={handleInputChange} id="configuration" placeholder="Enter device configuration" ></textarea>
                                 {/* {errors.config && <span className="error" style={{color: "red"}}>{errors.config}</span>} */}
                               </div>

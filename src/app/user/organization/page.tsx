@@ -200,7 +200,7 @@ const HolidayList = () => {
     }
 
     return (
-        <div className='mainbox'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -322,7 +322,7 @@ const HolidayList = () => {
                                                         <img src="/images/user/organization-icon-background.png" alt="Background image" className="img-fluid" />
                                                     </div>
                                                     <div className="org_compony_logo_box">
-                                                        <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/api/uploads?imagePath=${compData.leap_client_basic_info[0].company_logo}`} alt="Organization icon" className="img-fluid" />
+                                                        <img src={staticIconsBaseURL + "/images/user/evonixLogo.jpg"} alt="Organization icon" className="img-fluid" />
                                                     </div>
                                                 </div>
                                             </div>

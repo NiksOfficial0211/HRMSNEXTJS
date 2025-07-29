@@ -87,7 +87,7 @@ async function startAttendance(fields: any, files: { file: any; }) {
 
   const fileUploadResponse = await fileUploadURL.json();
   if (fileUploadResponse.error) {
-    return NextResponse.json({ error: "File upload api call error" }, { status: 500 });
+    return NextResponse.json({ message: "File upload api call error" ,error:fileUploadResponse.error }, { status: 500 });
   }
 
   const { data, error } = await supabase

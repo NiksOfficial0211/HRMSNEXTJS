@@ -17,6 +17,7 @@ import DialogUploadDocument from '@/app/components/dialog_addDocument'
 import { ALERTMSG_addAssetSuccess, employeeDocUpload, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import PageErrorCenterContent from '@/app/components/pageError'
 import ShowAlertMessage from '@/app/components/alert'
+import DialogUserUploadDocument from '@/app/components/dialog_userAddDoc'
 
 const EmployeeDocuments = () => {
 
@@ -75,7 +76,7 @@ const EmployeeDocuments = () => {
             const response = await res.json();
             console.log(response);
             const companyDoc = response.data;
-            if (response.status == 1 && companyDoc.length > 0) {
+            if (response.status == 1) {
                 setOrgDoc(companyDoc)
                 // setLoading(false);
             } else {
@@ -104,7 +105,7 @@ const EmployeeDocuments = () => {
             // formData.append("client_id", contextClientID);
             // // formData.append("branch_id", contaxtBranchID )
             // formData.append("customer_id", contextCustomerID);
-            
+
             for (const [key, value] of formData.entries()) {
                 console.log(`${key}: ${value}`);
             }
@@ -168,7 +169,7 @@ const EmployeeDocuments = () => {
         }
     };
     return (
-        <div className='mainbox'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -186,19 +187,17 @@ const EmployeeDocuments = () => {
                             <div className="col-lg-12">
                                 <div className="nw_user_inner_mainbox">
                                     <div className="nw_user_inner_heading_tabbox">
-                                        <div className="heading25">
-                                            Documents<span></span>
+                                        <div className="heading25 pt-3">
+                                            Documents
                                         </div>
-                                        <div className="nw_user_inner_tabs">
-                                            <ul>
+                                        <div className="nw_user_inner_tabs nw_user_inner_right_tabs new_righ_two_tabs">
+                                            <ul className='new_righ_four_tabs'>
                                                 <li className={tabSelectedIndex == 0 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"} key={0}>
                                                     <a onClick={(e) => { setTabSelectedIndex(0), setLoadingCursor(true), fetchCompanyDoc() }} className={tabSelectedIndex == 0 ? "nw_user_selected" : "new_list_view_heading"}>
                                                         <div className="nw_user_tab_icon">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512">
+                                                            <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
                                                                 <g>
-                                                                    <path className='black_to_white_fill' d="M446.605 124.392 326.608 4.395A15.02 15.02 0 0 0 316 0H106C81.187 0 61 20.187 61 45v422c0 24.813 20.187 45 45 45h300c24.813 0 45-20.187 45-45V135c0-4.09-1.717-7.931-4.395-10.608zM331 51.213 399.787 120H346c-8.271 0-15-6.729-15-15zM406 482H106c-8.271 0-15-6.729-15-15V45c0-8.271 6.729-15 15-15h195v75c0 24.813 20.187 45 45 45h75v317c0 8.271-6.729 15-15 15z" fill="#000000" opacity="1" data-original="#000000"></path>
-                                                                    <path className='black_to_white_fill' d="M346 212H166c-8.284 0-15 6.716-15 15s6.716 15 15 15h180c8.284 0 15-6.716 15-15s-6.716-15-15-15zM346 272H166c-8.284 0-15 6.716-15 15s6.716 15 15 15h180c8.284 0 15-6.716 15-15s-6.716-15-15-15zM346 332H166c-8.284 0-15 6.716-15 15s6.716 15 15 15h180c8.284 0 15-6.716 15-15s-6.716-15-15-15zM286 392H166c-8.284 0-15 6.716-15 15s6.716 15 15 15h120c8.284 0 15-6.716 15-15s-6.716-15-15-15z" fill="#000000" opacity="1" data-original="#000000">
-                                                                    </path>
+                                                                    <path fill="#ffffff" d="M20 6h-3V4c0-1.103-.897-2-2-2H9c-1.103 0-2 .897-2 2v2H4c-1.103 0-2 .897-2 2v3h20V8c0-1.103-.897-2-2-2zM9 4h6v2H9zm5 10h-4v-2H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-8z" opacity="1" data-original="#000000"></path>
                                                                 </g>
                                                             </svg>
                                                         </div>
@@ -210,12 +209,11 @@ const EmployeeDocuments = () => {
                                                 <li className={tabSelectedIndex == 1 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"} key={1}>
                                                     <a onClick={(e) => { setTabSelectedIndex(1), setLoadingCursor(true), fetchEmployeeDoc() }} className={tabSelectedIndex == 1 ? "nw_user_selected" : "new_list_view_heading"}>
                                                         <div className="nw_user_tab_icon">
-                                                            <svg width="15" height="15" viewBox="0 0 682.667 682.667">
-                                                                <defs><clipPath id="a" clipPathUnits="userSpaceOnUse"><path fill="red" d="M0 512h512V0H0Z" data-original="#000000" /></clipPath></defs>
-                                                                <g fill="none" className="black_to_white_stoke" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="30" clip-path="url(#a)" transform="matrix(1.33333 0 0 -1.33333 0 682.667)">
-                                                                    <path d="M497 376.5H15V104c0-32.516 26.359-58.875 58.875-58.875h364.25C470.641 45.125 497 71.484 497 104zM346.375 376.5h-180.75v44.808c0 25.166 20.401 45.567 45.567 45.567h89.616c25.166 0 45.567-20.401 45.567-45.567Z" data-original="#000000" />
-                                                                    <path d="M15 376.5c0-87.23 82.38-160.02 191.97-177.01M305.03 199.49C414.62 216.48 497 289.27 497 376.5" data-original="#000000" />
-                                                                    <path d="M305.03 244.78v-49.03c0-27.08-21.95-49.03-49.03-49.03-27.08 0-49.03 21.95-49.03 49.03v49.03Z" data-original="#000000" />
+                                                            <svg width="18" height="18" x="0" y="0" viewBox="0 0 512 512">
+                                                                <g>
+                                                                    <path d="M136 242C61.561 242 1 302.561 1 377s60.561 135 135 135 135-60.561 135-135-60.561-135-135-135zm59.606 118.606-70 70C122.678 433.535 118.839 435 115 435s-7.678-1.465-10.606-4.394l-30-30c-5.858-5.857-5.858-15.355 0-21.213 5.857-5.857 15.355-5.857 21.213 0L115 398.787l59.394-59.394c5.857-5.857 15.355-5.857 21.213 0 5.857 5.858 5.857 15.356-.001 21.213z" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                    <path d="M396 130c-8.284 0-15-6.716-15-15V0H166c-24.813 0-45 20.187-45 45v167.689c4.942-.448 9.943-.689 15-.689 51.128 0 96.897 23.376 127.186 60H426c8.284 0 15 6.716 15 15s-6.716 15-15 15H282.948a163.749 163.749 0 0 1 17.363 60H426c8.284 0 15 6.716 15 15s-6.716 15-15 15H300.311c-4.486 49.539-30.954 92.826-69.553 120H466c24.813 0 45-20.187 45-45V130zm30 82H206c-8.284 0-15-6.716-15-15s6.716-15 15-15h220c8.284 0 15 6.716 15 15s-6.716 15-15 15z" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                    <path d="M411 8.783V100h91.211z" fill="#ffffff" opacity="1" data-original="#000000"></path>
                                                                 </g>
                                                             </svg>
                                                         </div>
@@ -227,8 +225,10 @@ const EmployeeDocuments = () => {
                                                 <li className={tabSelectedIndex == 2 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"} key={2}>
                                                     <a onClick={(e) => { setTabSelectedIndex(2), setLoadingCursor(true), fetchEmployeeDoc() }} className={tabSelectedIndex == 2 ? "nw_user_selected" : "new_list_view_heading"}>
                                                         <div className="nw_user_tab_icon">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" className='black_to_white_fill'>
-                                                                <path d="M12 12.922a6.458 6.458 0 1 0-6.458-6.457A6.458 6.458 0 0 0 12 12.922zm0-11.07a4.613 4.613 0 1 1-4.613 4.613A4.613 4.613 0 0 1 12 1.852zm11.07 17.823a8.5 8.5 0 0 0-8.13-6.15H9.073a8.512 8.512 0 0 0-8.13 6.15H.93a3.383 3.383 0 0 0 3.247 4.317h15.621a3.383 3.383 0 0 0 3.272-4.317zm-2.017 1.857a1.538 1.538 0 0 1-1.23.615H4.189a1.538 1.538 0 0 1-1.476-1.955 6.642 6.642 0 0 1 6.36-4.797h5.854a6.63 6.63 0 0 1 6.36 4.81 1.525 1.525 0 0 1-.247 1.327z" data-original="#000000" />
+                                                            <svg width="18" height="18" x="0" y="0" viewBox="0 0 512 512">
+                                                                <g>
+                                                                    <path d="M256 0c-74.439 0-135 60.561-135 135s60.561 135 135 135 135-60.561 135-135S330.439 0 256 0zM423.966 358.195C387.006 320.667 338.009 300 286 300h-60c-52.008 0-101.006 20.667-137.966 58.195C51.255 395.539 31 444.833 31 497c0 8.284 6.716 15 15 15h420c8.284 0 15-6.716 15-15 0-52.167-20.255-101.461-57.034-138.805z" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                </g>
                                                             </svg>
                                                         </div>
                                                         <div className="nw_user_tab_name">
@@ -237,12 +237,17 @@ const EmployeeDocuments = () => {
                                                     </a>
                                                 </li>
                                             </ul>
-                                            <ul>
+                                            {tabSelectedIndex === 2 && <ul className='new_righ_sub_two_tabs'>
                                                 <li>
                                                     <a className="" onClick={() => { setShowUploadDialog(true) }}>
                                                         <div className="nw_user_tab_icon">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
-                                                                <path className='red_to_white' fill="#ed2024" d="M12 .12A11.88 11.88 0 1 0 23.88 12 11.894 11.894 0 0 0 12 .12zm5.4 12.96h-4.32v4.32a1.08 1.08 0 0 1-2.16 0v-4.32H6.6a1.08 1.08 0 0 1 0-2.16h4.32V6.6a1.08 1.08 0 0 1 2.16 0v4.32h4.32a1.08 1.08 0 0 1 0 2.16z" data-name="Layer 2" data-original="#000000" />
+                                                            <svg width="18" height="18" x="0" y="0" viewBox="0 0 64 64">
+                                                                <g>
+                                                                    <g fill="#000">
+                                                                        <path fill-rule="evenodd" d="M42 2v10a8 8 0 0 0 8 8h11.977c.015.201.023.404.023.607V46c0 8.837-7.163 16-16 16H18C9.163 62 2 54.837 2 46V18C2 9.163 9.163 2 18 2zm1 30a2 2 0 0 1-2 2h-7v7a2 2 0 1 1-4 0v-7h-7a2 2 0 1 1 0-4h7v-7a2 2 0 1 1 4 0v7h7a2 2 0 0 1 2 2z" clip-rule="evenodd" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                        <path d="M46 2.742V12a4 4 0 0 0 4 4h10.54a7.995 7.995 0 0 0-1.081-1.241L48.093 4.152A7.998 7.998 0 0 0 46 2.742z" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                    </g>
+                                                                </g>
                                                             </svg>
                                                         </div>
                                                         <div className="nw_user_tab_name">
@@ -251,13 +256,14 @@ const EmployeeDocuments = () => {
                                                     </a>
                                                 </li>
                                             </ul>
+                                            }
                                         </div>
                                     </div>
-                                    <div className="nw_user_inner_content_box">
+                                    <div className="nw_user_inner_content_box" style={{ minHeight: '60vh' }}>
                                         {tabSelectedIndex == 0 ?
                                             // Company documents
                                             <>
-                                                <div className="user_document_right_listing">
+                                                <div className="user_document_right_listing mt-4">
                                                     {orgDocArray.length > 0 ? (
                                                         <div className="user_document_right_cardbox">
                                                             {orgDocArray.map((doc, index) => {
@@ -269,7 +275,7 @@ const EmployeeDocuments = () => {
                                                                 return (
                                                                     <div className="user_document_right_card_listing" key={index}>
                                                                         <div className="user_document_right_card_icon">
-                                                                            <img src={staticIconsBaseURL+"/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
+                                                                            <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
                                                                         </div>
                                                                         <div className="user_document_right_card_content">
                                                                             <div className="user_document_right_card_heading">
@@ -304,7 +310,7 @@ const EmployeeDocuments = () => {
                                                                     return (
                                                                         <div className="user_document_right_card_listing" key={index}>
                                                                             <div className="user_document_right_card_icon">
-                                                                                <img src={staticIconsBaseURL+"/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
+                                                                                <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
                                                                             </div>
                                                                             <div className="user_document_right_card_content">
                                                                                 <div className="user_document_right_card_heading">
@@ -342,7 +348,7 @@ const EmployeeDocuments = () => {
                                                                         return (
                                                                             <div className="user_document_right_card_listing" key={index}>
                                                                                 <div className="user_document_right_card_icon">
-                                                                                    <img src={staticIconsBaseURL+"/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
+                                                                                    <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
                                                                                 </div>
                                                                                 <div className="user_document_right_card_content">
                                                                                     <div className="user_document_right_card_heading">
@@ -367,13 +373,18 @@ const EmployeeDocuments = () => {
                                                     </>
                                                     : <div />
                                         }
-                                        {showUploadDialog && <DialogUploadDocument onClose={() => { setShowUploadDialog(false); fetchEmployeeDoc() }} docType={employeeDocUpload} />}
+                                        {/* {showUploadDialog && <DialogUploadDocument onClose={() => { setShowUploadDialog(false); fetchEmployeeDoc() }} docType={employeeDocUpload} />} */}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     {/* ---------------------- */}
+                    <div className="nw_user_offcanvas">
+                                            <div className={showUploadDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
+                                                {showUploadDialog && <DialogUserUploadDocument onClose={() => { setShowUploadDialog(false); fetchEmployeeDoc() }} docType={employeeDocUpload} />}
+                                            </div>
+                                        </div>
                 </div>
             } />
             {/* </div> */}

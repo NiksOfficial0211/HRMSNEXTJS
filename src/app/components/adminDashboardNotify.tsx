@@ -136,7 +136,10 @@ const AdminDashboardNotify = ({ activity }: { activity: LeapUserActivitiesModel 
                                 <a onClick={()=>{handleViewNavigation()}} style={{color:"#FFF", cursor:"pointer"}}>View</a>
                                 </div>
                             </div>
+                            <div className={showLeaveApprovalDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
                             {showLeaveApprovalDialog && <LeaveStatusUpdate id={activity.activity_related_id} selectedShortCutID={activity.id} onClose={() => { setShowLeaveApprovalDialog(false); } } isToBeEddited={leaveToBeEdited} />}
+
+                                </div>
                         </div>
                     </div>
                 </div>

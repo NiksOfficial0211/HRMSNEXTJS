@@ -573,7 +573,7 @@ const AssignLeave: React.FC = () => {
 
    
     return (
-        <div className='mainbox'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title={createLeaveTitle} />
             </header>
@@ -673,10 +673,10 @@ const AssignLeave: React.FC = () => {
                                                         <input type='text' id="task_details" name="task_details" value={formValues.task_details} onChange={handleInputChange} className='form-control'/>
                                                         {errors.task_details && <span className="error" style={{ color: "red" }}>{errors.task_details}</span>}
                                                     </div>
-                                                    <div className="form_new_group form_new_group_btn">
-                                                        <BackButton isCancelText={true} />
-                                                        <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
-                                                    </div>
+                                                <div className="new_leave_formgoup_btn new_leave_formgoup_back_btn" style={{ textAlign: "right" }}>
+                          <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
+                          <BackButton isCancelText={true} />
+                        </div>
                                                 </div>
                                             </div>
                                         </div>

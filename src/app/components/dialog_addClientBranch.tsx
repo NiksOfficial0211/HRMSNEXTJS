@@ -264,13 +264,25 @@ import React, { useEffect, useState } from 'react'
 import supabase from '@/app/api/supabaseConfig/supabase';
 import { Client } from '@/app/models/companyModel';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
-import { staticIconsBaseURL } from '../pro_utils/stringConstants';
+import { ALERTMSG_FormExceptionString, apifailedWithException, staticIconsBaseURL } from '../pro_utils/stringConstants';
+import ShowAlertMessage from './alert';
+import LoadingDialog from './PageLoader';
 
 interface BranchData{
         time_zone_id: '',is_active:any,
     id: any; branch_address: any; branch_city: any; contact_details: any; branch_email: any; branch_number: any; is_main_branch: any; 
 }
  const AddBranchDetails = ({ onClose }: { onClose: () => void}) => {
+
+      const [loading, setLoading] = useState(false);
+      const [showAlert, setShowAlert] = useState(false);
+      const [alertForSuccess, setAlertForSuccess] = useState(0);
+      const [alertTitle, setAlertTitle] = useState('');
+      const [alertStartContent, setAlertStartContent] = useState('');
+      const [alertMidContent, setAlertMidContent] = useState('');
+      const [alertEndContent, setAlertEndContent] = useState('');
+      const [alertValue1, setAlertValue1] = useState('');
+      const [alertvalue2, setAlertValue2] = useState('');
     
     const [formValues, setFormValues] = useState<BranchData>({
         id: '',
@@ -322,7 +334,11 @@ interface BranchData{
       if (!formValues.branch_address) newErrors.branch_address = "required";
       if (!formValues.branch_city) newErrors.branch_city = "required";
       if (!formValues.contact_details) newErrors.contact_details = "required";
-      if (!formValues.branch_email) newErrors.branch_email = "required";
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!formValues.branch_email || !emailRegex.test(formValues.branch_email)) {
+            newErrors.branch_email = "Valid email is required";
+        }
+    //   if (!formValues.branch_email) newErrors.branch_email = "required";
     //   if (!formValues.time_zone_id) newErrors.time_zone_id = "required";
       if (!formValues.is_main_branch) newErrors.is_main_branch = "required";
       if (!formValues.is_active) newErrors.is_active = "required";
@@ -342,9 +358,10 @@ const handleInputChange = (e: any) => {
     const formData = new FormData();
 
     const handleSubmit = async (e: React.FormEvent) => {
+        
     e.preventDefault();
-    // if (!validate()) return;
-
+    if (!validate()) return;
+    setLoading(true);
     formData.append("client_id", contextClientID);
 
     formData.append("branch_number", formValues.branch_number);
@@ -363,21 +380,43 @@ const handleInputChange = (e: any) => {
         });
         const response=await res.json();
         if(res.ok){
-            alert(response.message);
-            onClose();
+            setLoading(false);
+          setShowAlert(true);
+          setAlertTitle("Success")
+          setAlertStartContent("Branch Added");
+          setAlertForSuccess(1)
+            
         }else{
-            alert(response.message);
+            setLoading(false);
+            setShowAlert(true);
+          setAlertTitle("Error")
+          setAlertStartContent(response.message);
+          setAlertForSuccess(1)
         }
-        }catch(e){
+        }catch(e:any){
+            console.log(e);
+            
+            setShowAlert(true);
+          setAlertTitle("Error")
+          setAlertStartContent(ALERTMSG_FormExceptionString);
+          setAlertForSuccess(1)
             alert(e);
         }
     }
     
     return (
-          
-
-            
+  
             <div className="">
+                <LoadingDialog isLoading={loading}/>
+                
+                {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                            setShowAlert(false)
+                            if(alertForSuccess==1){onClose()}
+                            
+
+                        }} onCloseClicked={function (): void {
+                            setShowAlert(false)
+                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
                 <div className='rightpoup_close' onClick={onClose}>
                     <img src={staticIconsBaseURL+"/images/close_white.png"} alt="Search Icon" title='Close'/>
                 </div>
@@ -395,20 +434,24 @@ const handleInputChange = (e: any) => {
                                                 <div className="row">
                                                     <div className="col-md-6">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Branch Number:  </label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Branch Number<span className='req_text'>*</span> :  </label>
                                                             <input type="text" className="form-control" id="branch_number" value={formValues.branch_number} name="branch_number" onChange={handleInputChange} />
+                                                            {errors.branch_number && <span className="error" style={{color: "red"}}>{errors.branch_number}</span>}
+
                                                         </div>
                                                     </div>
                                                     
                                                     <div className="col-md-6">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Branch City:  </label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Branch City<span className='req_text'>*</span> :  </label>
                                                             <input type="text" className="form-control" id="branch_city" value={formValues.branch_city} name="branch_city" onChange={handleInputChange}  />
+                                                            {errors.branch_city && <span className="error" style={{color: "red"}}>{errors.branch_city}</span>}
+
                                                         </div>
                                                     </div>
                                                     <div className="col-md-12">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Email address: </label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Email Address: </label>
                                                             <input type="text" className="form-control" id="branch_email" value={formValues.branch_email} name="branch_email" onChange={handleInputChange}  />
                                                         </div>
                                                     </div>
@@ -416,14 +459,14 @@ const handleInputChange = (e: any) => {
                                                 <div className="row">
                                                     <div className="col-md-8">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Address:</label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Address<span className='req_text'>*</span> :</label>
                                                             <input type="text" className="form-control" id="branch_address" value={formValues.branch_address}name="branch_address" onChange={handleInputChange}  />
                                                             {errors.branch_address && <span className="error" style={{color: "red"}}>{errors.branch_address}</span>}
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Contact Details:  </label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label">Contact Details<span className='req_text'>*</span> :  </label>
                                                             <input type="text" className="form-control" id="contact_details" value={formValues.contact_details} name="contact_details" onChange={handleInputChange}  />                                                                                                                   
                                                             {errors.contact_details && <span className="error" style={{color: "red"}}>{errors.contact_details}</span>}
                                                         </div>
@@ -434,11 +477,11 @@ const handleInputChange = (e: any) => {
                                                 <div className="row" style={{ alignItems: "center" }}>
                                                 <div className="col-md-4">
                                                         <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Is main branch:</label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Is main branch<span className='req_text'>*</span> :</label>
                                                         <select id="is_main_branch" name="is_main_branch" value={formValues.is_main_branch} onChange={handleInputChange} >
                                                                 <option value="">--</option>
-                                                                <option value="TRUE">TRUE</option>
-                                                                <option value="FALSE">FALSE</option>
+                                                                <option value="TRUE">Yes</option>
+                                                                <option value="FALSE">No</option>
                                                             </select>
                                                             {errors.is_main_branch && <span className="error" style={{color: "red"}}>{errors.is_main_branch}</span>}
                                                         </div>
@@ -460,8 +503,8 @@ const handleInputChange = (e: any) => {
                                                             <label htmlFor="exampleFormControlInput1" className="form-label">Is active:</label>
                                                             <select id="is_active" name="is_active" value={formValues.is_active} onChange={handleInputChange} >
                                                                 <option value="">--</option>
-                                                                <option value="TRUE">TRUE</option>
-                                                                <option value="FALSE">FALSE</option>
+                                                                <option value="TRUE">Yes</option>
+                                                                <option value="FALSE">No</option>
                                                             </select>
                                                             {errors.is_active && <span className="error" style={{color: "red"}}>{errors.is_active}</span>}
                                                         </div>
@@ -470,9 +513,8 @@ const handleInputChange = (e: any) => {
                                               
                                                 <div className="row mb-5">
                                                     <div className="col-lg-12 ">
-                                                    <input type='submit' value="Update" className="red_button"  />
+                                                    <input type='submit' value="Add" className="red_button"  />
                                                 </div>
-                   
                             </div>
                     </form>
                 </div>

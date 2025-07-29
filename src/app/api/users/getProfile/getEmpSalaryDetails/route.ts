@@ -8,7 +8,6 @@ export async function POST(request: NextRequest) {
     try{
         // const { data: user, error: userError } = await supabase.auth.getUser();
     
-    
         // // Handle case where the user is not authenticated
         // if (userError || !user) {
         //   return NextResponse.json(
@@ -18,10 +17,9 @@ export async function POST(request: NextRequest) {
         // }
         const {customer_id, role_id, client_id  } = await request.json();
     
-        
           let bankQuery = supabase
           .from("leap_customer_bank_details")
-          .select('*').eq('customer_id',customer_id);
+          .select('*,bank_component_id(component_name, id)').eq('customer_id',customer_id);
           
           const {data:bankDetails,error:bankError}=await bankQuery;
           

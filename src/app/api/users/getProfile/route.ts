@@ -18,12 +18,11 @@ export async function POST(request: NextRequest) {
         // }
         const {client_id, branch_id, customer_id }  = await request.json();
     
-        
           let query = supabase
           .from("leap_customer")
           .select(`
             *,
-            leap_client_branch_details(*),leap_client(*),leap_client_designations(*),leap_client_departments(*),leap_working_type(*),leap_employement_type(*)
+            leap_client_branch_details(*),leap_client(*),department_id(department_name),designation_id(designation_name),work_mode(type),employment_type(employeement_type), manager_id(name)
           `).eq('client_id',client_id);
           
           

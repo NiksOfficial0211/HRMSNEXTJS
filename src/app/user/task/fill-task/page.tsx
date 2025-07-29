@@ -480,7 +480,7 @@ const AssignLeave: React.FC = () => {
   }
 
   return (
-    <div className='mainbox'>
+    <div className='mainbox user_mainbox_new_design'>
       <header>
         <LeapHeader title={createLeaveTitle} />
       </header>
@@ -494,21 +494,37 @@ const AssignLeave: React.FC = () => {
           }} onCloseClicked={function (): void {
               setShowAlert(false)
           }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
-          <form onSubmit={handleSubmit}>
+      
             {/* ------------------ */}
                         <div className='container'>
-                            <div className="row">
-                                <div className="col-lg-12">
-                                    <div className="nw_user_inner_mainbox">
-                                        <div className="nw_user_inner_heading_tabbox">
-                                            <div className="heading25">
-                                                Add <span>Tasks</span>
-                                            </div>
-                                            <div className="nw_user_inner_tabs empty_div"></div>
-                                        </div>
-                                        <div className="nw_user_inner_content_box">
-                                            <div className="fill_task_mainbox">
-                                            <div className="fill_task_formbox">
+              <div className="row">
+                  <div className="col-lg-12">
+                      <div className="nw_user_inner_mainbox">
+                          <div className="nw_user_inner_heading_tabbox">
+                              <div className="heading25">
+                                  Add Tasks
+                              </div>
+                              <div className="nw_user_inner_tabs nw_user_inner_right_tabs">
+                                  <ul>
+                                      <li className='filter_relative_li' style={{visibility: 'hidden', opacity: '1'}}>
+                                          <a href="#">
+                                              <div className="nw_user_tab_icon">
+                                                  <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
+                                                      <g>
+                                                          <path fill="#ffffff" d="M20 6h-3V4c0-1.103-.897-2-2-2H9c-1.103 0-2 .897-2 2v2H4c-1.103 0-2 .897-2 2v3h20V8c0-1.103-.897-2-2-2zM9 4h6v2H9zm5 10h-4v-2H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-8z" opacity="1" data-original="#000000"></path>
+                                                      </g>
+                                                  </svg>
+                                              </div>
+                                          </a>
+                                      </li>
+                                  </ul>
+                              </div>
+                          </div>
+                          <div className="nw_user_inner_content_box nw_user_inner_content_form_box" style={{ minHeight: '60vh' }}>
+                              <div className="new_user_inner_form_mainbox">
+                                  <div className="new_user_inner_form_box">
+                                      <form onSubmit={handleSubmit}>
+                                          <div className="fill_task_formbox">
                                               <div className="form_new_group">
                                                 <label htmlFor="exampleFormControlInput1" className="form-label" >Client<span className='req_text'>*</span> </label>
                                                 <select id="project_id" name="project_id" onChange={handleProjectTypeChange} className='form-select'>
@@ -550,7 +566,7 @@ const AssignLeave: React.FC = () => {
                                               </div>
                                               <div className="form_new_group">
                                                 <label htmlFor="exampleFormControlInput1" className="form-label" >Details<span className='req_text'>*</span> </label>
-                                                <textarea className='form-control' rows={1} id="task_details" name="task_details" value={formValues.task_details} onChange={handleInputChange} />
+                                                <textarea className='form-control' rows={3} id="task_details" name="task_details" value={formValues.task_details} onChange={handleInputChange} />
                                                 {errors.task_details && <span className="error" style={{ color: "red" }}>{errors.task_details}</span>}
                                               </div>
                                               <div className="form_new_group">
@@ -563,19 +579,29 @@ const AssignLeave: React.FC = () => {
                                                 </select>
                                                 {errors.task_status && <span className="error" style={{ color: "red" }}>{errors.task_status}</span>}
                                               </div>
-                                              <div className="form_new_group form_new_group_btn">
-                                                <BackButton isCancelText={true} />
+                                              <div className="form_new_group form_new_group_btn new_leave_formgoup_back_btn">
                                                 <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
+                                                <BackButton isCancelText={true} />
                                               </div>
                                             </div>
-                                          </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                      </form>
+                                  </div>
+                                  <div className="new_user_inner_img_box">
+                                      <div className="new_user_inner_img_heading">
+                                          NEW TASK <br /> SUBMISSION
+                                      </div>
+                                      <div className="new_user_inner_img">
+                                          <img src="/images/user/task-add-form-image.svg" alt="Task image" className="img-fluid" />
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
                         {/* ------------------ */}
-          </form>
+          
         </div>
       }
       />

@@ -118,11 +118,15 @@ const DeleteConfirmation = ({ onClose, id,deletionType,deleteDetail }: { onClose
               method: "DELETE",
               body: formData,
           });
+          setAlertStartContent("Asset type deleted successfully");
+
         }else if(deletionType==deleteDataTypeSalaryComponent){
             response = await fetch("/api/clientAdmin/payroll/delete_payroll_component", {
                 method: "DELETE",
                 body: formData,
             });
+            setAlertStartContent("Payroll component deleted successfully");
+
         }
         else if(deletionType==deleteDataTypeAnnouncement ||deletionType==deleteDataTypeAnnouncement){
             alert("delete api announvcement")
@@ -131,6 +135,8 @@ const DeleteConfirmation = ({ onClose, id,deletionType,deleteDetail }: { onClose
                 method: "DELETE",
                 body: formData,
             });
+        setAlertStartContent("Announcement deleted successfully");
+
         }
         else if(deletionType==deleteDataTypeSubProject ||deletionType==deleteDataTypeProject){
             formData.append("is_sub_project", deletionType==deleteDataTypeSubProject?"True":"False"); 
@@ -138,26 +144,29 @@ const DeleteConfirmation = ({ onClose, id,deletionType,deleteDetail }: { onClose
                 method: "DELETE",
                 body: formData,
             });
+                        setAlertStartContent("Sub project deleted successfully");
+
         }else{
             formData.append("is_Department", deletionType==deleteDataTypeDepartment?"True":"False"); 
             response = await fetch("/api/clientAdmin/delete/delete_designation_department", {
                 method: "DELETE",
                 body: formData,
             });
+            setAlertStartContent("Designation deleted successfully");
         }
         const resJson=await response.json();
           if (response.ok && resJson.status==1) {
                 setLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Success")
-                setAlertStartContent("Deletion of");
+                
                 setAlertForSuccess(1)
               
           } else {
             setLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Error")
-                setAlertStartContent("Failed to delete data");
+                setAlertStartContent(resJson.message);
                 setAlertForSuccess(2)
           }
       } catch (error) {

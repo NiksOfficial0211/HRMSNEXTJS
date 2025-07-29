@@ -5,35 +5,28 @@ import { funSendApiErrorMessage, funSendApiException, parseForm } from "@/app/pr
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const fdata = {
-     
-     leaveID: formData.get("leave_id"),
-     leaveStatus: formData.get("status"),
-     statusRemark: formData.get("status_remark"),
-      // customerID: formData.get("customer_id"),
-      
-    };
-    if (!fdata.leaveID) {
+    const {leave_id, status, status_remark} = await request.json();
+    
+    if (!leave_id) {
       return NextResponse.json({ error: "Leave ID needed" },{ status: apiStatusInvalidDataCode }
       );
     }
-    console.log("-------------- lieave status",fdata.leaveStatus);
+    console.log("-------------- lieave status",status);
     
     const { data, error } = await supabase
       .from('leap_customer_apply_leave')
       .update({
        
-        leave_status: fdata.leaveStatus,
-        approve_disapprove_remark: fdata.statusRemark || null,
+        leave_status: status,
+        approve_disapprove_remark: status_remark || null,
         isAssigned: "FALSE",
         
       })
-      .eq('id', fdata.leaveID )
+      .eq('id', leave_id )
       .select("*");
     
     if (error) {
-      return funSendApiErrorMessage(error, "Company Update Issue");
+      return funSendApiErrorMessage(error, "Leave Update Issue");
     }
     
     if (error) {
@@ -42,8 +35,8 @@ export async function POST(request: NextRequest) {
     }
     let query = supabase
         .from('leap_client_useractivites')
-        .update({activity_status:fdata.leaveStatus})
-        .eq("activity_related_id",fdata.leaveID);
+        .update({activity_status:status})
+        .eq("activity_related_id",leave_id);
         // .eq("asset_status", 1);
     const { data:activity, error:activityError } = await query;
     if (activityError) {
@@ -52,9 +45,9 @@ export async function POST(request: NextRequest) {
     }
     
     if (data) {
-      return NextResponse.json({ message: companyUpdatedData, data: data }, { status: apiStatusSuccessCode });
+      return NextResponse.json({ status: 1, message: "Leave Status Updated", data: data }, { status: apiStatusSuccessCode });
     }else 
-    return NextResponse.json({ message: companyUpdateFailed }, { status: apiStatusFailureCode });
+    return NextResponse.json({ message: "Failed to update leave status" }, { status: apiStatusFailureCode });
     
   } catch (error) {
     console.log(error);

@@ -358,6 +358,8 @@ import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
 import BackButton from '@/app/components/BackButton'
 import LoadingDialog from '@/app/components/PageLoader'
 import ShowAlertMessage from '@/app/components/alert'
+import Select from "react-select";
+
 
 interface AssignEmpLeave {
     client_id: string,
@@ -380,6 +382,7 @@ const AssignLeave: React.FC = () => {
     const { contextClientID } = useGlobalContext();
 
     const [isLoading, setLoading] = useState(true);
+    const [employeeName, setEmployeeNames] = useState([{ value: '', label: '' }]);
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertForSuccess, setAlertForSuccess] = useState(0);
@@ -395,6 +398,15 @@ const AssignLeave: React.FC = () => {
         setSelectedBranchID(value);
         const emp = await getEmployee(value);
         setEmp(emp);
+        let name: any[] = []
+            for (let i = 0; i < emp.length; i++) {
+
+                name.push({
+                    value: emp[i].customer_id,
+                    label: emp[i].emp_id + "  " + emp[i].name,
+                })
+            }
+            setEmployeeNames(name);
     };
     const router = useRouter()
 
@@ -458,12 +470,19 @@ const AssignLeave: React.FC = () => {
 
     }
 
+    const handleEmpSelectChange = async (values: any) => {
+
+        setFormValues((prev) => ({ ...prev, ["customerID"]: values.value }));
+
+    };
+
     const formData = new FormData();
     const [errors, setErrors] = useState<Partial<AssignEmpLeave>>({});
     const [selected, setSelected] = React.useState(formValues.duration);
 
     const validate = () => {
         const newErrors: Partial<AssignEmpLeave> = {};
+        if (!formValues.branchID) newErrors.branchID = "required";
         if (!formValues.customerID) newErrors.customerID = "required";
         if (!formValues.leaveType) newErrors.leaveType = "required";
         if (!formValues.fromDate) newErrors.fromDate = "required";
@@ -555,20 +574,20 @@ const AssignLeave: React.FC = () => {
                                                 <div className="row">
                                                     <div className="col-md-4">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Branch:</label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Branch<span className='req_text'>*</span>:</label>
                                                             <select id="branchID" name="branchID" onChange={handleBranchIDChange}>
                                                                 <option value="">Select</option>
                                                                 {branchArray.map((type, index) => (
                                                                     <option value={type.id} key={type.id}>{type.branch_number} </option>
                                                                 ))}
                                                             </select>
-                                                            {/* {errors.customerID && <span className="error" style={{color: "red"}}>{errors.customerID}</span>} */}
+                                                            {errors.branchID && <span className="error" style={{color: "red"}}>{errors.branchID}</span>}
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Employee:</label>
-                                                            <select id="customerID" name="customerID" onChange={handleInputChange}>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Employee<span className='req_text'>*</span>:</label>
+                                                            {/* <select id="customerID" name="customerID" onChange={handleInputChange}>
                                                                 <option value="">Select</option>
                                                                 {empArray.length > 0 ? (
                                                                     empArray.map((type) => (
@@ -578,15 +597,24 @@ const AssignLeave: React.FC = () => {
                                                                 ) : (
                                                                     <option value="" disabled>No Employee exists in this branch</option>
                                                                 )}
-                                                                {/* {empArray.map((type, index) => (
-                                                ))}*/}
-                                                            </select>
+                                                                
+                                                            </select> */}
+                                                            <Select
+                                                                                                                    className="custom-select"
+                                                                                                                    classNamePrefix="custom"
+                                                                                                                    options={employeeName}
+                                                                                                                    onChange={(selectedOption) =>
+                                                                                                                        handleEmpSelectChange(selectedOption)
+                                                                                                                    }
+                                                                                                                    placeholder="Search Employee"
+                                                                                                                    isSearchable
+                                                                                                                />
                                                             {errors.customerID && <span className="error" style={{ color: "red" }}>{errors.customerID}</span>}
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Leave Type:  </label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Leave Type<span className='req_text'>*</span>:  </label>
                                                             <select id="leaveType" name="leaveType" onChange={handleInputChange}>
                                                                 <option value="">Select</option>
                                                                 {leaveArray.map((type, index) => (
@@ -601,7 +629,7 @@ const AssignLeave: React.FC = () => {
                                                 <div className="row">
                                                     <div className="col-md-4">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >From Date:  </label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >From Date<span className='req_text'>*</span>:  </label>
                                                             <input type="date" id="fromDate" name="fromDate" value={formValues.fromDate} onChange={handleInputChange} />
                                                             {errors.fromDate && <span className="error" style={{ color: "red" }}>{errors.fromDate}</span>}
                                                         </div>
@@ -609,7 +637,7 @@ const AssignLeave: React.FC = () => {
                                                     <div className="col-md-4">
                                                         <div className="form_box mb-3">
                                                             <label htmlFor="exampleFormControlInput1" className="form-label" >To Date:  </label>
-                                                            <input type="date" id="toDate" name="toDate" value={formValues.toDate} onChange={handleInputChange} />
+                                                            <input type="date" id="toDate" name="toDate" value={formValues.toDate} min={formValues.fromDate} onChange={handleInputChange} />
                                                             {errors.toDate && <span className="error" style={{ color: "red" }}>{errors.toDate}</span>}
                                                         </div>
                                                     </div>
