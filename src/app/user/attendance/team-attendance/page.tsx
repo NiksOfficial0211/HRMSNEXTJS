@@ -26,21 +26,27 @@ interface FilterValues {
     name: any
 }
 interface selectedAttendance {
-    selected_attendanceID: any,
-    selected_date: any,
-    selected_empID: any
-    selected_empName: any
-    selected_empDesignation: any
-    selected_empDepartment: any
+    name: string,
+    customer_id: number,
+    emp_id: string,
+    contact_number: string,
+    email_id: string,
+    profile_pic: string,
+    designation_id: number,
+    branch_id: number,
+    leap_client_designations: {
+        designation_name: string
+    },
+    attendanceStatus: string
 }
 
 const EmpAttendancePage = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
     const { contaxtBranchID, contextClientID, contextRoleID,
-    contextUserName, contextCustomerID, contextEmployeeID, contextLogoURL, contextProfileImage,
-    contextCompanyName, dashboard_notify_activity_related_id, dashboard_notify_cust_id, setGlobalState } = useGlobalContext();
+        contextUserName, contextCustomerID, contextEmployeeID, contextLogoURL, contextProfileImage,
+        contextCompanyName, dashboard_notify_activity_related_id, dashboard_notify_cust_id, setGlobalState } = useGlobalContext();
     const [loadingCursor, setLoadingCursor] = useState(false);
-    const [empAttendanceData, setEmpAttendanceData] = useState<Employee[]>([]);
+    const [empAttendanceData, setEmpAttendanceData] = useState<selectedAttendance[]>([]);
     const [employeeName, setEmployeeNames] = useState([{ value: '', label: '' }]);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const router = useRouter();
@@ -81,26 +87,11 @@ const EmpAttendancePage = () => {
 
             window.removeEventListener('scroll', handleScroll);
         };
-
-
-
     }, []);
 
-    const formatDateYYYYMMDD = (date: any, isTime = false) => {
-        if (!date) return '';
-        const parsedDate = moment(date);
-
-        if (isTime) return parsedDate.format('HH:mm A');
-
-        return parsedDate.format('YYYY-MM-DD');
-    };
-    const fetchData = async () => {
+    const fetchData = async (filter = filterValues) => {
         setLoading(true)
         try {
-            const formData = new FormData();
-            // formData.append("client_id", contextClientID);
-            // formData.append("branch_id", contaxtBranchID);
-            // formData.append('customer_id', filterValues.name);
 
             const response = await fetch("/api/users/getTeamMembers", {
                 method: "POST",
@@ -109,36 +100,21 @@ const EmpAttendancePage = () => {
                 }),
             });
             const apiResponse = await response.json();
-            if (!response.ok) {
-                setLoading(false);
-                setShowAlert(true);
-                setAlertTitle("Error")
-                setAlertStartContent("Failed to get attendance");
-                setAlertForSuccess(2)
+            let subordinates = apiResponse.data.subordinates || [];
+            if (filter.name) {
+                subordinates = subordinates.filter((emp: any) => emp.customer_id === filter.name);
             }
-            else if (apiResponse.status == 0) {
 
-                setLoading(false);
-                setShowAlert(true);
-                setAlertTitle("Error")
-                setAlertStartContent("Failed to get customer attendance");
-                setAlertForSuccess(2)
-            } else {
+            setEmpAttendanceData(subordinates);
+            const empNames = apiResponse.data.subordinates.map((emp: any) => ({
+                value: emp.customer_id,
+                label: `${emp.emp_id}  ${emp.name}`,
+            }));
+            setEmployeeNames(empNames);
 
+            setLoading(false);
+            setLoadingCursor(false);
 
-                setEmpAttendanceData(apiResponse.data.subordinates);
-                let empNames: any[] = []
-                for (let i = 0; i < apiResponse.data.subordinates.length; i++) {
-
-                    empNames.push({
-                        value: apiResponse.data.subordinates[i].customer_id,
-                        label: apiResponse.data.subordinates[i].emp_id + "  " + apiResponse.data.subordinates[i].name,
-                    })
-                }
-                setEmployeeNames(empNames);
-                setLoading(false);
-                setLoadingCursor(false);
-            }
         } catch (e) {
             setLoading(false);
             setShowAlert(true);
@@ -148,21 +124,19 @@ const EmpAttendancePage = () => {
             console.log(e);
         }
     }
+
     const resetFilter = async () => {
-
-        setFilterValues({
-
-            name: ""
-        });
-        fetchData();
-    }
+        const resetValues = { name: "" };
+        setSelectedEmployee(null);
+        setFilterValues(resetValues);
+        fetchData(resetValues);
+    };
 
     const handleEmpSelectChange = async (values: any) => {
         console.log(values);
 
         setFilterValues((prev) => ({ ...prev, ["name"]: values.value }));
         setSelectedEmployee(values)
-        // setBranchArray(branch);
     };
 
     const go_to_details_Page = (customer_id: any) => {
@@ -186,7 +160,6 @@ const EmpAttendancePage = () => {
             selectedClientCustomerID: '',
             contextPARAM7: '',
             contextPARAM8: '',
-
         });
         router.push(pageURL_userTeamAttendanceDetails)
 
@@ -232,7 +205,9 @@ const EmpAttendancePage = () => {
                                                             <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_two">
                                                                 <div className="nw_filter_form_group">
                                                                     <Select
-                                                                        value={selectedEmployee}
+                                                                        className="custom-select"
+                                                                        classNamePrefix="custom"
+                                                                        // value={selectedEmployee}
                                                                         options={employeeName}
                                                                         onChange={(selectedOption) =>
                                                                             handleEmpSelectChange(selectedOption)
@@ -240,6 +215,20 @@ const EmpAttendancePage = () => {
                                                                         placeholder="Select..."
                                                                         isSearchable
                                                                     />
+                                                                {/* <div className="row d-flex align-items-center">
+                                                    <div className="col-lg-12 search_select_element">
+                                                        <Select
+                                                            className="custom-select"
+                                                            classNamePrefix="custom"
+                                                            options={employeeName}
+                                                            onChange={(selectedOption) =>
+                                                                handleEmpSelectChange(selectedOption)
+                                                            }
+                                                            placeholder="Search Employee"
+                                                            isSearchable
+                                                        />
+                                                    </div>
+                                                </div> */}
                                                                 </div>
                                                                 <div className="nw_filter_form_group">
                                                                     <a className={`red_button filter_submit_btn ${loadingCursor ? "loading" : ""}`} onClick={() => { setLoadingCursor(true), fetchData() }}>Submit</a>
@@ -277,18 +266,23 @@ const EmpAttendancePage = () => {
                                                     <div className="col-lg-2 text-center"><span>Status</span></div>
                                                     <div className="col-lg-1 text-center"><span>Action</span></div>
                                                 </div>
-                                                {empAttendanceData.map((emp) => (
-                                                    <div className='attendance_listbox' key={emp.emp_id}>
+                                                {empAttendanceData.map((emp, index) => (
+                                                    <div className='attendance_listbox' key={index}>
                                                         <div className="row" style={{ cursor: "pointer" }} onClick={() => { go_to_details_Page(emp.customer_id) }}>
                                                             <div className="col-lg-3 attendance_memberimg" style={{ paddingLeft: "60px" }}><img src={emp.profile_pic != null && emp.profile_pic.length > 0 ? process.env.NEXT_PUBLIC_BASE_URL + emp.profile_pic : "/images/user.png"} className="img-fluid" />{emp.name}</div>
                                                             <div className="col-lg-3 text-center">{emp.leap_client_designations?.designation_name || "--"}</div>
                                                             <div className="col-lg-1 text-center">{emp.emp_id}</div>
                                                             <div className="col-lg-2 text-center">{emp.contact_number}</div>
                                                             <div className="col-lg-2 text-center">
-                                                                <div className="new_team_attendance_status_mainbox">
+                                                                {emp.attendanceStatus == "Present" ? <div className="new_team_attendance_status_mainbox">
                                                                     <div className="new_team_attendance_status_present_icon"></div>
                                                                     <div className="new_team_attendance_status">Present</div>
-                                                                </div>
+                                                                </div> :
+                                                                    <div className="new_team_attendance_status_mainbox">
+                                                                        <div className="new_team_attendance_status_absent_icon"></div>
+                                                                        <div className="new_team_attendance_status">Absent</div>
+                                                                    </div>
+                                                                }
                                                             </div>
                                                             <div className="col-lg-1 text-center">
                                                                 <img src={staticIconsBaseURL + "/images/menu.png"} className="img-fluid" alt="Search Icon" style={{ width: "20px" }} />

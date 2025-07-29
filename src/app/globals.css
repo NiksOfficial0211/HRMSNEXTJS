@@ -3424,6 +3424,7 @@ background-color: #fff;
 .new_user_fourth_leftbox {
   min-width: 100%;
   padding: 0 10px;
+  width: 100%;
 }
 
 .new_user_left_fourthmainbox {
@@ -3629,6 +3630,7 @@ background-color: #fff;
 
 .new_dashboard_greeting_attendancebox {
   min-width: 100%;
+  width: 100%;
 }
 
 .new_attendancebox_middlebox_first_listing_time {
@@ -4545,7 +4547,9 @@ input.new_upload_btn_input {
 /* Documents ends  */
 /* Dashbord fixes start */
 .new_user_notification_listing_scroll {
-  overflow: auto;
+  /* overflow: auto; */
+  overflow-y: auto;
+  overflow-x: hidden;
   max-height: 130px;
 }
 
@@ -8094,6 +8098,13 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 .new_user_att_detail_whitelist:has(.new_small_leave_box) .att_detail_whitelist:hover .att_detail_datebox.new_user_small_leftbox {
   background-color: #F57C00;
 }
+.new_user_att_detail_whitelist:has(.new_small_weekend_box) .att_detail_datebox {
+  background-color: #616161;
+}
+
+.new_user_att_detail_whitelist:has(.new_small_weekend_box) .att_detail_whitelist:hover .att_detail_datebox.new_user_small_leftbox {
+  background-color: #616161;
+}
 
 .new_user_attendance_small_mainbox {
   height: 100%;
@@ -8286,6 +8297,20 @@ body:has(.user_mainbox_new_design) .dash_topbox {
   justify-items: center;
 }
 
+.nw_filter_form_group select,
+.nw_filter_form_group input,
+.nw_user_doc_selectbox select {
+  cursor: pointer;
+}
+
+.new_home_leave_balance_remaining_three {
+  font-size: 20px;
+}
+
+.nw_filter_form_group .css-13cymwt-control {
+  cursor: pointer !important;
+}
+
 
 /* Bugs css ends */
 
@@ -8334,6 +8359,26 @@ body:has(.user_mainbox_new_design) .dash_topbox {
     grid-template-columns: 0.5fr 1fr;
   }
 
+  .new_home_leave_balance_remaining_three {
+    font-size: 16px;
+  }
+
+  body:has(.user_mainbox_new_design) .nw_user_panel_mainbox {
+    grid-template-columns: 20vw 1fr;
+  }
+
+  .new_user_left_firstmainbox {
+    gap: 0;
+  }
+
+  .my_new_greeting_attendancebox {
+    gap: 15px;
+  }
+
+  .new_user_left_firstmainbox {
+    grid-template-columns: 0.9fr 2fr;
+  }
+
   /* Bugs ends  */
 
 }
@@ -8345,29 +8390,59 @@ body:has(.user_mainbox_new_design) .dash_topbox {
     grid-template-columns: 0.6fr 1fr;
   }
 
- .new_user_support_mainbox .nw_user_filter_mainbox.width_450 .filter_whitebox.filter_whitebox_open {
+  .new_user_support_mainbox .nw_user_filter_mainbox.width_450 .filter_whitebox.filter_whitebox_open {
     width: 360px;
-}
+  }
 
-.new_user_support_mainbox .nw_filter_form_group_mainbox {
+  .new_user_support_mainbox .nw_filter_form_group_mainbox {
     grid-template-columns: 1fr 1.5fr 1fr 30px;
-}
+  }
 
-.new_user_table_head {
-  padding: 0px 4px;
-}
+  .new_user_table_head {
+    padding: 0px 4px;
+  }
 
-.new_user_support_mainbox .rightpoup {
+  .new_user_support_mainbox .rightpoup {
     width: 48%;
-}
+  }
 
+  .new_home_team_member_mainbox {
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: 20px;
+  }
+
+  .new_user_left_firstmainbox {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 20px 20px 20px;
+  }
+
+  .new_attendancebox_lastbox {
+    right: -2px;
+  }
+
+  .new_personalize_greeting_mainbox::after {
+    display: none;
+  }
+
+  .new_attendancebox_middlebox_secondbox {
+    margin: 20px 10px 0px 0;
+  }
+.new_small_weekend_box {
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    text-align: center;
+}
+.new_small_weekend_heading {
+    font-weight: 600;
+    color: #6c757d;
+}
+.new_small_weekend_subtext {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
   /* Bugs ends  */
 }
 
 /*--- END Dashboard css by Rahul ---*/
-
-@media screen and (max-width:992px) {}
-
-@media screen and (max-width:768px) {}
-
-@media screen and (max-width:580px) {}

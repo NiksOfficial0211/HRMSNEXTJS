@@ -228,7 +228,16 @@ const Dashboard = () => {
                                                     prevEl: '.swiper-button-prev-custom',
                                                 }}
                                                 // spaceBetween={10}
-                                                slidesPerView={4}
+                                                // slidesPerView={4}
+                                                breakpoints={{
+                                                    992: {
+                                                        slidesPerView: 3,
+                                                    },
+                                                    // when window width is >= 1200px
+                                                    1200: {
+                                                        slidesPerView: 4,
+                                                    },
+                                                }}
                                             >
                                                 {balancearray.map((balance, index) =>
                                                     <SwiperSlide key={index}>
@@ -249,7 +258,9 @@ const Dashboard = () => {
                                                                 <div className="new_home_leave_balance_typebox">
                                                                     {extractFirstLetters(balance.leaveType)}
                                                                 </div>
-                                                                <div className="new_home_leave_balance_remaining">
+                                                                {/* add condition */}
+
+                                                                <div className="new_home_leave_balance_remaining new_home_leave_balance_remaining_three">
                                                                     {balance.leaveBalance + "/" + balance.leaveAllotedCount}
                                                                 </div>
                                                             </div>
@@ -519,44 +530,45 @@ const Dashboard = () => {
                                                             // Task
                                                             <>
                                                                 <div className="row">
-                                                                    {taskarray && taskarray.length > 0 ? (
-                                                                        <div className="col-lg-12">
-                                                                            <div className="new_home_task_status_list_mainbox">
-                                                                                <div className="new_home_task_status_list_listing">
-                                                                                    <div className="new_home_task_status_list_icon">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 341.333 341.333">
-                                                                                            <path fill="#FFA500" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
-                                                                                        </svg>
-                                                                                    </div>
-                                                                                    <div className="new_home_task_status_list_text">To do</div>
+                                                                    <div className="col-lg-12">
+                                                                        <div className="new_home_task_status_list_mainbox">
+                                                                            <div className="new_home_task_status_list_listing">
+                                                                                <div className="new_home_task_status_list_icon">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 341.333 341.333">
+                                                                                        <path fill="#FFA500" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
+                                                                                    </svg>
                                                                                 </div>
-                                                                                <div className="new_home_task_status_list_listing">
-                                                                                    <div className="new_home_task_status_list_icon">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 341.333 341.333">
-                                                                                            <path fill="#007BFF" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
-                                                                                        </svg>
-                                                                                    </div>
-                                                                                    <div className="new_home_task_status_list_text">Working</div>
-                                                                                </div>
-                                                                                <div className="new_home_task_status_list_listing">
-                                                                                    <div className="new_home_task_status_list_icon">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 341.333 341.333">
-                                                                                            <path fill="#28A745" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
-                                                                                        </svg>
-                                                                                    </div>
-                                                                                    <div className="new_home_task_status_list_text">Completed</div>
-                                                                                </div>
-                                                                                <div className="new_home_task_status_list_listing">
-                                                                                    <div className="new_home_task_status_list_icon">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 341.333 341.333">
-                                                                                            <path fill="#6F42C1" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
-                                                                                        </svg>
-                                                                                    </div>
-                                                                                    <div className="new_home_task_status_list_text">Assigned</div>
-                                                                                </div>
+                                                                                <div className="new_home_task_status_list_text">To do</div>
                                                                             </div>
-                                                                            {taskarray?.map((data, index) =>
-                                                                                <div className="new_home_task_mainbox" key={index}>
+                                                                            <div className="new_home_task_status_list_listing">
+                                                                                <div className="new_home_task_status_list_icon">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 341.333 341.333">
+                                                                                        <path fill="#007BFF" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
+                                                                                    </svg>
+                                                                                </div>
+                                                                                <div className="new_home_task_status_list_text">Working</div>
+                                                                            </div>
+                                                                            <div className="new_home_task_status_list_listing">
+                                                                                <div className="new_home_task_status_list_icon">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 341.333 341.333">
+                                                                                        <path fill="#28A745" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
+                                                                                    </svg>
+                                                                                </div>
+                                                                                <div className="new_home_task_status_list_text">Completed</div>
+                                                                            </div>
+                                                                            <div className="new_home_task_status_list_listing">
+                                                                                <div className="new_home_task_status_list_icon">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 341.333 341.333">
+                                                                                        <path fill="#6F42C1" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
+                                                                                    </svg>
+                                                                                </div>
+                                                                                <div className="new_home_task_status_list_text">Assigned</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="new_home_task_mainbox">
+                                                                        {taskarray && taskarray.length > 0 ? (
+                                                                            taskarray?.map((data, index) =>
+                                                                                <div className='new_user_home_task_listing'  key={index}>
                                                                                     {data.task_status.id == 1 ?
                                                                                         <> <div className="new_home_task_listing new_home_task_type_todo">
                                                                                             <div className="new_home_task_project_namebox">
@@ -613,11 +625,11 @@ const Dashboard = () => {
                                                                                                     </>
                                                                                                     : <></>}
                                                                                 </div>
-                                                                            )}
+                                                                            ))
+                                                                            : <> Fill your daily tasks!</>
+                                                                        }
                                                                         </div>
-                                                                    ) : <> Fill your daily tasks!</>
-                                                                    }
-
+                                                                    </div>
                                                                 </div>
                                                             </>
                                                             : <div />
@@ -719,3 +731,4 @@ const Dashboard = () => {
     )
 }
 export default Dashboard
+
