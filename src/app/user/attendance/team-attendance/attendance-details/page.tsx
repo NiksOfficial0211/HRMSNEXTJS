@@ -211,7 +211,6 @@ const EmpAttendancePage = () => {
                 setHolidayList(apiResponse.holidaylist);
                 setEmpLeaveList(apiResponse.leaveList);
 
-
                 const dateRanges = generateDateRange(filterValues.start_date || formatDateYYYYMMDD(new Date()), filterValues.end_date || formatDateYYYYMMDD(new Date()))
 
                 const empAttendanceData: DateRangeModel[] = []
@@ -371,7 +370,6 @@ const EmpAttendancePage = () => {
         } else {
             setFilterValues((prev) => ({ ...prev, ['start_date']: formatDateYYYYMMDD(ranges.selection.startDate) }));
             setFilterValues((prev) => ({ ...prev, ['end_date']: formatDateYYYYMMDD(ranges.selection.endDate) }));
-
         }
     };
     const formattedRange = formatDateYYYYMMDD(state[0].startDate) == formatDateYYYYMMDD(state[0].endDate) ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;

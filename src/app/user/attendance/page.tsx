@@ -21,6 +21,7 @@ import { ALERTMSG_exceptionString } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
 import { EmployeeLeave_Approval_LeaveType } from '@/app/models/leaveModel'
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
+import { stringify } from 'querystring'
 // import AttendanceMap from '@/app/components/trackerMap'
 // const AttendanceMap = dynamic(() => import('@/app/components/trackerMap'), { ssr: false });
 
@@ -28,7 +29,6 @@ import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
 interface FilterValues {
     start_date: any,
     end_date: any,
-
 }
 interface DateRangeModel {
     date: any,
@@ -91,7 +91,7 @@ const EmpAttendancePage = () => {
             img_attachment: '',
             pause_end_time: [],
             approval_status: '',
-            paused_duration: 0,
+            paused_duration: '',
             working_type_id: '',
             attendanceStatus: 0,
             pause_start_time: [],
@@ -148,25 +148,16 @@ const EmpAttendancePage = () => {
         setFilterValues({
             start_date: formatDateYYYYMMDD(new Date()),
             end_date: formatDateYYYYMMDD(new Date()),
-
         })
-
-
         fetchData();
         return () => {
-
             window.removeEventListener('scroll', handleScroll);
         };
-
-
-
     }, []);
 
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
         if (!date) return '';
         const parsedDate = moment(date);
-
-
         return parsedDate.format('YYYY-MM-DD');
     };
 
@@ -185,25 +176,38 @@ const EmpAttendancePage = () => {
         // console.log("end date selecte in fetch data", filterValues.end_date);
         setLoading(true);
         try {
-            const formData = new FormData();
-            formData.append("client_id", contextClientID);
-            formData.append("branch_id", contaxtBranchID);
-            formData.append('customer_id', contextCustomerID);
+            const startDate = filterValues.start_date || formatDateYYYYMMDD(new Date());
+            const endDate = (filterValues.start_date !== filterValues.end_date)
+                ? filterValues.end_date
+                : formatDateYYYYMMDD(new Date());
+            // const formData = new FormData();
+            let formData = {
+                "client_id": contextClientID,
+                "branch_id": contaxtBranchID,
+                "customer_id": contextCustomerID,
+                "start_date": startDate,
+                "end_date": endDate
+            }
 
-            formData.append('start_date', filterValues.start_date || formatDateYYYYMMDD(new Date()));
-            const endDate = filterValues.start_date != filterValues.end_date ? filterValues.end_date : formatDateYYYYMMDD(new Date())
-            formData.append('end_date', endDate);
+            // formData.append("client_id", contextClientID);
+            // formData.append("branch_id", contaxtBranchID);
+            // formData.append('customer_id', contextCustomerID);
+
+            // formData.append('start_date', filterValues.start_date || formatDateYYYYMMDD(new Date()));
+            // const endDate = filterValues.start_date != filterValues.end_date ? filterValues.end_date : formatDateYYYYMMDD(new Date())
+            // formData.append('end_date', endDate);
 
             const response = await fetch("/api/clientAdmin/getAllEmployeeAttendance", {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify(
+                    formData
+                ),
             });
             const apiResponse = await response.json();
             console.log(apiResponse);
 
             setLoading(false);
             if (apiResponse.status == 1) {
-
                 setEmpAttendanceData(apiResponse.data);
                 setHolidayList(apiResponse.holidaylist);
                 setEmpLeaveList(apiResponse.leaveList);
@@ -221,7 +225,6 @@ const EmpAttendancePage = () => {
                             if (dateRanges[i].actual_date == apiResponse.data[0].leap_customer_attendance[j].date) {
                                 isPresent = j;
                             }
-
                         }
                     }
                     if (apiResponse.holidaylist && apiResponse.holidaylist.length > 0) {
@@ -408,18 +411,19 @@ const EmpAttendancePage = () => {
         const mins = minutes % 60;
         return `${hrs}h ${mins}m`;
     };
-    // const { netMinutes } = getTotalWorkedMinutes(
-    // dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time,
-    // dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time
-    // // attendanceData.in_time,
-    // // attendanceData.out_time,
+    const { netMinutes } = getTotalWorkedMinutes(
+    dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time || '0',
+    dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time || '0' ,
+    // attendanceData.in_time,
+    // attendanceData.out_time,
     // parseInt(attendanceData.paused_duration || '0') || 0
-    // );
+    parseInt(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_duration || '0' ) || 0
+    );
     const calculateProgressPercentage = () => {
         // const worked = calculateWorkedMinutes();
         // const percent = Math.min(55, 100); // Cap at 100%
-        // const percent = Math.min((netMinutes / WORKING_MINUTES) * 100, 100); // Cap at 100%
-        // return Math.round(percent);
+        const percent = Math.min((netMinutes / WORKING_MINUTES) * 100, 100); // Cap at 100%
+        return Math.round(percent);
     };
 
     const [isExpanded, setIsExpanded] = useState(false);
@@ -459,6 +463,7 @@ const EmpAttendancePage = () => {
                                                                             type="text"
                                                                             className="form-control"
                                                                             value={formattedRange}
+                                                                            placeholder='Date'
                                                                             readOnly
                                                                             onClick={() => setShowCalendar(!showCalendar)}
                                                                         />
@@ -662,10 +667,11 @@ const EmpAttendancePage = () => {
                                                                             </div>
                                                                             <div className="my_attendance_right_name_id_box">
                                                                                 <div className="my_attendance_right_name">
-                                                                                    Rahul Rathod
+                                                                                    {/* {empAttendanceData[0].name} */}
                                                                                 </div>
                                                                                 <div className="my_attendance_right_id">
-                                                                                    Emp Code: <span>61</span>
+                                                                                    Emp Code:
+                                                                                    {/* <span>{empAttendanceData[0].emp_id}</span> */}
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -719,39 +725,27 @@ const EmpAttendancePage = () => {
                                                                                 <div className="col-lg-9">
                                                                                     <div className="my_user_attendance_break_mainbox">
                                                                                         <div className="my_user_attendance_break_heading">Breaks</div>
-                                                                                        <div className="my_user_attendance_breakbox">
-                                                                                            <div className="my_user_attendance_breakbox_left">
-                                                                                                <div className="my_user_attendance_breakbox_left_heading">Duration</div>
-                                                                                                <div className="my_user_attendance_breakbox_left_content">10 min</div>
-                                                                                            </div>
-                                                                                            <div className="my_user_attendance_breakbox_right">
-                                                                                                <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
-                                                                                                <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
-                                                                                            </div>
-                                                                                        </div>
+                                                                                        {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_start_time &&
+                                                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_start_time.length > 0 ?
+                                                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_start_time.map((data, index) =>
+                                                                                                <div className="my_user_attendance_breakbox" key={index}>
+                                                                                                    <div className="my_user_attendance_breakbox_left">
+                                                                                                        <div className="my_user_attendance_breakbox_left_heading">Duration</div>
+                                                                                                        <div className="my_user_attendance_breakbox_left_content">
+
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div className="my_user_attendance_breakbox_right">
+                                                                                                        <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
+                                                                                                        <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            ) : <></>
+                                                                                    }
+
                                                                                         {isExpanded && (
                                                                                             <span className="moretext">
                                                                                                 {' '}
-                                                                                                <div className="my_user_attendance_breakbox">
-                                                                                                    <div className="my_user_attendance_breakbox_left">
-                                                                                                        <div className="my_user_attendance_breakbox_left_heading">Duration</div>
-                                                                                                        <div className="my_user_attendance_breakbox_left_content">10 min</div>
-                                                                                                    </div>
-                                                                                                    <div className="my_user_attendance_breakbox_right">
-                                                                                                        <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
-                                                                                                        <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <div className="my_user_attendance_breakbox">
-                                                                                                    <div className="my_user_attendance_breakbox_left">
-                                                                                                        <div className="my_user_attendance_breakbox_left_heading">Duration</div>
-                                                                                                        <div className="my_user_attendance_breakbox_left_content">10 min</div>
-                                                                                                    </div>
-                                                                                                    <div className="my_user_attendance_breakbox_right">
-                                                                                                        <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
-                                                                                                        <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
-                                                                                                    </div>
-                                                                                                </div>
                                                                                                 <div className="my_user_attendance_breakbox">
                                                                                                     <div className="my_user_attendance_breakbox_left">
                                                                                                         <div className="my_user_attendance_breakbox_left_heading">Duration</div>
@@ -807,8 +801,8 @@ const EmpAttendancePage = () => {
                                                                                 Total Hours
                                                                             </div>
                                                                             <CircularProgressbar
-                                                                                value={80}//{calculateProgressPercentage()} //
-                                                                                text="9.55"//{formatMinutesToHours(netMinutes)}
+                                                                                value={calculateProgressPercentage()}
+                                                                                text={formatMinutesToHours(netMinutes)}
                                                                                 background
                                                                                 // backgroundPadding={6}
                                                                                 strokeWidth={10}
@@ -818,7 +812,6 @@ const EmpAttendancePage = () => {
                                                                                     pathColor: "#5DC600",
                                                                                     trailColor: "#CECECE",
                                                                                     textSize: "14px",
-
                                                                                 })}
                                                                             />
                                                                         </div>

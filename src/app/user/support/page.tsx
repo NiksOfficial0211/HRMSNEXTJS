@@ -291,7 +291,7 @@ const Support = () => {
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"
-                                                                        value={formattedRange}
+                                                                        value="Date"
                                                                         readOnly
                                                                         onClick={() => setShowCalendar(!showCalendar)}
                                                                     />

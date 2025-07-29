@@ -135,7 +135,7 @@ const LeftPannel = ({ menuIndex,subMenuIndex, showLeftPanel, rightBoxUI }: LeftP
     if (showLeftPanel) {
         return (
             <div className={toggleClass} id="middle_box">
-                <div className={`${loadingCursor?"cursorLoading":""}`}>
+                <div className={`${loadingCursor ? "cursorLoading nw_user_panel_mainbox" : "nw_user_panel_mainbox"}`} >
                     <div className="left_mainbox">
                         <div className="left_inner">
                             <div className="left_sticky">

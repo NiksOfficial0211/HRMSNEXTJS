@@ -5,7 +5,6 @@ import LeftPannel from '@/app/components/leftPannel';
 import LoadingDialog from '@/app/components/PageLoader';
 import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext';
 import { announcementListingPage, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants';
-import { pageURL_createAnnouncement, leftMenuAnnouncementPageNumbers, pageURL_updateAnnouncement, leftMenuUserAnnouncement } from '@/app/pro_utils/stringRoutes';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 

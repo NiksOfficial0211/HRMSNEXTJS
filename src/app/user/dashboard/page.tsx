@@ -28,7 +28,7 @@ import UserAttendanceTimer from '@/app/components/userAttendanceTimer';
 import { CustomerLeavePendingCount } from '@/app/models/leaveModel';
 import moment from 'moment';
 import { pageURL_userAnnouncement, pageURL_userApplyLeaveForm, pageURL_userAsset, pageURL_userDoc, pageURL_userFillTask, pageURL_userSupportForm, pageURL_userTeamLeave } from '@/app/pro_utils/stringRoutes';
-import { AttendanceTimer, ManagerData, Subordinate, TeamMember } from '@/app/models/userDashboardModel';
+import { AttendanceTimer, ManagerData, MyTask, Subordinate, TeamMember } from '@/app/models/userDashboardModel';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { AssignedTask, Task } from '@/app/models/TaskModel';
 
@@ -42,8 +42,8 @@ const Dashboard = () => {
     const [holidays, setHolidays] = useState<any[]>([]);
     const [permissionData, setPermissionData] = useState<userPermissionModel[]>();
     const { contaxtBranchID, contextClientID, contextRoleID, contextCustomerID, setGlobalState } = useGlobalContext();
-    const [taskarray, setTask] = useState<Task[]>([]);
-    const [assignedTaskarray, setAssignedTask] = useState<AssignedTask[]>([]);
+    const [taskarray, setTask] = useState<MyTask[]>([]);
+    // const [assignedTaskarray, setAssignedTask] = useState<AssignedTask[]>([]);
     const [firstName, setName] = useState<any[]>([]);
     const [managerData, setManagerData] = useState<ManagerData>();
     const [teamArray, setTeam] = useState<TeamMember[]>([]);
@@ -101,14 +101,14 @@ const Dashboard = () => {
             });
             const response = await res.json();
             if (response.status === 1) {
-                
+
                 // console.log("branch",contaxtBranchID);
                 setHolidays(response.upcommingHolidays.holidays);
                 setBalanceLeave(response.myLeaveBalances.customerLeavePendingCount);
                 // setSalarySlip(response.my_documents[0]);
                 setAttendanceData(response.myattendance[0]);
-                setTask(response.my_tasks.tasks);
-                setAssignedTask(response.assigned_tasks.taskData);
+                setTask(response.my_tasks);
+                // setAssignedTask(response.assigned_tasks.taskData);
                 setName(response.my_name.firstName)
                 // setAnnouncementData(response.announcements[0]);
             } else {
@@ -557,57 +557,57 @@ const Dashboard = () => {
                                                                             </div>
                                                                             {taskarray?.map((data, index) =>
                                                                                 <div className="new_home_task_mainbox" key={index}>
-                                                                                    {data.task_status == 1 ?
+                                                                                    {data.task_status.id == 1 ?
                                                                                         <> <div className="new_home_task_listing new_home_task_type_todo">
                                                                                             <div className="new_home_task_project_namebox">
-                                                                                                <div className="new_home_task_project">{data.leap_client_sub_projects.sub_project_name}</div>
+                                                                                                <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
                                                                                                 <div className="new_home_task_description">
                                                                                                     {data.task_details}
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div className="new_home_task_type">
-                                                                                                {data.leap_project_task_types.task_type_name}
+                                                                                                {data.task_type_id.task_type_name}
                                                                                             </div>
                                                                                         </div> </>
-                                                                                        : data.task_status == 2 ?
+                                                                                        : data.task_status.id == 2 ?
                                                                                             <>
                                                                                                 <div className="new_home_task_listing new_home_task_type_working">
                                                                                                     <div className="new_home_task_project_namebox">
-                                                                                                        <div className="new_home_task_project">{data.leap_client_sub_projects.sub_project_name}</div>
+                                                                                                        <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
                                                                                                         <div className="new_home_task_description">
                                                                                                             {data.task_details}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div className="new_home_task_type">
-                                                                                                        {data.leap_project_task_types.task_type_name}
+                                                                                                        {data.task_type_id.task_type_name}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </>
-                                                                                            : data.task_status == 3 ?
+                                                                                            : data.task_status.id == 3 ?
                                                                                                 <>
                                                                                                     <div className="new_home_task_listing new_home_task_type_complete">
                                                                                                         <div className="new_home_task_project_namebox">
-                                                                                                            <div className="new_home_task_project">{data.leap_client_sub_projects.sub_project_name}</div>
+                                                                                                            <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
                                                                                                             <div className="new_home_task_description">
                                                                                                                 {data.task_details}
                                                                                                             </div>
                                                                                                         </div>
                                                                                                         <div className="new_home_task_type">
-                                                                                                            {data.leap_project_task_types.task_type_name}
+                                                                                                            {data.task_type_id.task_type_name}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </>
-                                                                                                : data.task_status == 5 ?
+                                                                                                : data.task_status.id == 5 ?
                                                                                                     <>
                                                                                                         <div className="new_home_task_listing new_home_task_type_assigned">
                                                                                                             <div className="new_home_task_project_namebox">
-                                                                                                                <div className="new_home_task_project">{data.leap_client_sub_projects.sub_project_name}</div>
+                                                                                                                <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
                                                                                                                 <div className="new_home_task_description">
                                                                                                                     {data.task_details}
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                             <div className="new_home_task_type">
-                                                                                                                {data.leap_project_task_types.task_type_name}
+                                                                                                                {data.task_type_id.task_type_name}
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </>
@@ -617,29 +617,13 @@ const Dashboard = () => {
                                                                         </div>
                                                                     ) : <> Fill your daily tasks!</>
                                                                     }
-                                                                    {assignedTaskarray?.map((data, index) =>
-                                                                        <div className="new_home_task_mainbox" key={index}>
-                                                                            <> <div className="new_home_task_listing new_home_task_type_assigned">
-                                                                                <div className="new_home_task_project_namebox">
-                                                                                    <div className="new_home_task_project">{data.leap_client_sub_projects.sub_project_name}</div>
-                                                                                    <div className="new_home_task_description">
-                                                                                        {data.task_details}
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className="new_home_task_type">
-                                                                                    {data.leap_project_task_types.task_type_name}
-                                                                                </div>
-                                                                            </div> </>
-                                                                        </div>
-                                                                    )}                                                                
-                                                                    </div>
+
+                                                                </div>
                                                             </>
                                                             : <div />
                                                 }
                                             </div>
                                         </div>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -692,8 +676,8 @@ const Dashboard = () => {
                                                         </div>
                                                     </div>
                                                 ))}</div>) : <>
-                                                <div className="new_user_notification_listing py-4">No Holidays this month!</div>
-                                                </>
+                                            <div className="new_user_notification_listing py-4">No Holidays this month!</div>
+                                        </>
                                         }
                                     </div>
                                     {/* } */}

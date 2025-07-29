@@ -98,13 +98,15 @@ const EmpAttendancePage = () => {
         setLoading(true)
         try {
             const formData = new FormData();
-            formData.append("client_id", contextClientID);
-            formData.append("branch_id", contaxtBranchID);
-            formData.append('customer_id', filterValues.name);
+            // formData.append("client_id", contextClientID);
+            // formData.append("branch_id", contaxtBranchID);
+            // formData.append('customer_id', filterValues.name);
 
-            const response = await fetch("/api/clientAdmin/getAllEmployee", {
+            const response = await fetch("/api/users/getTeamMembers", {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "customer_id": contextCustomerID
+                }),
             });
             const apiResponse = await response.json();
             if (!response.ok) {
@@ -124,13 +126,13 @@ const EmpAttendancePage = () => {
             } else {
 
 
-                setEmpAttendanceData(apiResponse.data);
+                setEmpAttendanceData(apiResponse.data.subordinates);
                 let empNames: any[] = []
-                for (let i = 0; i < apiResponse.data.length; i++) {
+                for (let i = 0; i < apiResponse.data.subordinates.length; i++) {
 
                     empNames.push({
-                        value: apiResponse.data[i].customer_id,
-                        label: apiResponse.data[i].emp_id + "  " + apiResponse.data[i].name,
+                        value: apiResponse.data.subordinates[i].customer_id,
+                        label: apiResponse.data.subordinates[i].emp_id + "  " + apiResponse.data.subordinates[i].name,
                     })
                 }
                 setEmployeeNames(empNames);
@@ -271,7 +273,6 @@ const EmpAttendancePage = () => {
                                                     <div className="col-lg-3"><span>Name</span></div>
                                                     <div className="col-lg-3 text-center"><span>Designation</span></div>
                                                     <div className="col-lg-1 text-center"><span>Emp ID</span></div>
-                                                    {/* <div className="col-lg-2 text-center"><span>Department</span></div> */}
                                                     <div className="col-lg-2 text-center"><span>Contact No.</span></div>
                                                     <div className="col-lg-2 text-center"><span>Status</span></div>
                                                     <div className="col-lg-1 text-center"><span>Action</span></div>
@@ -282,15 +283,10 @@ const EmpAttendancePage = () => {
                                                             <div className="col-lg-3 attendance_memberimg" style={{ paddingLeft: "60px" }}><img src={emp.profile_pic != null && emp.profile_pic.length > 0 ? process.env.NEXT_PUBLIC_BASE_URL + emp.profile_pic : "/images/user.png"} className="img-fluid" />{emp.name}</div>
                                                             <div className="col-lg-3 text-center">{emp.leap_client_designations?.designation_name || "--"}</div>
                                                             <div className="col-lg-1 text-center">{emp.emp_id}</div>
-                                                            {/* <div className="col-lg-2 text-center">{emp.leap_client_departments?.department_name || "--"}</div> */}
                                                             <div className="col-lg-2 text-center">{emp.contact_number}</div>
                                                             <div className="col-lg-2 text-center">
                                                                 <div className="new_team_attendance_status_mainbox">
                                                                     <div className="new_team_attendance_status_present_icon"></div>
-                                                                    {/* <div className="new_team_attendance_status_absent_icon"></div>
-                                                                    <div className="new_team_attendance_status_holiday_icon"></div>
-                                                                    <div className="new_team_attendance_status_weekend_icon"></div>
-                                                                    <div className="new_team_attendance_status_leave_icon"></div> */}
                                                                     <div className="new_team_attendance_status">Present</div>
                                                                 </div>
                                                             </div>
