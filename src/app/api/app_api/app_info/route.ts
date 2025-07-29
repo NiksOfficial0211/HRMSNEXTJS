@@ -18,33 +18,32 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const formData = await request.formData();
-        const fdata = {
+        const {customer_id, role_id, platform, auth_token, version} = await request.json();
+        // const fdata = {
 
-            customer_id: formData.get('customer_id'),
-            role_id: formData.get('role_id'),
-            platform: formData.get('platform'),
-            authToken: formData.get('auth_token'),
-            version: formData.get('version')
-        };
+        //     customer_id: formData.get('customer_id'),
+        //     role_id: formData.get('role_id'),
+        //     platform: formData.get('platform'),
+        //     authToken: formData.get('auth_token'),
+        //     version: formData.get('version')
+        // };
         // console.log(fdata);
-        if(fdata.authToken && fdata.customer_id){
-            if (!await isAuthTokenValid(fdata.platform, fdata.customer_id, fdata.authToken)) {
+        if(auth_token && customer_id){
+            if (!await isAuthTokenValid(platform, customer_id, auth_token)) {
                 return funloggedInAnotherDevice()
             }
         }
 //  here we get the app version if platform is passed in api and matches ios or android
         let appVersions:any=[];
         
-        if(fdata.platform && (fdata.platform==="android" || fdata.platform==="ios")){
-            console.log(fdata.platform);
+        if(platform && (platform==="android" || platform==="ios")){
+            console.log(platform);
 
             const {data,error} = await supabase
             .from("app_versioning")
-            .select("*").eq("platform",fdata.platform);
+            .select("*").eq("platform",platform);
             if (error) {
                 console.log(error);
-                
                 appVersions=[]
             }else{
                 appVersions=data;
@@ -53,11 +52,11 @@ export async function POST(request: NextRequest) {
 //  here we get the customer company info if customer_id is passed in api
 
         let companyDetails:any=[];
-        if(fdata.customer_id){
+        if(customer_id){
             const {data,error} = await supabase
             .from("leap_customer")
             .select("leap_client(leap_client_basic_info(*))")
-            .eq("customer_id", fdata.customer_id);
+            .eq("customer_id", customer_id);
 
             if (error) {
                 return funSendApiErrorMessage(error,"Unable to get user");
@@ -67,8 +66,8 @@ export async function POST(request: NextRequest) {
         }
         const {data:DashboardPermission,error} = await supabase.from("leap_client_employee_permissions")
             .select('*,leap_client_employee_permission_types(*)')
-            .eq("customer_id",fdata.customer_id)
-            console.log(error);
+            .eq("customer_id",customer_id)
+            console.log(DashboardPermission);
 
             const filteredPermissions = DashboardPermission?.filter(permission =>
                 permission.leap_client_employee_permission_types?.permission_name === "Dashboard"
@@ -85,10 +84,8 @@ export async function POST(request: NextRequest) {
             compnay_websit: companyDetails[0].leap_client.leap_client_basic_info[0].compnay_websit,
             primary_color: companyDetails[0].leap_client.leap_client_basic_info[0].primary_color,
             secondary_color: companyDetails[0].leap_client.leap_client_basic_info[0].secondary_color,
-            show_dashboard:filteredPermissions![0].is_allowed
+            show_dashboard:filteredPermissions && filteredPermissions.length > 0 ?filteredPermissions[0].is_allowed : true
         }
-
-
 
         return NextResponse.json({
                 status: 1, message: "App Info",
@@ -98,12 +95,7 @@ export async function POST(request: NextRequest) {
             { status: apiStatusSuccessCode });
 
     } catch (error) {
-
-
         return funSendApiException(error);
-
     }
-
 }
-
 
