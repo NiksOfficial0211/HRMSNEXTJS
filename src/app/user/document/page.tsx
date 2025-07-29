@@ -301,7 +301,7 @@ const EmployeeDocuments = () => {
                                             : tabSelectedIndex == 1 ?
                                                 // Official documents
                                                 <>
-                                                    <div className="user_document_right_listing">
+                                                    <div className="user_document_right_listing mt-4">
                                                         {empOrgArray.length > 0 ? (
                                                             <div className="user_document_right_cardbox">
                                                                 {empOrgArray.map((doc, index) => {
@@ -336,7 +336,7 @@ const EmployeeDocuments = () => {
                                                 : tabSelectedIndex == 2 ?
                                                     // Personal documents
                                                     <>
-                                                        <div className="user_document_right_listing">
+                                                        <div className="user_document_right_listing mt-4">
                                                             {empPerArray.length > 0 ? (
                                                                 <div className="user_document_right_cardbox">
                                                                     {empPerArray.map((doc, index) => {

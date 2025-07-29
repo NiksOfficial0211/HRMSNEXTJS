@@ -36,6 +36,7 @@ interface DateRangeModel {
     actualDate: any,
     isHoliday: boolean,
     holidayName: any,
+    isWeekend: boolean;
     wasOnLeave: boolean,
     leaveTypeName: any,
     leaveApprovalStatus: any
@@ -57,10 +58,6 @@ const EmpAttendancePage = () => {
     const [alertForSuccess, setAlertForSuccess] = useState(0);
     const [alertTitle, setAlertTitle] = useState('');
     const [alertStartContent, setAlertStartContent] = useState('');
-    const [alertMidContent, setAlertMidContent] = useState('');
-    const [alertEndContent, setAlertEndContent] = useState('');
-    const [alertValue1, setAlertValue1] = useState('');
-    const [alertvalue2, setAlertValue2] = useState('');
 
     const [scrollPosition, setScrollPosition] = useState(0);
     const { contaxtBranchID, contextClientID, contextCustomerID, dashboard_notify_cust_id, contextRoleID, setGlobalState } = useGlobalContext();
@@ -75,6 +72,7 @@ const EmpAttendancePage = () => {
         date: '',
         month_year: '',
         actualDate: '',
+        isWeekend: false,
         employeeAttendance: {
             date: '',
             remark: '',
@@ -188,15 +186,6 @@ const EmpAttendancePage = () => {
                 "start_date": startDate,
                 "end_date": endDate
             }
-
-            // formData.append("client_id", contextClientID);
-            // formData.append("branch_id", contaxtBranchID);
-            // formData.append('customer_id', contextCustomerID);
-
-            // formData.append('start_date', filterValues.start_date || formatDateYYYYMMDD(new Date()));
-            // const endDate = filterValues.start_date != filterValues.end_date ? filterValues.end_date : formatDateYYYYMMDD(new Date())
-            // formData.append('end_date', endDate);
-
             const response = await fetch("/api/clientAdmin/getAllEmployeeAttendance", {
                 method: "POST",
                 body: JSON.stringify(
@@ -246,6 +235,7 @@ const EmpAttendancePage = () => {
                             date: dateRanges[i].date,
                             month_year: dateRanges[i].month_year,
                             actualDate: dateRanges[i].actual_date,
+                            isWeekend: dateRanges[i].isWeekend,
                             employeeAttendance: apiResponse.data[0].leap_customer_attendance[isPresent],
                             isHoliday: false,
                             holidayName: undefined,
@@ -258,6 +248,7 @@ const EmpAttendancePage = () => {
                             date: dateRanges[i].date,
                             month_year: dateRanges[i].month_year,
                             actualDate: dateRanges[i].actual_date,
+                            isWeekend: dateRanges[i].isWeekend,
                             employeeAttendance: apiResponse.data[0].leap_customer_attendance[isPresent],
                             isHoliday: true,
                             holidayName: apiResponse.holidaylist[isHoliday].holiday_name,
@@ -270,6 +261,7 @@ const EmpAttendancePage = () => {
                             date: dateRanges[i].date,
                             month_year: dateRanges[i].month_year,
                             actualDate: dateRanges[i].actual_date,
+                            isWeekend: dateRanges[i].isWeekend,
                             employeeAttendance: apiResponse.data[0].leap_customer_attendance[isPresent],
                             isHoliday: false,
                             holidayName: '',
@@ -282,6 +274,7 @@ const EmpAttendancePage = () => {
                             date: dateRanges[i].date,
                             month_year: dateRanges[i].month_year,
                             actualDate: dateRanges[i].actual_date,
+                            isWeekend: dateRanges[i].isWeekend,
                             employeeAttendance: null,
                             isHoliday: false,
                             holidayName: undefined,
@@ -323,9 +316,7 @@ const EmpAttendancePage = () => {
                 setAlertTitle("Exception");
                 setAlertStartContent(ALERTMSG_exceptionString);
                 setAlertForSuccess(2);
-
             }
-
         } catch (e) {
             setLoading(false);
             setShowAlert(true);
@@ -333,11 +324,9 @@ const EmpAttendancePage = () => {
             setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2);
             console.log(e);
-
         }
     }
     const resetFilter = async () => {
-
         setFilterValues({
             start_date: formatDateYYYYMMDD(new Date()),
             end_date: formatDateYYYYMMDD(new Date()),
@@ -412,12 +401,13 @@ const EmpAttendancePage = () => {
         return `${hrs}h ${mins}m`;
     };
     const { netMinutes } = getTotalWorkedMinutes(
-    dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time || '0',
-    dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time || '0' ,
-    // attendanceData.in_time,
-    // attendanceData.out_time,
-    // parseInt(attendanceData.paused_duration || '0') || 0
-    parseInt(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_duration || '0' ) || 0
+        dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time || '0',
+        dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time || '0',
+
+        // attendanceData.in_time,
+        // attendanceData.out_time,
+        // parseInt(attendanceData.paused_duration || '0') || 0
+        parseInt(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_duration || '0') || 0
     );
     const calculateProgressPercentage = () => {
         // const worked = calculateWorkedMinutes();
@@ -462,7 +452,7 @@ const EmpAttendancePage = () => {
                                                                         <input
                                                                             type="text"
                                                                             className="form-control"
-                                                                            value={formattedRange}
+                                                                            // value={formattedRange}
                                                                             placeholder='Date'
                                                                             readOnly
                                                                             onClick={() => setShowCalendar(!showCalendar)}
@@ -474,6 +464,7 @@ const EmpAttendancePage = () => {
                                                                                     onChange={handleDateChange}
                                                                                     moveRangeOnFirstSelection={false}
                                                                                     ranges={state}
+                                                                                    maxDate={new Date()}
                                                                                 />
                                                                             </div>
                                                                         )}
@@ -535,7 +526,6 @@ const EmpAttendancePage = () => {
                                                 </ul>
                                             </div>
                                         </div>
-
                                         {/* Main Content Box */}
                                         <div className="nw_user_inner_content_box new_user_attendance_contentbox" style={{ minHeight: '60vh' }}>
                                             <div className="row mt-4">
@@ -599,6 +589,14 @@ const EmpAttendancePage = () => {
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </>
+                                                                                        ) : dates.isWeekend && dates.employeeAttendance === null ? (
+                                                                                            <div className="new_small_weekend_box">
+                                                                                                
+                                                                                                    <div className="new_small_holidy_heading">Week-off</div>
+                                                                                                <div className="new_small_holidy_name">
+                                                                                                    {format(new Date(dates.actualDate), 'EEEE')}
+                                                                                                </div>
+                                                                                            </div>
                                                                                         ) : (
                                                                                             <>
                                                                                                 <div className="new_small_timing_box new_small_timing_present">
@@ -608,8 +606,21 @@ const EmpAttendancePage = () => {
                                                                                                                 <div className="my_attendance_start_time_name">Start Time</div>
                                                                                                                 <div className="my_attendance_start_time">
                                                                                                                     {dates.employeeAttendance?.in_time
-                                                                                                                        ? formatInTimeZone(new Date(dates.employeeAttendance.in_time), 'UTC', 'hh:mm a')
+                                                                                                                        ? (new Date(dates.employeeAttendance.in_time).toLocaleTimeString('en-US', {
+                                                                                                                            hour: '2-digit',
+                                                                                                                            minute: '2-digit',
+                                                                                                                            hour12: true,
+                                                                                                                        }))
                                                                                                                         : '--'}
+                                                                                                                    {/* {attendanceData.in_time! ? (
+                                                                                                                        <span>
+                                                                                                                            {new Date(dates.employeeAttendance.in_time).toLocaleTimeString('en-US', {
+                                                                                                                                hour: '2-digit',
+                                                                                                                                minute: '2-digit',
+                                                                                                                                hour12: true,
+                                                                                                                            })}
+                                                                                                                        </span>
+                                                                                                                    ) : <span>--</span>} */}
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                         </div>
@@ -618,7 +629,11 @@ const EmpAttendancePage = () => {
                                                                                                                 <div className="my_attendance_start_time_name">End Time</div>
                                                                                                                 <div className="my_attendance_start_time">
                                                                                                                     {dates.employeeAttendance?.out_time
-                                                                                                                        ? formatInTimeZone(new Date(dates.employeeAttendance.out_time), 'UTC', 'hh:mm a')
+                                                                                                                        ? (new Date(dates.employeeAttendance.out_time).toLocaleTimeString('en-US', {
+                                                                                                                            hour: '2-digit',
+                                                                                                                            minute: '2-digit',
+                                                                                                                            hour12: true,
+                                                                                                                        }))
                                                                                                                         : '--'}
                                                                                                                 </div>
                                                                                                             </div>
@@ -670,7 +685,7 @@ const EmpAttendancePage = () => {
                                                                                     {/* {empAttendanceData[0].name} */}
                                                                                 </div>
                                                                                 <div className="my_attendance_right_id">
-                                                                                    Emp Code:
+                                                                                    {/* Emp Code: */}
                                                                                     {/* <span>{empAttendanceData[0].emp_id}</span> */}
                                                                                 </div>
                                                                             </div>
@@ -684,11 +699,11 @@ const EmpAttendancePage = () => {
                                                                                         <div className="my_attendance_start_time_name">Start Time</div>
                                                                                         <div className="my_attendance_start_time">
                                                                                             {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time
-                                                                                                ? formatInTimeZone(
-                                                                                                    new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time),
-                                                                                                    'UTC',
-                                                                                                    'hh:mm a'
-                                                                                                )
+                                                                                                ? (new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time).toLocaleTimeString('en-US', {
+                                                                                                    hour: '2-digit',
+                                                                                                    minute: '2-digit',
+                                                                                                    hour12: true,
+                                                                                                }))
                                                                                                 : '--'}
                                                                                         </div>
                                                                                     </div>
@@ -698,11 +713,11 @@ const EmpAttendancePage = () => {
                                                                                         <div className="my_attendance_start_time_name">End Time</div>
                                                                                         <div className="my_attendance_start_time">
                                                                                             {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time
-                                                                                                ? formatInTimeZone(
-                                                                                                    new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time),
-                                                                                                    'UTC',
-                                                                                                    'hh:mm a'
-                                                                                                )
+                                                                                                ? (new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time).toLocaleTimeString('en-US', {
+                                                                                                    hour: '2-digit',
+                                                                                                    minute: '2-digit',
+                                                                                                    hour12: true,
+                                                                                                }))
                                                                                                 : '--'}
                                                                                         </div>
                                                                                     </div>
@@ -732,18 +747,26 @@ const EmpAttendancePage = () => {
                                                                                                     <div className="my_user_attendance_breakbox_left">
                                                                                                         <div className="my_user_attendance_breakbox_left_heading">Duration</div>
                                                                                                         <div className="my_user_attendance_breakbox_left_content">
-
+                                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index] ?
+                                                                                                                calculateTimeDuration(data, dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index]) : "--"} mins
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div className="my_user_attendance_breakbox_right">
-                                                                                                        <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
-                                                                                                        <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
+                                                                                                        <div className="my_user_attendance_breakbox_break">
+                                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons[index] ?
+                                                                                                                (dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons[index]) : "--"}
+                                                                                                        </div>
+                                                                                                        <div className="my_user_attendance_breakbox_timing">
+                                                                                                            {formatInTimeZone(new Date(data), 'UTC', 'hh:mm a')} To
+                                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index] ?
+                                                                                                                formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index]), 'UTC', 'hh:mm a') : "--"}
+                                                                                                        </div>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                            ) : <></>
-                                                                                    }
+                                                                                            ) : <> No breaks taken</>
+                                                                                        }
 
-                                                                                        {isExpanded && (
+                                                                                        {/* {isExpanded && (
                                                                                             <span className="moretext">
                                                                                                 {' '}
                                                                                                 <div className="my_user_attendance_breakbox">
@@ -756,20 +779,10 @@ const EmpAttendancePage = () => {
                                                                                                         <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                <div className="my_user_attendance_breakbox">
-                                                                                                    <div className="my_user_attendance_breakbox_left">
-                                                                                                        <div className="my_user_attendance_breakbox_left_heading">Duration</div>
-                                                                                                        <div className="my_user_attendance_breakbox_left_content">10 min</div>
-                                                                                                    </div>
-                                                                                                    <div className="my_user_attendance_breakbox_right">
-                                                                                                        <div className="my_user_attendance_breakbox_break">Taking Tea Break</div>
-                                                                                                        <div className="my_user_attendance_breakbox_timing">4:00pm To 4:15pm</div>
-                                                                                                    </div>
-                                                                                                </div>
                                                                                             </span>
-                                                                                        )}
+                                                                                        )} */}
                                                                                     </div>
-                                                                                    <div onClick={toggleText} className="user_attendance_readmore_iconbox">
+                                                                                    {/* <div onClick={toggleText} className="user_attendance_readmore_iconbox">
                                                                                         {isExpanded ?
                                                                                             <div className="read_leass_svg">
                                                                                                 <svg width="25" height="25" x="0" y="0" viewBox="0 0 24 24">
@@ -787,7 +800,7 @@ const EmpAttendancePage = () => {
                                                                                                 </svg>
                                                                                             </div>
                                                                                         }
-                                                                                    </div>
+                                                                                    </div> */}
                                                                                 </div>
                                                                             </div>
                                                                         </>
@@ -811,7 +824,7 @@ const EmpAttendancePage = () => {
                                                                                     textColor: "#000",
                                                                                     pathColor: "#5DC600",
                                                                                     trailColor: "#CECECE",
-                                                                                    textSize: "14px",
+                                                                                    textSize: "10px",
                                                                                 })}
                                                                             />
                                                                         </div>
@@ -821,17 +834,7 @@ const EmpAttendancePage = () => {
                                                         </div>
                                                     </div>
 
-                                                    {/* Optional Map Component */}
-                                                    {/* {showMap && (
-                                                    <AttendanceMap
-                                                        attendanceID={selectedData.selected_attendanceID}
-                                                        date={selectedData.selected_date}
-                                                        empName={selectedData.selected_empName}
-                                                        empID={selectedData.selected_empID}
-                                                        empDesignation={selectedData.selected_empDesignation}
-                                                        empDepartment={selectedData.selected_empDepartment}
-                                                    />
-                                                    )} */}
+
                                                 </div>
                                             </div>
                                         </div>
@@ -863,12 +866,16 @@ const generateDateRange = (start: string, end: string) => {
         const day = currentDate.getDate();
         const suffix = getOrdinalSuffix(day);
         const monthYear = format(currentDate, 'MMMM yyyy');
+        const isoDate = currentDate.toISOString().split("T")[0];
+        const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
 
         tempDates.push({
             date: `${day}${suffix}`,
             month_year: monthYear,
-            actual_date: currentDate.toISOString().split("T")[0],
+            actual_date: isoDate,
+            isWeekend: dayOfWeek === 0 || dayOfWeek === 6, // Sunday or Saturday
         });
+
 
         currentDate.setDate(currentDate.getDate() + 1); // safely increment
     }

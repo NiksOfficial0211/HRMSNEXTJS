@@ -53,7 +53,6 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
         const fetchData = async () => {
             const clientHour = await getTotalWorkingHours(contextClientID);
             setTotalHours(clientHour);
-            
         };
         fetchData();
         setAttendanceData(data);
@@ -73,8 +72,6 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
-
-
 
     const calculateTimeDuration = (startDate: any, endDate: any) => {
         const start = new Date(startDate);
@@ -269,10 +266,10 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
                                     <div className="new_attendance_break_mainbox">
                                         <div className="new_attendance_break_leftbox">
                                             From <span>{formatInTimeZone(new Date(breakTime), 'UTC', 'hh:mm a')}</span>
-                                            to <span>{attendanceData.pause_end_time[index] ? formatInTimeZone(new Date(attendanceData.pause_end_time[index]), 'UTC', 'hh:mm a') : "--"}</span>
+                                            to <span>{attendanceData?.pause_end_time[index] ? formatInTimeZone(new Date(attendanceData?.pause_end_time[index]), 'UTC', 'hh:mm a') : "--"}</span>
                                         </div>
                                         <div className="new_attendance_break_rightbox">
-                                            Duration: {attendanceData.pause_end_time[index] ? calculateTimeDuration(breakTime, attendanceData.pause_end_time[index]) : "--"} mins
+                                            Duration: {attendanceData?.pause_end_time[index] ? calculateTimeDuration(breakTime, attendanceData.pause_end_time[index]) : "--"} mins
                                         </div>
                                     </div>
                                 </div>
