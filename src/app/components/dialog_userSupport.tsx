@@ -61,13 +61,16 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
     const fetchData = async () => {
         setLoading(true);
         try {
-            const formData = new FormData();
-            formData.append("request_id", id);
-            formData.append("client_id", contextClientID);
+            // const formData = new FormData();
+            // formData.append("request_id", id);
+            // formData.append("client_id", contextClientID);
 
             const res = await fetch("/api/clientAdmin/get_supportrequest", {
                 method: "POST",
-                body: formData,
+                body:  JSON.stringify({
+                    "request_id": id,
+                    "client_id": contextClientID
+                }),
             });
             const response = await res.json();
 
@@ -86,17 +89,17 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
     const updateStatus = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        const formData = new FormData();
-        formData.append("status", "4");
-        formData.append("request_id", id);
-        formData.append("comments", formValues.status_remark);
-        formData.append("customer_id", contextCustomerID);
-        formData.append("client_id", contextClientID);
 
         try {
             const res = await fetch("/api/clientAdmin/update_supportrequest", {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "status": "4", // reopen
+                    "request_id": id,
+                    "comments": formValues.status_remark,
+                    "customer_id": contextCustomerID,
+                    "client_id": contextClientID
+                }),
             });
             const response = await res.json();
 
@@ -135,8 +138,8 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
         <div className="">
             <div className="">
                 <LoadingDialog isLoading={isLoading} />
-                <div className='rightpoup_close'>
-                    <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close' onClick={(e) => onClose(false)} />
+                <div className='rightpoup_close' onClick={(e) => onClose(false)}>
+                    <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close'  />
                 </div>
                 <div className="nw_user_offcanvas_mainbox">
                     <div className="nw_user_offcanvas_heading">

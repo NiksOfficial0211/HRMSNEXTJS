@@ -41,12 +41,14 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
             const taskStatus = await getStatus();
             setStatus(taskStatus);
             try {
-                const formData = new FormData();
-                formData.append("id", id);
+                // const formData = new FormData();
+                // formData.append("id", id);
 
                 const res = await fetch("/api/users/getTasks", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "id": id
+                    }),
                 });
 
                 const response = await res.json();
@@ -63,15 +65,18 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log("handle submit called");
-        const formData = new FormData();
-        formData.append("id", id);
-        formData.append("task_details", formValues.task_details);
+        // const formData = new FormData();
+        // formData.append("id", id);
+        // formData.append("task_details", formValues.task_details);
         try {
             const response = await fetch("/api/users/updateTask", {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "id": id,
+                    "task_details": formValues.task_details,
+                    "task_status": formValues.task_status
+                }),
             });
-            // console.log(response);
 
             if (response.ok) {
                 onClose();
@@ -121,16 +126,11 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
                         <div className="nw_user_offcanvas_listing">
                             <div className="nw_user_offcanvas_listing_lable">Status</div>
                             <div className='nw_user_offcanvas_listing_content'>
-                                {/* <select id="task_status" name="task_status" onChange={(e) => setFormValues((prev) => ({ ...prev, ['task_status']: e.target.value }))}>
-                                    <option value={taskData?.leap_task_status.id}>{taskData?.leap_task_status.status}</option>
-                                    {statusArray.map((type, index) => (
-                                        <option value={type.id} key={type.id} disabled={taskData?.leap_task_status.id == 3}>{type.status}</option>
-                                    ))}
-                                </select> */}
+                                
                                 <div className="form_box">
                                     {isToBeEddited ? <select id="status" name="status" value={formValues.task_status} onChange={(e) => setFormValues((prev) => ({ ...prev, ['task_status']: e.target.value }))}>
                                         {statusArray.map((type, index) => (
-                                            <option value={type.id} key={type.id}>{type.status}</option>
+                                            <option value={type.id} key={index}>{type.status}</option>
                                         ))}
                                     </select> :
                                         <div className="nw_user_offcanvas_listing_content">

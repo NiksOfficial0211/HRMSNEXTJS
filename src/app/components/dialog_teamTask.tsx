@@ -40,13 +40,12 @@ const TeamTaskData = ({ id, num, isToBeEddited, onClose }: { id: any, num: any, 
 
     const fetchAssignedTasks = async () => {
         try {
-            const formData = new FormData();
-            formData.append("id", id);
-            formData.append("assigned_to", contextCustomerID);
-
             const res = await fetch(`/api/users/getAssignedTask`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "id": id,
+                    "assigned_to": contextCustomerID
+                }),
             });
             const response = await res.json();
             console.log(response);
@@ -63,13 +62,13 @@ const TeamTaskData = ({ id, num, isToBeEddited, onClose }: { id: any, num: any, 
     };
     const fetchTeamTasks = async () => {
         try {
-            const formData = new FormData();
-            formData.append("id", id);
-            formData.append("manager_id", contextCustomerID);
 
             const res = await fetch(`/api/users/getTeamTasks`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "id": id,
+                    "manager_id": contextCustomerID
+                }),
             });
             const response = await res.json();
             console.log(response);
@@ -87,13 +86,13 @@ const TeamTaskData = ({ id, num, isToBeEddited, onClose }: { id: any, num: any, 
 
     const fetchProjectTasks = async () => {
         try {
-            const formData = new FormData();
-            formData.append("id", id);
-            formData.append("project_manager_id", contextCustomerID);
 
             const res = await fetch(`/api/users/getProjectTasks`, {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "id": id,
+                   "project_manager_id": contextCustomerID
+                }),
             });
             const response = await res.json();
             console.log(response);
@@ -111,14 +110,14 @@ const TeamTaskData = ({ id, num, isToBeEddited, onClose }: { id: any, num: any, 
     const handleApproval = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log("handle submit called");
-        const formData = new FormData();
-        formData.append("id", id);
-        formData.append("approval_status", formValues.approval_status);
 
         try {
             const response = await fetch("/api/users/approveTask", {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "id": id,
+                   "approval_status": formValues.approval_status
+                }),
             });
             if (response.ok) {
                 onClose();

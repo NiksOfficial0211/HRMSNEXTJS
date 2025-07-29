@@ -146,12 +146,6 @@ export async function POST(request: NextRequest) {
 
 
 
-
-
-
-
-
-
 // import { NextRequest, NextResponse } from "next/server";
 // import supabase from "../../supabaseConfig/supabase";
 // import { allClientsData, allEmployeeListData, apiStatusFailureCode, apiStatusSuccessCode, apiwentWrong } from "@/app/pro_utils/stringConstants";

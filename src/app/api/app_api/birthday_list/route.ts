@@ -17,18 +17,18 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const formData = await request.formData();
-        const fdata = {
+        const {customer_id, client_id, role_id, platform, auth_token, version } = await request.json();
+        // const fdata = {
 
-            customer_id: formData.get('customer_id'),
-            client_id: formData.get('client_id'),
-            role_id: formData.get('role_id'),
-            platform: formData.get('platform'),
-            authToken: formData.get('auth_token'),
-            version: formData.get('version')
-        };
-        if (fdata.authToken && fdata.customer_id) {
-            if (!await isAuthTokenValid(fdata.platform, fdata.customer_id, fdata.authToken)) {
+        //     customer_id: formData.get('customer_id'),
+        //     client_id: formData.get('client_id'),
+        //     role_id: formData.get('role_id'),
+        //     platform: formData.get('platform'),
+        //     authToken: formData.get('auth_token'),
+        //     version: formData.get('version')
+        // };
+        if (auth_token && customer_id) {
+            if (!await isAuthTokenValid(platform, customer_id, auth_token)) {
                 return funloggedInAnotherDevice()
             }
         }
@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
 
         const { data: birthdayList, error:todayListError } = await supabase.from("leap_all_birthdays")
             .select(`*,leap_customer(name)`)
-            .eq('client_id', fdata.client_id)
-            .neq("customer_id", fdata.customer_id)
+            .eq('client_id', client_id)
+            .neq("customer_id", customer_id)
             .eq("leap_customer.employment_status", true)
             .order("ocassion_date", { ascending: true });
         let todayList:any=[],upcommingList:any=[];
@@ -70,5 +70,4 @@ export async function POST(request: NextRequest) {
     }
 
 }
-
 

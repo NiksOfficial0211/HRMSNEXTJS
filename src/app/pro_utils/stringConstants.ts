@@ -173,6 +173,12 @@ export const selectBranch_AddEmployement="SelectBranch-AddEmployement"
 export const UpdateBranchEmployeeCount_AddEmployement="UpdateBranchEmployeeCount-AddEmployement"
 
 
+
+
+
+
+
+
 ///////////////////////////////////////////ritika code merge
 
 
@@ -248,3 +254,38 @@ export const permission_s_organization_id="15"
 export const permission_s_help_id="16"
 export const permission_s_googleMeetCalender_id="17"
 export const permission_s_holidayList_id="18"
+
+///-------------SUPER ADMIN STATIC TABLES-----------//
+
+export const table_LeapApprovalStatus="1"
+export const table_LeapAssetCondition="2"
+export const table_LeapAssetStatus="3"
+export const table_LeapCity="4"
+export const table_LeapClientEmployeePermissionTypes="5"
+export const table_LeapDashboardGreetings="6"
+export const table_LeapDepartment="7"
+export const table_LeapDesignation="8"
+export const table_LeapDocumentMainTypes="9"
+export const table_LeapDocumentType="10"
+export const table_LeapEmployementType="11"
+export const table_LeapHolidayTypes="12"
+export const table_LeapLeaveTypeIconAndColor="13"
+export const table_LeapPermissionMaster="14"
+export const table_LeapProjectStatus="15"
+// export const table_LeapProjectTaskType="16" // check again
+export const table_LeapProjectType="17"
+export const table_LeapProjectsTechStack="18"
+export const table_LeapRelations="19"
+export const table_LeapRequestMaster="20"
+export const table_LeapRequestPriority="21"
+export const table_LeapRequestStatus="22"
+export const table_LeapSalaryPayableDays="23"
+export const table_LeapSalaryStructure="24"
+export const table_LeapSectorType="25"
+export const table_LeapTaskPriorityLevel="26"
+export const table_LeapTaskStatus="27"
+export const table_LeapUserActivityType="28"
+export const table_LeapUserRole="29"
+export const table_LeapWebSidePanelMenu="30"
+export const table_LeapWorkingType="31"
+

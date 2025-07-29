@@ -28,7 +28,7 @@ interface breaktimer {
     fullday_working_hours: any
 }
 
-const UserAttendanceTimer = ({ data }: { data: AttendanceTimer }) => {
+const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any }) => {
     const { contextClientID, contextCustomerID, contextRoleID, contaxtBranchID, setGlobalState } = useGlobalContext();
     const [attendanceData, setAttendanceData] = useState<AttendanceTimer>(data);
     const [totalHours, setTotalHours] = useState<breaktimer[]>();
@@ -53,6 +53,7 @@ const UserAttendanceTimer = ({ data }: { data: AttendanceTimer }) => {
         const fetchData = async () => {
             const clientHour = await getTotalWorkingHours(contextClientID);
             setTotalHours(clientHour);
+            
         };
         fetchData();
         setAttendanceData(data);
@@ -135,7 +136,7 @@ const UserAttendanceTimer = ({ data }: { data: AttendanceTimer }) => {
                 </div>
                 <div className="new_attendancebox_middlebox">
                     <div className="new_attendance_middlebox_new_name">
-                        <h4>Hello Deeksha</h4>
+                        <h4>Hello {name}</h4>
                     </div>
                     <div className="new_attendancebox_middlebox_first">
                         <div className="new_attendancebox_middlebox_first_listing_wfh">
@@ -146,7 +147,7 @@ const UserAttendanceTimer = ({ data }: { data: AttendanceTimer }) => {
                                 <div className="wfh_date_listing_content">{moment().format("LL")}</div>
                             </div>
                             <div className="wfh_date_listing">
-                                <div className="wfh_date_listing_content_day">{attendanceData.leap_working_type && attendanceData.leap_working_type.type ? attendanceData.leap_working_type.type: "--"}</div>
+                                <div className="wfh_date_listing_content_day">{attendanceData.leap_working_type.type ? attendanceData.leap_working_type.type: "--"}</div>
                             </div>
                         </div>
                         <div className="new_attendancebox_middlebox_first_listing">
@@ -306,6 +307,24 @@ async function getTotalWorkingHours(id: string) {
         .from('leap_client')
         .select('fullday_working_hours')
         .eq('client_id', id);
+
+    const { data, error } = await query;
+    if (error) {
+        // console.log(error);
+
+        return [];
+    } else {
+        // console.log(data);
+        return data;
+    }
+}
+
+async function getUserName(id: string) {
+
+    let query = supabase
+        .from('leap_customer')
+        .select('name')
+        .eq('customer_id', id);
 
     const { data, error } = await query;
     if (error) {

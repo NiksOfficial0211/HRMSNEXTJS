@@ -153,7 +153,6 @@ export interface LeapApprovalStatus {
     leap_client_sub_projects: LeapClientSubProjects
     leap_project_task_types: LeapProjectTaskTypes
     leap_customer: LeapCustomer
-
   }
   
   export interface LeapTaskPriorityLevel {

@@ -443,95 +443,37 @@
 
 
 ////////////// ritika code merge 
-
-
-
-
 'use client'
-
 import React, { useEffect, useState } from 'react'
-import supabase from '@/app/api/supabaseConfig/supabase';
 import { useRouter } from 'next/navigation';
-import { error } from 'console';
-import { Address, AddressModel, CustomerAddress, EmergencyContact, LeapRelations } from '../models/employeeDetailsModel';
-import LoadingDialog from '@/app/components/PageLoader';
+import { Address, AddressModel, CustomerAddress, EmergencyContact, LeapRelations } from '../models/userEmployeeDetailsModel';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 
 export const UserAddress = () => {
     // const [userData, setUserData] = useState<Address>();
     const router = useRouter();
- const { contextClientID, contextRoleID, contextSelectedCustId } = useGlobalContext();
+    const { contextClientID, contextRoleID, contextCustomerID } = useGlobalContext();
     const [isLoading, setLoading] = useState(false)
-    const [emergencyContactRelation, setEmergencyRelation] = useState<LeapRelations[]>([]);
-    const [currentAdd, setcurrent] = useState<CustomerAddress>({
-        id: 0,
-        client_id: 0,
-        branch_id: 0,
-        customer_id: 0,
-        address_line1: '',
-        address_line2: '',
-        city: '',
-        state: '',
-        postal_code: '',
-        country: '',
-        latitude: '',
-        longitude: '',
-        is_primary: false,
-        created_at: '',
-        updated_at: '',
-        address_type: '',
-    });
-    const [permenantAdd, setpermenant] = useState<CustomerAddress>({
-        id: 0,
-        client_id: 0,
-        branch_id: 0,
-        customer_id: 0,
-        address_line1: '',
-        address_line2: '',
-        city: '',
-        state: '',
-        postal_code: '',
-        country: '',
-        latitude: '',
-        longitude: '',
-        is_primary: false,
-        created_at: '',
-        updated_at: '',
-        address_type: '',
-    });
-    const [emergencyContact, setEmergencyContact] = useState<EmergencyContact>({
-        emergency_contact: '',
-        contact_name: '',
-        relation: '',
-        leap_relations: {
-            id: 0,
-            relation_type: '',
-        }
-    })
+    const [currentAdd, setcurrent] = useState<CustomerAddress>();
+    const [permenantAdd, setpermenant] = useState<CustomerAddress>();
+    const [emergencyContact, setEmergencyContact] = useState<EmergencyContact>()
 
     useEffect(() => {
         const fetchData = async () => {
 
-            const relationsType = await getRelations();
-            setEmergencyRelation(relationsType);
-
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
-
 
                 const res = await fetch("/api/users/getProfile/getEmployeeAddress", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "customer_id": contextCustomerID
+                    }),
                 });
-                console.log(res);
 
                 const response = await res.json();
 
                 const user = response.data;
-
-
                 for (let i = 0; i < user.customerAddress.length; i++) {
                     console.log("Inside for loop", user.customerAddress[i].address_type);
 
@@ -546,8 +488,6 @@ export const UserAddress = () => {
                 }
                 // setUserData(user);
                 setEmergencyContact(user.emergencyContact[0])
-
-
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
@@ -555,60 +495,8 @@ export const UserAddress = () => {
         fetchData();
     }, []);
 
-    const formData = new FormData();
-
-    const [errors, setErrors] = useState<Partial<CustomerAddress>>({});
-
-    const validate = () => {
-        const newErrors: Partial<CustomerAddress> = {};
-        if (!currentAdd.address_line1) newErrors.address_line1 = "required";
-        if (!currentAdd.address_line2) newErrors.address_line2 = "required";
-        if (!currentAdd.city) newErrors.city = "required";
-        if (!currentAdd.state) newErrors.state = "required";
-        if (!currentAdd.postal_code) newErrors.postal_code = "required";
-        if (!currentAdd.country) newErrors.country = "required";
-
-        if (!permenantAdd.address_line1) newErrors.address_line1 = "required";
-        if (!permenantAdd.address_line2) newErrors.address_line2 = "required";
-        if (!permenantAdd.city) newErrors.city = "required";
-        if (!permenantAdd.state) newErrors.state = "required";
-        if (!permenantAdd.postal_code) newErrors.postal_code = "required";
-        if (!permenantAdd.country) newErrors.country = "required";
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-    const [emerErrors, setEmerErrors] = useState<Partial<EmergencyContact>>({});
-
-    const emergencyValidate = () => {
-        const newErrors: Partial<EmergencyContact> = {};
-        if (!emergencyContact.emergency_contact) newErrors.emergency_contact = "required";
-        if (!emergencyContact.contact_name) newErrors.contact_name = "required";
-        if (!emergencyContact.relation) newErrors.relation = "required";
 
 
-
-        setEmerErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    // const handleInputChange = (e: any) => {
-    //     const { name, value, type, files } = e.target;
-    //     console.log("Form values updated:", userData);
-    //     // setUserData((prev) => ({ ...prev, [name]: value }));
-    // };
-   
-
-
-    function isReadonly() {
-        if (contextRoleID == "2") {
-            return false;
-        } else if (contextRoleID == "3") {
-            return false;
-        } else {
-            return true;
-        }
-    }
     return (
         <>
             <div className="container" id='address_id'>
@@ -620,27 +508,27 @@ export const UserAddress = () => {
                             <div className="d_user_profile_details_listing_box">
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Line 1</div>
-                                    <div className="d_user_profile_details_content">{currentAdd.address_line1 || "--"}</div>
+                                    <div className="d_user_profile_details_content">{currentAdd?.address_line1 || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Line 2</div>
-                                    <div className="d_user_profile_details_content">{currentAdd.address_line2 || "--"}</div>
+                                    <div className="d_user_profile_details_content">{currentAdd?.address_line2 || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">City</div>
-                                    <div className="d_user_profile_details_content">{currentAdd.city || "--"}</div>
+                                    <div className="d_user_profile_details_content">{currentAdd?.city || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">State</div>
-                                    <div className="d_user_profile_details_content">{currentAdd.state || "--"}</div>
+                                    <div className="d_user_profile_details_content">{currentAdd?.state || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Postal code</div>
-                                    <div className="d_user_profile_details_content">{currentAdd.postal_code || "--"}</div>
+                                    <div className="d_user_profile_details_content">{currentAdd?.postal_code || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Country</div>
-                                    <div className="d_user_profile_details_content">{currentAdd.country || "--"}</div>
+                                    <div className="d_user_profile_details_content">{currentAdd?.country || "--"}</div>
                                 </div>
                             </div>
                         </div>
@@ -651,27 +539,27 @@ export const UserAddress = () => {
                             <div className="d_user_profile_details_listing_box">
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Line 1</div>
-                                    <div className="d_user_profile_details_content">{permenantAdd.address_line1 || "--"}</div>
+                                    <div className="d_user_profile_details_content">{permenantAdd?.address_line1 || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Line 2</div>
-                                    <div className="d_user_profile_details_content">{permenantAdd.address_line2 || "--"}</div>
+                                    <div className="d_user_profile_details_content">{permenantAdd?.address_line2 || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">City</div>
-                                    <div className="d_user_profile_details_content">{permenantAdd.city || "--"}</div>
+                                    <div className="d_user_profile_details_content">{permenantAdd?.city || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">State</div>
-                                    <div className="d_user_profile_details_content">{permenantAdd.state || "--"}</div>
+                                    <div className="d_user_profile_details_content">{permenantAdd?.state || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Postal code</div>
-                                    <div className="d_user_profile_details_content">{permenantAdd.postal_code || "--"}</div>
+                                    <div className="d_user_profile_details_content">{permenantAdd?.postal_code || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Country</div>
-                                    <div className="d_user_profile_details_content">{permenantAdd.country || "--"}</div>
+                                    <div className="d_user_profile_details_content">{permenantAdd?.country || "--"}</div>
                                 </div>
                             </div>
                         </div>
@@ -682,15 +570,15 @@ export const UserAddress = () => {
                             <div className="d_user_profile_details_listing_box">
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Emergency contact</div>
-                                    <div className="d_user_profile_details_content">{emergencyContact.emergency_contact || "--"}</div>
+                                    <div className="d_user_profile_details_content">{emergencyContact?.emergency_contact || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Contact person name</div>
-                                    <div className="d_user_profile_details_content">{emergencyContact.contact_name || "--"}</div>
+                                    <div className="d_user_profile_details_content">{emergencyContact?.contact_name || "--"}</div>
                                 </div>
                                 <div className="d_user_profile_details_listing">
                                     <div className="d_user_profile_details_subheading">Relation</div>
-                                    <div className="d_user_profile_details_content">{emergencyContact.leap_relations?.relation_type || "--"}</div>
+                                    <div className="d_user_profile_details_content">{emergencyContact?.leap_relations?.relation_type || "--"}</div>
                                 </div>
                             </div>
                         </div>
@@ -698,290 +586,8 @@ export const UserAddress = () => {
                     </div>
                 </div>
             </div>
-            
-                {/* <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12 mb-5">
-
-                            <div className="grey_box">
-                                <div className="row">
-                                    <div className="col-lg-12">
-                                        <div className="add_form_inner">
-                                            <div className="row">
-                                                <div className="col-lg-12 mb-4 inner_heading25">
-                                                    Current Address Details:
-                                                </div>
-                                            </div>
-                                            <div className="row" style={{ alignItems: "center" }}>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Line 1:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="address_line1" readOnly={isReadonly()} value={currentAdd.address_line1 || ""} name="address_line1" onChange={(e) => setcurrent((prev) => ({ ...prev, ["address_line1"]: e.target.value }))} />
-                                                        {errors.address_line1 && <span className="error" style={{ color: "red" }}>{errors.address_line1}</span>}
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" > Line 2:</label>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="address_line2" readOnly={isReadonly()} value={currentAdd.address_line2 || ""} name="address_line2" onChange={(e) => setcurrent((prev) => ({ ...prev, ["address_line2"]: e.target.value }))} />
-                                                        {errors.address_line2 && <span className="error" style={{ color: "red" }}>{errors.address_line2}</span>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="row" style={{ alignItems: "center" }}>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >City:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="city" readOnly={isReadonly()} value={currentAdd.city || ""} name="city" onChange={(e) => setcurrent((prev) => ({ ...prev, ["city"]: e.target.value }))} />
-                                                        {errors.city && <span className="error" style={{ color: "red" }}>{errors.city}</span>}
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >State: </label>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="state" readOnly={isReadonly()} value={currentAdd.state || ""} name="state" onChange={(e) => setcurrent((prev) => ({ ...prev, ["state"]: e.target.value }))} />
-                                                        {errors.state && <span className="error" style={{ color: "red" }}>{errors.state}</span>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="row" style={{ alignItems: "center" }}>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Postal code:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="postal_code" readOnly={isReadonly()} value={currentAdd.postal_code || ""} name="postal_code" onChange={(e) => setcurrent((prev) => ({ ...prev, ["postal_code"]: e.target.value }))} />
-                                                        {errors.postal_code && <span className="error" style={{ color: "red" }}>{errors.postal_code}</span>}
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Country:</label>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="country" readOnly={isReadonly()} value={currentAdd.country || ""} name="country" onChange={(e) => setcurrent((prev) => ({ ...prev, ["country"]: e.target.value }))} />
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>&nbsp;
-                        </div>
-                    </div>
-                </div> */}
-                {/* AddressDetails details 2 */}
-
-                {/* <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12 mb-5">
-                            <div className="grey_box">
-                                <div className="row">
-                                    <div className="col-lg-12">
-                                        <div className="add_form_inner">
-                                            <div className="row">
-                                                <div className="col-lg-12 mb-4 inner_heading25">
-                                                    Permanent Address Details:
-                                                </div>
-                                            </div>
-
-                                            <div className="row" style={{ alignItems: "center" }}>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Line 1:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="address_line1" readOnly={isReadonly()} value={permenantAdd.address_line1 || ""} name="address_line1" onChange={(e) => setpermenant((prev) => ({ ...prev, ["address_line1"]: e.target.value }))} />
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Line 2:</label>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="address_line2" readOnly={isReadonly()} value={permenantAdd.address_line2 || ""} name="address_line2" onChange={(e) => setpermenant((prev) => ({ ...prev, ["address_line2"]: e.target.value }))} />
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="row" style={{ alignItems: "center" }}>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >City:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="city" readOnly={isReadonly()} value={permenantAdd.city || ""} name="city" onChange={(e) => setpermenant((prev) => ({ ...prev, ["city"]: e.target.value }))} />
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >State: </label>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="state" readOnly={isReadonly()} value={permenantAdd.state || ""} name="state" onChange={(e) => setpermenant((prev) => ({ ...prev, ["state"]: e.target.value }))} />
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="row" style={{ alignItems: "center" }}>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Postal code:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="postal_code" readOnly={isReadonly()} value={permenantAdd.postal_code || ""} name="postal_code" onChange={(e) => setpermenant((prev) => ({ ...prev, ["postal_code"]: e.target.value }))} />
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Country:</label>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="country" readOnly={isReadonly()} value={permenantAdd.country || ""} name="country" onChange={(e) => setpermenant((prev) => ({ ...prev, ["country"]: e.target.value }))} />
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>&nbsp;
-
-                        </div>
-                    </div>
-                </div> */}
 
 
-                {/* <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12 mb-5">
-                            <div className="grey_box">
-                                <div className="row">
-                                    <div className="col-lg-12">
-                                        <div className="add_form_inner">
-                                            <div className="row">
-                                                <div className="col-lg-12 mb-4 inner_heading25">
-                                                    Emergency Contact details:
-                                                </div>
-                                            </div>
-
-                                            <div className="row" style={{ alignItems: "center" }}>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Emergency contact:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="emergency_contact" readOnly={isReadonly()} value={emergencyContact.emergency_contact || ""} name="emergency_contact" onChange={(e) => setEmergencyContact((prev) => ({ ...prev, ["emergency_contact"]: e.target.value }))} />
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Contact person name</label>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="contact_name" readOnly={isReadonly()} value={emergencyContact.contact_name || ""} name="contact_name" onChange={(e) => setEmergencyContact((prev) => ({ ...prev, ["contact_name"]: e.target.value }))} />
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="row" style={{ alignItems: "center" }}>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Relation:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <select id="relation" name="relation" onChange={(e) => setEmergencyContact((prev) => ({ ...prev, ["relation"]: e.target.value }))}>
-                                                            <option value={emergencyContact.leap_relations?.relation_type || ""}>{emergencyContact?.leap_relations?.relation_type || ""}</option>
-                                                            {emergencyContactRelation.map((relationsType, index) => (
-                                                                <option value={relationsType.id} key={relationsType.id} disabled={isReadonly()}>{relationsType.relation_type}</option>
-                                                            ))}
-                                                        </select>
-                                                        {errors.department_id && <span className="error" style={{ color: "red" }}>{errors.department_id}</span>}
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>&nbsp;
-                            <div className="row">
-                                {contextRoleID != "5" && <div className="col-lg-12" style={{ textAlign: "right" }}><input type='submit' value="Update" disabled={isReadonly()} className={`red_button ${isLoading}:"loading":""`} onClick={handleSubmit} /></div>}
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
-           
         </>
     )
-}
-
-
-async function getRelations() {
-
-    let query = supabase
-        .from('leap_relations')
-        .select();
-
-    const { data, error } = await query;
-    if (error) {
-        console.log(error);
-
-        return [];
-    } else {
-
-
-        return data;
-    }
 }

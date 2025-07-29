@@ -8,9 +8,8 @@ import LoadingDialog from './PageLoader';
 import { staticIconsBaseURL } from '../pro_utils/stringConstants';
 import moment from 'moment';
 
-const UserLeaveStatus = ({ onClose, id}: { onClose: (fetchData: boolean) => void, id: any}) => {
+const UserLeaveStatus = ({ onClose, id }: { onClose: (fetchData: boolean) => void, id: any }) => {
 
-    const [showResponseMessage, setResponseMessage] = useState(false);
     const { contextClientID, contaxtBranchID, contextSelectedCustId, contextRoleID } = useGlobalContext();
     const [leaveData, setLeaveData] = useState<AppliedLeave>();
     const [isLoading, setLoading] = useState(true);
@@ -18,13 +17,13 @@ const UserLeaveStatus = ({ onClose, id}: { onClose: (fetchData: boolean) => void
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("branch_id", contaxtBranchID);
-                formData.append("id", id);
                 const res = await fetch(`/api/users/getAppliedLeaves`, {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "branch_id": contaxtBranchID,
+                        "id": id
+                    }),
                 });
                 const response = await res.json();
                 const user = response.leavedata[0];
@@ -37,7 +36,7 @@ const UserLeaveStatus = ({ onClose, id}: { onClose: (fetchData: boolean) => void
         }
         fetchData();
     }, []);
-    
+
     return (
         <div >
             <div className='rightpoup_close'>
@@ -62,11 +61,11 @@ const UserLeaveStatus = ({ onClose, id}: { onClose: (fetchData: boolean) => void
                         <div className="nw_user_offcanvas_listing_lable">Date</div>
                         <div className="nw_user_offcanvas_listing_content">
                             {leaveData?.from_date === leaveData?.to_date ?
-                            <div className="ne_user_offcanvas_from_date_mainbox">
-                                <div className="ne_user_offcanvas_single_box">{moment(leaveData?.from_date).format('DD-MM-YYYY')}</div> </div>:
+                                <div className="ne_user_offcanvas_from_date_mainbox">
+                                    <div className="ne_user_offcanvas_single_box">{moment(leaveData?.from_date).format('DD-MM-YYYY')}</div> </div> :
                                 <div className="ne_user_offcanvas_from_date_mainbox"><div className="ne_user_offcanvas_from_to_box"><span className='from_color_code'>From :</span><span>{moment(leaveData?.from_date).format('DD-MM-YYYY')}</span></div>
-                                <div className="ne_user_offcanvas_to_box"><div className="ne_user_offcanvas_from_to_box"><span className='from_color_code'>To :</span><span>{moment(leaveData?.to_date).format('DD-MM-YYYY')}</span></div></div>
-                            </div>
+                                    <div className="ne_user_offcanvas_to_box"><div className="ne_user_offcanvas_from_to_box"><span className='from_color_code'>To :</span><span>{moment(leaveData?.to_date).format('DD-MM-YYYY')}</span></div></div>
+                                </div>
                             }
                         </div>
                     </div>
@@ -115,7 +114,7 @@ const UserLeaveStatus = ({ onClose, id}: { onClose: (fetchData: boolean) => void
                                     <div className="nw_priority_namebox"> {leaveData?.leap_approval_status.approval_type}</div>
                                 </div>
                                 </>
-                            )  : < div />
+                            ) : < div />
                             }
                         </div>
                     </div>

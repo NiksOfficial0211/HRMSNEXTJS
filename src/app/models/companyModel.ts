@@ -1,7 +1,9 @@
 export interface CompanyModel {
+    status: number
     message: string
     clients: Client[]
   }
+
   export interface Client {
     client_id: number
     created_at: string
@@ -24,7 +26,6 @@ export interface CompanyModel {
     leap_client_branch_details: LeapClientBranchDetail
     leap_sector_type: LeapSectorType
     leap_client_basic_info: LeapClientBasicInfo[]
-
   }
   
   export interface LeapClientBranchDetail {

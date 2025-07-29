@@ -503,7 +503,6 @@
 //     return userRole;
 //   }
 
-
 ////////////////// ritika code merge 
 
 
@@ -515,140 +514,26 @@ import supabase from '@/app/api/supabaseConfig/supabase';
 import { useRouter } from 'next/navigation';
 import { error } from 'console';
 import LoadingDialog from '@/app/components/PageLoader';
-import { ProfileModel, CustomerProfile, LeapWorkingType } from '../models/employeeDetailsModel';
+import { ProfileModel, CustomerProfile} from '../models/userEmployeeDetailsModel';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
-interface CustomerProfileErr {
-    designation_id: string,
-    department_id: string,
-    manager_id: string,
-    employment_type: string,
-    branch_id: string,
-    work_mode: string,
-    work_location: string,
-    date_of_joining: string,
-    email_id: string,
-}
+import moment from 'moment';
 export const UserEmployement = () => {
-    const [userData, setUserData] = useState<CustomerProfile>({
-        id: '',
-        customer_id: 0,
-        created_at: '',
-        name: '',
-        contact_number: '',
-        email_id: '',
-        dob: '',
-        client_id: 0,
-        gender: '',
-        date_of_joining: '',
-        employment_status: false,
-        device_id: '',
-        salary_structure: '',
-        user_role: 0,
-        profile_pic: '',
-        emergency_contact: 0,
-        contact_name: '',
-        relation: 0,
-        manager_id: 0,
-        designation_id: 0,
-        authUuid: '',
-        branch_id: 0,
-        emp_id: '',
-        updated_at: '',
-        marital_status: '',
-        nationality: '',
-        blood_group: '',
-        department_id: 0,
-        employment_type: 0,
-        work_location: '',
-        probation_period: '',
-        official_onboard_date: '',
-        alternateContact: '',
-        personalEmail: '',
-        work_mode: 0,
-        leap_client_branch_details: {
-            id: 0,
-            uuid: '',
-            client_id: 0,
-            dept_name: '',
-            is_active: false,
-            created_at: '',
-            updated_at: '',
-            branch_city: '',
-            branch_email: '',
-            time_zone_id: undefined,
-            branch_number: '',
-            branch_address: '',
-            is_main_branch: false,
-            contact_details: 0,
-            total_employees: 0
-        },
-        leap_client: {
-            user_id: '',
-            client_id: 0,
-            parent_id: undefined,
-            created_at: '',
-            is_deleted: false,
-            updated_at: '',
-            is_a_parent: false,
-            sector_type: '',
-            timezone_id: undefined,
-            company_name: '',
-            company_email: '',
-            company_number: '',
-            company_location: '',
-            number_of_branches: 0,
-            total_weekend_days: 0,
-            company_website_url: '',
-            fullday_working_hours: 0,
-            halfday_working_hours: 0
-        },
-        leap_client_designations: {
-            id: 0,
-            department: undefined,
-            designation_name: ''
-        },
-        leap_client_departments: {
-            id: 0,
-            is_active: false,
-            department_name: ''
-        },
-        leap_working_type: {
-            id: 0,
-            type: '',
-            created_at: ''
-        },
-        leap_employement_type: {
-            created_at: '',
-            updated_at: '',
-            employeement_type: '',
-            employment_type_id: 0
-        }
-    });
-    const router = useRouter();
-    const { contextClientID, contextRoleID, contextSelectedCustId } = useGlobalContext();
-    const [managerArray, setManagerArray] = useState<RoleManagerNameModel[]>([]);
-   
-    const [isLoading, setLoading] = useState(false)
+    const [userData, setUserData] = useState<CustomerProfile>();
+    const { contextClientID, contextCustomerID } = useGlobalContext();
+
 
     useEffect(() => {
         const fetchData = async () => {
-        
-            const managerName = await getManagers();
-            setManagerArray(managerName);
-
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
-
                 const res = await fetch("/api/users/getProfile", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "customer_id": contextCustomerID
+                    }),
                 });
-                console.log(res);
 
                 const response = await res.json();
-                console.log(response);
 
                 const user = response.customer_profile[0];
                 setUserData(user);
@@ -659,20 +544,12 @@ export const UserEmployement = () => {
         fetchData();
     }, []);
 
-    function isReadonly() {
-        if (contextRoleID == "2" || contextRoleID == "3") {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     return (
         <div className="container" id='employement_id'>
             <div className="row">
                 <div className="col-lg-12">
                     <div className="d_user_new_details_mainbox">
-                        <div className="d_user_profile_heading">Employement Details</div>
+                        <div className="d_user_profile_heading">Employment Details</div>
                         <div className="d_user_profile_details_listing_box">
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Employee ID</div>
@@ -680,19 +557,19 @@ export const UserEmployement = () => {
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Designation</div>
-                                <div className="d_user_profile_details_content">{userData?.leap_client_designations.designation_name|| "--"}</div>
+                                <div className="d_user_profile_details_content">{userData?.designation_id.designation_name || "--"}</div>
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Department</div>
-                                <div className="d_user_profile_details_content">{userData?.leap_client_departments.department_name || "--"}</div>
+                                <div className="d_user_profile_details_content">{userData?.department_id.department_name || "--"}</div>
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Reporting Manager</div>
-                                <div className="d_user_profile_details_content">{userData?.emp_id || "--"}</div>
+                                <div className="d_user_profile_details_content">{userData?.manager_id.name|| "--"}</div>
                             </div>
                             <div className="d_user_profile_details_listing">
-                                <div className="d_user_profile_details_subheading">Employement Type</div>
-                                <div className="d_user_profile_details_content">{userData?.leap_employement_type.employeement_type || "--"}</div>
+                                <div className="d_user_profile_details_subheading">Employment Type</div>
+                                <div className="d_user_profile_details_content">{userData?.employment_type.employeement_type|| "--"}</div>
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Branch</div>
@@ -700,7 +577,7 @@ export const UserEmployement = () => {
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Work Mode</div>
-                                <div className="d_user_profile_details_content">{userData?.leap_working_type.type || "--"}</div>
+                                <div className="d_user_profile_details_content">{userData?.work_mode.type || "--"}</div>
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Work Location</div>
@@ -708,7 +585,7 @@ export const UserEmployement = () => {
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Date of Joining</div>
-                                <div className="d_user_profile_details_content">{userData?.date_of_joining || "--"}</div>
+                                <div className="d_user_profile_details_content">{moment(userData?.date_of_joining).format('DD-MM-YYYY') || "--"}</div>
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Official email</div>
@@ -718,45 +595,7 @@ export const UserEmployement = () => {
                     </div>
                 </div>
             </div>
-           
+
         </div>
     )
-}
-
-
-
-async function getManagers() {
-    const clientID = 3;
-    let query = supabase
-        .from('leap_customer')
-        .select("customer_id,emp_id,name,client_id,branch_id")
-        .eq("client_id", 3);
-
-    if (clientID == 3) {
-        query = query.eq("user_role", 4);
-    } else {
-        query = query.eq("user_role", 6);
-    }
-
-    const { data, error } = await query;
-    if (error) {
-        console.log(error);
-
-        return [];
-    } else {
-        return data;
-    }
-
-}
-async function getDesignationSetUserRole(designation_id: any) {
-    let userRole = { role: 5, isMAnager: false, isTeamlead: false, isemployee: true }
-    const { data: Designation, error: desigError } = await supabase.from('leap_client_designations').select('*').eq('id', designation_id);
-    console.log("this isthe designation got------", Designation);
-    if (Designation![0].designation_name.toLowerCase().includes('manager')) {
-        userRole = { role: 4, isMAnager: true, isTeamlead: false, isemployee: false }
-    } else if (Designation![0].designation_name.toLowerCase().includes('team lead')) {
-        userRole = { role: 9, isMAnager: false, isTeamlead: true, isemployee: false }
-    }
-
-    return userRole;
 }

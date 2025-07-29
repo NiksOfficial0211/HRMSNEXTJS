@@ -65,13 +65,16 @@ export const pageURL_clientAdminSupport=baseUrl+"/clientadmin/admin-support";
 export const pageURL_orgHierarchy=baseUrl+"/clientadmin/org-hierarchy";
 
 
+
 export const pageURL_employeeAttendancePage=baseUrl+"/clientadmin/employee-attendance";
 
-export const pageURL_superAdmin_dashboard=baseUrl+"/clientadmin/dashboard";
-export const pageURL_superAdmin_clientDetails=baseUrl+"/clientadmin/client-details";
-export const pageURL_superAdmin_clientList=baseUrl+"/clientadmin/client-list";
-export const pageURL_superAdmin_onBoardClient=baseUrl+"/clientadmin/onboard-client";
-
+export const pageURL_superAdmin_dashboard=baseUrl+"/superadmin/dashboard";
+export const pageURL_superAdmin_clientDetails=baseUrl+"/superadmin/client-details";
+export const pageURL_superAdmin_clientList=baseUrl+"/superadmin/client-list";
+export const pageURL_superAdmin_onBoardClient=baseUrl+"/superadmin/onboard-client";
+export const pageURL_superAdmin_branchDetails=baseUrl+"/superadmin/onboard-client/branch-details";
+export const pageURL_superAdmin_permission=baseUrl+"/superadmin/permission";
+export const pageURL_superAdmin_tableSettings=baseUrl+"/superadmin/table-settings";
 
 
 export const leftMenuDashboardPageNumbers=1;
@@ -88,10 +91,10 @@ export const leftMenuHRPageNumbers=9;
 export const leftMenuNoticePageNumbers=10;
 export const leftMenuMessagePageNumbers=11;
 export const leftMenuProjectMGMTPageNumbers=12;
+export const leftMenuCustomerListPageNumbers=18;
 export const leftMenuPageNumbers=13;
 export const leftMenuteamMeetPageNumbers=14;
 export const leftMenuAdminSettingsPageNumbers=15;
-export const leftMenuCustomerListPageNumbers=18;
 export const leftMenuEmployeeListPageNumbers=16;
 export const leftMenuCompanyPayrollPageNumbers=17;
 export const leftMenuPayrollSub1PageNumbers=171;
