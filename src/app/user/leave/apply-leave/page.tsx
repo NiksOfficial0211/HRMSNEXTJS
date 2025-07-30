@@ -170,14 +170,13 @@ const AssignLeave: React.FC = () => {
     setShowCalendar(false)
     if (ranges.selection.startDate == ranges.selection.endDate) {
       setFormValues((prev) => ({ ...prev, ['from_date']: ranges.selection.startDate + "" }));
+      setFormValues((prev) => ({ ...prev, ['to_date']: ranges.selection.startDate + "" }));
       setIsHalfDayDisabled(false);
     } else {
       setFormValues((prev) => ({ ...prev, ['from_date']: ranges.selection.startDate + "" }));
       setFormValues((prev) => ({ ...prev, ['to_date']: ranges.selection.endDate + "" }));
       setIsHalfDayDisabled(true);
     }
-    // dateStart = ranges.selection.startDate;
-    // fetchUsers(3, '', selectedPage,ranges.selection.startDate,ranges.selection.endDate);
   };
   const formattedRange = state[0].startDate! == state[0].endDate! ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
 
@@ -228,6 +227,7 @@ const AssignLeave: React.FC = () => {
                                 onChange={handleChange}
                                 moveRangeOnFirstSelection={false}
                                 ranges={state}
+                                
                               />
                             </div>
                           )}

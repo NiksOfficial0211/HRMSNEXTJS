@@ -1,7 +1,7 @@
 // Manager can view their team members leaves
 import { NextRequest, NextResponse } from "next/server";
 import supabase from "../../supabaseConfig/supabase";
-import { allClientsData, apiStatusFailureCode, apiStatusSuccessCode, apiwentWrong } from "@/app/pro_utils/stringConstants";
+import { allClientsData, allLeavesData, apiStatusFailureCode, apiStatusSuccessCode, apiwentWrong } from "@/app/pro_utils/stringConstants";
 import { funSendApiException, funISDataKeyPresent } from "@/app/pro_utils/constant";
 import { log } from "console";
 import { funGetMyLeaveBalance } from "@/app/pro_utils/constantFunGetData";
@@ -9,17 +9,12 @@ import { funGetMyLeaveBalance } from "@/app/pro_utils/constantFunGetData";
 export async function POST(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || ""); 
-    const pageSize = parseInt(searchParams.get("limit") || ""); 
+    const page = parseInt(searchParams.get("page") || "");
+    const pageSize = parseInt(searchParams.get("limit") || "");
 
-    const {client_id, manager_id, end_date, start_date, customer_id, leave_status, branch_id } = await request.json();
-    // const fdata = {
-    //   clientId: formData.get('client_id'),
-    //   managerId: formData.get('manager_id')
-    // }
-   
+    const { client_id, manager_id, end_date, start_date, customer_id, leave_status, branch_id } = await request.json();
+
     let leaveBalances;
-
     if (!manager_id) {
       return NextResponse.json({ status: 0, message: "Manager ID is required" }, { status: apiStatusFailureCode });
     }
@@ -32,7 +27,7 @@ export async function POST(request: NextRequest) {
       .from("leap_customer")
       .select("customer_id")
       .eq("manager_id", manager_id)
-      .order('updated_at', {ascending:false})
+      .order('updated_at', { ascending: false })
 
     if (teamError) {
       return NextResponse.json({ status: 0, message: apiwentWrong, error: teamError }, { status: apiStatusFailureCode });
@@ -49,35 +44,52 @@ export async function POST(request: NextRequest) {
       .select(`*, leap_approval_status(approval_type), leap_client_leave(leave_name), leap_customer(name)`)
       .in("customer_id", employeeIds)
       .order("updated_at", { ascending: false })
-      // .range(start, end);
+    // .range(start, end);
 
-        if(customer_id && customer_id!="0"){
-                query=query.eq('customer_id', customer_id);
-                leaveBalances = await funGetMyLeaveBalance(client_id, branch_id,  customer_id, 5);
-              }
-        if(leave_status && parseInt(leave_status+'')>0){
-        query=query.eq('leave_status',leave_status);
-        }
-        if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_date)!){
-          query=query.gte('from_date',start_date).lte('to_date',start_date);
-        }
-        if(funISDataKeyPresent(start_date && funISDataKeyPresent(end_date))){
-          query=query.lte('from_date',end_date).gte('to_date',start_date);
-        }
-        
-        if(start || end){
-           query=query.range(start, end);
-        }
-        log(query);
+    if (customer_id && customer_id != "0") {
+      query = query.eq('customer_id', customer_id);
+      leaveBalances = await funGetMyLeaveBalance(client_id, branch_id, customer_id, 5);
+    }
+    if (leave_status && parseInt(leave_status + '') > 0) {
+      query = query.eq('leave_status', leave_status);
+    }
+    if (funISDataKeyPresent(start_date) && funISDataKeyPresent(end_date)) {
+      query = query
+        .gte('from_date', start_date)
+        .lte('to_date', end_date);
+    }
+
+    if (start || end) {
+      query = query.range(start, end);
+    }
+    log(query);
     const { data: leaves, error: leaveError } = await query;
 
     if (leaveError) {
       return NextResponse.json({ status: 0, message: apiwentWrong, error: leaveError }, { status: apiStatusFailureCode });
+    } else if (leaves.length == 0 && (start_date || end_date)) {
+      if (page == 1) {
+        return NextResponse.json({ message: "start date present if condition", status: 1, page: page, leavedata: [] }, { status: apiStatusSuccessCode });
+      } else {
+        return NextResponse.json({ message: allLeavesData, status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+      }
     }
+    else if (leaves.length == 0 && !start_date && page) {
+      return NextResponse.json({ message: allLeavesData, status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+    }
+    else if (leaves.length == 0 && !leave_status && page) {
+      return NextResponse.json({ message: allLeavesData, status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+    }
+    else {
+      if (!leaveBalances) {
+        leaveBalances = await funGetMyLeaveBalance(client_id, branch_id, leaves[0].customer_id, 5);
+      }
 
-    return NextResponse.json({ message: allClientsData, status: 1, leavedata: leaves }, { status: apiStatusSuccessCode });
+      return NextResponse.json({ message: allLeavesData, status: 1, leavedata: leaves }, { status: apiStatusSuccessCode });
+    }
+  }
 
-  } catch (error) {
+  catch (error) {
     return funSendApiException(error);
   }
 }

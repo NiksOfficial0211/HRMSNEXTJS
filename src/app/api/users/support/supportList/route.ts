@@ -9,6 +9,10 @@ import supabase from "@/app/api/supabaseConfig/supabase";
 
 export async function POST(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || ""); // Default: 1
+    const pageSize = parseInt(searchParams.get("limit") || ""); // Default: 20 per page
+
     const {
       client_id,
       customer_id,
@@ -19,20 +23,18 @@ export async function POST(request: NextRequest) {
       raised_on,
       id,
       end_date,
-      start_date,
-      page,
-      limit,
+      start_date
     } = await request.json();
 
-    const currentPage = parseInt(page || 1); // Default to 1
-    const pageSize = parseInt(limit || 10); // Default to 20 per page
-    const start = (currentPage - 1) * pageSize;
+   
+    const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
 
     let query = supabase
       .from("leap_client_employee_requests")
       .select(
-        "*, leap_request_master(*), leap_request_priority(priority_name), leap_customer(name), leap_request_status(status), leap_client_employee_requests_updates(*, leap_customer(name), leap_request_status(status))"
+        "*, leap_request_master(*), leap_request_priority(priority_name), leap_customer(name), leap_request_status(status), leap_client_employee_requests_updates(*, leap_customer(name), leap_request_status(status))",
+        
       )
       .order("updated_at", { ascending: false });
 
@@ -44,26 +46,39 @@ export async function POST(request: NextRequest) {
     if (active_status && active_status !== "0") query = query.eq("active_status", active_status);
     if (id && id !== "0") query = query.eq("id", id);
 
-    // Date range filter
+
     if (funISDataKeyPresent(start_date) && funISDataKeyPresent(end_date)) {
       query = query.gte("raised_on", start_date).lte("raised_on", end_date);
     }
 
-    // Exact date filter
     if (funISDataKeyPresent(raised_on)) {
       query = query.eq("raised_on", raised_on);
     }
-
-    // Pagination
-    query = query.range(start, end);
-
+    if (start || end) {
+      query = query.range(start, end);
+    }
     const { data: supportData, error: supportError } = await query;
 
     if (supportError) {
       return funSendApiErrorMessage(supportError, "Failed to fetch support data");
-    }
-
-    return NextResponse.json(
+    }else if (supportData.length == 0 && (start_date || end_date)) {
+          if (page == 1) {
+            return NextResponse.json({ message: "start date present if condition", status: 1, page: page, supportData: [] }, { status: apiStatusSuccessCode });
+          } else {
+            return NextResponse.json({ message: "Support request data fetched successfully", status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+          }
+        }
+        else if (supportData.length == 0 && !start_date && page) {
+          return NextResponse.json({ message: "Support request data fetched successfully", status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+        }
+        else if (supportData.length == 0 && !active_status && page) {
+          return NextResponse.json({ message: "Support request data fetched successfully", status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+        }
+        else if (supportData.length == 0 && !priority_level && page) {
+          return NextResponse.json({ message: "Support request data fetched successfully", status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+        }
+        else
+          { return NextResponse.json(
       {
         status: 1,
         message: "Support request data fetched successfully",
@@ -71,7 +86,7 @@ export async function POST(request: NextRequest) {
         // page: currentPage,
       },
       { status: apiStatusSuccessCode }
-    );
+    );}
   } catch (error) {
     return funSendApiException(error);
   }

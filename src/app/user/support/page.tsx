@@ -48,6 +48,8 @@ const Support = () => {
     const [alertEndContent, setAlertEndContent] = useState('');
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState("");
+    const [selectedPriority, setSelectedPriority] = useState("");
 
     const [filters, setFilters] = useState<filterType>({
         active_status: "", start_date: '', end_date: '',
@@ -57,7 +59,7 @@ const Support = () => {
 
     useEffect(() => {
         fetchFilter();
-        fetchData("", "", selectedPage, "", "");
+        fetchData("", "", "", selectedPage, "", "");
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
             const element = document.querySelector('.mainbox');
@@ -80,7 +82,7 @@ const Support = () => {
     }
     const formData = new FormData();
 
-    const fetchData = async (filterID: any, value: any, pageNumber: number, startDate: any, endDate: any) => {
+    const fetchData = async (filterID: any, statusValue: any, priorityValue: any, pageNumber: number, startDate: any, endDate: any) => {
         setLoading(true);
         try {
             let formData = {
@@ -92,14 +94,14 @@ const Support = () => {
                 "end_date": ""
             }
             if (filterID == 1) {
-                let activeStatus = filters.active_status.length > 0 && filters.active_status == value ? filters.active_status : value;
+                let activeStatus = filters.active_status.length > 0 && filters.active_status == statusValue ? filters.active_status : statusValue;
                 formData = {
                     ...formData,
                     "active_status": activeStatus
                 }
             }
             if (filterID == 2) {
-                let priorityLevel = filters.priority_level.length > 0 && filters.priority_level == value ? filters.priority_level : value;
+                let priorityLevel = filters.priority_level.length > 0 && filters.priority_level == priorityValue ? filters.priority_level : priorityValue;
                 formData = {
                     ...formData,
                     "priority_level": priorityLevel
@@ -120,29 +122,22 @@ const Support = () => {
                 }
             }
             if (filterID == 1 || filters.active_status.length > 0) {
-                let activeStatus = filters.active_status == value ? filters.active_status : value;
+                let activeStatus = filters.active_status == statusValue ? filters.active_status : statusValue;
                 formData = {
                     ...formData,
                     "active_status": activeStatus
                 }
             }
             if (filterID == 2 || filters.priority_level.length > 0) {
-                let priorityLevel = filters.priority_level == value ? filters.priority_level : value;
+                let priorityLevel = filters.priority_level == priorityValue ? filters.priority_level : priorityValue;
                 formData = {
                     ...formData,
                     "priority_level": priorityLevel
                 }
             }
-            // if (startDate || filters.start_date) formData.append("start_date", formatDateYYYYMMDD(startDate || filters.start_date));
-            // if (endDate || filters.end_date) formData.append("end_date", formatDateYYYYMMDD(endDate || filters.end_date));
-            // if (filterID == 1 || filters.active_status.length > 0) formData.append("active_status", filters.active_status);
-            // if (filterID == 2 || filters.priority_level.length > 0) formData.append("priority_level", filters.priority_level);
-
             const res = await fetch(`/api/users/support/supportList?page=${pageNumber}&limit=${10}`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+
                 body: JSON.stringify(
                     formData
                 ),
@@ -173,10 +168,10 @@ const Support = () => {
             }
         } catch (error) {
             setLoading(false);
-            console.error("Error fetching user data:", error);
+            // console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent("Failed to load API");
+            setAlertStartContent("ALERTMSG_exceptionString");
             setAlertForSuccess(2)
         }
     }
@@ -193,16 +188,16 @@ const Support = () => {
         setFilters({
             active_status: "", start_date: '', end_date: '', priority_level: ""
         });
-        fetchData("", "", selectedPage, "", "");
+        fetchData("", "", "", selectedPage, "", "");
     };
     function changePage(page: any) {
         if (hasMoreData) {
             setSelectedPage(selectedPage + page);
-            fetchData(3, "", selectedPage + page, '', '');
+            fetchData(3, selectedStatus, selectedPriority, selectedPage + page, '', '');
         }
         else if (!hasMoreData && selectedPage > 1) {
             setSelectedPage(selectedPage + page);
-            fetchData(3, "", selectedPage + page, '', '');
+            fetchData(3, selectedStatus, selectedPriority, selectedPage + page, '', '');
         }
     }
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -212,11 +207,13 @@ const Support = () => {
 
         if (name == "active_status") {
             setFilters((prev) => ({ ...prev, ['active_status']: value }));
-            fetchData(1, value, selectedPage, '', '');
+            fetchData(1, value, selectedPriority, selectedPage, '', '');
+            setSelectedStatus(value)
         }
         if (name == "priority_level") {
             setFilters((prev) => ({ ...prev, ['priority_level']: value }));
-            fetchData(2, value, selectedPage, '', '');
+            fetchData(2, selectedStatus, value, selectedPage, '', '');
+            setSelectedPriority(value)
         }
     };
     const [showCalendar, setShowCalendar] = useState(false);
@@ -237,7 +234,7 @@ const Support = () => {
             setFilters((prev) => ({ ...prev, ['start_date']: ranges.selection.startDate }));
             setFilters((prev) => ({ ...prev, ['end_date']: ranges.selection.endDate }));
         }
-        fetchData('', '', selectedPage, ranges.selection.startDate, ranges.selection.endDate);
+        fetchData('', selectedStatus, selectedPriority, selectedPage, ranges.selection.startDate, ranges.selection.endDate);
     };
     const formattedRange = state[0].startDate! == state[0].endDate! ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
@@ -247,7 +244,7 @@ const Support = () => {
         return parsedDate.format('YYYY-MM-DD');
     };
     return (
-        <div className='mainbox user_mainbox_new_design'>
+        <div className='mainbox user_mainbox_new_design new_user_support_mainbox'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -272,15 +269,15 @@ const Support = () => {
                                                         <div className="filter_whitebox" id="filter_whitebox">
                                                             <div className="nw_filter_form_group_mainbox">
                                                                 <div className="nw_filter_form_group">
-                                                                    <select id="active_status" name="active_status" onChange={handleFilterChange}>
-                                                                        <option value="">Status:</option>
+                                                                    <select id="active_status" name="active_status" className="form-select" onChange={handleFilterChange}>
+                                                                        <option value="">Status</option>
                                                                         {statusArray.map((dep, index) => (
                                                                             <option value={dep.id} key={index}>{dep.status}</option>
                                                                         ))}
                                                                     </select>
                                                                 </div>
                                                                 <div className="nw_filter_form_group">
-                                                                    <select id="priority_level" name="priority_level" onChange={handleFilterChange}>
+                                                                    <select id="priority_level" name="priority_level" className="form-select" onChange={handleFilterChange}>
                                                                         <option value="">Priority Level:</option>
                                                                         {priorityArray.map((dep, index) => (
                                                                             <option value={dep.id} key={index}>{dep.priority_name}</option>
@@ -291,7 +288,14 @@ const Support = () => {
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"
-                                                                        value="Date"
+                                                                        value={
+                                                                            filters.start_date && filters.end_date
+                                                                                ? `${format(new Date(filters.start_date), 'MMM d, yyyy')} - ${format(new Date(filters.end_date), 'MMM d, yyyy')}`
+                                                                                : filters.start_date
+                                                                                    ? `${format(new Date(filters.start_date), 'MMM d, yyyy')}`
+                                                                                    : 'Select Date'
+                                                                        }
+                                                                        placeholder='Select Date'
                                                                         readOnly
                                                                         onClick={() => setShowCalendar(!showCalendar)}
                                                                     />
@@ -351,13 +355,13 @@ const Support = () => {
                                                         <div className="row mb-5">
                                                             <div className="col-lg-12">
                                                                 <div className="row list_label mb-4">
-                                                                    <div className="col-lg-2 text-center"><div className="label">Ticket ID</div></div>
-                                                                    <div className="col-lg-2 text-center"><div className="label">Request Type</div></div>
-                                                                    <div className="col-lg-1 text-center"><div className="label">Raised on</div></div>
-                                                                    <div className="col-lg-2 text-center"><div className="label">Priority level</div></div>
-                                                                    <div className="col-lg-2 text-center"><div className="label">Description</div></div>
-                                                                    <div className="col-lg-2 text-center"><div className="label">Status</div></div>
-                                                                    <div className="col-lg-1 text-center"><div className="label">Action</div></div>
+                                                                    <div className="col-lg-2 text-center new_user_table_head"><div className="label">Ticket ID</div></div>
+                                                                    <div className="col-lg-2 text-center new_user_table_head"><div className="label">Request Type</div></div>
+                                                                    <div className="col-lg-1 text-center new_user_table_head"><div className="label">Raised on</div></div>
+                                                                    <div className="col-lg-2 text-center new_user_table_head"><div className="label">Priority level</div></div>
+                                                                    <div className="col-lg-2 text-center new_user_table_head"><div className="label">Description</div></div>
+                                                                    <div className="col-lg-2 text-center new_user_table_head"><div className="label">Status</div></div>
+                                                                    <div className="col-lg-1 text-center new_user_table_head"><div className="label">Action</div></div>
                                                                 </div>
                                                                 {supportArray.map((id, index) => (
                                                                     <div className="row list_listbox" key={index}>
@@ -436,11 +440,11 @@ const Support = () => {
                                                                             </div></>
                                                                         ) : id.active_status === 2 ? (
                                                                             <><div className="col-lg-2 text-center ">
-                                                                                <div className="user_red_chip">
+                                                                                <div className="user_blue_chip">
                                                                                     <div className="nw_chip_iconbox">
                                                                                         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="13" height="13" x="0" y="0" viewBox="0 0 32 32">
                                                                                             <g transform="matrix(1.1399999999999995,0,0,1.1399999999999995,-2.240141324996948,-2.240000267028801)">
-                                                                                                <path d="M21 12.46 17.41 16 21 19.54A1 1 0 0 1 21 21a1 1 0 0 1-.71.29 1 1 0 0 1-.7-.29L16 17.41 12.46 21a1 1 0 0 1-.7.29 1 1 0 0 1-.71-.29 1 1 0 0 1 0-1.41L14.59 16l-3.54-3.54a1 1 0 0 1 1.41-1.41L16 14.59l3.54-3.54A1 1 0 0 1 21 12.46zm4.9 13.44a14 14 0 1 1 0-19.8 14 14 0 0 1 0 19.8zM24.49 7.51a12 12 0 1 0 0 17 12 12 0 0 0 0-17z" data-name="Layer 22" fill="#ff0000" opacity="1" data-original="#000000"></path>
+                                                                                                <path d="M21 12.46 17.41 16 21 19.54A1 1 0 0 1 21 21a1 1 0 0 1-.71.29 1 1 0 0 1-.7-.29L16 17.41 12.46 21a1 1 0 0 1-.7.29 1 1 0 0 1-.71-.29 1 1 0 0 1 0-1.41L14.59 16l-3.54-3.54a1 1 0 0 1 1.41-1.41L16 14.59l3.54-3.54A1 1 0 0 1 21 12.46zm4.9 13.44a14 14 0 1 1 0-19.8 14 14 0 0 1 0 19.8zM24.49 7.51a12 12 0 1 0 0 17 12 12 0 0 0 0-17z" data-name="Layer 22" fill="#1976d2" opacity="1" data-original="#000000"></path>
                                                                                             </g>
                                                                                         </svg>
                                                                                     </div>
@@ -475,25 +479,29 @@ const Support = () => {
                                                         </div>
                                                         {/* here are the page number crowsels */}
                                                         <div className="row mt-4">
-                                                            <div className="col-lg-6 mb-1" style={{ textAlign: "left" }}>
-                                                                <BackButton isCancelText={false} />
-                                                            </div>
-                                                            <div className="col-lg-6" style={{ textAlign: "right" }}>
-                                                                <div className="page_changer new_page_changer_pagination">
-                                                                    {selectedPage > 1 ? <div className="new_pagination_svg" onClick={() => { changePage(-1) }}>
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
-                                                                            <g transform="matrix(-1.4400000000000002,1.763491390772189e-16,-1.763491390772189e-16,-1.4400000000000002,156.16000000000003,156.16015357971196)">
-                                                                                <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ed2024" opacity="1" data-original="#000000"></path>
-                                                                            </g>
-                                                                        </svg>
-                                                                    </div> : <></>}
-                                                                    <div className="font15Medium">{selectedPage}</div>
-                                                                    <div className="new_pagination_svg" onClick={() => { changePage(1) }}>
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
-                                                                            <g transform="matrix(1.4400000000000002,0,0,1.4400000000000002,-28.16000000000001,-28.16002769470215)">
-                                                                                <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ed2024" opacity="1" data-original="#000000"></path>
-                                                                            </g>
-                                                                        </svg>
+                                                            <div className="col-lg-12">
+                                                                <div className="my_new_paggination_box">
+                                                                    <div className="my_new_paggination_left_box">
+                                                                        <BackButton isCancelText={false} />
+                                                                    </div>
+                                                                    <div className='my_new_paggination_right_box'>
+                                                                        <div className="page_changer new_page_changer_pagination">
+                                                                            {selectedPage > 1 ? <div className="new_pagination_svg" onClick={() => { changePage(-1) }}>
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
+                                                                                    <g transform="matrix(-1.4400000000000002,1.763491390772189e-16,-1.763491390772189e-16,-1.4400000000000002,156.16000000000003,156.16015357971196)">
+                                                                                        <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ed2024" opacity="1" data-original="#000000"></path>
+                                                                                    </g>
+                                                                                </svg>
+                                                                            </div> : <></>}
+                                                                            <div className="font15Medium">{selectedPage}</div>
+                                                                            {hasMoreData && <div className="new_pagination_svg" onClick={() => { changePage(1) }}>
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
+                                                                                    <g transform="matrix(1.4400000000000002,0,0,1.4400000000000002,-28.16000000000001,-28.16002769470215)">
+                                                                                        <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ed2024" opacity="1" data-original="#000000"></path>
+                                                                                    </g>
+                                                                                </svg>
+                                                                            </div>}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -512,7 +520,7 @@ const Support = () => {
                     </div>
                     <div className="nw_user_offcanvas">
                         <div className={showDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
-                            {showDialog && <UserSupport id={editSupportId} selectedShortCutID={false} onClose={(updateData) => { setShowDialog(false), updateData && fetchData(3, "", selectedPage, '', '') }} />}
+                            {showDialog && <UserSupport id={editSupportId} selectedShortCutID={false} onClose={(updateData) => { setShowDialog(false), updateData && fetchData(3, "", "", selectedPage, '', '') }} />}
                         </div>
                     </div>
                     {/* ---------------------------------------- */}

@@ -32,42 +32,14 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
 
         fetchData();
     }, []);
-    // const fetchData = async () => {
-    //     setLoading(true);
-    //     try{
-    //         const formData = new FormData();
-    //         formData.append("id", id );
 
-    //         const res = await fetch("/api/users/support/supportList", {
-    //         method: "POST",
-    //         body: formData,
-    //     });
-    //     const response = await res.json();
-
-    //     if(response.status==1){
-    //         const supportData = response.data[0];
-    //         // const supportComments = response.data.leap_client_employee_requests_updates[0];
-    //         setSupport(supportData)
-    //         // setSupportRequestData(supportComments)
-    //         setLoading(false);
-    //     }else{
-    //         setLoading(false);
-    //     }
-    //     } catch (error) {
-    //         setLoading(false);
-    //         console.error("Error fetching user data:", error);
-    //     }
-    // }
     const fetchData = async () => {
         setLoading(true);
         try {
-            // const formData = new FormData();
-            // formData.append("request_id", id);
-            // formData.append("client_id", contextClientID);
 
             const res = await fetch("/api/clientAdmin/get_supportrequest", {
                 method: "POST",
-                body:  JSON.stringify({
+                body: JSON.stringify({
                     "request_id": id,
                     "client_id": contextClientID
                 }),
@@ -88,6 +60,7 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
     }
     const updateStatus = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validate()) return;
         setLoading(true);
 
         try {
@@ -121,6 +94,14 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
         }
     }
 
+    const [errors, setErrors] = useState<Partial<LeaveType>>({});
+
+    const validate = () => {
+        const newErrors: Partial<LeaveType> = {};
+        if (!formValues.status_remark) newErrors.status_remark = "required";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleInputChange = async (e: any) => {
         const { name, value } = e.target;
@@ -139,11 +120,11 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
             <div className="">
                 <LoadingDialog isLoading={isLoading} />
                 <div className='rightpoup_close' onClick={(e) => onClose(false)}>
-                    <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close'  />
+                    <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close' />
                 </div>
                 <div className="nw_user_offcanvas_mainbox">
                     <div className="nw_user_offcanvas_heading">
-                        Ticket <span style={{fontSize: "large"}}>{supportArray?.ticket_id || "--"}</span>
+                        Ticket <span style={{ fontSize: "large" }}>{supportArray?.ticket_id || "--"}</span>
                     </div>
                     <div className="nw_user_offcanvas_listing_mainbox">
                         <div className="nw_user_offcanvas_listing">
@@ -161,11 +142,12 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
                         <div className="nw_user_offcanvas_listing">
                             <div className="nw_user_offcanvas_listing_lable">Priority</div>
                             <div className="nw_user_offcanvas_listing_content">
+                                
                                 {supportArray?.priority_level === 1 ? (
                                     <><div className="nw_priority_mainbox">
                                         <div className="nw_priority_iconbox">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 341.333 341.333">
-                                                <path fill="#d32f2f" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
+                                                <path fill="#FF0000" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
                                             </svg>
                                         </div>
                                         <div className="nw_priority_namebox">{supportArray?.leap_request_priority?.priority_name}</div>
@@ -175,7 +157,7 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
                                     <><div className="nw_priority_mainbox">
                                         <div className="nw_priority_iconbox">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 341.333 341.333">
-                                                <path fill="#f9a825" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
+                                                <path fill="#FF6600" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
                                             </svg>
                                         </div>
                                         <div className="nw_priority_namebox">{supportArray?.leap_request_priority?.priority_name}</div>
@@ -185,7 +167,7 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
                                     <><div className="nw_priority_mainbox">
                                         <div className="nw_priority_iconbox">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 341.333 341.333">
-                                                <path fill="#388e3c" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
+                                                <path fill="#008000" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
                                             </svg>
                                         </div>
                                         <div className="nw_priority_namebox">{supportArray?.leap_request_priority?.priority_name}</div>
@@ -202,7 +184,7 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
                                     <><div className="nw_priority_mainbox">
                                         <div className="nw_priority_iconbox">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 341.333 341.333">
-                                                <path fill="#9e9e9e" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
+                                                <path fill="#FF6600" d="M170.667 0C76.41 0 0 76.41 0 170.667s76.41 170.667 170.667 170.667 170.667-76.41 170.667-170.667S264.923 0 170.667 0zm0 298.667c-70.692 0-128-57.308-128-128s57.308-128 128-128 128 57.308 128 128-57.308 128-128 128z" data-original="#000000" />
                                             </svg>
                                         </div>
                                         <div className="nw_priority_namebox">{supportArray?.leap_request_status?.status}</div>
@@ -303,6 +285,7 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
                                     <div className="col-lg-12">
                                         <div className="nw_reopen_text_area">
                                             <textarea className="form-control" rows={2} id="status_remark" name="status_remark" value={formValues.status_remark} onChange={handleInputChange} placeholder='Reason for reopening' />
+                                            {errors.status_remark && <span className="error" style={{ color: "red" }}>{errors.status_remark}</span>}
                                         </div>
                                         <div className="nw_user_reopen_btn_red">
                                             <input type='submit' value="Submit" onClick={updateStatus} />

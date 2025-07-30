@@ -333,12 +333,6 @@ const Dashboard = () => {
                                                     Add Task
                                                 </div>
                                             </div>
-                                            {/* <div className="salery_slip_btn_box">
-                                                <div className="salery_slip_btn_left">
-                                                    <img src={staticIconsBaseURL + "/images/user/megaphone.gif"}"/images/user/salaryslip.gif" alt="Salary Slip Icon" style={{ maxWidth: "45px", padding: "1px 1px 0px 7px" }} className="img-fluid" />
-                                                </div>
-                                                <div className="salery_slip_btn_right"><span>SALARY</span> SLIP</div>
-                                            </div> */}
                                         </a>
                                         {/* }  */}
                                         {/* {checkPermission(permission_m_asset_6) && */}
@@ -419,7 +413,7 @@ const Dashboard = () => {
                                                                 </svg>
                                                             </div>
                                                             <div className="nw_user_tab_name">
-                                                                Todays Tasks
+                                                                Today's Tasks
                                                             </div>
                                                         </a>
                                                     </li>

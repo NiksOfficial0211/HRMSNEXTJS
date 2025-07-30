@@ -222,6 +222,7 @@ import LoadingDialog from './PageLoader';
 import { staticIconsBaseURL } from '../pro_utils/stringConstants';
 import { SwiperSlide } from 'swiper/react';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
+import moment from 'moment';
 
 interface LeaveType {
     leave_id: string,
@@ -238,7 +239,6 @@ const LeaveStatusUpdate = ({ onClose, id, selectedShortCutID, isToBeEddited }: {
 
     const [formValues, setFormValues] = useState<LeaveType>({
         leave_id: "",
-        // customer_id: "",
         status: "",
         status_remark: "",
     });
@@ -251,7 +251,7 @@ const LeaveStatusUpdate = ({ onClose, id, selectedShortCutID, isToBeEddited }: {
         const fetchData = async () => {
 
             try {
-                
+
                 const res = await fetch(`/api/users/getAppliedLeaves`, {
                     method: "POST",
                     body: JSON.stringify({
@@ -294,20 +294,20 @@ const LeaveStatusUpdate = ({ onClose, id, selectedShortCutID, isToBeEddited }: {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
         setLoading(true);
-       
+
         try {
             const response = await fetch("/api/users/updateAppliedLeaveStatus", {
                 method: "POST",
                 body: JSON.stringify({
-                        "leave_id": id,
-                        "status": formValues.status,
-                       "status_remark": formValues.status_remark
-                    }),
+                    "leave_id": id,
+                    "status": formValues.status,
+                    "status_remark": formValues.status_remark
+                }),
             });
             // console.log(response);
             if (response.ok) {
@@ -326,7 +326,7 @@ const LeaveStatusUpdate = ({ onClose, id, selectedShortCutID, isToBeEddited }: {
             alert("An error occurred while submitting the form.");
         }
     }
-function extractFirstLetters(sentence: string) {
+    function extractFirstLetters(sentence: string) {
         const words = sentence.split(" ");
         let result = "";
         for (const word of words) {
@@ -338,7 +338,7 @@ function extractFirstLetters(sentence: string) {
         <div className="">
             <div className="">
                 <LoadingDialog isLoading={isLoading} />
-                <div className='rightpoup_close'>
+                <div className='rightpoup_close' onClick={(e) => onClose(false)}>
                     <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close' onClick={(e) => onClose(false)} />
                 </div>
                 {/* -------------- */}
@@ -354,8 +354,24 @@ function extractFirstLetters(sentence: string) {
                                 <div className="nw_user_offcanvas_listing_content">{leaveData?.leap_customer.name}</div>
                             </div>
                             <div className="nw_user_offcanvas_listing">
+                                <div className="nw_user_offcanvas_listing_lable">Applied on</div>
+                                <div className="nw_user_offcanvas_listing_content">{moment(leaveData?.created_at).format('DD-MM-YYYY')}</div>
+                            </div>
+                            <div className="nw_user_offcanvas_listing">
                                 <div className="nw_user_offcanvas_listing_lable">Leave Type</div>
                                 <div className="nw_user_offcanvas_listing_content">{leaveData?.leap_client_leave.leave_name}</div>
+                            </div>
+                            <div className="nw_user_offcanvas_listing">
+                                <div className="nw_user_offcanvas_listing_lable">Date</div>
+                                <div className="nw_user_offcanvas_listing_content">
+                                    {leaveData?.from_date === leaveData?.to_date ?
+                                        <div className="ne_user_offcanvas_from_date_mainbox">
+                                            <div className="ne_user_offcanvas_single_box">{moment(leaveData?.from_date).format('DD-MM-YYYY')}</div> </div> :
+                                        <div className="ne_user_offcanvas_from_date_mainbox"><div className="ne_user_offcanvas_from_to_box"><span className='from_color_code'>From :</span><span>{moment(leaveData?.from_date).format('DD-MM-YYYY')}</span></div>
+                                            <div className="ne_user_offcanvas_to_box"><div className="ne_user_offcanvas_from_to_box"><span className='from_color_code'>To :</span><span>{moment(leaveData?.to_date).format('DD-MM-YYYY')}</span></div></div>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                             <div className="nw_user_offcanvas_listing">
                                 <div className="nw_user_offcanvas_listing_lable">Reason</div>
@@ -422,37 +438,37 @@ function extractFirstLetters(sentence: string) {
                                     <div className="col-lg-12">
                                         <div className="nw_user_offcanavas_leave_balance_mainbox">
                                             {empleaveBalances && empleaveBalances.customerLeavePendingCount.map((balance, index) =>
-                                               
-                                                    <SwiperSlide key={index}>
-                                                        <div className="d_user_leave_balance_listing">
-                                                            <CircularProgressbar
-                                                                value={balance.leaveBalance}
-                                                                maxValue={balance.leaveAllotedCount}
-                                                                // text=
-                                                                // text={balance.leaveType}
-                                                                strokeWidth={12}
-                                                                styles={buildStyles({
-                                                                    textColor: "#000",
-                                                                    pathColor: "#899DAF",
-                                                                    trailColor: "#C2D4E4",
-                                                                    // textSize: "14px"
-                                                                })} />
-                                                            <div className="new_home_leave_balance_typebox_remaining_box">
-                                                                <div className="new_home_leave_balance_typebox">
-                                                                    {extractFirstLetters(balance.leaveType)}
-                                                                </div>
-                                                                <div className="new_home_leave_balance_remaining">
-                                                                    {balance.leaveBalance + "/" + balance.leaveAllotedCount}
-                                                                </div>
+
+                                                <SwiperSlide key={index}>
+                                                    <div className="d_user_leave_balance_listing">
+                                                        <CircularProgressbar
+                                                            value={balance.leaveBalance}
+                                                            maxValue={balance.leaveAllotedCount}
+                                                            // text=
+                                                            // text={balance.leaveType}
+                                                            strokeWidth={12}
+                                                            styles={buildStyles({
+                                                                textColor: "#000",
+                                                                pathColor: "#899DAF",
+                                                                trailColor: "#C2D4E4",
+                                                                // textSize: "14px"
+                                                            })} />
+                                                        <div className="new_home_leave_balance_typebox_remaining_box">
+                                                            <div className="new_home_leave_balance_typebox">
+                                                                {extractFirstLetters(balance.leaveType)}
                                                             </div>
-                                                            <div className='user_balance_tooltip'>
-                                                                <div className="ser_tool_tip_content">
-                                                                    {balance.leaveType}
-                                                                </div>
+                                                            <div className="new_home_leave_balance_remaining">
+                                                                {balance.leaveBalance + "/" + balance.leaveAllotedCount}
                                                             </div>
                                                         </div>
-                                                    </SwiperSlide>
-                                                )}
+                                                        <div className='user_balance_tooltip'>
+                                                            <div className="ser_tool_tip_content">
+                                                                {balance.leaveType}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </SwiperSlide>
+                                            )}
                                         </div>
                                     </div>
                                     {/* {empleaveBalances && empleaveBalances.customerLeavePendingCount.map((counts, index) =>

@@ -15,7 +15,7 @@ import { DateRange, RangeKeyDict } from 'react-date-range';
 import { Range } from 'react-date-range';
 import { format } from 'date-fns'
 import moment from 'moment'
-import { ALERTMSG_exceptionString, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import PageErrorCenterContent from '@/app/components/pageError'
 import ShowAlertMessage from '@/app/components/alert'
 import { ALERTMSG_addAssetSuccess } from '@/app/pro_utils/stringConstants'
@@ -53,9 +53,6 @@ const EmployeeLeaveList = () => {
     const [alertEndContent, setAlertEndContent] = useState('');
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
-    const [selectedStatus, setSelectedStatus] = useState("");
-    const [dateRange, setDateRange] = useState({ start: "", end: "" });
-
     useEffect(() => {
         fetchData();
         fetchUsers("", "", selectedPage, "", "");
@@ -85,12 +82,9 @@ const EmployeeLeaveList = () => {
                 "client_id": contextClientID,
                 "branch_id": contaxtBranchID,
                 "customer_id": contextCustomerID,
-                // "leave_status": 0,
-                // "start_date": "",
-                // "end_date": "",
-                "leave_status": value,
-                start_date: dateRange.start,
-                end_date: dateRange.end,
+                "leave_status": 0,
+                "start_date": "",
+                "end_date": ""
             }
             if (filterID == 1) {
                 let approved_id = filters.approvedID.length > 0 && filters.approvedID == value ? filters.approvedID : value;
@@ -157,17 +151,17 @@ const EmployeeLeaveList = () => {
             setLoading(false);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_exceptionString);
+            setAlertStartContent(ALERTMSG_addAssetSuccess);
             setAlertForSuccess(2)
         }
     }
     function changePage(page: any) {
         if (hasMoreData) {
             setSelectedPage(selectedPage + page);
-            fetchUsers(3, selectedStatus, selectedPage + page, '', '');
+            fetchUsers(3, "", selectedPage + page, '', '');
         } else if (!hasMoreData && selectedPage > 1) {
             setSelectedPage(selectedPage + page);
-            fetchUsers(3, selectedStatus, selectedPage + page, '', '');
+            fetchUsers(3, "", selectedPage + page, '', '');
         }
     }
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -177,10 +171,9 @@ const EmployeeLeaveList = () => {
 
         if (name == "approvedID") {
             setFilters((prev) => ({ ...prev, ['approvedID']: value }));
-            setSelectedStatus(value);
             fetchUsers(1, value, selectedPage, '', '');
         }
-        console.log("status: ", selectedStatus)
+
     };
     function filter_whitebox() {
         const x = document.getElementById("filter_whitebox");
@@ -210,21 +203,21 @@ const EmployeeLeaveList = () => {
     ]);
 
     const handleChange = (ranges: RangeKeyDict) => {
-        const start = ranges.selection.startDate;
-        const end = ranges.selection.endDate;
+    const start = ranges.selection.startDate;
+    const end = ranges.selection.endDate;
 
-        setState([ranges.selection]);
-        setShowCalendar(false);
+    setState([ranges.selection]);
+    setShowCalendar(false);
 
-        if (start && end) {
-            setFilters((prev) => ({
-                ...prev,
-                start_date: start,
-                end_date: end,
-            }));
-            fetchUsers('', selectedStatus, selectedPage, start, end);
-        }
-    };
+    if (start && end) {
+        setFilters((prev) => ({
+            ...prev,
+            start_date: start,
+            end_date: end,
+        }));
+        fetchUsers('', '', selectedPage, start, end);
+    }
+};
 
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
         if (!date) return '';
@@ -243,7 +236,7 @@ const EmployeeLeaveList = () => {
         return result;
     }
     return (
-        <div className='mainbox user_mainbox_new_design my_user_leave_page_mainbox user_black_overlay_main'>
+        <div className='mainbox user_mainbox_new_design'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -256,7 +249,7 @@ const EmployeeLeaveList = () => {
                                 <div className="nw_user_inner_mainbox">
                                     <div className="nw_user_inner_heading_tabbox">
                                         <div className="heading25">
-                                            My Leave
+                                            My <span>Leave</span>
                                         </div>
                                         {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                                             setShowAlert(false)
@@ -270,11 +263,10 @@ const EmployeeLeaveList = () => {
                                                         <div className="filter_whitebox" id="filter_whitebox">
                                                             <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_two">
                                                                 <div className="nw_filter_form_group">
-                                                                    <select id="approvedID" name="approvedID" onChange={handleFilterChange} >
+                                                                    <select id="approvedID" name="approvedID" onChange={handleFilterChange}>
                                                                         <option value="">Status:</option>
                                                                         {statusArray.map((dep, index) => (
                                                                             <option value={dep.id} key={index}>{dep.approval_type}</option>
-
                                                                         ))}
                                                                     </select>
                                                                 </div>
@@ -303,7 +295,7 @@ const EmployeeLeaveList = () => {
                                                                             />
                                                                         </div>
                                                                     )}
-
+                                                                    
                                                                 </div>
                                                                 <div className="nw_filter_submit_btn">
                                                                     <a onClick={() => resetFilter()}>
@@ -470,13 +462,13 @@ const EmployeeLeaveList = () => {
                                                                                     </svg>
                                                                                 </div> : <></>}
                                                                                 <div className="font15Medium">{selectedPage}</div>
-                                                                                {hasMoreData && <div className="new_pagination_svg" onClick={() => { changePage(1) }}>
+                                                                                <div className="new_pagination_svg" onClick={() => { changePage(1) }}>
                                                                                     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
                                                                                         <g transform="matrix(1.4400000000000002,0,0,1.4400000000000002,-28.16000000000001,-28.16002769470215)">
                                                                                             <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ED2024" opacity="1" data-original="#000000"></path>
                                                                                         </g>
                                                                                     </svg>
-                                                                                </div>}
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -507,21 +499,14 @@ const EmployeeLeaveList = () => {
                                                 </div>
                                             </div>
                                             <Swiper
-                                                // direction="vertical"
-                                                direction="horizontal"
-                                                breakpoints={{
-                                                    1200: {
-                                                        direction: "vertical",
-                                                        slidesPerView: 4,
-                                                    },
-                                                }}
+                                                direction="vertical"
                                                 modules={[Navigation]}
                                                 navigation={{
                                                     nextEl: '.swiper-button-next-custom',
                                                     prevEl: '.swiper-button-prev-custom',
                                                 }}
                                                 spaceBetween={20}
-                                                slidesPerView={5}
+                                                slidesPerView={4}
                                                 style={{ height: "540px" }}
                                             >
                                                 {balancearray.map((balance, index) =>
@@ -567,7 +552,6 @@ const EmployeeLeaveList = () => {
                         <div className={showDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
                             {showDialog && <UserLeaveStatus id={editLeaveId} onClose={(updateData) => { setShowDialog(false), updateData && fetchUsers(3, "", selectedPage, '', '') }} />}
                         </div>
-                        <div className="overlay_offcanvas"></div>
                     </div>
                 </div>
             } />
