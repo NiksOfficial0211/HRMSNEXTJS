@@ -413,7 +413,7 @@ const Dashboard = () => {
                                                                 </svg>
                                                             </div>
                                                             <div className="nw_user_tab_name">
-                                                                Today's Tasks
+                                                                Today&apos;s Tasks
                                                             </div>
                                                         </a>
                                                     </li>
