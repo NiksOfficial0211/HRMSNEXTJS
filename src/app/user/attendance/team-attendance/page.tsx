@@ -215,20 +215,7 @@ const EmpAttendancePage = () => {
                                                                         placeholder="Select..."
                                                                         isSearchable
                                                                     />
-                                                                {/* <div className="row d-flex align-items-center">
-                                                    <div className="col-lg-12 search_select_element">
-                                                        <Select
-                                                            className="custom-select"
-                                                            classNamePrefix="custom"
-                                                            options={employeeName}
-                                                            onChange={(selectedOption) =>
-                                                                handleEmpSelectChange(selectedOption)
-                                                            }
-                                                            placeholder="Search Employee"
-                                                            isSearchable
-                                                        />
-                                                    </div>
-                                                </div> */}
+
                                                                 </div>
                                                                 <div className="nw_filter_form_group">
                                                                     <a className={`red_button filter_submit_btn ${loadingCursor ? "loading" : ""}`} onClick={() => { setLoadingCursor(true), fetchData() }}>Submit</a>

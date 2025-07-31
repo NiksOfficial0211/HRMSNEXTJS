@@ -4,8 +4,7 @@ import supabase from '@/app/api/supabaseConfig/supabase';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 import { LeapDashboardShortcuts } from '../models/DashboardModel';
 import { companyDocUpload, employeeDocUpload, staticIconsBaseURL } from '../pro_utils/stringConstants';
-import Select from "react-select";
-import LoadingDialog from './PageLoader';
+import ShowAlertMessage from './alert';
 
 
 interface FormCompanyUploadDocDialog {
@@ -27,10 +26,16 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
     const [docTypes, setDocTypes] = useState<LeapDocumentType[]>([]);
     const [employeeData, setEmployee] = useState<LeapEmployeeBasic[]>([]);
     const [branchArray, setBranchArray] = useState<ClientBranchTableModel[]>([]);
-    const [empIDArray, setEmpIDArray] = useState<any[]>([]);
     const [branchSelected, setBranchSelected] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
-
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertForSuccess, setAlertForSuccess] = useState(0);
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertMidContent, setAlertMidContent] = useState('');
+    const [alertStartContent, setAlertStartContent] = useState('');
+    const [alertEndContent, setAlertEndContent] = useState('');
+    const [alertValue1, setAlertValue1] = useState('');
+    const [alertvalue2, setAlertValue2] = useState('');
     const [employeeName, setEmployeeNames] = useState([{ value: '', label: '' }]);
     const [inputData, setInputData] = useState<FormCompanyUploadDocDialog>({
         docTypeID: "",
@@ -46,8 +51,6 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         showToUsers: false
     });
     const { contextClientID, contaxtBranchID, contextRoleID, contextCustomerID } = useGlobalContext();
-    const [showResponseMessage, setResponseMessage] = useState(false);
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -72,21 +75,33 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                     label: empData[i].emp_id + "  " + empData[i].name,
                 })
             }
-            console.log(name);
-
+            // console.log(name);
             setEmployeeNames(name);
         }
 
     }
+    const [errors, setErrors] = useState<Partial<FormCompanyUploadDocDialog>>({});
+
+    const validate = () => {
+        const newErrors: Partial<FormCompanyUploadDocDialog> = {};
+        if (!inputData.docTypeID) newErrors.docTypeID = "required";
+        // if (!inputData.selectedFile) newErrors.selectedFile = "required";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const uploadDocument = async () => {
+        if (!validate()) return;
         const formData = new FormData();
         formData.append("uploadType", docType);
 
-
-
         if (docType == companyDocUpload) {
             if (inputData.selectedFile == null) {
-                return alert("Please select File to upload");
+                // return alert("Please select File to upload");
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent("No documents uploaded yet!");
+                setAlertForSuccess(2)
             }
             if (inputData.docTypeID.length > 0) {
                 return alert("Please select type of document");
@@ -99,20 +114,20 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
             formData.append("show_to_users", inputData.showToUsers + "");
         } else {
             if (formFilledData.selectedFile == null) {
-                return alert("Please select File to upload");
+                // return alert("Please select File to upload");
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent("No documents uploaded yet!");
+                setAlertForSuccess(2)
             }
             if (inputData.docTypeID.length > 0) {
                 return alert("Please select type of document");
             }
             formData.append("client_id", contextClientID);
-       
-                formData.append("customer_id", contextCustomerID);
-        
-
+            formData.append("customer_id", contextCustomerID);
             formData.append("file", formFilledData.selectedFile!);
             formData.append("branch_id", formFilledData.branch_id!);
             formData.append("doc_type_id", formFilledData.docTypeID);
-
         }
         try {
             const res = await fetch("/api/clientAdmin/org_documents", {
@@ -126,15 +141,12 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                 alert(response.message)
                 onClose();
             } else {
-
                 alert(response.message)
             }
         } catch (e) {
             console.log(e);
             alert("Somthing went wrong! Please try again.")
-
         }
-
     };
 
     const handleInputChange = (e: any) => {
@@ -156,8 +168,6 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         } else {
             setformFilledData((prev) => ({ ...prev, [name]: value }));
         }
-
-
         if (name == "branch_id") {
             setSelectedEmployee(null);
             setformFilledData((prev) => ({ ...prev, ['customer_id']: '' }))
@@ -169,24 +179,24 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                 setBranchSelected(false)
             }
             fetchEmployeeData(contextClientID, value);
-
         }
-
     };
-
-
-
 
     return (
         <div >
-            <div className='rightpoup_close'>
-                <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close' onClick={onClose} />
+            <div className='rightpoup_close' onClick={onClose}>
+                <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close' />
             </div>
             {/* -------------- */}
+            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                setShowAlert(false)
+            }} onCloseClicked={function (): void {
+                setShowAlert(false)
+            }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
             <div className="nw_user_offcanvas_mainbox">
                 {/* <LoadingDialog isLoading={isLoading} /> */}
                 <div className="nw_user_offcanvas_heading">
-                   Add <span>Document</span>
+                    Add <span>Document</span>
                 </div>
                 <div className="nw_user_offcanvas_listing_mainbox">
                     <div className="row">
@@ -200,6 +210,7 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                                             <option value={type.id} key={type.id}>{type.document_name}</option>
                                         ))}
                                     </select>
+                                    {errors.docTypeID && <span className="error" style={{ color: "red" }}>{errors.docTypeID}</span>}
                                 </div>
                                 <div className="nw_user_doc_uploadbox">
                                     <label htmlFor="selectedFile" className='nw_user_doc_upload_lablebox'>

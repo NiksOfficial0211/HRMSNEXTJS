@@ -4476,6 +4476,7 @@ input.new_upload_btn_input {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
   min-height: 300px;
+  row-gap: 36px;
   /* margin: 20px 0 0 0; */
 }
 
@@ -4487,8 +4488,7 @@ input.new_upload_btn_input {
   -webkit-box-orient: vertical;
   word-break: break-word;
   font-size: 14px;
-  margin: 0 0 10px 0;
-  /* color: #707070; */
+  padding: 15px;
 }
 
 .user_document_right_card_icon img {
@@ -4496,24 +4496,21 @@ input.new_upload_btn_input {
 }
 
 .user_document_right_card_listing {
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   border-radius: 12px;
   height: fit-content;
+  box-shadow: 0px 0px 12px #dededec2;
 }
 
 .user_document_right_card_icon {
   text-align: center;
+  padding: 20px 0;
 }
 
-.user_document_right_card_icon {
-  text-align: center;
-  padding: 20px;
-  border-bottom: 1px solid #ccc;
-}
 
-.user_document_right_card_content {
+/* .user_document_right_card_content {
   padding: 15px;
-}
+} */
 
 .user_document_right_card_two_btns {
   display: grid;
@@ -4559,6 +4556,50 @@ input.new_upload_btn_input {
   padding: 20px;
   border-radius: 12px;
 }
+
+.user_document_right_card_icon_download_box {
+    background-color: #ebeff2;
+    border-radius: 12px 12px 0 0;
+    display: grid;
+}
+
+.user_document_right_card_icon_download_box > * {
+  grid-area: 1/1;
+}
+
+.user_document_right_card_download {
+    width: 35px;
+    height: 35px;
+    align-self: start;
+    justify-self: end;
+    background-color: #6B8CA9;
+    border-radius: 0 12px;
+    transition-duration: 0.3s;
+}
+
+.user_document_right_card_download:hover {
+  background-color: #ec2024;
+}
+
+.user_document_right_card_download a {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.user_document_right_card_type {
+    padding: 10px;
+    background-color: #FFEDED;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    max-width: 90%;
+    margin: 0 auto -16px auto;
+}
+
 
 /* Documents ends  */
 /* Dashbord fixes start */
@@ -7739,6 +7780,10 @@ body:has(.user_mainbox_new_design) .left_inner {
   top: 100px;
 }
 
+body:has(.user_mainbox_new_design) .middle_box {
+  min-height: 88vh;
+}
+
 /* left menu design ends*/
 
 body:has(.user_mainbox_new_design) .dash_topbox {
@@ -8123,13 +8168,6 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 .new_user_att_detail_whitelist:has(.new_small_leave_box) .att_detail_whitelist:hover .att_detail_datebox.new_user_small_leftbox {
   background-color: #F57C00;
 }
-.new_user_att_detail_whitelist:has(.new_small_weekend_box) .att_detail_datebox {
-  background-color: #616161;
-}
-
-.new_user_att_detail_whitelist:has(.new_small_weekend_box) .att_detail_whitelist:hover .att_detail_datebox.new_user_small_leftbox {
-  background-color: #616161;
-}
 
 .new_user_att_detail_whitelist:has(.new_small_weekend_box) .att_detail_datebox {
   background-color: #616161;
@@ -8382,6 +8420,22 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 
 /* New announcement page ends */
 
+/* Body scroll bar start */
+body::-webkit-scrollbar {
+    width: 6px;
+}
+body::-webkit-scrollbar-thumb {
+    outline: none;
+    border-radius: 30px;
+    background-color: #ed2024;
+}
+body::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Body scroll bar ends */
+
 /* Bugs css start */
 .user_my_leave_details_box .d_user_leave_balance_listing {
   width: 160px;
@@ -8398,7 +8452,6 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 .nw_user_doc_selectbox select,
 .new_leave_formgoup select,
 .new_leave_formgoup input {
-.nw_user_doc_selectbox select {
   cursor: pointer;
 }
 
@@ -8433,8 +8486,9 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
     display: block;
 }
 
-
-
+.new_user_notification_listing:last-child .monthely_holiday_listing {
+  border: 0;  
+}
 
 /* Bugs css ends */
 
@@ -8600,44 +8654,7 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
 }
 
 
-
-  .new_home_team_member_mainbox {
-    grid-template-columns: repeat(2, 1fr);
-    grid-column-gap: 20px;
-  }
-
-  .new_user_left_firstmainbox {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 0 20px 20px 20px;
-  }
-
-  .new_attendancebox_lastbox {
-    right: -2px;
-  }
-
-  .new_personalize_greeting_mainbox::after {
-    display: none;
-  }
-
-  .new_attendancebox_middlebox_secondbox {
-    margin: 20px 10px 0px 0;
-  }
-.new_small_weekend_box {
-    padding: 10px;
-    background-color: #e9ecef;
-    border-radius: 8px;
-    text-align: center;
-}
-.new_small_weekend_heading {
-    font-weight: 600;
-    color: #6c757d;
-}
-.new_small_weekend_subtext {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
   /* Bugs ends  */
 }
-}
+
 /*--- END Dashboard css by Rahul ---*/

@@ -521,32 +521,22 @@ const AssignLeave: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
     setLoadingCursor(true);
-    // console.log("handle submit called");
-    //  formData.append("client_id", contextClientID);
-    //  formData.append("assigned_by", contextCustomerID);
-    //  formData.append("assigned_to", formValues.assigned_to);
-    //  formData.append("project_id", formValues.project_id);
-    //  formData.append("sub_project_id", formValues.sub_project_id);
-    //  formData.append("task_type_id", formValues.task_type_id);
-    //  formData.append("task_details", formValues.task_details);
-    // //  formData.append("task_date", formValues.task_date);
-    //  formData.append("task_priority", formValues.task_priority);
-    //  formData.append("deadline", formValues.deadline);
+    console.log("handle submit called");
+     formData.append("client_id", contextClientID);
+     formData.append("assigned_by", contextCustomerID);
+     formData.append("assigned_to", formValues.assigned_to);
+     formData.append("project_id", formValues.project_id);
+     formData.append("sub_project_id", formValues.sub_project_id);
+     formData.append("task_type_id", formValues.task_type_id);
+     formData.append("task_details", formValues.task_details);
+    //  formData.append("task_date", formValues.task_date);
+     formData.append("task_priority", formValues.task_priority);
+     formData.append("deadline", formValues.deadline);
 
     try {
       const response = await fetch("/api/users/assignTask", {
           method: "POST",
-          body: JSON.stringify({
-                        "client_id": contextClientID,
-                        "assigned_by": contextCustomerID,
-                        "assigned_to": formValues.assigned_to,
-                        "project_id": formValues.project_id,
-                        "sub_project_id": formValues.sub_project_id,
-                        "task_type_id": formValues.task_type_id,
-                        "task_details": formValues.task_details,
-                        "task_priority": formValues.task_priority,
-                        "deadline": formValues.deadline
-                    }),
+          body: formData,
       });
       if (response.ok) {
         setLoadingCursor(false);
@@ -573,7 +563,7 @@ const AssignLeave: React.FC = () => {
 
    
     return (
-        <div className='mainbox user_mainbox_new_design'>
+        <div className='mainbox'>
             <header>
                 <LeapHeader title={createLeaveTitle} />
             </header>
@@ -587,8 +577,130 @@ const AssignLeave: React.FC = () => {
                     }} onCloseClicked={function (): void {
                         setShowAlert(false)
                     }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
-                    <form onSubmit={handleSubmit}>
-                        {/* ------------------ */}
+                        {/* ========= New structure start ============ */}
+                        <div className='container'>
+                            <div className="row">
+                                <div className="col-lg-12">
+                                    <div className="nw_user_inner_mainbox">
+                                        <div className="nw_user_inner_heading_tabbox">
+                                            <div className="heading25">
+                                                Assign Tasks
+                                            </div>
+                                            <div className="nw_user_inner_tabs nw_user_inner_right_tabs">
+                                                <ul>
+                                                    <li className='filter_relative_li' style={{visibility: 'hidden', opacity: '1'}}>
+                                                        <a href="#">
+                                                            <div className="nw_user_tab_icon">
+                                                                <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
+                                                                    <g>
+                                                                        <path fill="#ffffff" d="M20 6h-3V4c0-1.103-.897-2-2-2H9c-1.103 0-2 .897-2 2v2H4c-1.103 0-2 .897-2 2v3h20V8c0-1.103-.897-2-2-2zM9 4h6v2H9zm5 10h-4v-2H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-8z" opacity="1" data-original="#000000"></path>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div className="nw_user_inner_content_box nw_user_inner_content_form_box" style={{ minHeight: '60vh' }}>
+                                            <div className="new_user_inner_form_mainbox">
+                                                <div className="new_user_inner_form_box">
+                                                    <form onSubmit={handleSubmit}>
+                                                        <div className="fill_task_formbox">
+                                                            <div className="form_new_group">
+                                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Employee<span className='req_text'>*</span></label>
+                                                                <select id="assigned_to" name="assigned_to" onChange={handleInputChange} className='form-select'>
+                                                                    <option value="">Select</option>
+                                                                    {empArray.length > 0 ? (
+                                                                        empArray.map((type) => (
+                                                                            <option value={type.customer_id} key={type.customer_id}>{type.emp_id} : {type.name}</option>
+
+                                                                        ))
+                                                                    ) : (
+                                                                        <option value="" disabled>Employee does not exists</option>
+                                                                    )}
+
+                                                                </select>
+                                                                {errors.assigned_to && <span className="error" style={{ color: "red" }}>{errors.assigned_to}</span>}
+                                                            </div>
+                                                            <div className="form_new_group">
+                                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Project Name<span className='req_text'>*</span>  </label>
+                                                                <select id="project_id" name="project_id" onChange={handleProjectTypeChange} className='form-select'>
+                                                                    <option value="">Select</option>
+                                                                    {projectarray.map((type, index) => (
+                                                                        <option value={type.project_id} key={type.project_id}>{type.project_name}</option>
+                                                                    ))}
+                                                                </select>
+                                                                {/* {errors.project_id && <span className="error" style={{color: "red"}}>{errors.project_id}</span>} */}
+                                                            </div>
+                                                            <div className="form_new_group">
+                                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Sub Project Name<span className='req_text'>*</span>  </label>
+                                                                <select id="sub_project_id" name="sub_project_id" onChange={handleInputChange} className='form-select'>
+                                                                    <option value="">Select</option>
+                                                                    {subProjectarray.length > 0 ? (
+                                                                        subProjectarray.map((type, index) => (
+                                                                            <option value={type.subproject_id} key={type.subproject_id}>{type.sub_project_name}</option>
+                                                                        ))
+                                                                    ) : (
+                                                                        <option value="" disabled>No Sub project exists for this project</option>
+                                                                    )
+                                                                    }
+                                                                </select>
+                                                                {errors.sub_project_id && <span className="error" style={{ color: "red" }}>{errors.sub_project_id}</span>}
+                                                            </div>
+                                                            <div className="form_new_group">
+                                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Task Type<span className='req_text'>*</span>  </label>
+                                                                <select id="task_type_id" name="task_type_id" onChange={handleInputChange} className='form-select'>
+                                                                    <option value="">Select</option>
+                                                                    {taskArray.map((type, index) => (
+                                                                        <option value={type.task_type_id} key={type.task_type_id}>{type.task_type_name}</option>
+                                                                    ))}
+                                                                </select>
+                                                                {errors.task_type_id && <span className="error" style={{ color: "red" }}>{errors.task_type_id}</span>}
+                                                            </div>
+                                                            <div className="form_new_group">
+                                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Deadline<span className='req_text'>*</span>  </label>
+                                                                <input type="date" id="deadline" name="deadline" value={formValues.deadline} onChange={handleInputChange} className='form-control'/>
+                                                                {errors.deadline && <span className="error" style={{ color: "red" }}>{errors.deadline}</span>}
+                                                            </div>
+                                                            <div className="form_new_group">
+                                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Priority<span className='req_text'>*</span>  </label>
+                                                                <select id="task_priority" name="task_priority" onChange={handleInputChange} className='form-select'>
+                                                                    <option value="">Select</option>
+                                                                    {priorityArray.map((type, index) => (
+                                                                        <option value={type.id} key={type.id}>{type.priority_type}</option>
+                                                                    ))}
+                                                                </select>
+                                                                {errors.task_priority && <span className="error" style={{ color: "red" }}>{errors.task_priority}</span>}
+                                                            </div>
+                                                            <div className="form_new_group">
+                                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Task Details<span className='req_text'>*</span>  </label>
+                                                                <input type='text' id="task_details" name="task_details" value={formValues.task_details} onChange={handleInputChange} className='form-control'/>
+                                                                {errors.task_details && <span className="error" style={{ color: "red" }}>{errors.task_details}</span>}
+                                                            </div>
+                                                            <div className="form_new_group form_new_group_btn new_leave_formgoup_back_btn">
+                                                                <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
+                                                                <BackButton isCancelText={true} />
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div className="new_user_inner_img_box">
+                                                    <div className="new_user_inner_img_heading">
+                                                        NEW TASK <br /> SUBMISSION
+                                                    </div>
+                                                    <div className="new_user_inner_img">
+                                                        <img src="/images/user/task-form-image.svg" alt="Task image" className="img-fluid" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {/* ========= New structure ends ============= */}
+                    {/* <form onSubmit={handleSubmit}>
                         <div className='container'>
                             <div className="row">
                                 <div className="col-lg-12">
@@ -626,7 +738,6 @@ const AssignLeave: React.FC = () => {
                                                                 <option value={type.project_id} key={type.project_id}>{type.project_name}</option>
                                                             ))}
                                                         </select>
-                                                        {/* {errors.project_id && <span className="error" style={{color: "red"}}>{errors.project_id}</span>} */}
                                                     </div>
                                                     <div className="form_new_group">
                                                         <label htmlFor="exampleFormControlInput1" className="form-label" >Sub Project Name<span className='req_text'>*</span>  </label>
@@ -673,10 +784,10 @@ const AssignLeave: React.FC = () => {
                                                         <input type='text' id="task_details" name="task_details" value={formValues.task_details} onChange={handleInputChange} className='form-control'/>
                                                         {errors.task_details && <span className="error" style={{ color: "red" }}>{errors.task_details}</span>}
                                                     </div>
-                                                <div className="new_leave_formgoup_btn new_leave_formgoup_back_btn" style={{ textAlign: "right" }}>
-                          <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
-                          <BackButton isCancelText={true} />
-                        </div>
+                                                    <div className="form_new_group form_new_group_btn">
+                                                        <BackButton isCancelText={true} />
+                                                        <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -684,8 +795,7 @@ const AssignLeave: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* ------------------ */}
-                    </form>
+                    </form> */}
                 </div>
             }
             />
@@ -761,7 +871,6 @@ async function getStatus() {
     let query = supabase
         .from('leap_task_status')
         .select()
-        .neq('is_deleted', true);
     // .eq("asset_status",1);
 
     const { data, error } = await query;
@@ -777,7 +886,6 @@ async function getPriority() {
     let query = supabase
         .from('leap_task_priority_level')
         .select()
-        .neq('is_deleted', true);
     // .eq("asset_status",1);
 
     const { data, error } = await query;
