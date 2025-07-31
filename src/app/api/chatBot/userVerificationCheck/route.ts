@@ -37,3 +37,5 @@ export async function POST(request: NextRequest) {
         return funSendApiException(error);
     }
 }
+
+// api to check if user is there in the database by checking their phone_number, if not present then display "new user", if present then display "verified user"

@@ -8123,6 +8123,13 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 .new_user_att_detail_whitelist:has(.new_small_leave_box) .att_detail_whitelist:hover .att_detail_datebox.new_user_small_leftbox {
   background-color: #F57C00;
 }
+.new_user_att_detail_whitelist:has(.new_small_weekend_box) .att_detail_datebox {
+  background-color: #616161;
+}
+
+.new_user_att_detail_whitelist:has(.new_small_weekend_box) .att_detail_whitelist:hover .att_detail_datebox.new_user_small_leftbox {
+  background-color: #616161;
+}
 
 .new_user_att_detail_whitelist:has(.new_small_weekend_box) .att_detail_datebox {
   background-color: #616161;
@@ -8388,9 +8395,13 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 
 .nw_filter_form_group select,
 .nw_filter_form_group input,
+<<<<<<< HEAD
 .nw_user_doc_selectbox select,
 .new_leave_formgoup select,
 .new_leave_formgoup input {
+=======
+.nw_user_doc_selectbox select {
+>>>>>>> b19d004e7942ec8110efae7138107798b60dd780
   cursor: pointer;
 }
 
@@ -8402,6 +8413,7 @@ body:has(.user_mainbox_new_design) .dash_topbox {
   cursor: pointer !important;
 }
 
+<<<<<<< HEAD
 .my_user_leave_page_mainbox .edit-icon {
     cursor: pointer;
 }
@@ -8427,6 +8439,8 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
 
 
 
+=======
+>>>>>>> b19d004e7942ec8110efae7138107798b60dd780
 
 /* Bugs css ends */
 
@@ -8525,6 +8539,7 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
   .new_user_support_mainbox .rightpoup {
     width: 48%;
   }
+<<<<<<< HEAD
 
   .new_home_team_member_mainbox {
     grid-template-columns: repeat(2, 1fr);
@@ -8592,6 +8607,45 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
 }
 
 
+=======
+
+  .new_home_team_member_mainbox {
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: 20px;
+  }
+
+  .new_user_left_firstmainbox {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 20px 20px 20px;
+  }
+
+  .new_attendancebox_lastbox {
+    right: -2px;
+  }
+
+  .new_personalize_greeting_mainbox::after {
+    display: none;
+  }
+
+  .new_attendancebox_middlebox_secondbox {
+    margin: 20px 10px 0px 0;
+  }
+.new_small_weekend_box {
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    text-align: center;
+}
+.new_small_weekend_heading {
+    font-weight: 600;
+    color: #6c757d;
+}
+.new_small_weekend_subtext {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+>>>>>>> b19d004e7942ec8110efae7138107798b60dd780
   /* Bugs ends  */
 }
 
