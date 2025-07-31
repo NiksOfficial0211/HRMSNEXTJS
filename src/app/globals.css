@@ -8395,13 +8395,10 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 
 .nw_filter_form_group select,
 .nw_filter_form_group input,
-<<<<<<< HEAD
 .nw_user_doc_selectbox select,
 .new_leave_formgoup select,
 .new_leave_formgoup input {
-=======
 .nw_user_doc_selectbox select {
->>>>>>> b19d004e7942ec8110efae7138107798b60dd780
   cursor: pointer;
 }
 
@@ -8413,7 +8410,6 @@ body:has(.user_mainbox_new_design) .dash_topbox {
   cursor: pointer !important;
 }
 
-<<<<<<< HEAD
 .my_user_leave_page_mainbox .edit-icon {
     cursor: pointer;
 }
@@ -8439,8 +8435,6 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
 
 
 
-=======
->>>>>>> b19d004e7942ec8110efae7138107798b60dd780
 
 /* Bugs css ends */
 
@@ -8539,7 +8533,6 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
   .new_user_support_mainbox .rightpoup {
     width: 48%;
   }
-<<<<<<< HEAD
 
   .new_home_team_member_mainbox {
     grid-template-columns: repeat(2, 1fr);
@@ -8607,7 +8600,6 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
 }
 
 
-=======
 
   .new_home_team_member_mainbox {
     grid-template-columns: repeat(2, 1fr);
@@ -8645,8 +8637,7 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
     font-size: 0.85rem;
     color: #6c757d;
 }
->>>>>>> b19d004e7942ec8110efae7138107798b60dd780
   /* Bugs ends  */
 }
-
+}
 /*--- END Dashboard css by Rahul ---*/
