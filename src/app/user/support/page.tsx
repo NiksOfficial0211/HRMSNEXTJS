@@ -249,7 +249,7 @@ const Support = () => {
         return parsedDate.format('YYYY-MM-DD');
     };
     return (
-        <div className='mainbox user_mainbox_new_design new_user_support_mainbox'>
+        <div className='mainbox user_mainbox_new_design new_user_support_mainbox user_black_overlay_main'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -348,11 +348,7 @@ const Support = () => {
                                     </div>
 
                                     <div className="nw_user_inner_content_box" style={{ minHeight: '60vh' }}>
-                                        {/* {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
-                                            setShowAlert(false)
-                                        }} onCloseClicked={function (): void {
-                                            setShowAlert(false)
-                                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />} */}
+                                        {/*  />} */}
                                         <div className={`${loadingCursor ? "cursorLoading" : ""}`}>
                                             {supportArray! && supportArray.length > 0 ?
                                                 <div className="row">
@@ -527,6 +523,7 @@ const Support = () => {
                         <div className={showDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
                             {showDialog && <UserSupport id={editSupportId} selectedShortCutID={false} onClose={(updateData) => { setShowDialog(false), updateData && fetchData(3, "", "", selectedPage, '', '') }} />}
                         </div>
+                        <div className="overlay_offcanvas"></div>
                     </div>
                     {/* ---------------------------------------- */}
                 </div>

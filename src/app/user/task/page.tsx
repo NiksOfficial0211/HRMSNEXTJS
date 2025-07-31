@@ -17,7 +17,7 @@ import LeftPannel from '@/app/components/leftPannel'
 import { staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import PageErrorCenterContent from '@/app/components/pageError'
 import ShowAlertMessage from '@/app/components/alert'
-import { ALERTMSG_addAssetSuccess } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_exceptionString } from '@/app/pro_utils/stringConstants'
 import EmployeeTaskData from '@/app/components/dialog_userTaskDetails'
 import TeamTaskData from '@/app/components/dialog_teamTask'
 
@@ -54,6 +54,10 @@ const EmployeeLeaveList = () => {
     const [alertForSuccess, setAlertForSuccess] = useState(0);
     const [alertTitle, setAlertTitle] = useState('');
     const [alertStartContent, setAlertStartContent] = useState('');
+     const [selectedStatus, setSelectedStatus] = useState('');
+     const [selectedProject, setSelectedProject] = useState('');
+     const [selectedEmployee, setSelectedEmp] = useState('');
+     const [selectedDate, setSelectedDate] = useState(new Date());
 
     useEffect(() => {
         const fetchData = async () => {
@@ -71,8 +75,9 @@ const EmployeeLeaveList = () => {
             }
             setEmployeeNames(name);
         }
+
         fetchData();
-        fetchTasks("", "");
+        fetchTasks("", "","","");
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
             const element = document.querySelector('.mainbox');
@@ -89,31 +94,33 @@ const EmployeeLeaveList = () => {
 
     }, [selectedPage])
 
-    const fetchTasks = async (filterID: any, value: any) => {
+    const fetchTasks = async (filterID: any, valueDate: any, valueProject: any, valueStatus: any) => {
+        setViewIndex(0)
+        console.log("index: ", viewIndex)
         try {
             let formData = {
                 "client_id": contextClientID,
                 "customer_id": contextCustomerID,
-                "task_date": "",
-                "sub_project_id": "",
-                "task_status": ""
+                "task_date": selectedDate,
+                "sub_project_id": selectedProject,
+                "task_status": selectedStatus
             }
             if (filterID == 1) {
-                let taskDate = filters.date.length > 0 && filters.date == value ? filters.date : value;
+                let taskDate = filters.date.length > 0 && filters.date == valueDate ? filters.date : valueDate;
                 formData = {
                     ...formData,
                     "task_date": taskDate
                 }
             }
             if (filterID == 2) {
-                let subproject = filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value
+                let subproject = filters.projectID.length > 0 && filters.projectID == valueProject ? filters.projectID : valueProject
                 formData = {
                     ...formData,
                     "sub_project_id": subproject
                 }
             }
             if (filterID == 3) {
-                let status = filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value
+                let status = filters.taskStatus.length > 0 && filters.taskStatus == valueStatus ? filters.taskStatus : valueStatus
                 formData = {
                     ...formData,
                     "task_status": status
@@ -122,7 +129,7 @@ const EmployeeLeaveList = () => {
             const res = await fetch(`/api/users/getTasks`, {
                 method: "POST",
                 body: JSON.stringify({
-                   formData
+                    formData
                 }),
             });
             const response = await res.json();
@@ -142,39 +149,27 @@ const EmployeeLeaveList = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
     };
-    const fetchAssignedTasks = async (filterID: any, value: any) => {
+    const fetchAssignedTasks = async (filterID: any, valueDate: any) => {
+        setViewIndex(1)
+        console.log("index: ", viewIndex)
         try {
             let formData = {
                 "assigned_to": contextCustomerID,
-                "task_date": "",
-                "sub_project_id": "",
-                "task_status": ""
+                "task_date": selectedDate,
+                "sub_project_id": selectedProject
             }
             if (filterID == 1) {
-                let taskDate = filters.date.length > 0 && filters.date == value ? filters.date : value;
+                let taskDate = filters.date.length > 0 && filters.date == valueDate ? filters.date : valueDate;
                 formData = {
                     ...formData,
                     "task_date": taskDate
                 }
             }
-            if (filterID == 2) {
-                let subproject = filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value
-                formData = {
-                    ...formData,
-                    "sub_project_id": subproject
-                }
-            }
-            if (filterID == 3) {
-                let status = filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value
-                formData = {
-                    ...formData,
-                    "task_status": status
-                }
-            }
+            
             const res = await fetch(`/api/users/getAssignedTask`, {
                 method: "POST",
                 body: JSON.stringify({
@@ -199,42 +194,30 @@ const EmployeeLeaveList = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
     };
-    const fetchTeamTasks = async (filterID: any, value: any) => {
+    const fetchTeamTasks = async (filterID: any, valueDate: any, valueEmp: any) => {
+        setViewIndex(2)
+        console.log("index: ", viewIndex)
         try {
-           let formData = {
+            let formData = {
                 "manager_id": contextCustomerID,
-                "task_date": "",
-                "customer_id": 0,
-                "sub_project_id": "",
-                "task_status": ""
+                "task_date": selectedDate,
+                "customer_id": selectedEmployee,
+                // "sub_project_id": "",
+                // "task_status": ""
             }
             if (filterID == 1) {
-                let taskDate = filters.date.length > 0 && filters.date == value ? filters.date : value;
+                let taskDate = filters.date.length > 0 && filters.date == valueDate ? filters.date : valueDate;
                 formData = {
                     ...formData,
                     "task_date": taskDate
                 }
             }
-            if (filterID == 2) {
-                let subproject = filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value
-                formData = {
-                    ...formData,
-                    "sub_project_id": subproject
-                }
-            }
-            if (filterID == 3) {
-                let status = filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value
-                formData = {
-                    ...formData,
-                    "task_status": status
-                }
-            }
             if (filterID == 4) {
-                let customerID = filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value
+                let customerID = filters.customerID.length > 0 && filters.customerID == valueEmp ? filters.customerID : valueEmp
                 formData = {
                     ...formData,
                     "customer_id": customerID
@@ -251,7 +234,7 @@ const EmployeeLeaveList = () => {
             // console.log(response);
 
             const taskData = response.taskdata;
-            if (response.status == 1 ) {
+            if (response.status == 1) {
                 setTeamTask(taskData);
             } else {
                 setTeamTask([]);
@@ -264,53 +247,41 @@ const EmployeeLeaveList = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
         setLoadingCursor(false);
     };
-    const fetchProjectTasks = async (filterID: any, value: any) => {
+    const fetchProjectTasks = async (filterID: any,  valueDate: any, valueProject: any) => {
+        setViewIndex(3)
+        console.log("index: ", viewIndex)
         try {
             let formData = {
                 "project_manager_id": contextCustomerID,
-                "task_date": "",
-                "customer_id": 0,
-                "sub_project_id": "",
-                "task_status": ""
+                "task_date":selectedDate,
+                // "customer_id": 0,
+                "sub_project_id": selectedProject
             }
             if (filterID == 1) {
-                let taskDate = filters.date.length > 0 && filters.date == value ? filters.date : value;
+                let taskDate = filters.date.length > 0 && filters.date == valueDate ? filters.date : valueDate;
                 formData = {
                     ...formData,
                     "task_date": taskDate
                 }
             }
             if (filterID == 2) {
-                let subproject = filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value
+                let subproject = filters.projectID.length > 0 && filters.projectID == valueProject ? filters.projectID : valueProject
                 formData = {
                     ...formData,
                     "sub_project_id": subproject
                 }
             }
-            if (filterID == 3) {
-                let status = filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value
-                formData = {
-                    ...formData,
-                    "task_status": status
-                }
-            }
-            if (filterID == 4) {
-                let customerID = filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value
-                formData = {
-                    ...formData,
-                    "customer_id": customerID
-                }
-            }
+            
 
             const res = await fetch(`/api/users/getProjectTasks`, {
                 method: "POST",
                 body: JSON.stringify({
-                    
+
                 }),
             });
             const response = await res.json();
@@ -331,56 +302,62 @@ const EmployeeLeaveList = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
     };
-    const [isDropdownVisible, setDropdownVisible] = useState(false);
 
     const handleTaskFilter = (e: any) => {
         const { name, value } = e.target;
 
         if (name == "date") {
             setFilters((prev) => ({ ...prev, ['date']: value }));
-            fetchTasks(1, value);
-            fetchTeamTasks(1, value);
-            fetchProjectTasks(1, value);
+            setSelectedDate(value);
+            fetchTasks(1, value, selectedProject, selectedStatus );
+            fetchAssignedTasks(1, value);
+            fetchTeamTasks(1, value, selectedEmployee);
+            fetchProjectTasks(1, value, selectedProject);
         }
         if (name == "projectID") {
             setFilters((prev) => ({ ...prev, ['projectID']: value }));
-            fetchTasks(2, value);
-            fetchTeamTasks(2, value);
-            fetchProjectTasks(2, value);
+            setSelectedProject(value);
+            fetchTasks(2, selectedDate, value, selectedStatus );
+            // fetchAssignedTasks(1,selectedDate,  value );
+            // fetchTeamTasks(2, value);
+            fetchProjectTasks(2, selectedDate,  value);
         }
         if (name == "taskStatus") {
             setFilters((prev) => ({ ...prev, ['taskStatus']: value }));
-            fetchTasks(3, value);
-            fetchTeamTasks(3, value)
-            fetchProjectTasks(3, value);
+            setSelectedProject(value);
+            fetchTasks(3,selectedDate, selectedProject, value);
+            // fetchTeamTasks(3, value)
+            // fetchProjectTasks(3, value);
         }
     };
+
     const resetFilter = async (value: any) => {
         // window.location.reload();
         setFilters({
             date: formatDateYYYYMMDD(new Date()), projectID: "", empName: "", taskStatus: "", customerID: ""
         });
         if (value == "fetchTasks") {
-            fetchTasks("", "");
+            fetchTasks("", "","","");
         }
         if (value == "fetchTeamTasks") {
-            fetchTeamTasks("", "");
+            fetchTeamTasks("", "","");
         }
         if (value == "fetchAssignedTasks") {
             fetchAssignedTasks("", "");
         }
         if (value == "fetchProjectTasks") {
-            fetchProjectTasks("", "");
+            fetchProjectTasks("", "","");
         }
     };
     const handleEmpSelectChange = async (values: any) => {
         setEmployeeNames(values)
-        fetchProjectTasks(4, values.value);
-        fetchTeamTasks(4, values.value);
+        setSelectedEmp(values)
+        // fetchProjectTasks(4, selectedDate, values.value);
+        fetchTeamTasks(4, selectedDate,  values.value);
     };
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
         if (!date) return '';
@@ -399,7 +376,7 @@ const EmployeeLeaveList = () => {
         }
     }
     return (
-        <div className='mainbox user_mainbox_new_design'>
+        <div className='mainbox user_mainbox_new_design new_user_support_mainbox'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -418,7 +395,7 @@ const EmployeeLeaveList = () => {
                                         <div className="nw_user_inner_tabs nw_user_inner_right_tabs new_righ_two_tabs">
                                             <ul className='new_righ_four_tabs'>
                                                 <li className={viewIndex === 0 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"} key={0}>
-                                                    <a onClick={(e) => { setViewIndex(0), setLoadingCursor(true), resetFilter(""), fetchTasks("", "") }} className={viewIndex === 0 ? "nw_user_selected" : "new_list_view_heading"}>
+                                                    <a onClick={(e) => { setViewIndex(0), setLoadingCursor(true), resetFilter(""), fetchTasks("", "","","") }} className={viewIndex === 0 ? "nw_user_selected" : "new_list_view_heading"}>
                                                         <div className="nw_user_tab_icon">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
                                                                 <g className='black_to_white_fill' fill="#000000">
@@ -447,7 +424,7 @@ const EmployeeLeaveList = () => {
                                                 </li>
                                                 {contextRoleID != "5" &&
                                                     <li className={viewIndex === 2 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"} key={2}>
-                                                        <a onClick={(e) => { setViewIndex(2), setLoadingCursor(true), resetFilter(""), fetchTeamTasks("", "") }} className={viewIndex === 2 ? "nw_user_selected" : "new_list_view_heading"}>
+                                                        <a onClick={(e) => { setViewIndex(2), setLoadingCursor(true), resetFilter(""), fetchTeamTasks("", "", "") }} className={viewIndex === 2 ? "nw_user_selected" : "new_list_view_heading"}>
                                                             <div className="nw_user_tab_icon">
                                                                 <svg className='black_to_white_fill' xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
                                                                     <path d="M15.25 9.64c1.14 0 2.065.924 2.065 2.065v5.604a5.311 5.311 0 0 1-10.623 0v-5.604c0-1.14.924-2.065 2.065-2.065zm0 1.77H8.757a.295.295 0 0 0-.295.295v5.604a3.541 3.541 0 0 0 7.083 0v-5.604a.295.295 0 0 0-.295-.295zM2.265 9.64h3.99a3.23 3.23 0 0 0-.73 1.77h-3.26a.295.295 0 0 0-.295.295v3.834a2.951 2.951 0 0 0 3.637 2.87c.1.596.283 1.163.534 1.69A4.721 4.721 0 0 1 .2 15.54v-3.834c0-1.14.925-2.065 2.065-2.065zm15.487 0h3.983c1.141 0 2.065.924 2.065 2.065v3.835a4.72 4.72 0 0 1-5.935 4.562 6.43 6.43 0 0 0 .536-1.69 2.95 2.95 0 0 0 3.629-2.872v-3.835a.295.295 0 0 0-.295-.295h-3.253a3.23 3.23 0 0 0-.73-1.77zM12 1.38a3.54 3.54 0 1 1 0 7.08 3.54 3.54 0 0 1 0-7.08zm7.67 1.18a2.95 2.95 0 1 1 0 5.9 2.95 2.95 0 0 1 0-5.9zm-15.34 0a2.95 2.95 0 1 1 0 5.9 2.95 2.95 0 0 1 0-5.9zm7.67.59a1.77 1.77 0 1 0 0 3.54 1.77 1.77 0 0 0 0-3.54zm7.67 1.18a1.18 1.18 0 1 0 0 2.36 1.18 1.18 0 0 0 0-2.36zm-15.34 0a1.18 1.18 0 1 0 0 2.36 1.18 1.18 0 0 0 0-2.36z" data-original="#000000" />
@@ -461,7 +438,7 @@ const EmployeeLeaveList = () => {
                                                 }
                                                 {contextRoleID != "5" &&
                                                     <li className={viewIndex === 3 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"} key={3}>
-                                                        <a onClick={(e) => { setViewIndex(3), setLoadingCursor(true), resetFilter(""), fetchProjectTasks("", "") }} className={viewIndex === 3 ? "nw_user_selected" : "new_list_view_heading"}>
+                                                        <a onClick={(e) => { setViewIndex(3), setLoadingCursor(true), resetFilter(""), fetchProjectTasks("", "","") }} className={viewIndex === 3 ? "nw_user_selected" : "new_list_view_heading"}>
                                                             <div className="nw_user_tab_icon">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 682.667 682.667">
                                                                     <defs>
@@ -481,7 +458,8 @@ const EmployeeLeaveList = () => {
                                                 }
                                             </ul>
                                             <ul className='new_righ_sub_two_tabs'>
-                                                <li className='filter_relative_li'>
+
+                                                {viewIndex === 0 ? <li className='filter_relative_li'>
                                                     <div className="nw_user_filter_mainbox width_450">
                                                         <div className="filter_whitebox" id="filter_whitebox">
                                                             <div className="nw_filter_form_group_mainbox">
@@ -492,7 +470,7 @@ const EmployeeLeaveList = () => {
                                                                     <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
                                                                         <option value="">Project</option>
                                                                         {projectarray.map((id, index) => (
-                                                                            <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
+                                                                            <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
                                                                         ))}
                                                                     </select>
                                                                 </div>
@@ -500,7 +478,7 @@ const EmployeeLeaveList = () => {
                                                                     <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
                                                                         <option value="">Status</option>
                                                                         {statusarray.map((id, index) => (
-                                                                            <option value={id.id} key={id.id}>{id.status}</option>
+                                                                            <option value={id.id} key={index}>{id.status}</option>
                                                                         ))}
                                                                     </select>
                                                                 </div>
@@ -521,9 +499,145 @@ const EmployeeLeaveList = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </li>
+                                                </li> :
+                                                    viewIndex === 1 ? <li className='filter_relative_li'>
+                                                        <div className="nw_user_filter_mainbox width_450">
+                                                            <div className="filter_whitebox" id="filter_whitebox">
+                                                                <div className="nw_filter_form_group_mainbox">
+                                                                    <div className="nw_filter_form_group">
+                                                                        <input type="date" name="date" value={filters.date} onChange={handleTaskFilter} className='form-control' />
+                                                                    </div>
+                                                                    <div className="nw_filter_form_group">
+                                                                        <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
+                                                                            <option value="">Project:</option>
+                                                                            {projectarray.map((id, index) => (
+                                                                                <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                    </div>
+                                                                    <div className="nw_filter_form_group">
+                                                                        <div className="nw_filter_submit_btn">
+                                                                            <a onClick={() => resetFilter("fetchAssignedTasks")}>
+                                                                                <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="nw_filter_icon" onClick={filter_whitebox}>
+                                                                <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
+                                                                <img src={staticIconsBaseURL + "/images/user/filter-icon-red.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_red" />
+                                                                <div className="new_filter_tooltip_box">
+                                                                    Filter
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li> :
+                                                        viewIndex === 2 ? <li className='filter_relative_li'>
+                                                            <div className="nw_user_filter_mainbox width_450">
+                                                                <div className="filter_whitebox" id="filter_whitebox">
+                                                                    <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_four">
+                                                                        <div className="nw_filter_form_group">
+                                                                            <input type="date" name="date" value={filters.date} onChange={handleTaskFilter} className='form-control' />
+                                                                        </div>
+                                                                        <div className="nw_filter_form_group">
+                                                                            <Select
+                                                                                className="custom-select"
+                                                                                classNamePrefix="custom"
+                                                                                options={employeeName}
+                                                                                value={selectedEmp}
+                                                                                onChange={(selectedOption) =>
+                                                                                    handleEmpSelectChange(selectedOption)
+                                                                                }
+                                                                                placeholder="Employee"
+                                                                                isSearchable={true}
+                                                                            />
+                                                                            {/* <Select
+                                                                                className="custom-select"
+                                                                                classNamePrefix="custom"
+                                                                                // value={selectedEmployee}
+                                                                                options={employeeName}
+                                                                                onChange={(selectedOption) =>
+                                                                                    handleEmpSelectChange(selectedOption)
+                                                                                }
+                                                                                placeholder="Select..."
+                                                                                isSearchable
+                                                                            /> */}
+                                                                        </div>
+                                                                        <div className="nw_filter_form_group">
+                                                                            <div className="nw_filter_submit_btn">
+                                                                                <a onClick={() => resetFilter("fetchTeamTasks")}>
+                                                                                    <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="nw_filter_icon" onClick={filter_whitebox}>
+                                                                    <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
+                                                                    <img src={staticIconsBaseURL + "/images/user/filter-icon-red.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_red" />
+                                                                    <div className="new_filter_tooltip_box">
+                                                                        Filter
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li> :
+                                                            viewIndex === 3 ? <li className='filter_relative_li'>
+                                                                <div className="nw_user_filter_mainbox width_450">
+                                                                    <div className="filter_whitebox" id="filter_whitebox">
+                                                                        <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_four">
+                                                                            <div className="nw_filter_form_group">
+                                                                                <input type="date" name="date" value={filters.date} onChange={handleTaskFilter} className='form-control' />
+                                                                            </div>
+                                                                            <div className="nw_filter_form_group">
+                                                                                <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
+                                                                                    <option value="">Project:</option>
+                                                                                    {projectarray.map((id, index) => (
+                                                                                        <option value={id.subproject_id} key={index}>{id.sub_project_name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="nw_filter_form_group">
+                                                                                <Select
+                                                                                    className="custom-select"
+                                                                                    classNamePrefix="custom"
+                                                                                    options={employeeName}
+                                                                                    onChange={(selectedOption) =>
+                                                                                        handleEmpSelectChange(selectedOption)
+                                                                                    }
+                                                                                    placeholder="Employee"
+                                                                                    isSearchable
+                                                                                // value={filters.empName}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="nw_filter_form_group">
+                                                                                <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
+                                                                                    <option value="">Status:</option>
+                                                                                    {statusarray.map((id, index) => (
+                                                                                        <option value={id.id} key={index}>{id.status}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="nw_filter_form_group">
+                                                                                <div className="nw_filter_submit_btn">
+                                                                                    <a onClick={() => resetFilter("fetchProjectTasks")}>
+                                                                                        <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="nw_filter_icon" onClick={filter_whitebox}>
+                                                                        <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
+                                                                        <img src={staticIconsBaseURL + "/images/user/filter-icon-red.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_red" />
+                                                                        <div className="new_filter_tooltip_box">
+                                                                            Filter
+                                                                        </div>
+                                                                    </div>
+                                                                </div></li> : <></>}
+
                                                 <li>
-                                                    {viewIndex == 2 || viewIndex== 3 &&
+                                                    {viewIndex === 2  &&
                                                         <a href={pageURL_userAssignTask}>
                                                             <div className="nw_user_tab_icon">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512" className="">
@@ -537,19 +651,47 @@ const EmployeeLeaveList = () => {
                                                             </div>
                                                         </a>
                                                     }
-                                                </li>
-                                                <li>
-                                                    {viewIndex != 2 && viewIndex!=3 &&
+                                                    { viewIndex === 3 &&
+                                                        <a href={pageURL_userAssignTask}>
+                                                            <div className="nw_user_tab_icon">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512" className="">
+                                                                    <g>
+                                                                        <path d="M256 0C114.837 0 0 114.837 0 256s114.837 256 256 256 256-114.837 256-256S397.163 0 256 0zm96.325 274.113L227.163 399.275c-5 4.988-11.55 7.487-18.1 7.487s-13.1-2.5-18.1-7.487c-10-10-10-26.212 0-36.212L298.025 256 190.963 148.95c-10-10-10-26.213 0-36.213 10-9.988 26.2-9.988 36.2 0L352.325 237.9a25.604 25.604 0 0 1 0 36.213z" fill="#ed2024" opacity="1" data-original="#000000" className="red_to_white"></path>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div className="nw_user_tab_name">
+                                                                Assign
+                                                            </div>
+                                                        </a>
+                                                    }
+
+                                                    {viewIndex == 0 &&
                                                         <a href={pageURL_userFillTask}>
-                                                        <div className="nw_user_tab_icon">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
-                                                                <path className='red_to_white' fill="#ed2024" d="M12 .12A11.88 11.88 0 1 0 23.88 12 11.894 11.894 0 0 0 12 .12zm5.4 12.96h-4.32v4.32a1.08 1.08 0 0 1-2.16 0v-4.32H6.6a1.08 1.08 0 0 1 0-2.16h4.32V6.6a1.08 1.08 0 0 1 2.16 0v4.32h4.32a1.08 1.08 0 0 1 0 2.16z" data-name="Layer 2" data-original="#000000" />
-                                                            </svg>
-                                                        </div>
-                                                        <div className="nw_user_tab_name">
-                                                            Add
-                                                        </div>
-                                                    </a>}
+                                                            <div className="nw_user_tab_icon">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512" className="">
+                                                                    <g>
+                                                                        <path d="M256 0C114.837 0 0 114.837 0 256s114.837 256 256 256 256-114.837 256-256S397.163 0 256 0zm96.325 274.113L227.163 399.275c-5 4.988-11.55 7.487-18.1 7.487s-13.1-2.5-18.1-7.487c-10-10-10-26.212 0-36.212L298.025 256 190.963 148.95c-10-10-10-26.213 0-36.213 10-9.988 26.2-9.988 36.2 0L352.325 237.9a25.604 25.604 0 0 1 0 36.213z" fill="#ed2024" opacity="1" data-original="#000000" className="red_to_white"></path>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div className="nw_user_tab_name">
+                                                                Add
+                                                            </div>
+                                                        </a>}
+                                                        { viewIndex == 1 &&
+                                                        <a href={pageURL_userFillTask}>
+                                                            <div className="nw_user_tab_icon">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512" className="">
+                                                                    <g>
+                                                                        <path d="M256 0C114.837 0 0 114.837 0 256s114.837 256 256 256 256-114.837 256-256S397.163 0 256 0zm96.325 274.113L227.163 399.275c-5 4.988-11.55 7.487-18.1 7.487s-13.1-2.5-18.1-7.487c-10-10-10-26.212 0-36.212L298.025 256 190.963 148.95c-10-10-10-26.213 0-36.213 10-9.988 26.2-9.988 36.2 0L352.325 237.9a25.604 25.604 0 0 1 0 36.213z" fill="#ed2024" opacity="1" data-original="#000000" className="red_to_white"></path>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div className="nw_user_tab_name">
+                                                                Add
+                                                            </div>
+                                                        </a>}
                                                 </li>
                                             </ul>
                                         </div>
@@ -578,7 +720,7 @@ const EmployeeLeaveList = () => {
                                                                                         <div className="col-lg-2 text-center">{list.task_date}</div>
                                                                                         <div className="col-lg-2 text-center">{list.leap_client_sub_projects.sub_project_name}</div>
                                                                                         <div className="col-lg-2 text-center">{list.leap_project_task_types.task_type_name}</div>
-                                                                                        <div className="col-lg-4 text-center restrict_two_lines">{list.task_details}</div>
+                                                                                        <div className="col-lg-4 text-center restrict_two_lines">{list.task_details || "--"}</div>
                                                                                         {list.task_status === 3 ? (
                                                                                             <><div className="col-lg-1 text-center" style={{ color: "green" }}>{list.leap_task_status.status}</div></>
                                                                                         ) :
@@ -608,41 +750,7 @@ const EmployeeLeaveList = () => {
                                             : viewIndex == 1 ?
                                                 // assigned task 
                                                 <>
-                                                    <div className="nw_user_filter_mainbox">
-                                                        <div className="filter_whitebox" id="filter_whitebox">
-                                                            <div className="nw_filter_form_group_mainbox">
-                                                                <div className="nw_filter_form_group">
-                                                                    <input type="date" name="date" value={filters.date} onChange={handleTaskFilter} className='form-control' />
-                                                                </div>
-                                                                <div className="nw_filter_form_group">
-                                                                    <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
-                                                                        <option value="">Project:</option>
-                                                                        {projectarray.map((id, index) => (
-                                                                            <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
-                                                                        ))}
-                                                                    </select>
-                                                                </div>
-                                                                <div className="nw_filter_form_group">
-                                                                    <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
-                                                                        <option value="">Status:</option>
-                                                                        {statusarray.map((id, index) => (
-                                                                            <option value={id.id} key={id.id}>{id.status}</option>
-                                                                        ))}
-                                                                    </select>
-                                                                </div>
-                                                                <div className="nw_filter_form_group">
-                                                                    <div className="nw_filter_submit_btn">
-                                                                        <a onClick={() => resetFilter("fetchAssignedTasks")}>
-                                                                            <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                            <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
-                                                        </div>
-                                                    </div>
+
                                                     <div className="my_task_tabbing_content">
                                                         <div className="row">
                                                             <div className="col-lg-12">
@@ -693,54 +801,7 @@ const EmployeeLeaveList = () => {
                                                 : viewIndex == 2 ?
                                                     // Team members task
                                                     <>
-                                                        <div className="nw_user_filter_mainbox">
-                                                            <div className="filter_whitebox" id="filter_whitebox">
-                                                                <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_four">
-                                                                    <div className="nw_filter_form_group">
-                                                                        <input type="date" name="date" value={filters.date} onChange={handleTaskFilter} className='form-control' />
-                                                                    </div>
-                                                                    <div className="nw_filter_form_group">
-                                                                        <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
-                                                                            <option value="">Project:</option>
-                                                                            {projectarray.map((id, index) => (
-                                                                                <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
-                                                                            ))}
-                                                                        </select>
-                                                                    </div>
-                                                                    <div className="nw_filter_form_group">
-                                                                        <Select
-                                                                            className="custom-select"
-                                                                            classNamePrefix="custom"
-                                                                            options={employeeName}
-                                                                            value={selectedEmp}
-                                                                            onChange={(selectedOption) =>
-                                                                                handleEmpSelectChange(selectedOption)
-                                                                            }
-                                                                            placeholder="Employee"
-                                                                            isSearchable={true}
-                                                                        />
-                                                                    </div>
-                                                                    <div className="nw_filter_form_group">
-                                                                        <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
-                                                                            <option value="">Status:</option>
-                                                                            {statusarray.map((id, index) => (
-                                                                                <option value={id.id} key={id.id}>{id.status}</option>
-                                                                            ))}
-                                                                        </select>
-                                                                    </div>
-                                                                    <div className="nw_filter_form_group">
-                                                                        <div className="nw_filter_submit_btn">
-                                                                            <a onClick={() => resetFilter("fetchTeamTasks")}>
-                                                                                <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                                <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
-                                                            </div>
-                                                        </div>
+
                                                         <div className="my_task_tabbing_content">
                                                             <div className="row">
                                                                 <div className="col-lg-12">
@@ -792,54 +853,7 @@ const EmployeeLeaveList = () => {
                                                     : viewIndex == 3 ?
                                                         // Project members task
                                                         <>
-                                                            <div className="nw_user_filter_mainbox">
-                                                                <div className="filter_whitebox" id="filter_whitebox">
-                                                                    <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_four">
-                                                                        <div className="nw_filter_form_group">
-                                                                            <input type="date" name="date" value={filters.date} onChange={handleTaskFilter} className='form-control' />
-                                                                        </div>
-                                                                        <div className="nw_filter_form_group">
-                                                                            <select id="projectID" name="projectID" value={filters.projectID} onChange={handleTaskFilter} className='form-select'>
-                                                                                <option value="">Project:</option>
-                                                                                {projectarray.map((id, index) => (
-                                                                                    <option value={id.subproject_id} key={id.subproject_id}>{id.sub_project_name}</option>
-                                                                                ))}
-                                                                            </select>
-                                                                        </div>
-                                                                        <div className="nw_filter_form_group">
-                                                                            <Select
-                                                                                className="custom-select"
-                                                                                classNamePrefix="custom"
-                                                                                options={employeeName}
-                                                                                onChange={(selectedOption) =>
-                                                                                    handleEmpSelectChange(selectedOption)
-                                                                                }
-                                                                                placeholder="Employee"
-                                                                                isSearchable
-                                                                            // value={filters.empName}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="nw_filter_form_group">
-                                                                            <select id="taskStatus" name="taskStatus" value={filters.taskStatus} onChange={handleTaskFilter} className='form-select'>
-                                                                                <option value="">Status:</option>
-                                                                                {statusarray.map((id, index) => (
-                                                                                    <option value={id.id} key={id.id}>{id.status}</option>
-                                                                                ))}
-                                                                            </select>
-                                                                        </div>
-                                                                        <div className="nw_filter_form_group">
-                                                                            <div className="nw_filter_submit_btn">
-                                                                                <a onClick={() => resetFilter("fetchProjectTasks")}>
-                                                                                    <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
-                                                                                </a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                                    <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
-                                                                </div>
-                                                            </div>
+
                                                             <div className="my_task_tabbing_content">
                                                                 <div className="row">
                                                                     <div className="col-lg-12">
@@ -900,13 +914,13 @@ const EmployeeLeaveList = () => {
                         <div className={showDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
                             {showDialog && <EmployeeTaskData id={editTaskId} isToBeEddited={isToBeEdited} onClose={() => {
                                 setShowDialog(false)
-                                    , resetFilter(""), fetchTasks("", "")
+                                    , resetFilter(""), fetchTasks("", "","","")
                             }} />}
                         </div>
                     </div>
                     <div className="nw_user_offcanvas">
                         <div className={showDialog1 ? "rightpoup rightpoupopen" : "rightpoup"}>
-                            {showDialog1 && <TeamTaskData id={editTaskId} num={numId} isToBeEddited={isToBeEdited} onClose={() => { setShowDialog1(false), resetFilter(""), fetchTasks("", "") }} />}
+                            {showDialog1 && <TeamTaskData id={editTaskId} num={numId} isToBeEddited={isToBeEdited} onClose={() => { setShowDialog1(false), resetFilter(""), fetchTasks("", "","","") }} />}
                         </div>
                     </div>
                     {/* ----------------------------- */}

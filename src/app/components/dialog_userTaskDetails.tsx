@@ -50,9 +50,7 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
                         "id": id
                     }),
                 });
-
                 const response = await res.json();
-
                 const user = response.data[0];
                 setTaskData(user);
             } catch (error) {
@@ -73,10 +71,8 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
   };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("handle submit called");
-        // const formData = new FormData();
-        // formData.append("id", id);
-        // formData.append("task_details", formValues.task_details);
+        if (!validate()) return;
+        // console.log("handle submit called");
         try {
             const response = await fetch("/api/users/updateTask", {
                 method: "POST",
@@ -86,7 +82,6 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
                     "task_status": formValues.task_status
                 }),
             });
-
             if (response.ok) {
                 onClose();
             } else {
@@ -97,7 +92,6 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
             alert("An error occurred while submitting the form.");
         }
     }
-
 
     return (
         <div >
@@ -129,7 +123,8 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
                             <div className="nw_user_offcanvas_listing_content">
                                 {isToBeEddited ?
                                     <textarea style={{ fontSize: "13px", minHeight: "100px" }} className="form-control" value={formValues?.task_details} name="task_details" onChange={(e) => setFormValues((prev) => ({ ...prev, ['task_details']: e.target.value }))} id="task_details" placeholder="Details"></textarea>
-                                    : <div className="col-lg-8 mb-3">{taskData?.task_details}</div>}
+                                    : <div className="col-lg-8 mb-3">{taskData?.task_details || "--"}</div>}
+                                    {errors.task_details && <span className="error" style={{ color: "red" }}>{errors.task_details}</span>}
                             </div>
                         </div>
                         <div className="nw_user_offcanvas_listing">
@@ -141,7 +136,9 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
                                         {statusArray.map((type, index) => (
                                             <option value={type.id} key={index}>{type.status}</option>
                                         ))}
-                                    </select> :
+                                        
+                                    </select>
+                                     :
                                         <div className="nw_user_offcanvas_listing_content">
                                             {taskData?.task_status === 1 ? (
                                                 <><div className="nw_priority_mainbox">
@@ -206,7 +203,7 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
                                             ) : < div />
                                             }
                                         </div>
-                                    }
+                                    }{errors.task_status && <span className="error" style={{ color: "red" }}>{errors.task_status}</span>}
                                 </div>
                             </div>
 

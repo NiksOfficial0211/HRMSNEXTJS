@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     // Fetch projects under this manager
     const { data: projectName, error: teamError } = await supabase
       .from("leap_client_sub_projects")
-      .select("subproject_id")
+      .select("project_id")
       .eq("project_manager_id", managerId);
 
     if (teamError) {
@@ -35,12 +35,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 1, message: "No Project found under this manager", taskdata: [] }, { status: apiStatusSuccessCode });
     }
 
-    const subprojectIds = projectName.map(emp => emp.subproject_id);
+    const subprojectIds = projectName.map(emp => emp.project_id);
 
     // Fetch task records for employees under this manager
     let query = supabase
       .from("leap_customer_project_task")
-      .select(`*, leap_project_task_types(task_type_name), leap_customer(name), leap_client_sub_projects(sub_project_name, leap_client_project(project_name)), leap_task_status(*), leap_approval_status(*)`)
+      .select(`*, leap_project_task_types(task_type_name), leap_customer(name), leap_client_sub_projects(sub_project_name), leap_task_status(*), leap_approval_status(*)`)
       .in("sub_project_id", subprojectIds)
       .order("updated_at", { ascending: false })
       .range(start, end);

@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
         // }
         let query = supabase.from('leap_customer_project_task_assignment')
             .select('*, leap_task_priority_level(*), leap_task_status(*), leap_client_sub_projects(sub_project_name,leap_client_project(project_name)),leap_project_task_types(task_type_name),  leap_customer!leap_task_assignment_assigned_by_fkey(name)')
+            
             .order('updated_at', {ascending:false});
 
         if (funISDataKeyPresent(client_id)) {
@@ -37,9 +38,9 @@ export async function POST(request: NextRequest) {
         if (funISDataKeyPresent(id))  {
             query = query.eq('id', id)
         }
-        if (funISDataKeyPresent(task_status))  {
-            query = query.eq('task_status', task_status)
-        }
+        // if (funISDataKeyPresent(task_status))  {
+        //     query = query.eq('task_status', task_status)
+        // }
         console.log(query);
 
         const { data: TaskData, error: taskError } = await query;

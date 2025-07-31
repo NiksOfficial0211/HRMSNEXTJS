@@ -85,9 +85,6 @@ const EmployeeLeaveList = () => {
                 "client_id": contextClientID,
                 "branch_id": contaxtBranchID,
                 "customer_id": contextCustomerID,
-                // "leave_status": 0,
-                // "start_date": "",
-                // "end_date": "",
                 "leave_status": value,
                 start_date: dateRange.start,
                 end_date: dateRange.end,
@@ -266,7 +263,7 @@ const EmployeeLeaveList = () => {
                                         <div className="nw_user_inner_tabs nw_user_inner_right_tabs">
                                             <ul>
                                                 <li className='filter_relative_li'>
-                                                    <div className="nw_user_filter_mainbox">
+                                                    <div className="nw_user_filter_mainbox width_300">
                                                         <div className="filter_whitebox" id="filter_whitebox">
                                                             <div className="nw_filter_form_group_mainbox nw_filter_form_group_mainbox_two">
                                                                 <div className="nw_filter_form_group">

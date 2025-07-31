@@ -10,6 +10,8 @@ export async function POST(request: NextRequest) {
 
         let query = supabase.from('leap_customer_project_task')
             .select('*,leap_project_task_types(task_type_name),leap_client_sub_projects(sub_project_name,leap_client_project(project_name)), leap_task_status(*), leap_approval_status(*)')
+            //  .select('id,total_hours, total_minutes, task_details, task_type_id(task_type_id,task_type_name), task_status(id,status), approval_status(id,approval_type),sub_project_id(subproject_id,sub_project_name)')
+           
             .order('updated_at', {ascending:false});
             
         if (funISDataKeyPresent(client_id)) {
@@ -24,9 +26,9 @@ export async function POST(request: NextRequest) {
         if (funISDataKeyPresent(customer_id)) {
             query = query.eq('customer_id', customer_id)
         }
-        if (funISDataKeyPresent(project_id)) {
-            query = query.eq('project_id', project_id)
-        }
+        // if (funISDataKeyPresent(project_id)) {
+        //     query = query.eq('project_id', project_id)
+        // }
         if (funISDataKeyPresent(sub_project_id)) {
             query = query.eq('sub_project_id', sub_project_id)
         }
@@ -34,15 +36,15 @@ export async function POST(request: NextRequest) {
             query = query.eq('id', id)
         }
 
-        if((from_date && from_date!=null ) 
-            && (to_date && to_date!=null )){
-            query = query
-            .gte("task_date", formatDateYYYYMMDD(from_date)) // to_date >= fromDate
-            .lte("task_date", formatDateYYYYMMDD(to_date)); // from_date <= fromDate
-        }else if(from_date && from_date!=null){
-            query = query
-            .eq("task_date", formatDateYYYYMMDD(from_date));
-        }
+        // if((from_date && from_date!=null ) 
+        //     && (to_date && to_date!=null )){
+        //     query = query
+        //     .gte("task_date", formatDateYYYYMMDD(from_date)) // to_date >= fromDate
+        //     .lte("task_date", formatDateYYYYMMDD(to_date)); // from_date <= fromDate
+        // }else if(from_date && from_date!=null){
+        //     query = query
+        //     .eq("task_date", formatDateYYYYMMDD(from_date));
+        // }
 
         const { data: TaskData, error: taskError } = await query;
         if (taskError) {
