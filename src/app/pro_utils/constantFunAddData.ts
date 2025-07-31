@@ -143,3 +143,24 @@ export async function addErrorLog(client_id:any,actionType:any,errorJson:any,
     }
     return "0";
   }
+
+  export async function addErrorExceptionLog(client_id:any,customer_id:any,error_title:any,errorJson:any,
+  ){
+    console.log("===============addErrorExceptionLog============");
+    
+    let userActivityQuery = supabase.from("error_logs")
+      .insert({
+        client_id: client_id,
+        customer_id:customer_id,
+        error_title:error_title,
+        error_json:errorJson,
+        created_at: new Date()
+      });
+      
+    const { error: activities } = await userActivityQuery;
+
+    if (activities) {      
+      return "0";
+    }
+    return "1";
+  }
