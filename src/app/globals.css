@@ -8391,6 +8391,7 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 .nw_user_doc_selectbox select,
 .new_leave_formgoup select,
 .new_leave_formgoup input {
+.nw_user_doc_selectbox select {
   cursor: pointer;
 }
 
@@ -8592,7 +8593,44 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
 }
 
 
+
+  .new_home_team_member_mainbox {
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: 20px;
+  }
+
+  .new_user_left_firstmainbox {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 20px 20px 20px;
+  }
+
+  .new_attendancebox_lastbox {
+    right: -2px;
+  }
+
+  .new_personalize_greeting_mainbox::after {
+    display: none;
+  }
+
+  .new_attendancebox_middlebox_secondbox {
+    margin: 20px 10px 0px 0;
+  }
+.new_small_weekend_box {
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    text-align: center;
+}
+.new_small_weekend_heading {
+    font-weight: 600;
+    color: #6c757d;
+}
+.new_small_weekend_subtext {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
   /* Bugs ends  */
 }
-
+}
 /*--- END Dashboard css by Rahul ---*/
