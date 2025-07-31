@@ -50,7 +50,7 @@ const Support = () => {
     const [alertvalue2, setAlertValue2] = useState('');
     const [selectedStatus, setSelectedStatus] = useState("");
     const [selectedPriority, setSelectedPriority] = useState("");
-
+    const [dateRange, setDateRange] = useState({ start: "", end: "" });
     const [filters, setFilters] = useState<filterType>({
         active_status: "", start_date: '', end_date: '',
         priority_level: ""
@@ -80,7 +80,6 @@ const Support = () => {
         const priority = await getPriority();
         setPriority(priority);
     }
-    const formData = new FormData();
 
     const fetchData = async (filterID: any, statusValue: any, priorityValue: any, pageNumber: number, startDate: any, endDate: any) => {
         setLoading(true);
@@ -88,10 +87,10 @@ const Support = () => {
             let formData = {
                 "client_id": contextClientID,
                 "customer_id": contextCustomerID,
-                "active_status": 0,
-                "priority_level": 0,
-                "start_date": "",
-                "end_date": ""
+                "active_status": statusValue,
+                "priority_level": priorityValue,
+                start_date: dateRange.start,
+                end_date: dateRange.end,
             }
             if (filterID == 1) {
                 let activeStatus = filters.active_status.length > 0 && filters.active_status == statusValue ? filters.active_status : statusValue;
@@ -137,7 +136,6 @@ const Support = () => {
             }
             const res = await fetch(`/api/users/support/supportList?page=${pageNumber}&limit=${10}`, {
                 method: "POST",
-
                 body: JSON.stringify(
                     formData
                 ),
@@ -202,18 +200,20 @@ const Support = () => {
     }
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
-        console.log("this is the name ", name);
-        console.log("this is the value", value);
+        // console.log("this is the name ", name);
+        // console.log("this is the value", value);
 
         if (name == "active_status") {
             setFilters((prev) => ({ ...prev, ['active_status']: value }));
-            fetchData(1, value, selectedPriority, selectedPage, '', '');
             setSelectedStatus(value)
+            fetchData(1, value, selectedPriority, selectedPage, '', '');
+            
         }
         if (name == "priority_level") {
             setFilters((prev) => ({ ...prev, ['priority_level']: value }));
-            fetchData(2, selectedStatus, value, selectedPage, '', '');
             setSelectedPriority(value)
+            fetchData(2, selectedStatus, value, selectedPage, '', '');
+            
         }
     };
     const [showCalendar, setShowCalendar] = useState(false);
@@ -226,15 +226,20 @@ const Support = () => {
         }
     ]);
     const handleChange = (ranges: RangeKeyDict) => {
+         const start = ranges.selection.startDate;
+        const end = ranges.selection.endDate;
+
         setState([ranges.selection]);
-        setShowCalendar(false)
-        if (ranges.selection.startDate == ranges.selection.endDate) {
-            setFilters((prev) => ({ ...prev, ['start_date']: ranges.selection.startDate }));
-        } else {
-            setFilters((prev) => ({ ...prev, ['start_date']: ranges.selection.startDate }));
-            setFilters((prev) => ({ ...prev, ['end_date']: ranges.selection.endDate }));
+        setShowCalendar(false);
+
+        if (start && end) {
+            setFilters((prev) => ({
+                ...prev,
+                start_date: start,
+                end_date: end,
+            }));
+        fetchData('', selectedStatus, selectedPriority, selectedPage, start, end);
         }
-        fetchData('', selectedStatus, selectedPriority, selectedPage, ranges.selection.startDate, ranges.selection.endDate);
     };
     const formattedRange = state[0].startDate! == state[0].endDate! ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
@@ -343,11 +348,11 @@ const Support = () => {
                                     </div>
 
                                     <div className="nw_user_inner_content_box" style={{ minHeight: '60vh' }}>
-                                        {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                                        {/* {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                                             setShowAlert(false)
                                         }} onCloseClicked={function (): void {
                                             setShowAlert(false)
-                                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
+                                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />} */}
                                         <div className={`${loadingCursor ? "cursorLoading" : ""}`}>
                                             {supportArray! && supportArray.length > 0 ?
                                                 <div className="row">
@@ -361,7 +366,7 @@ const Support = () => {
                                                                     <div className="col-lg-2 text-center new_user_table_head"><div className="label">Priority level</div></div>
                                                                     <div className="col-lg-2 text-center new_user_table_head"><div className="label">Description</div></div>
                                                                     <div className="col-lg-2 text-center new_user_table_head"><div className="label">Status</div></div>
-                                                                    <div className="col-lg-1 text-center new_user_table_head"><div className="label">Action</div></div>
+                                                                    {/* <div className="col-lg-1 text-center new_user_table_head"><div className="label">Action</div></div> */}
                                                                 </div>
                                                                 {supportArray.map((id, index) => (
                                                                     <div className="row list_listbox" key={index}>
