@@ -38,7 +38,6 @@ const EmployeeLeaveList = () => {
     const [selectedPage, setSelectedPage] = useState(1);
     const [detailAppliedID, setDetailAppliedID] = useState(-1);
     const [selectedEmp, setSelectedEmployeeName] = useState({ value: '', label: '' });
-
     const [isToBeEdited, setisToBeEdited] = useState(false);
     const [editTaskId, setEditTaskId] = useState(0);
     const [numId, setNumId] = useState(0);
@@ -51,15 +50,10 @@ const EmployeeLeaveList = () => {
     const [statusarray, setStatus] = useState<LeapTaskStatus[]>([]);
     const [employeeName, setEmployeeNames] = useState([{ value: '', label: '' }]);
     const [loadingCursor, setLoadingCursor] = useState(false);
-
     const [showAlert, setShowAlert] = useState(false);
     const [alertForSuccess, setAlertForSuccess] = useState(0);
     const [alertTitle, setAlertTitle] = useState('');
     const [alertStartContent, setAlertStartContent] = useState('');
-    const [alertMidContent, setAlertMidContent] = useState('');
-    const [alertEndContent, setAlertEndContent] = useState('');
-    const [alertValue1, setAlertValue1] = useState('');
-    const [alertvalue2, setAlertValue2] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -79,8 +73,6 @@ const EmployeeLeaveList = () => {
         }
         fetchData();
         fetchTasks("", "");
-        // fetchTeamTasks("", "");
-        // fetchProjectTasks("", "");
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
             const element = document.querySelector('.mainbox');
@@ -127,19 +119,6 @@ const EmployeeLeaveList = () => {
                     "task_status": status
                 }
             }
-            // formData.append("client_id", "3");
-            // formData.append("customer_id", contextCustomerID);
-            // formData.append("task_date", "24-03-2024");
-            // if (filterID == 1) formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
-            // if (filterID == 1) { formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value); }
-            // else {
-            //     formData.append("task_date", formatDateYYYYMMDD(new Date()));
-            // }
-            // if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
-            // if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
-            // for (const [key, value] of formData.entries()) {
-            //     console.log(`${key}: ${value}`);
-            // }
             const res = await fetch(`/api/users/getTasks`, {
                 method: "POST",
                 body: JSON.stringify({
@@ -196,15 +175,6 @@ const EmployeeLeaveList = () => {
                     "task_status": status
                 }
             }
-            // formData.append("assigned_to", contextCustomerID);
-            // if (filterID == 1) formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
-            // if (filterID == 1) { formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value); }
-            // else {
-            //     formData.append("task_date", new Date().toISOString());
-
-            // }
-            // if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
-            // if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
             const res = await fetch(`/api/users/getAssignedTask`, {
                 method: "POST",
                 body: JSON.stringify({
@@ -270,16 +240,6 @@ const EmployeeLeaveList = () => {
                     "customer_id": customerID
                 }
             }
-            // formData.append("manager_id", contextCustomerID);
-            // if (filterID == 1) formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
-            // if (filterID == 1) {
-            //     formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value);
-            // } else {
-            //     formData.append("task_date", new Date().toISOString());
-            // }
-            // if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
-            // if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
-            // if (filterID == 4) formData.append("customer_id", filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value);
 
             const res = await fetch(`/api/users/getTeamTasks`, {
                 method: "POST",
@@ -346,15 +306,6 @@ const EmployeeLeaveList = () => {
                     "customer_id": customerID
                 }
             }
-            // formData.append("project_manager_id", contextCustomerID);
-            // if (filterID == 1) { formData.append("task_date", filters.date.length > 0 && filters.date == value ? filters.date : value); }
-            // else {
-            //     formData.append("task_date", new Date().toISOString());
-
-            // }
-            // if (filterID == 2) formData.append("sub_project_id", filters.projectID.length > 0 && filters.projectID == value ? filters.projectID : value);
-            // if (filterID == 3) formData.append("task_status", filters.taskStatus.length > 0 && filters.taskStatus == value ? filters.taskStatus : value);
-            // if (filterID == 4) formData.append("customer_id", filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value);
 
             const res = await fetch(`/api/users/getProjectTasks`, {
                 method: "POST",
@@ -428,9 +379,6 @@ const EmployeeLeaveList = () => {
     };
     const handleEmpSelectChange = async (values: any) => {
         setEmployeeNames(values)
-        // setSelectedEmployeeName({ value: '', label: '' });
-
-        // setFilters((prev) => ({ ...prev, ["customerID"]: values.value }));
         fetchProjectTasks(4, values.value);
         fetchTeamTasks(4, values.value);
     };
@@ -559,15 +507,15 @@ const EmployeeLeaveList = () => {
                                                                 <div className="nw_filter_form_group">
                                                                     <div className="nw_filter_submit_btn">
                                                                         <a onClick={() => resetFilter("fetchTasks")}>
-                                                                            <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                            <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                         </a>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                            <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
-                                                            <img src="/images/user/filter-icon-red.svg" alt="Filter icon" className="img-fluid new_filter_color_change_red" />
+                                                            <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
+                                                            <img src={staticIconsBaseURL + "/images/user/filter-icon-red.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_red" />
                                                             <div className="new_filter_tooltip_box">
                                                                 Filter
                                                             </div>
@@ -637,8 +585,8 @@ const EmployeeLeaveList = () => {
                                                                                             <><div className="col-lg-1 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
                                                                                         }
                                                                                         <div className="col-lg-1 text-center">
-                                                                                            {list.leap_task_status.status == "Completed" ? <img src="/images/ic_eye.png" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(false) }} /> :
-                                                                                                <img src="/images/edit.png" className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(true) }} />
+                                                                                            {list.leap_task_status.status == "Completed" ? <img src={staticIconsBaseURL + "/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(false) }} /> :
+                                                                                                <img src={staticIconsBaseURL + "/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(true) }} />
 
                                                                                             }
                                                                                         </div>
@@ -685,14 +633,14 @@ const EmployeeLeaveList = () => {
                                                                 <div className="nw_filter_form_group">
                                                                     <div className="nw_filter_submit_btn">
                                                                         <a onClick={() => resetFilter("fetchAssignedTasks")}>
-                                                                            <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                            <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                         </a>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                            <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
+                                                            <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
                                                         </div>
                                                     </div>
                                                     <div className="my_task_tabbing_content">
@@ -723,7 +671,7 @@ const EmployeeLeaveList = () => {
                                                                                             <div className="col-lg-2 text-center" style={{ color: "red" }}>{list.deadline ? list.deadline : "--"}</div>
                                                                                             <div className="col-lg-2 text-center">{list.leap_customer.name}</div>
                                                                                             <div className="col-lg-1 text-center">
-                                                                                                <img src="/images/ic_eye.png" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(1); setShowDialog(true); setisToBeEdited(false) }} />
+                                                                                                <img src={staticIconsBaseURL + "/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(1); setShowDialog(true); setisToBeEdited(false) }} />
 
                                                                                             </div>
                                                                                         </div>
@@ -783,14 +731,14 @@ const EmployeeLeaveList = () => {
                                                                     <div className="nw_filter_form_group">
                                                                         <div className="nw_filter_submit_btn">
                                                                             <a onClick={() => resetFilter("fetchTeamTasks")}>
-                                                                                <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                                <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                             </a>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                                <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
+                                                                <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
                                                             </div>
                                                         </div>
                                                         <div className="my_task_tabbing_content">
@@ -821,8 +769,8 @@ const EmployeeLeaveList = () => {
                                                                                                 }
                                                                                                 <div className="col-lg-1 text-center">
                                                                                                     {list.leap_approval_status.approval_type == "Pending" ?
-                                                                                                        <img src="/images/edit.png" className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
-                                                                                                        <img src="/images/ic_eye.png" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog(true); setisToBeEdited(false) }} />
+                                                                                                        <img src={staticIconsBaseURL + "/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
+                                                                                                        <img src={staticIconsBaseURL + "/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog(true); setisToBeEdited(false) }} />
                                                                                                     }
                                                                                                 </div>
                                                                                             </div>
@@ -882,14 +830,14 @@ const EmployeeLeaveList = () => {
                                                                         <div className="nw_filter_form_group">
                                                                             <div className="nw_filter_submit_btn">
                                                                                 <a onClick={() => resetFilter("fetchProjectTasks")}>
-                                                                                    <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                                    <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                                 </a>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                                    <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid" />
+                                                                    <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid" />
                                                                 </div>
                                                             </div>
                                                             <div className="my_task_tabbing_content">

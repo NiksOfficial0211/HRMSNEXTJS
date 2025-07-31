@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
       end_date,
       start_date
     } = await request.json();
-
    
     const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
@@ -51,8 +50,8 @@ export async function POST(request: NextRequest) {
       query = query.gte("raised_on", start_date).lte("raised_on", end_date);
     }
 
-    if (funISDataKeyPresent(raised_on)) {
-      query = query.eq("raised_on", raised_on);
+    if (funISDataKeyPresent(start_date) && !funISDataKeyPresent(end_date)) {
+      query = query.eq("raised_on", start_date);
     }
     if (start || end) {
       query = query.range(start, end);

@@ -61,7 +61,16 @@ const EmployeeTaskData = ({ id, isToBeEddited, onClose }: { id: any, isToBeEddit
         }
         fetchData();
     }, []);
+  const [errors, setErrors] = useState<Partial<TaskUpdateModel>>({});
 
+  const validate = () => {
+    const newErrors: Partial<TaskUpdateModel> = {};
+    if (!formValues.task_details) newErrors.task_details = "required";
+    if (!formValues.task_status) newErrors.task_status = "required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log("handle submit called");

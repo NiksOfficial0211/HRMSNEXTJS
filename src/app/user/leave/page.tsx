@@ -180,7 +180,7 @@ const EmployeeLeaveList = () => {
             setSelectedStatus(value);
             fetchUsers(1, value, selectedPage, '', '');
         }
-        console.log("status: ", selectedStatus)
+        // console.log("status: ", selectedStatus)
     };
     function filter_whitebox() {
         const x = document.getElementById("filter_whitebox");
