@@ -73,14 +73,14 @@ async function startAttendance(fields: any, files: { file: any; }) {
   // }
   const currentDateTime = new Date();
   let fileUploadResponse;
-const log=await addErrorExceptionLog(fields.client_id[0],fields.customer_id[0],"Upload attendance start api called",JSON.stringify({
-        client_id:fields.client_id[0],customer_id:fields.customer_id[0]
-    }));
+
   if (files){
     
-    fileUploadResponse=apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id,"attendance")
-
+    fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id,"attendance")
+    console.log(fileUploadResponse);
+    
   }
+
 //   if(files){
   
 //   const uploadedFile = files.file[0];
@@ -135,9 +135,7 @@ const log=await addErrorExceptionLog(fields.client_id[0],fields.customer_id[0],"
   if (error) {
     return NextResponse.json({ message: "Start Attendance error :- " ,error: error.message }, { status: 401 });
   }
-  const log2=await addErrorExceptionLog(fields.client_id[0],fields.customer_id[0],"Upload attendance start api called",JSON.stringify({
-        fileUplaodRes:fileUploadResponse
-    }));
+  
   const { data: latLngData, error: latLngError } = await supabase
     .from("leap_customer_attendance_geolocation")
     .insert([

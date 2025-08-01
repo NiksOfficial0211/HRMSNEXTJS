@@ -3,6 +3,7 @@ import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import { apiStatusFailureCode, apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
+import { apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 
 export async function POST(request: NextRequest) {
 
@@ -11,33 +12,18 @@ export async function POST(request: NextRequest) {
             if (!files || !files.file) {
                 return NextResponse.json({ error: "No files received." }, { status: 400 });
             }
+            let fileUploadResponse;
+            fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id[0],fields.docName[0] || "")
+                          
+                        
 
-        const uploadedFile = files.file[0];
-        const fileBuffer = await fs.readFile(uploadedFile.path);
+        if(fileUploadResponse && fileUploadResponse.length>0){
+        return NextResponse.json({status:1 ,message: "File uploaded", data:fileUploadResponse}, { status: apiStatusSuccessCode })
 
+        }else{
+                    return NextResponse.json({status:0 ,message: "Failed to upload file", }, { status: apiStatusSuccessCode })
 
-const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
-            type: uploadedFile.headers["content-type"]
-          });
-        const formData = new FormData();
-        formData.append("client_id", fields.client_id[0]);
-        formData.append("customer_id", fields.customer_id[0]);
-        formData.append("docType", fields.docName[0] || "");
-        formData.append("file", fileBlob, uploadedFile.originalFilename);
-
-
-
-        const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles", {
-            method: "POST",
-            // headers:{"Content-Type":"multipart/form-data"},
-            body: formData,
-        });
-
-        const fileUploadResponse = await fileUploadURL.json();
-        if (fileUploadResponse.error) {
-            return NextResponse.json({ status: 0,message:"Unable to upload file",error: "File upload api call error" }, { status: apiStatusFailureCode });
         }
-        return NextResponse.json({status:1 ,message: "File uploaded", data:fileUploadResponse.documentURL}, { status: apiStatusSuccessCode })
 
     }catch(e){
         console.log(error);

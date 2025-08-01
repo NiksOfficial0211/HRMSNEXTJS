@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import supabase from "../../supabaseConfig/supabase";
 import { formatDateYYYYMMDD, funDataAddedSuccessMessage, funSendApiErrorMessage, funSendApiException } from "@/app/pro_utils/constant";
+import moment from "moment";
 
 export async function POST(request: NextRequest) {
 
@@ -12,16 +13,15 @@ export async function POST(request: NextRequest) {
       branchId: formData.get('branch_id'),
       holidayName: formData.get('holiday_name'),
       holidayTypeId: formData.get('holiday_type_id'),
-      holidayDate: formData.get('holiday_date'),
+      holidayDate: formData.get('date'),
       holidayYear: formData.get('holiday_year'),
-
-
     }
+    
     let query = supabase.from("leap_holiday_list")
       .insert({
         holiday_name: fdata.holidayName,
         holiday_type_id: fdata.holidayTypeId,
-        date: formatDateYYYYMMDD(fdata.holidayDate), 
+        date: moment(fdata.holidayDate?.toString() || '', 'YYYY-MM-DD').format('YYYY-MM-DD'), 
         client_id: fdata.clientId, 
         branch_id: fdata.branchId, 
         holiday_year: fdata.holidayYear

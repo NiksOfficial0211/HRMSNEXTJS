@@ -173,9 +173,10 @@ export async function addErrorLog(client_id:any,actionType:any,errorJson:any,
     let filename;
     let uploadDir;
 
+    
     filename=setUploadFileName("selfie"+"_"+customer_id+"_"+uploadedFile.originalFilename);
-    uploadDir = path.join(process.cwd(), "/uploads/"+docType+"/"+client_id+"/selfie");
-    const log1=await addErrorExceptionLog(client_id,customer_id,"Upload attendance start api called",JSON.stringify({
+    uploadDir = path.join(process.cwd(), "/uploads/"+docType+"/"+client_id+"/"+getCurrentDateFormatted());
+    const log1=await addErrorExceptionLog(client_id,customer_id,"Upload attendance start api called log 1",JSON.stringify({
         dirpath:uploadDir
     }));
     await fs.mkdir(uploadDir, { recursive: true });
@@ -183,9 +184,18 @@ export async function addErrorLog(client_id:any,actionType:any,errorJson:any,
     const destination = path.join(uploadDir, filename);
     await fs.copyFile(tempFilePath, destination);
         
-    const fileUploadResponse=docType+"/"+client_id+"selfie"+"/"+filename
-    const log2=await addErrorExceptionLog(client_id,customer_id,"Upload attendance start api called",JSON.stringify({
+    const fileUploadResponse=docType+"/"+client_id+"/"+getCurrentDateFormatted()+"/"+filename
+    const log2=await addErrorExceptionLog(client_id,customer_id,"Upload attendance start api called log 2",JSON.stringify({
         fileUplaodRes:fileUploadResponse
     }));
     return fileUploadResponse;
   }
+
+ export function getCurrentDateFormatted(): string {
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const yyyy = today.getFullYear();
+
+  return `${dd}-${mm}-${yyyy}`;
+}
