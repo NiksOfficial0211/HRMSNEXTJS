@@ -11,7 +11,7 @@ export const POST = async (req: NextRequest) => {
   let clientid,customer_id;
   try {
     const { fields, files } = await parseForm(req);
-    console.log("uplaod Files is called==============================");
+    console.log("uplaod Files is called============================== ",req);
     
     const log=await addErrorExceptionLog(fields.client_id[0],fields.customer_id[0],"Upload document api called",JSON.stringify({
         client_id:fields.client_id[0],customer_id:fields.customer_id[0]
