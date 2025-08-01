@@ -523,9 +523,7 @@ const EmpAttendancePage = () => {
                                                             </div>
                                                         </div>
                                                     </li>
-                                                    <li>
-                                                        <BackButton isCancelText={false} />
-                                                    </li>
+                                                    
                                                 </ul>
                                             </div>
                                         </div>
@@ -835,8 +833,11 @@ const EmpAttendancePage = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-
-
+                                                </div>
+                                            </div>
+                                            <div className="row mt-4">
+                                                <div className="col-lg-12">
+                                                        <BackButton isCancelText={false} />
                                                 </div>
                                             </div>
                                         </div>

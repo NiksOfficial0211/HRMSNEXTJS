@@ -131,8 +131,8 @@ const Asset = () => {
                                         </div>
                                     </div>
                                     <div className="nw_user_inner_content_box" style={{ minHeight: '60vh' }}>
-                                        <div className="user_assets_listingBox mt-4">
-                                            {asset.length > 0 ? (asset.map((assetList, index) => (
+                                         {asset.length > 0 ? <div className="user_assets_listingBox mt-4">{
+                                            (asset.map((assetList, index) => (
                                                 <div className="user_asset_list" key={index}>
                                                     <div className="user_asset_imageBox">
                                                         <div className="swiper-wrapper-with-nav">
@@ -209,10 +209,10 @@ const Asset = () => {
                                                     </div>
                                                 </div>
                                             ))
-                                            ) : <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+                                            ) }</div>: 
+                                        <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
                                                 <PageErrorCenterContent content={"None Allotted"} />
                                             </div>}
-                                        </div>
                                     </div>
                                 </div>
                             </div>

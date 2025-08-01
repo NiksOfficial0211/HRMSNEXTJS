@@ -253,9 +253,9 @@ const UserSupport = ({ onClose, id, selectedShortCutID }: { onClose: (fetchData:
                                                                 {updatedData.status === 1 ? (
                                                                     <><div className="col-lg-2 text-center" style={{ color: "orange" }}>{updatedData.leap_request_status.status}</div></>
                                                                 ) : updatedData.status === 2 ? (
-                                                                    <><div className="col-lg-2 text-center" style={{ color: "green" }}>{updatedData.leap_request_status.status}</div></>
+                                                                    <><div className="col-lg-2 text-center" style={{ color: "#1976d2" }}>{updatedData.leap_request_status.status}</div></>
                                                                 ) : updatedData.status === 3 ? (
-                                                                    <><div className="col-lg-2 text-center" style={{ color: "red" }}>{updatedData.leap_request_status.status}</div></>
+                                                                    <><div className="col-lg-2 text-center" style={{ color: "green" }}>{updatedData.leap_request_status.status}</div></>
                                                                 ) :
                                                                     <><div className="col-lg-2 text-center" style={{ color: "red" }}>{updatedData.leap_request_status.status}</div></>
                                                                 }

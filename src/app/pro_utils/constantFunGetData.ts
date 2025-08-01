@@ -841,7 +841,6 @@ export async function funGetMyLeaveBalance(clientId: any, branchId: any, custome
       }
       if (appliedLeavedata[i].leave_status == 2) {
         leaveStatusApprovedCount = leaveStatusApprovedCount + 1;
-
       }
       if (appliedLeavedata[i].leave_status == 3) {
         leaveStatusRejectedCount = leaveStatusRejectedCount + 1;
@@ -863,19 +862,20 @@ export async function funGetMyLeaveBalance(clientId: any, branchId: any, custome
       // console.log("leave Data =======",custleaveData[0]);
 
       if ((customerData[0].gender == custleaveData[i].gender || custleaveData[i].gender == "All")) {
-        if (custleaveData[i].if_unused == "Carry Forward") {
+    
+        // (custleaveData[i].if_unused == "Carry Forward") {
 
-          customerLeavePendingCount.push({
-            leaveTypeId: custleaveData[i].leave_id,
-            leaveType: custleaveData[i].leave_name,
-            leaveAllotedCount: calcTotalWorkingSpan * custleaveData[i].leave_count,
-            totalAppliedLeaveDays: 0,
-            leaveBalance: calcTotalWorkingSpan * custleaveData[i].leave_count,
-            isPaid: custleaveData[i].is_paid,
-            color_code: custleaveData[i].color_code
-          })
-
-        } else {
+        //   customerLeavePendingCount.push({
+        //     leaveTypeId: custleaveData[i].leave_id,
+        //     leaveType: custleaveData[i].leave_name,
+        //     leaveAllotedCount: calcTotalWorkingSpan * custleaveData[i].leave_count,
+        //     totalAppliedLeaveDays: 0,
+        //     leaveBalance: calcTotalWorkingSpan * custleaveData[i].leave_count,
+        //     isPaid: custleaveData[i].is_paid,
+        //     color_code: custleaveData[i].color_code
+        //   })
+        // } else
+           
           customerLeavePendingCount.push({
             leaveTypeId: custleaveData[i].leave_id,
             leaveType: custleaveData[i].leave_name,
@@ -885,7 +885,7 @@ export async function funGetMyLeaveBalance(clientId: any, branchId: any, custome
             isPaid: custleaveData[i].is_paid,
             color_code: custleaveData[i].color_code
           })
-        }
+        
       }
     }
     let totalLeaveAppliedDays = 0, totalLeaveBalance = 0;
@@ -898,7 +898,6 @@ export async function funGetMyLeaveBalance(clientId: any, branchId: any, custome
           totalLeaveBalance = totalLeaveBalance + customerLeavePendingCount[j].leaveBalance;
         }
       }
-
     }
     if (appliedLeaveError) {
       return appliedLeaveError;

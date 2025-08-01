@@ -210,11 +210,11 @@ const HolidayList = () => {
                 showLeftPanel={true}
                 rightBoxUI={
                     <div>
-                        {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                        {/* {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                             setShowAlert(false)
                         }} onCloseClicked={function (): void {
                             setShowAlert(false)
-                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
+                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />} */}
                         <LoadingDialog isLoading={isLoading} />
                         <div className='container'>
                             <div className="row">
@@ -330,7 +330,7 @@ const HolidayList = () => {
                                         <div className="new_org_leave_mainbox" id='id_leave_org'>
                                             <div className="my_task_tabbing_content">
                                                 <div className="row">
-                                                    <LoadingDialog isLoading={isLoading} />
+                                                    {/* <LoadingDialog isLoading={isLoading} /> */}
                                                     <div className="col-lg-12">
                                                         <div className="new_org_subheading_box">
                                                             <div className="heading25">
@@ -389,7 +389,7 @@ const HolidayList = () => {
                                         <div className="new_org_holiday_mainbox" id='id_holiday_org'>
                                             <div className="my_task_tabbing_content">
                                                 <div className="row">
-                                                    <LoadingDialog isLoading={isLoading} />
+                                                    {/* <LoadingDialog isLoading={isLoading} /> */}
                                                     <div className="col-lg-12">
                                                         <div className="new_org_subheading_box">
                                                             <div className="heading25">
