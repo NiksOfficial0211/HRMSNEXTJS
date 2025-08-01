@@ -137,7 +137,7 @@ export const calculateNumMonths=(startDate:Date,endDate:Date)=>{
 
 // Get the year and month values
 const startYear = startDate.getFullYear();
-const startMonth = startDate.getMonth(); // Note: Months are zero-indexed (0 = January)
+const startMonth = startDate.getMonth(); // Note: Months ar e zero-indexed (0 = January)
 
 const endYear = endDate.getFullYear();
 const endMonth = endDate.getMonth(); // Note: Months are zero-indexed (0 = January)

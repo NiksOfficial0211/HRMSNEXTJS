@@ -540,9 +540,20 @@ const EmployeeLeaveList = () => {
                                                                 <div className="new_home_leave_balance_typebox">
                                                                     {extractFirstLetters(balance.leaveType)}
                                                                 </div>
-                                                                <div className="new_home_leave_balance_remaining">
+                                                                {
+                                                                    (balance.leaveBalance.toString().length > 2 || balance.leaveAllotedCount.toString().length > 2) ? (
+                                                                        <div className="new_home_leave_balance_remaining new_home_leave_balance_remaining_three">
+                                                                            {balance.leaveBalance + "/" + balance.leaveAllotedCount}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="new_home_leave_balance_remaining">
+                                                                            {balance.leaveBalance + "/" + balance.leaveAllotedCount}
+                                                                        </div>
+                                                                    )
+                                                                }
+                                                                {/* <div className="new_home_leave_balance_remaining">
                                                                     {balance.leaveBalance + "/" + balance.leaveAllotedCount}
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                             <div className='user_balance_tooltip'>
                                                                 <div className="ser_tool_tip_content">

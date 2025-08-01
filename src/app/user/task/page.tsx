@@ -36,7 +36,6 @@ const EmployeeLeaveList = () => {
     const { contextClientID, contextRoleID, contextCustomerID, contaxtBranchID } = useGlobalContext();
     const [scrollPosition, setScrollPosition] = useState(0);
     const [selectedPage, setSelectedPage] = useState(1);
-    const [detailAppliedID, setDetailAppliedID] = useState(-1);
     const [selectedEmp, setSelectedEmployeeName] = useState({ value: '', label: '' });
     const [isToBeEdited, setisToBeEdited] = useState(false);
     const [editTaskId, setEditTaskId] = useState(0);
@@ -133,7 +132,7 @@ const EmployeeLeaveList = () => {
                 }),
             });
             const response = await res.json();
-            console.log(response);
+            // console.log(response);
             const leaveListData = response.data;
             if (response.status === 1) {
                 setTask(leaveListData)

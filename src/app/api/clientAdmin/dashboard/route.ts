@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import supabase from "../../supabaseConfig/supabase";
 import { allClientsData, allEmployeeListData, apiStatusFailureCode, apiStatusSuccessCode, apiwentWrong } from "@/app/pro_utils/stringConstants";
 import { funloggedInAnotherDevice, funSendApiException } from "@/app/pro_utils/constant";
-import { funGetAnnouncements, funGetClientCustomerList, funGetClientEmployeeAttendance, funGetClientEmployeeAttendanceforManager, funGetClientEmployeeLeaveRequest, funGetClientEmployeeList, funGetClientEmployeeListForManager, funGetClientEmployeeSummary, funGetClientHolidayList, funGetClientList, funGetClientUpCommingHolidayList, funGetCustomer, funGetEmpBirthdayList, funGetEmployeeLeaveRequest, funGetEmployeeLeaveRequestforManager, funGetMidShortCutsList, funGetMyLeaveBalance, funGetShortCutsOneList, funGetThisMonthHoliday, funGetUserAssignedTask, funGetUserDailyTask, funGetUserFirstName, getAllActivitiesOfUsers, getDashboardAllActivitiesOfUsers, getMyAttendance, getMyDocumentsList, getMyPresentTeam, getUserRoles, isAuthTokenValid } from "@/app/pro_utils/constantFunGetData";
+import { funGetAnnouncements, funGetClientCustomerList, funGetClientEmployeeAttendance, funGetClientEmployeeAttendanceforManager, funGetClientEmployeeLeaveRequest, funGetClientEmployeeList, funGetClientEmployeeListForManager, funGetClientEmployeeSummary, funGetClientHolidayList, funGetClientList, funGetClientUpCommingHolidayList, funGetCompanyWorkingHour, funGetCustomer, funGetEmpBirthdayList, funGetEmployeeLeaveRequest, funGetEmployeeLeaveRequestforManager, funGetMidShortCutsList, funGetMyLeaveBalance, funGetShortCutsOneList, funGetThisMonthHoliday, funGetUserAssignedTask, funGetUserDailyTask, funGetUserFirstName, getAllActivitiesOfUsers, getDashboardAllActivitiesOfUsers, getMyAttendance, getMyDocumentsList, getMyPresentTeam, getUserRoles, isAuthTokenValid } from "@/app/pro_utils/constantFunGetData";
 import { platform } from "os";
 
 export async function POST(request: NextRequest) {
@@ -99,6 +99,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         message: allEmployeeListData,
         status: 1,
+        workingHour: await funGetCompanyWorkingHour(client_id, branch_id),
         employees: funGetClientEmployeeListForManager(client_id, customer_id),
         leaveRequest:
           await funGetEmployeeLeaveRequestforManager(client_id, null, new Date(), null, customer_id, false),
@@ -124,6 +125,7 @@ export async function POST(request: NextRequest) {
         status: 1,
         leaveRequest: null,
         employeeAttendance: null,
+        workingHour: await funGetCompanyWorkingHour(client_id, branch_id),
         upcommingHolidays: await funGetThisMonthHoliday(client_id, branch_id),
         myattendance: await getMyAttendance(customer_id, client_id, new Date()),
         // my_documents: await getMyDocumentsList(customer_id),
@@ -135,7 +137,6 @@ export async function POST(request: NextRequest) {
         // announcements:await funGetAnnouncements(client_id,customer_id,role_id),
         birthdays: await funGetEmpBirthdayList(client_id)
         // mypresentTeam:null,
-
       },
         { status: apiStatusSuccessCode });
     }

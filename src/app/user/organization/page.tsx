@@ -13,7 +13,7 @@ import LeftPannel from '@/app/components/leftPannel';
 import LoadingDialog from '@/app/components/PageLoader';
 import PageErrorCenterContent from '@/app/components/pageError';
 import ShowAlertMessage from '@/app/components/alert'
-import { ALERTMSG_addAssetSuccess, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_addAssetSuccess, ALERTMSG_exceptionString, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 
 const HolidayList = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -134,7 +134,7 @@ const HolidayList = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
     };
@@ -165,7 +165,7 @@ const HolidayList = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
     }
@@ -194,7 +194,7 @@ const HolidayList = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
     }

@@ -585,22 +585,7 @@ export const UserBankDetails = () => {
                                     );
                                 })}
 
-                                {/* <div className="d_user_profile_details_listing">
-                                    <div className="d_user_profile_details_subheading">TAX Insurance Number</div>
-                                    <div className="d_user_profile_details_content">{bankDetails?.TIN_number || "--"}</div>
-                                </div>
-                                <div className="d_user_profile_details_listing">
-                                    <div className="d_user_profile_details_subheading">UAN number</div>
-                                    <div className="d_user_profile_details_content">{bankDetails?.UAN_number || "--"}</div>
-                                </div>
-                                <div className="d_user_profile_details_listing">
-                                    <div className="d_user_profile_details_subheading">ESIC number</div>
-                                    <div className="d_user_profile_details_content">{bankDetails?.ESIC_number || "--"}</div>
-                                </div>
-                                <div className="d_user_profile_details_listing">
-                                    <div className="d_user_profile_details_subheading">Social Security Number</div>
-                                    <div className="d_user_profile_details_content">{bankDetails?.security_insurance_no || "--"}</div>
-                                </div> */}
+                            
                             </div>
                         </div>
                     </div>

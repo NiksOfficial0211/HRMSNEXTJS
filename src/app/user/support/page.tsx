@@ -348,7 +348,11 @@ const Support = () => {
                                     </div>
 
                                     <div className="nw_user_inner_content_box" style={{ minHeight: '60vh' }}>
-                                        {/*  />} */}
+                                        {/* {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                                            setShowAlert(false)
+                                        }} onCloseClicked={function (): void {
+                                            setShowAlert(false)
+                                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />} */}
                                         <div className={`${loadingCursor ? "cursorLoading" : ""}`}>
                                             {supportArray! && supportArray.length > 0 ?
                                                 <div className="row">

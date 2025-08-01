@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 
 import ShowAlertMessage from '@/app/components/alert'
-import { ALERTMSG_addAssetSuccess } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_addAssetSuccess, ALERTMSG_exceptionString } from '@/app/pro_utils/stringConstants'
 
 // Import Swiper styles
 import 'swiper/css';
@@ -94,7 +94,7 @@ const GreetingBlock = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
     };

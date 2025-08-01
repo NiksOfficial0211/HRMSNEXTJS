@@ -19,7 +19,7 @@ import 'swiper/css/pagination';
 // import BackButton from '@/app/components/BackButton'
 import PageErrorCenterContent from '@/app/components/pageError'
 import ShowAlertMessage from '@/app/components/alert'
-import { ALERTMSG_addAssetSuccess, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_addAssetSuccess, ALERTMSG_exceptionString, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 
 const Asset = () => {
     const { contextClientID, contextCustomerID } = useGlobalContext();
@@ -86,7 +86,7 @@ const Asset = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
     }
