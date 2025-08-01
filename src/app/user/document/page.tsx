@@ -491,7 +491,7 @@ const EmployeeDocuments = () => {
             setShowAlert(true);
 
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
         setLoadingCursor(false);

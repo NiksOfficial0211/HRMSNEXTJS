@@ -1141,7 +1141,19 @@ export async function funGetUserFirstName(customer_id: any) {
 
   return { firstName };
 }
+export async function funGetCompanyWorkingHour(clientID: any, branch_id: any ) {
+  const { data: workData, error } = await supabase
+         .from('leap_client_working_hour_policy')
+        .select('full_day')
+        .eq("client_id", clientID)
+        .eq("branch_id", branch_id);
 
+  if (error ) {
+    return error;
+  }
+
+  return { workData };
+}
 
 
 // import { NextResponse } from "next/server";

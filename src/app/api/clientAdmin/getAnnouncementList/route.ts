@@ -29,7 +29,9 @@ async function sendAllAnnouncements(client_id: any, branch_id: any){
     let query =  supabase.from('leap_client_announcements')
     .select('*,leap_show_announcement_users(announcement_id, role_id)')
     .eq('client_id', client_id)
-    .eq('branch_id', branch_id);
+    .eq('branch_id', branch_id)
+    .eq('isEnabled', true)
+    .eq('isDeleted', true);
 
     const { data: TaskData, error: taskError } =await query;
     if (taskError) {

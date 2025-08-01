@@ -259,10 +259,21 @@ const Dashboard = () => {
                                                                     {extractFirstLetters(balance.leaveType)}
                                                                 </div>
                                                                 {/* add condition */}
+                                                                {
+                                                                    (balance.leaveBalance.toString().length > 3 || balance.leaveAllotedCount.toString().length > 3) ? (
+                                                                        <div className="new_home_leave_balance_remaining new_home_leave_balance_remaining_three">
+                                                                            {balance.leaveBalance + "/" + balance.leaveAllotedCount}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="new_home_leave_balance_remaining">
+                                                                            {balance.leaveBalance + "/" + balance.leaveAllotedCount}
+                                                                        </div>
+                                                                    )
+                                                                }
 
-                                                                <div className="new_home_leave_balance_remaining new_home_leave_balance_remaining_three">
+                                                                {/* <div className="new_home_leave_balance_remaining new_home_leave_balance_remaining_three">
                                                                     {balance.leaveBalance + "/" + balance.leaveAllotedCount}
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                             <div className='user_balance_tooltip'>
                                                                 <div className="ser_tool_tip_content">
@@ -560,38 +571,24 @@ const Dashboard = () => {
                                                                             </div>
                                                                         </div>
                                                                         <div className="new_home_task_mainbox">
-                                                                        {taskarray && taskarray.length > 0 ? (
-                                                                            taskarray?.map((data, index) =>
-                                                                                <div className='new_user_home_task_listing'  key={index}>
-                                                                                    {data.task_status.id == 1 ?
-                                                                                        <> <div className="new_home_task_listing new_home_task_type_todo">
-                                                                                            <div className="new_home_task_project_namebox">
-                                                                                                <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
-                                                                                                <div className="new_home_task_description">
-                                                                                                    {data.task_details}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div className="new_home_task_type">
-                                                                                                {data.task_type_id.task_type_name}
-                                                                                            </div>
-                                                                                        </div> </>
-                                                                                        : data.task_status.id == 2 ?
-                                                                                            <>
-                                                                                                <div className="new_home_task_listing new_home_task_type_working">
-                                                                                                    <div className="new_home_task_project_namebox">
-                                                                                                        <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
-                                                                                                        <div className="new_home_task_description">
-                                                                                                            {data.task_details}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div className="new_home_task_type">
-                                                                                                        {data.task_type_id.task_type_name}
+                                                                            {taskarray && taskarray.length > 0 ? (
+                                                                                taskarray?.map((data, index) =>
+                                                                                    <div className='new_user_home_task_listing' key={index}>
+                                                                                        {data.task_status.id == 1 ?
+                                                                                            <> <div className="new_home_task_listing new_home_task_type_todo">
+                                                                                                <div className="new_home_task_project_namebox">
+                                                                                                    <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
+                                                                                                    <div className="new_home_task_description">
+                                                                                                        {data.task_details}
                                                                                                     </div>
                                                                                                 </div>
-                                                                                            </>
-                                                                                            : data.task_status.id == 3 ?
+                                                                                                <div className="new_home_task_type">
+                                                                                                    {data.task_type_id.task_type_name}
+                                                                                                </div>
+                                                                                            </div> </>
+                                                                                            : data.task_status.id == 2 ?
                                                                                                 <>
-                                                                                                    <div className="new_home_task_listing new_home_task_type_complete">
+                                                                                                    <div className="new_home_task_listing new_home_task_type_working">
                                                                                                         <div className="new_home_task_project_namebox">
                                                                                                             <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
                                                                                                             <div className="new_home_task_description">
@@ -603,9 +600,9 @@ const Dashboard = () => {
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </>
-                                                                                                : data.task_status.id == 5 ?
+                                                                                                : data.task_status.id == 3 ?
                                                                                                     <>
-                                                                                                        <div className="new_home_task_listing new_home_task_type_assigned">
+                                                                                                        <div className="new_home_task_listing new_home_task_type_complete">
                                                                                                             <div className="new_home_task_project_namebox">
                                                                                                                 <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
                                                                                                                 <div className="new_home_task_description">
@@ -617,11 +614,25 @@ const Dashboard = () => {
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </>
-                                                                                                    : <></>}
-                                                                                </div>
-                                                                            ))
-                                                                            : <> Fill your daily tasks!</>
-                                                                        }
+                                                                                                    : data.task_status.id == 5 ?
+                                                                                                        <>
+                                                                                                            <div className="new_home_task_listing new_home_task_type_assigned">
+                                                                                                                <div className="new_home_task_project_namebox">
+                                                                                                                    <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
+                                                                                                                    <div className="new_home_task_description">
+                                                                                                                        {data.task_details}
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                <div className="new_home_task_type">
+                                                                                                                    {data.task_type_id.task_type_name}
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </>
+                                                                                                        : <></>}
+                                                                                    </div>
+                                                                                ))
+                                                                                : <> Fill your daily tasks!</>
+                                                                            }
                                                                         </div>
                                                                     </div>
                                                                 </div>
