@@ -22,9 +22,9 @@ import ShowAlertMessage from '@/app/components/alert'
 import { EmployeeLeave_Approval_LeaveType } from '@/app/models/leaveModel'
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
 import { stringify } from 'querystring'
+import BackButton from '@/app/components/BackButton'
 // import AttendanceMap from '@/app/components/trackerMap'
 // const AttendanceMap = dynamic(() => import('@/app/components/trackerMap'), { ssr: false });
-
 
 interface FilterValues {
     start_date: any,
@@ -40,7 +40,6 @@ interface DateRangeModel {
     wasOnLeave: boolean,
     leaveTypeName: any,
     leaveApprovalStatus: any
-
     employeeAttendance: LeapCustomerAttendanceAPI | null
 }
 interface selectedAttendance {
@@ -335,7 +334,6 @@ const EmpAttendancePage = () => {
         fetchData();
     }
 
-
     const setShowAttendance = (attendanceID: any, date: any, empID: any, empName: any,
         empDesignation: any, empDepartment: any) => {
         window.scrollTo({ top: 160, behavior: "smooth" });
@@ -351,7 +349,6 @@ const EmpAttendancePage = () => {
     };
 
     const handleDateChange = (ranges: RangeKeyDict) => {
-
         setState([ranges.selection]);
         setShowCalendar(false)
         if (ranges.selection.startDate == ranges.selection.endDate) {
@@ -359,10 +356,10 @@ const EmpAttendancePage = () => {
         } else {
             setFilterValues((prev) => ({ ...prev, ['start_date']: formatDateYYYYMMDD(ranges.selection.startDate) }));
             setFilterValues((prev) => ({ ...prev, ['end_date']: formatDateYYYYMMDD(ranges.selection.endDate) }));
-
         }
     };
     const formattedRange = formatDateYYYYMMDD(state[0].startDate) == formatDateYYYYMMDD(state[0].endDate) ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
+
     function filter_whitebox() {
         const x = document.getElementById("filter_whitebox");
         if (x!.className === "filter_whitebox") {
@@ -458,6 +455,20 @@ const EmpAttendancePage = () => {
                                                                             readOnly
                                                                             onClick={() => setShowCalendar(!showCalendar)}
                                                                         />
+                                                                        {/* <input
+                                                                                                                                                type="text"
+                                                                                                                                                className="form-control"
+                                                                                                                                                value={
+                                                                                                                                                    filters.start_date && filters.end_date
+                                                                                                                                                        ? `${format(new Date(filters.start_date), 'MMM d, yyyy')} - ${format(new Date(filters.end_date), 'MMM d, yyyy')}`
+                                                                                                                                                        : filters.start_date
+                                                                                                                                                            ? `${format(new Date(filters.start_date), 'MMM d, yyyy')}`
+                                                                                                                                                            : 'Select Date'
+                                                                                                                                                }
+                                                                                                                                                placeholder='Select Date'
+                                                                                                                                                readOnly
+                                                                                                                                                onClick={() => setShowCalendar(!showCalendar)}
+                                                                                                                                            /> */}
                                                                         {showCalendar && (
                                                                             <div style={{ position: 'absolute', zIndex: 1000 }}>
                                                                                 <DateRange
@@ -683,6 +694,7 @@ const EmpAttendancePage = () => {
                                                                             <div className="my_attendance_right_name_id_box">
                                                                                 <div className="my_attendance_right_name">
                                                                                     {/* {empAttendanceData[0].name} */}
+                                                                                    {moment(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.date).format('DD-MM-YYYY')}
                                                                                 </div>
                                                                                 <div className="my_attendance_right_id">
                                                                                     {/* Emp Code: */}
@@ -757,7 +769,7 @@ const EmpAttendancePage = () => {
                                                                                                                 (dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons[index]) : "--"}
                                                                                                         </div>
                                                                                                         <div className="my_user_attendance_breakbox_timing">
-                                                                                                            {formatInTimeZone(new Date(data), 'UTC', 'hh:mm a')} To
+                                                                                                            {formatInTimeZone(new Date(data), 'UTC', 'hh:mm a')} <span className='from_color_code'>to</span>
                                                                                                             {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index] ?
                                                                                                                 formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index]), 'UTC', 'hh:mm a') : "--"}
                                                                                                         </div>
@@ -765,7 +777,6 @@ const EmpAttendancePage = () => {
                                                                                                 </div>
                                                                                             ) : <> No breaks taken</>
                                                                                         }
-
                                                                                         {/* {isExpanded && (
                                                                                             <span className="moretext">
                                                                                                 {' '}
@@ -849,7 +860,9 @@ const EmpAttendancePage = () => {
 
 
                                                 </div>
+                                                
                                             </div>
+                                            
                                         </div>
                                     </div>
                                 </div>

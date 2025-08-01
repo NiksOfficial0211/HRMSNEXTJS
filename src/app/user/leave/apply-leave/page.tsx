@@ -52,9 +52,10 @@ const AssignLeave: React.FC = () => {
   useEffect(() => {
     setLoadingCursor(true);
     const fetchData = async () => {
-      const leavetype = await getLeave(contextClientID, contaxtBranchID );
+      const leavetype = await getLeave(contextCustomerID ,contextClientID, contaxtBranchID );
       setLeave(leavetype);
       setLoadingCursor(false);
+      
     };
     fetchData();
     const handleScroll = () => {
@@ -261,89 +262,7 @@ const AssignLeave: React.FC = () => {
                       <img src="/images/user/apply-leave.webp" alt="Apply leave image" className="img-fluid" />
                     </div>
                   </div>
-                  {/* <div className="grey_box">
-                    <div className="row">
-                      <div className="col-lg-12">
-                        <div className="add_form_inner">
-                          <div className="row">
-                            <div className="col-lg-12 mb-4 inner_heading25">
-                              Apply for Leave:
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-md-4">
-                              <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >Leave Type<span className='req_text'>*</span>:</label>
-                                <select id="leave_type" name="leave_type" onChange={handleInputChange}>
-                                  <option value="">Select</option>
-                                  {leaveArray.map((type, index) => (
-                                    <option value={type.leave_id} key={type.leave_id}>{type.leave_name}</option>
-                                  ))}
-                                </select>
-                                {errors.leave_type && <span className="error" style={{ color: "red" }}>{errors.leave_type}</span>}
-                              </div>
-                            </div>
-                            <div className="col-md-4">
-                              <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >Date<span className='req_text'>*</span>:  </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  value={formattedRange}
-                                  readOnly
-                                  onClick={() => setShowCalendar(!showCalendar)}
-                                />
-                                {showCalendar && (
-                                  <div style={{ position: 'absolute', zIndex: 1000 }}>
-                                    <DateRange
-                                      editableDateInputs={true}
-                                      onChange={handleChange}
-                                      moveRangeOnFirstSelection={false}
-                                      ranges={state}
-                                    />
-                                  </div>
-                                )}
-                                {errors.from_date && <span className="error" style={{ color: "red" }}>{errors.from_date}</span>}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-md-4" >
-                              <div className="form_box mb-3" >
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >Duration:  </label>
-                                <div className="row" >
-                                  <div className="col-md-4"><label htmlFor="exampleFormControlInput1">Full day</label></div>
-                                  <div className="col-md-6" style={{ alignContent: "center" }}><input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="Full day" onChange={handleInputChange} /></div>
-                                </div>
-                                <div className="row" >
-                                  <div className="col-md-4"><label htmlFor="exampleFormControlInput1">1st half</label></div>
-                                  <div className="col-md-6" style={{ alignContent: "center" }}><input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="1st half day" onChange={handleInputChange} /></div>
-                                </div>
-                                <div className="row" >
-                                  <div className="col-md-4"><label htmlFor="exampleFormControlInput1">2nd half</label></div>
-                                  <div className="col-md-6" style={{ alignContent: "center" }}><input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="2nd half day" onChange={handleInputChange} /></div>
-                                </div>
-                                {errors.duration && <span className="error" style={{ color: "red" }}>{errors.duration}</span>}
-                              </div>
-                            </div>
-                            <div className="col-md-4">
-                              <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >Leave reason<span className='req_text'>*</span>: </label>
-                                <textarea id="leave_reason" name="leave_reason" value={formValues.leave_reason} onChange={handleInputChange} />
-                                {errors.leave_reason && <span className="error" style={{ color: "red" }}>{errors.leave_reason}</span>}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>&nbsp;
-                  <div className="row">
-                    <div className="col-lg-12" style={{ textAlign: "right" }}>
-                      <BackButton isCancelText={true} />
-                      <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
-                    </div>
-                  </div> */}
+                 
                 </div>
               </div>
             </div>
@@ -360,23 +279,40 @@ const AssignLeave: React.FC = () => {
 
 export default AssignLeave
 
+async function getGender(customer_id: any) {
+  const { data, error } = await supabase
+    .from('leap_customer')
+    .select('gender')
+    .eq("customer_id", customer_id)
+    .single();
 
-async function getLeave(clientID: string, branchID: string) {
-
-  let query = supabase
-    .from('leap_client_leave')
-    .select()
-   .eq("client_id",clientID)
-   .eq("branch_id",branchID);
-
-  const { data, error } = await query;
-  if (error) {
-    // console.log(error);
-
-    return [];
-  } else {
-    // console.log(data);
-    return data;
+  if (error || !data) {
+    console.error("Error fetching gender:", error);
+    return null;
   }
 
+  return data.gender;
+}
+
+async function getLeave(customer_id: any, clientID: any, branchID: any) {
+  const gender = await getGender(customer_id);
+
+  if (!gender) {
+    console.error("No gender found for customer");
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from('leap_client_leave')
+    .select()
+    .eq("client_id", clientID)
+    .eq("branch_id", branchID)
+    .in('gender', ['All', gender]); 
+
+  if (error) {
+    console.error("Error fetching leave types:", error);
+    return [];
+  }
+
+  return data;
 }

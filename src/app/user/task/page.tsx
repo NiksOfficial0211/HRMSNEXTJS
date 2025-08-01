@@ -53,10 +53,10 @@ const EmployeeLeaveList = () => {
     const [alertForSuccess, setAlertForSuccess] = useState(0);
     const [alertTitle, setAlertTitle] = useState('');
     const [alertStartContent, setAlertStartContent] = useState('');
-     const [selectedStatus, setSelectedStatus] = useState('');
-     const [selectedProject, setSelectedProject] = useState('');
-     const [selectedEmployee, setSelectedEmp] = useState('');
-     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [selectedProject, setSelectedProject] = useState('');
+    const [selectedEmployee, setSelectedEmp] = useState('');
+    const [selectedDate, setSelectedDate] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -76,7 +76,7 @@ const EmployeeLeaveList = () => {
         }
 
         fetchData();
-        fetchTasks("", "","","");
+        fetchTasks("", "", "", "");
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
             const element = document.querySelector('.mainbox');
@@ -105,7 +105,8 @@ const EmployeeLeaveList = () => {
                 "task_status": selectedStatus
             }
             if (filterID == 1) {
-                let taskDate = filters.date.length > 0 && filters.date == valueDate ? filters.date : valueDate;
+                let taskDate = formatDateYYYYMMDD(filters.date == valueDate ? filters.date : valueDate);
+                // let taskDate = filters.date.length > 0 && filters.date == valueDate ? filters.date : valueDate;
                 formData = {
                     ...formData,
                     "task_date": taskDate
@@ -158,7 +159,7 @@ const EmployeeLeaveList = () => {
         try {
             let formData = {
                 "assigned_to": contextCustomerID,
-                "task_date": selectedDate,
+                "task_date": formatDateYYYYMMDD(selectedDate),
                 "sub_project_id": selectedProject
             }
             if (filterID == 1) {
@@ -168,7 +169,7 @@ const EmployeeLeaveList = () => {
                     "task_date": taskDate
                 }
             }
-            
+
             const res = await fetch(`/api/users/getAssignedTask`, {
                 method: "POST",
                 body: JSON.stringify({
@@ -203,7 +204,7 @@ const EmployeeLeaveList = () => {
         try {
             let formData = {
                 "manager_id": contextCustomerID,
-                "task_date": selectedDate,
+                "task_date": formatDateYYYYMMDD(selectedDate),
                 "customer_id": selectedEmployee,
                 // "sub_project_id": "",
                 // "task_status": ""
@@ -251,13 +252,13 @@ const EmployeeLeaveList = () => {
         }
         setLoadingCursor(false);
     };
-    const fetchProjectTasks = async (filterID: any,  valueDate: any, valueProject: any) => {
+    const fetchProjectTasks = async (filterID: any, valueDate: any, valueProject: any) => {
         setViewIndex(3)
         console.log("index: ", viewIndex)
         try {
             let formData = {
                 "project_manager_id": contextCustomerID,
-                "task_date":selectedDate,
+                "task_date": selectedDate,
                 // "customer_id": 0,
                 "sub_project_id": selectedProject
             }
@@ -275,7 +276,7 @@ const EmployeeLeaveList = () => {
                     "sub_project_id": subproject
                 }
             }
-            
+
 
             const res = await fetch(`/api/users/getProjectTasks`, {
                 method: "POST",
@@ -312,7 +313,7 @@ const EmployeeLeaveList = () => {
         if (name == "date") {
             setFilters((prev) => ({ ...prev, ['date']: value }));
             setSelectedDate(value);
-            fetchTasks(1, value, selectedProject, selectedStatus );
+            fetchTasks(1, value, selectedProject, selectedStatus);
             fetchAssignedTasks(1, value);
             fetchTeamTasks(1, value, selectedEmployee);
             fetchProjectTasks(1, value, selectedProject);
@@ -320,15 +321,15 @@ const EmployeeLeaveList = () => {
         if (name == "projectID") {
             setFilters((prev) => ({ ...prev, ['projectID']: value }));
             setSelectedProject(value);
-            fetchTasks(2, selectedDate, value, selectedStatus );
+            fetchTasks(2, selectedDate, value, selectedStatus);
             // fetchAssignedTasks(1,selectedDate,  value );
             // fetchTeamTasks(2, value);
-            fetchProjectTasks(2, selectedDate,  value);
+            fetchProjectTasks(2, selectedDate, value);
         }
         if (name == "taskStatus") {
             setFilters((prev) => ({ ...prev, ['taskStatus']: value }));
             setSelectedProject(value);
-            fetchTasks(3,selectedDate, selectedProject, value);
+            fetchTasks(3, selectedDate, selectedProject, value);
             // fetchTeamTasks(3, value)
             // fetchProjectTasks(3, value);
         }
@@ -340,23 +341,23 @@ const EmployeeLeaveList = () => {
             date: formatDateYYYYMMDD(new Date()), projectID: "", empName: "", taskStatus: "", customerID: ""
         });
         if (value == "fetchTasks") {
-            fetchTasks("", "","","");
+            fetchTasks("", "", "", "");
         }
         if (value == "fetchTeamTasks") {
-            fetchTeamTasks("", "","");
+            fetchTeamTasks("", "", "");
         }
         if (value == "fetchAssignedTasks") {
             fetchAssignedTasks("", "");
         }
         if (value == "fetchProjectTasks") {
-            fetchProjectTasks("", "","");
+            fetchProjectTasks("", "", "");
         }
     };
     const handleEmpSelectChange = async (values: any) => {
         setEmployeeNames(values)
         setSelectedEmp(values)
         // fetchProjectTasks(4, selectedDate, values.value);
-        fetchTeamTasks(4, selectedDate,  values.value);
+        fetchTeamTasks(4, selectedDate, values.value);
     };
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
         if (!date) return '';
@@ -394,7 +395,7 @@ const EmployeeLeaveList = () => {
                                         <div className="nw_user_inner_tabs nw_user_inner_right_tabs new_righ_two_tabs">
                                             <ul className='new_righ_four_tabs'>
                                                 <li className={viewIndex === 0 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"} key={0}>
-                                                    <a onClick={(e) => { setViewIndex(0), setLoadingCursor(true), resetFilter(""), fetchTasks("", "","","") }} className={viewIndex === 0 ? "nw_user_selected" : "new_list_view_heading"}>
+                                                    <a onClick={(e) => { setViewIndex(0), setLoadingCursor(true), resetFilter(""), fetchTasks("", "", "", "") }} className={viewIndex === 0 ? "nw_user_selected" : "new_list_view_heading"}>
                                                         <div className="nw_user_tab_icon">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
                                                                 <g className='black_to_white_fill' fill="#000000">
@@ -437,7 +438,7 @@ const EmployeeLeaveList = () => {
                                                 }
                                                 {contextRoleID != "5" &&
                                                     <li className={viewIndex === 3 ? "nw_user_inner_listing_selected" : "nw_user_inner_listing"} key={3}>
-                                                        <a onClick={(e) => { setViewIndex(3), setLoadingCursor(true), resetFilter(""), fetchProjectTasks("", "","") }} className={viewIndex === 3 ? "nw_user_selected" : "new_list_view_heading"}>
+                                                        <a onClick={(e) => { setViewIndex(3), setLoadingCursor(true), resetFilter(""), fetchProjectTasks("", "", "") }} className={viewIndex === 3 ? "nw_user_selected" : "new_list_view_heading"}>
                                                             <div className="nw_user_tab_icon">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 682.667 682.667">
                                                                     <defs>
@@ -636,12 +637,15 @@ const EmployeeLeaveList = () => {
                                                                 </div></li> : <></>}
 
                                                 <li>
-                                                    {viewIndex === 2  &&
+                                                    {viewIndex === 2 &&
                                                         <a href={pageURL_userAssignTask}>
                                                             <div className="nw_user_tab_icon">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512" className="">
+                                                                <svg width="18" height="18" x="0" y="0" viewBox="0 0 64 64">
                                                                     <g>
-                                                                        <path d="M256 0C114.837 0 0 114.837 0 256s114.837 256 256 256 256-114.837 256-256S397.163 0 256 0zm96.325 274.113L227.163 399.275c-5 4.988-11.55 7.487-18.1 7.487s-13.1-2.5-18.1-7.487c-10-10-10-26.212 0-36.212L298.025 256 190.963 148.95c-10-10-10-26.213 0-36.213 10-9.988 26.2-9.988 36.2 0L352.325 237.9a25.604 25.604 0 0 1 0 36.213z" fill="#ed2024" opacity="1" data-original="#000000" className="red_to_white"></path>
+                                                                        <g fill="#000">
+                                                                            <path fill-rule="evenodd" d="M42 2v10a8 8 0 0 0 8 8h11.977c.015.201.023.404.023.607V46c0 8.837-7.163 16-16 16H18C9.163 62 2 54.837 2 46V18C2 9.163 9.163 2 18 2zm1 30a2 2 0 0 1-2 2h-7v7a2 2 0 1 1-4 0v-7h-7a2 2 0 1 1 0-4h7v-7a2 2 0 1 1 4 0v7h7a2 2 0 0 1 2 2z" clip-rule="evenodd" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                            <path d="M46 2.742V12a4 4 0 0 0 4 4h10.54a7.995 7.995 0 0 0-1.081-1.241L48.093 4.152A7.998 7.998 0 0 0 46 2.742z" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                        </g>
                                                                     </g>
                                                                 </svg>
                                                             </div>
@@ -650,12 +654,15 @@ const EmployeeLeaveList = () => {
                                                             </div>
                                                         </a>
                                                     }
-                                                    { viewIndex === 3 &&
+                                                    {viewIndex === 3 &&
                                                         <a href={pageURL_userAssignTask}>
                                                             <div className="nw_user_tab_icon">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512" className="">
+                                                                <svg width="18" height="18" x="0" y="0" viewBox="0 0 64 64">
                                                                     <g>
-                                                                        <path d="M256 0C114.837 0 0 114.837 0 256s114.837 256 256 256 256-114.837 256-256S397.163 0 256 0zm96.325 274.113L227.163 399.275c-5 4.988-11.55 7.487-18.1 7.487s-13.1-2.5-18.1-7.487c-10-10-10-26.212 0-36.212L298.025 256 190.963 148.95c-10-10-10-26.213 0-36.213 10-9.988 26.2-9.988 36.2 0L352.325 237.9a25.604 25.604 0 0 1 0 36.213z" fill="#ed2024" opacity="1" data-original="#000000" className="red_to_white"></path>
+                                                                        <g fill="#000">
+                                                                            <path fill-rule="evenodd" d="M42 2v10a8 8 0 0 0 8 8h11.977c.015.201.023.404.023.607V46c0 8.837-7.163 16-16 16H18C9.163 62 2 54.837 2 46V18C2 9.163 9.163 2 18 2zm1 30a2 2 0 0 1-2 2h-7v7a2 2 0 1 1-4 0v-7h-7a2 2 0 1 1 0-4h7v-7a2 2 0 1 1 4 0v7h7a2 2 0 0 1 2 2z" clip-rule="evenodd" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                            <path d="M46 2.742V12a4 4 0 0 0 4 4h10.54a7.995 7.995 0 0 0-1.081-1.241L48.093 4.152A7.998 7.998 0 0 0 46 2.742z" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                        </g>
                                                                     </g>
                                                                 </svg>
                                                             </div>
@@ -668,22 +675,30 @@ const EmployeeLeaveList = () => {
                                                     {viewIndex == 0 &&
                                                         <a href={pageURL_userFillTask}>
                                                             <div className="nw_user_tab_icon">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512" className="">
+                                                                <svg width="18" height="18" x="0" y="0" viewBox="0 0 64 64">
                                                                     <g>
-                                                                        <path d="M256 0C114.837 0 0 114.837 0 256s114.837 256 256 256 256-114.837 256-256S397.163 0 256 0zm96.325 274.113L227.163 399.275c-5 4.988-11.55 7.487-18.1 7.487s-13.1-2.5-18.1-7.487c-10-10-10-26.212 0-36.212L298.025 256 190.963 148.95c-10-10-10-26.213 0-36.213 10-9.988 26.2-9.988 36.2 0L352.325 237.9a25.604 25.604 0 0 1 0 36.213z" fill="#ed2024" opacity="1" data-original="#000000" className="red_to_white"></path>
+                                                                        <g fill="#000">
+                                                                            <path fill-rule="evenodd" d="M42 2v10a8 8 0 0 0 8 8h11.977c.015.201.023.404.023.607V46c0 8.837-7.163 16-16 16H18C9.163 62 2 54.837 2 46V18C2 9.163 9.163 2 18 2zm1 30a2 2 0 0 1-2 2h-7v7a2 2 0 1 1-4 0v-7h-7a2 2 0 1 1 0-4h7v-7a2 2 0 1 1 4 0v7h7a2 2 0 0 1 2 2z" clip-rule="evenodd" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                            <path d="M46 2.742V12a4 4 0 0 0 4 4h10.54a7.995 7.995 0 0 0-1.081-1.241L48.093 4.152A7.998 7.998 0 0 0 46 2.742z" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                        </g>
                                                                     </g>
                                                                 </svg>
                                                             </div>
                                                             <div className="nw_user_tab_name">
                                                                 Add
                                                             </div>
-                                                        </a>}
-                                                        { viewIndex == 1 &&
+                                                        </a>
+
+                                                    }
+                                                    {viewIndex == 1 &&
                                                         <a href={pageURL_userFillTask}>
                                                             <div className="nw_user_tab_icon">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="15" height="15" x="0" y="0" viewBox="0 0 512 512" className="">
+                                                                <svg width="18" height="18" x="0" y="0" viewBox="0 0 64 64">
                                                                     <g>
-                                                                        <path d="M256 0C114.837 0 0 114.837 0 256s114.837 256 256 256 256-114.837 256-256S397.163 0 256 0zm96.325 274.113L227.163 399.275c-5 4.988-11.55 7.487-18.1 7.487s-13.1-2.5-18.1-7.487c-10-10-10-26.212 0-36.212L298.025 256 190.963 148.95c-10-10-10-26.213 0-36.213 10-9.988 26.2-9.988 36.2 0L352.325 237.9a25.604 25.604 0 0 1 0 36.213z" fill="#ed2024" opacity="1" data-original="#000000" className="red_to_white"></path>
+                                                                        <g fill="#000">
+                                                                            <path fill-rule="evenodd" d="M42 2v10a8 8 0 0 0 8 8h11.977c.015.201.023.404.023.607V46c0 8.837-7.163 16-16 16H18C9.163 62 2 54.837 2 46V18C2 9.163 9.163 2 18 2zm1 30a2 2 0 0 1-2 2h-7v7a2 2 0 1 1-4 0v-7h-7a2 2 0 1 1 0-4h7v-7a2 2 0 1 1 4 0v7h7a2 2 0 0 1 2 2z" clip-rule="evenodd" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                            <path d="M46 2.742V12a4 4 0 0 0 4 4h10.54a7.995 7.995 0 0 0-1.081-1.241L48.093 4.152A7.998 7.998 0 0 0 46 2.742z" fill="#ffffff" opacity="1" data-original="#000000"></path>
+                                                                        </g>
                                                                     </g>
                                                                 </svg>
                                                             </div>
@@ -913,13 +928,13 @@ const EmployeeLeaveList = () => {
                         <div className={showDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
                             {showDialog && <EmployeeTaskData id={editTaskId} isToBeEddited={isToBeEdited} onClose={() => {
                                 setShowDialog(false)
-                                    , resetFilter(""), fetchTasks("", "","","")
+                                    , resetFilter(""), fetchTasks("", "", "", "")
                             }} />}
                         </div>
                     </div>
                     <div className="nw_user_offcanvas">
                         <div className={showDialog1 ? "rightpoup rightpoupopen" : "rightpoup"}>
-                            {showDialog1 && <TeamTaskData id={editTaskId} num={numId} isToBeEddited={isToBeEdited} onClose={() => { setShowDialog1(false), resetFilter(""), fetchTasks("", "","","") }} />}
+                            {showDialog1 && <TeamTaskData id={editTaskId} num={numId} isToBeEddited={isToBeEdited} onClose={() => { setShowDialog1(false), resetFilter(""), fetchTasks("", "", "", "") }} />}
                         </div>
                     </div>
                     {/* ----------------------------- */}
