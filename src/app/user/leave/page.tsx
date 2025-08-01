@@ -117,7 +117,6 @@ const EmployeeLeaveList = () => {
                     "leave_status": approved_id
                 }
             }
-
             const res = await fetch(`/api/users/getAppliedLeaves?page=${pageNumber}&limit=${10}`, {
                 method: "POST",
                 body: JSON.stringify(
@@ -145,7 +144,7 @@ const EmployeeLeaveList = () => {
                 setLoading(false);
                 setSelectedPage(response.page);
                 setHasMoreData(false);
-                setShowAlert(true);
+                // setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("Failed to load next page data");
                 setAlertForSuccess(2)
