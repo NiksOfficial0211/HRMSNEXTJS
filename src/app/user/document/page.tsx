@@ -480,7 +480,7 @@ const EmployeeDocuments = () => {
             } else {
                 setOrgDoc([]);
                 // setLoading(false);
-                setShowAlert(true);
+                // setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("No documents uploaded yet!");
                 setAlertForSuccess(2)
@@ -488,7 +488,7 @@ const EmployeeDocuments = () => {
         } catch (error) {
             // setLoading(false);
             console.error("Error fetching user data:", error);
-            setShowAlert(true);
+            // setShowAlert(true);
 
             setAlertTitle("Exception")
             setAlertStartContent(ALERTMSG_exceptionString);
@@ -526,7 +526,7 @@ const EmployeeDocuments = () => {
             } else {
                 setEmpOrgDoc(empOrgDoc);
                 // setLoading(false);
-                setShowAlert(true);
+                // setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("No documents uploaded yet!");
                 setAlertForSuccess(2)
@@ -537,7 +537,7 @@ const EmployeeDocuments = () => {
             } else {
                 setEmpPerDoc(empPerDoc);
                 // setLoading(false);
-                setShowAlert(true);
+                // setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("No documents uploaded yet!");
                 setAlertForSuccess(2)
