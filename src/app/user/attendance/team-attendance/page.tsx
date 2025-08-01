@@ -246,12 +246,12 @@ const EmpAttendancePage = () => {
                                         <div className="row mt-4">
                                             <div className="col-lg-12">
                                                 <div className="row mb-4 attendance_list_table">
-                                                    <div className="col-lg-3"><span>Name</span></div>
-                                                    <div className="col-lg-3 text-center"><span>Designation</span></div>
-                                                    <div className="col-lg-1 text-center"><span>Emp ID</span></div>
-                                                    <div className="col-lg-2 text-center"><span>Contact No.</span></div>
-                                                    <div className="col-lg-2 text-center"><span>Status</span></div>
-                                                    <div className="col-lg-1 text-center"><span>Action</span></div>
+                                                    <div className="col-lg-3 text-center new_user_table_head"><span>Name</span></div>
+                                                    <div className="col-lg-3 text-center new_user_table_head"><span>Designation</span></div>
+                                                    <div className="col-lg-1 text-center new_user_table_head"><span>Emp ID</span></div>
+                                                    <div className="col-lg-2 text-center new_user_table_head"><span>Contact No.</span></div>
+                                                    <div className="col-lg-2 text-center new_user_table_head"><span>Status</span></div>
+                                                    <div className="col-lg-1 text-center new_user_table_head"><span>Action</span></div>
                                                 </div>
                                                 {empAttendanceData.map((emp, index) => (
                                                     <div className='attendance_listbox' key={index}>

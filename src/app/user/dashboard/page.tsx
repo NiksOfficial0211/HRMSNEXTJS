@@ -260,7 +260,7 @@ const Dashboard = () => {
                                                                 </div>
                                                                 {/* add condition */}
                                                                 {
-                                                                    (balance.leaveBalance.toString().length > 3 || balance.leaveAllotedCount.toString().length > 3) ? (
+                                                                    (balance.leaveBalance.toString().length > 2 || balance.leaveAllotedCount.toString().length > 2) ? (
                                                                         <div className="new_home_leave_balance_remaining new_home_leave_balance_remaining_three">
                                                                             {balance.leaveBalance + "/" + balance.leaveAllotedCount}
                                                                         </div>

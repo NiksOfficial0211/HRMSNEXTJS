@@ -665,7 +665,7 @@ const EmpAttendancePage = () => {
                                                 {/* Profile Box */}
                                                 <div className="col-xl-7 col-xxl-8">
                                                     <div className="row">
-                                                        <div className="col-lg-12 mb-4">
+                                                        <div className="col-lg-12 mb-4 mt-lg-4 mt-xl-0">
                                                             <div className="att_detail_profilebox user_att_detail_profilebox">
                                                                 <div className="row">
                                                                     <div className="col-lg-3 text-center">
