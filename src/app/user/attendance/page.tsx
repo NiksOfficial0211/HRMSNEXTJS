@@ -172,6 +172,7 @@ const EmpAttendancePage = () => {
     const fetchData = async () => {
         // console.log("start date selecte in fetch data", filterValues.start_date);
         // console.log("end date selecte in fetch data", filterValues.end_date);
+        console.log("role: ", contextRoleID)
         setLoading(true);
         try {
             const startDate = filterValues.start_date || formatDateYYYYMMDD(new Date());
@@ -428,7 +429,7 @@ const EmpAttendancePage = () => {
                 <LeapHeader title="Welcome!" />
             </header>
             <LeftPannel
-                menuIndex={leftMenuAttendancePageNumbers}
+                menuIndex={21}
                 subMenuIndex={0}
                 showLeftPanel={true}
                 rightBoxUI={
@@ -453,7 +454,7 @@ const EmpAttendancePage = () => {
                                                                             type="text"
                                                                             className="form-control"
                                                                             // value={formattedRange}
-                                                                            placeholder='Date'
+                                                                            placeholder='Select Date'
                                                                             readOnly
                                                                             onClick={() => setShowCalendar(!showCalendar)}
                                                                         />
@@ -503,7 +504,7 @@ const EmpAttendancePage = () => {
                                                         </div>
                                                     </li>
                                                     <li>
-                                                        {contextRoleID !== '5' && (
+                                                        {contextRoleID != '5' && (
                                                             <a href={pageURL_userTeamAttendanceList}>
                                                                 <div className="nw_user_tab_icon">
                                                                     <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
@@ -581,9 +582,9 @@ const EmpAttendancePage = () => {
                                                                                                     <div className="new_small_leave_secound_box">
                                                                                                         <div className="my_attendance_start_time_name">Status:</div>
                                                                                                         <div className="new_small_leave_statusbox">
-                                                                                                            <div className="new_small_leave_pending"></div>
-                                                                                                            {/* <div className="new_small_leave_approved"></div>
-                                                                                            <div className="new_small_leave_disapproved"></div> */}
+                                                                                                            {dates.leaveApprovalStatus === "Pending" ? <div className="new_small_leave_pending"></div>
+                                                                                                                : dates.leaveApprovalStatus === "Approved" ? <div className="new_small_leave_approved"></div> :
+                                                                                                                    <div className="new_small_leave_disapproved"></div>}
                                                                                                             <div className="new_small_leave_status">{dates.leaveApprovalStatus}</div>
                                                                                                         </div>
                                                                                                     </div>
@@ -591,68 +592,67 @@ const EmpAttendancePage = () => {
                                                                                             </>
                                                                                         ) : dates.isWeekend && dates.employeeAttendance === null ? (
                                                                                             <div className="new_small_weekend_box">
-                                                                                                
-                                                                                                    <div className="new_small_holidy_heading">Week-off</div>
+
+                                                                                                <div className="new_small_holidy_heading">Week-off</div>
                                                                                                 <div className="new_small_holidy_name">
                                                                                                     {format(new Date(dates.actualDate), 'EEEE')}
                                                                                                 </div>
                                                                                             </div>
-                                                                                        ) : (
-                                                                                            <>
-                                                                                                <div className="new_small_timing_box new_small_timing_present">
-                                                                                                    <div className="row">
-                                                                                                        <div className="col-lg-6">
-                                                                                                            <div className="my_attendance_start_time_box_listing">
-                                                                                                                <div className="my_attendance_start_time_name">Start Time</div>
-                                                                                                                <div className="my_attendance_start_time">
-                                                                                                                    {dates.employeeAttendance?.in_time
-                                                                                                                        ? (new Date(dates.employeeAttendance.in_time).toLocaleTimeString('en-US', {
-                                                                                                                            hour: '2-digit',
-                                                                                                                            minute: '2-digit',
-                                                                                                                            hour12: true,
-                                                                                                                        }))
-                                                                                                                        : '--'}
-                                                                                                                    {/* {attendanceData.in_time! ? (
-                                                                                                                        <span>
-                                                                                                                            {new Date(dates.employeeAttendance.in_time).toLocaleTimeString('en-US', {
+                                                                                        ) : dates.employeeAttendance?.in_time ?
+                                                                                            (
+                                                                                                <>
+                                                                                                    <div className="new_small_timing_box new_small_timing_present">
+                                                                                                        <div className="row">
+                                                                                                            <div className="col-lg-6">
+                                                                                                                <div className="my_attendance_start_time_box_listing">
+                                                                                                                    <div className="my_attendance_start_time_name">Start Time</div>
+                                                                                                                    <div className="my_attendance_start_time">
+                                                                                                                        {dates.employeeAttendance?.in_time
+                                                                                                                            ? (new Date(dates.employeeAttendance.in_time).toLocaleTimeString('en-US', {
                                                                                                                                 hour: '2-digit',
                                                                                                                                 minute: '2-digit',
                                                                                                                                 hour12: true,
-                                                                                                                            })}
-                                                                                                                        </span>
-                                                                                                                    ) : <span>--</span>} */}
+                                                                                                                            }))
+                                                                                                                            : '--'}
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div className="col-lg-6">
+                                                                                                                <div className="my_attendance_start_time_box_listing">
+                                                                                                                    <div className="my_attendance_start_time_name">End Time</div>
+                                                                                                                    <div className="my_attendance_start_time">
+                                                                                                                        {dates.employeeAttendance?.out_time
+                                                                                                                            ? (new Date(dates.employeeAttendance.out_time).toLocaleTimeString('en-US', {
+                                                                                                                                hour: '2-digit',
+                                                                                                                                minute: '2-digit',
+                                                                                                                                hour12: true,
+                                                                                                                            }))
+                                                                                                                            : '--'}
+                                                                                                                    </div>
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                         </div>
-                                                                                                        <div className="col-lg-6">
-                                                                                                            <div className="my_attendance_start_time_box_listing">
-                                                                                                                <div className="my_attendance_start_time_name">End Time</div>
-                                                                                                                <div className="my_attendance_start_time">
-                                                                                                                    {dates.employeeAttendance?.out_time
-                                                                                                                        ? (new Date(dates.employeeAttendance.out_time).toLocaleTimeString('en-US', {
-                                                                                                                            hour: '2-digit',
-                                                                                                                            minute: '2-digit',
-                                                                                                                            hour12: true,
-                                                                                                                        }))
-                                                                                                                        : '--'}
+                                                                                                        <div className="row">
+                                                                                                            <div className="col-lg-12">
+                                                                                                                <div className="my_attendance_start_time_box_listing_last">
+                                                                                                                    <div className="my_attendance_start_time_name">Work Location:</div>
+                                                                                                                    <div className="my_attendance_start_time">
+
+                                                                                                                        {dates.employeeAttendance?.leap_working_type?.type || '--'}
+                                                                                                                    </div>
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                    <div className="row">
-                                                                                                        <div className="col-lg-12">
-                                                                                                            <div className="my_attendance_start_time_box_listing_last">
-                                                                                                                <div className="my_attendance_start_time_name">Work Location:</div>
-                                                                                                                <div className="my_attendance_start_time">
-                                                                                                                    {' '}
-                                                                                                                    {dates.employeeAttendance?.leap_working_type?.type || '--'}
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
+                                                                                                </>
+                                                                                            ) :
+                                                                                            <div className="new_small_timing_absent">
+                                                                                                <div className="new_small_holidy_heading">Absent</div>
+                                                                                                <div className="new_small_holidy_name">
+                                                                                                    {/* {format(new Date(dates.actualDate), 'EEEE')} */}
                                                                                                 </div>
-                                                                                            </>
-                                                                                        )}
+                                                                                            </div>
+                                                                                    }
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -827,6 +827,19 @@ const EmpAttendancePage = () => {
                                                                                     textSize: "10px",
                                                                                 })}
                                                                             />
+                                                                            {/* <CircularProgressbar
+                                                                                value={calculateProgressPercentage()}
+                                                                                text={formatMinutesToHours(netMinutes)}
+                                                                                background
+                                                                                // backgroundPadding={6}
+                                                                                styles={buildStyles({
+                                                                                    backgroundColor: "transparent",
+                                                                                    textColor: "#000",
+                                                                                    pathColor: "#ed2024",
+                                                                                    trailColor: "transparent",
+                                                                                    textSize: "14px"
+                                                                                })}
+                                                                            /> */}
                                                                         </div>
                                                                     </div>
                                                                 </div>

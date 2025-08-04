@@ -17,7 +17,7 @@ import { DateRange, RangeKeyDict } from 'react-date-range';
 import { Range } from 'react-date-range';
 import { format } from 'date-fns'
 import moment from 'moment'
-import { staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_exceptionString, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import PageErrorCenterContent from '@/app/components/pageError'
 import ShowAlertMessage from '@/app/components/alert'
 import { ALERTMSG_addAssetSuccess } from '@/app/pro_utils/stringConstants'
@@ -51,10 +51,12 @@ const EmployeeLeaveList = () => {
     const [alertEndContent, setAlertEndContent] = useState('');
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
+    const [selectedApprov, setselectedApprov] = useState("");
+    const [selectedCust, setSelectedCust] = useState("");
 
     useEffect(() => {
         fetchData();
-        fetchUsers("", "", selectedPage, "", "");
+        fetchUsers("", "", "", selectedPage, "", "");
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
             const element = document.querySelector('.mainbox');
@@ -75,7 +77,7 @@ const EmployeeLeaveList = () => {
         const approval = await getStatus();
         setStatus(approval);
     }
-    const fetchUsers = async (filterID: any, value: any, pageNumber: number, startDate: any, endDate: any,) => {
+    const fetchUsers = async (filterID: any, approvedIdValue: any, customerValue: any, pageNumber: number, startDate: any, endDate: any,) => {
         setLoading(true);
         try {
             let formData = {
@@ -86,14 +88,14 @@ const EmployeeLeaveList = () => {
                 "end_date": ""
             }
             if (filterID == 1) {
-                let approved_id = filters.approvedID.length > 0 && filters.approvedID == value ? filters.approvedID : value;
+                let approved_id = filters.approvedID.length > 0 && filters.approvedID == approvedIdValue ? filters.approvedID : approvedIdValue;
                 formData = {
                     ...formData,
                     "leave_status": approved_id
                 }
             }
             if (filterID == 2) {
-                let customer_id = filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value
+                let customer_id = filters.customerID.length > 0 && filters.customerID == customerValue ? filters.customerID : customerValue
                 formData = {
                     ...formData,
                     "customer_id": customer_id
@@ -114,28 +116,19 @@ const EmployeeLeaveList = () => {
                 }
             }
             if (filterID == 1 || filters.approvedID.length > 0) {
-                let approved_id = filters.approvedID == value ? filters.approvedID : value;
+                let approved_id = filters.approvedID == approvedIdValue ? filters.approvedID : approvedIdValue;
                 formData = {
                     ...formData,
                     "leave_status": approved_id
                 }
             }
             if (filterID == 2 || filters.customerID.length > 0) {
-                let customer_id = filters.customerID == value ? filters.customerID : value;
+                let customer_id = filters.customerID == customerValue ? filters.customerID : customerValue;
                 formData = {
                     ...formData,
                     "customer_id": customer_id
                 }
             }
-            // if (filterID == 1) formData.append("leave_status", filters.approvedID.length > 0 && filters.approvedID == value ? filters.approvedID : value);
-            // if (filterID == 2) formData.append("customer_id", filters.customerID.length > 0 && filters.customerID == value ? filters.customerID : value);
-            // if (startDate || filters.start_date) formData.append("start_date", formatDateYYYYMMDD(startDate || filters.start_date));
-            // if (endDate || filters.end_date) formData.append("end_date", formatDateYYYYMMDD(endDate || filters.end_date));
-            // if (filterID == 1 || filters.approvedID.length > 0) formData.append("leave_status", filters.approvedID);
-            // if (filterID == 2 || filters.customerID.length > 0) formData.append("customer_id", filters.customerID);
-            // for (const [key, value] of formData.entries()) {
-            //     console.log(`${key}: ${value}`);
-            // }
             const res = await fetch(`/api/users/getTeamLeaves?page=${pageNumber}&limit=${10}`, {
                 method: "POST",
                 body: JSON.stringify(
@@ -168,10 +161,10 @@ const EmployeeLeaveList = () => {
             }
         } catch (error) {
             setLoading(false);
-            setLoadingCursor(false);
+            // setLoadingCursor(false);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_addAssetSuccess);
+            setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
         }
     }
@@ -180,11 +173,13 @@ const EmployeeLeaveList = () => {
 
         if (name == "approvedID") {
             setFilters((prev) => ({ ...prev, ['approvedID']: value }));
-            fetchUsers(1, value, selectedPage, '', '');
+            setselectedApprov(value);
+            fetchUsers(1, value, selectedCust, selectedPage, '', '');
         }
         if (name == "customerID") {
             setFilters((prev) => ({ ...prev, ['customerID']: value }));
-            fetchUsers(2, value, selectedPage, '', '');
+            setSelectedCust(value);
+            fetchUsers(2, selectedApprov, value, selectedPage, '', '');
         }
     };
     function filter_whitebox() {
@@ -198,11 +193,11 @@ const EmployeeLeaveList = () => {
     function changePage(page: any) {
         if (hasMoreData) {
             setSelectedPage(selectedPage + page);
-            fetchUsers(3, "", selectedPage + page, '', '');
+            fetchUsers(3, selectedApprov, selectedCust, selectedPage + page, '', '');
         }
         else if (!hasMoreData && selectedPage > 1) {
             setSelectedPage(selectedPage + page);
-            fetchUsers(3, "", selectedPage + page, '', '');
+            fetchUsers(3, selectedApprov, selectedCust, selectedPage + page, '', '');
         }
     }
     const resetFilter = async () => {
@@ -214,7 +209,7 @@ const EmployeeLeaveList = () => {
             end_date: ''
         });
         fetchData();
-        fetchUsers("", "", selectedPage, "", "");
+        fetchUsers("", "", "", selectedPage, "", "");
     };
     const [showCalendar, setShowCalendar] = useState(false);
     const ref = useRef(null);
@@ -234,7 +229,7 @@ const EmployeeLeaveList = () => {
             setFilters((prev) => ({ ...prev, ['start_date']: ranges.selection.startDate }));
             setFilters((prev) => ({ ...prev, ['end_date']: ranges.selection.endDate }));
         }
-        fetchUsers('', '', selectedPage, ranges.selection.startDate, ranges.selection.endDate);
+        fetchUsers('', selectedApprov, selectedCust, selectedPage, ranges.selection.startDate, ranges.selection.endDate);
     };
     const formattedRange = state[0].startDate! == state[0].endDate! ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
@@ -244,7 +239,7 @@ const EmployeeLeaveList = () => {
         return parsedDate.format('YYYY-MM-DD');
     };
     return (
-        <div className='mainbox user_mainbox_new_design'>
+        <div className='mainbox user_mainbox_new_design my_user_leave_page_mainbox user_black_overlay_main new_user_team_leave_mainbox'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -284,11 +279,16 @@ const EmployeeLeaveList = () => {
                                                                 </div>
                                                                 <div className="nw_filter_form_group">
                                                                     <input
-                                                                    
                                                                         type="text"
                                                                         className="form-control"
-                                                                        placeholder="Select a date"
-                                                                        value={formattedRange}
+                                                                        value={
+                                                                            filters.start_date && filters.end_date
+                                                                                ? `${format(new Date(filters.start_date), 'MMM d, yyyy')} - ${format(new Date(filters.end_date), 'MMM d, yyyy')}`
+                                                                                : filters.start_date
+                                                                                    ? `${format(new Date(filters.start_date), 'MMM d, yyyy')}`
+                                                                                    : 'Select Date'
+                                                                        }
+                                                                        placeholder='Select Date'
                                                                         readOnly
                                                                         onClick={() => setShowCalendar(!showCalendar)}
                                                                     />
@@ -317,9 +317,7 @@ const EmployeeLeaveList = () => {
                                                         </div>
                                                     </div>
                                                 </li>
-                                                <li>
-                                                    <BackButton isCancelText={false} />
-                                                </li>
+
                                             </ul>
                                         </div>
                                     </div>
@@ -331,23 +329,23 @@ const EmployeeLeaveList = () => {
                                         }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
                                         <div className="my_task_tabbing_content">
                                             {leavearray! && leavearray.length > 0 ?
-                                                <div className="row">
+                                                <div className="row mt-4 mb-5">
                                                     <div className="col-lg-12">
                                                         <div className="row mb-3">
                                                             <div className="col-lg-12">
                                                                 <div className="row list_label mb-4">
-                                                                    <div className="col-lg-2 text-center"><div className="label">Employee</div></div>
-                                                                    <div className="col-lg-2 text-center"><div className="label">Leave Type</div></div>
-                                                                    <div className="col-lg-1 text-center"><div className="label">Total Days</div></div>
-                                                                    <div className="col-lg-3 text-center"><div className="label">Date</div></div>
+                                                                    <div className="col-lg-2 text-center new_user_table_head"><div className="label">Employee</div></div>
+                                                                    <div className="col-lg-2 text-center new_user_table_head"><div className="label">Leave Type</div></div>
+                                                                    <div className="col-lg-1 text-center new_user_table_head"><div className="label">Total Days</div></div>
+                                                                    <div className="col-lg-3 text-center new_user_table_head"><div className="label">Date</div></div>
                                                                     {/* <div className="col-lg-1 text-center"><div className="label">To</div></div> */}
-                                                                    <div className="col-lg-1 text-center"><div className="label">Duration</div></div>
-                                                                    <div className="col-lg-2 text-center"><div className="label">Status</div></div>
-                                                                    <div className="col-lg-1 text-center"><div className="label">Action</div></div>
+                                                                    <div className="col-lg-1 text-center new_user_table_head"><div className="label">Duration</div></div>
+                                                                    <div className="col-lg-2 text-center new_user_table_head"><div className="label">Status</div></div>
+                                                                    {/* <div className="col-lg-1 text-center new_user_table_head"><div className="label">Action</div></div> */}
                                                                 </div>
                                                                 {leavearray?.map((applied, index) => (
                                                                     <div className="row list_listbox" key={index}>
-                                                                        <div className="col-lg-2 text-center">{applied.leap_customer.name}</div>
+                                                                        <div className="col-lg-2 text-center ">{applied.leap_customer.name}</div>
                                                                         <div className="col-lg-2 text-center">{applied.leap_client_leave.leave_name}</div>
                                                                         <div className="col-lg-1 text-center">{applied.total_days}</div>
                                                                         {applied.from_date === applied.to_date ?
@@ -423,25 +421,29 @@ const EmployeeLeaveList = () => {
                                                         </div>
                                                         {/* here are the page number crowsels */}
                                                         <div className="row mt-4">
-                                                            <div className="col-lg-6 mb-1" style={{ textAlign: "left" }}>
-                                                                {/* <BackButton isCancelText={false} /> */}
-                                                            </div>
-                                                            <div className="col-lg-6" style={{ textAlign: "right" }}>
-                                                                <div className="page_changer new_page_changer_pagination">
-                                                                    {selectedPage > 1 ? <div className="new_pagination_svg" onClick={() => { changePage(-1) }}>
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
-                                                                            <g transform="matrix(-1.4400000000000002,1.763491390772189e-16,-1.763491390772189e-16,-1.4400000000000002,156.16000000000003,156.16015357971196)">
-                                                                                <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ed2024" opacity="1" data-original="#000000"></path>
-                                                                            </g>
-                                                                        </svg>
-                                                                    </div> : <></>}
-                                                                    <div className="font15Medium">{selectedPage}</div>
-                                                                    <div className="new_pagination_svg" onClick={() => { changePage(1) }}>
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
-                                                                            <g transform="matrix(1.4400000000000002,0,0,1.4400000000000002,-28.16000000000001,-28.16002769470215)">
-                                                                                <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ed2024" opacity="1" data-original="#000000"></path>
-                                                                            </g>
-                                                                        </svg>
+                                                            <div className="col-lg-12">
+                                                                <div className="my_new_paggination_box">
+                                                                    <div className="my_new_paggination_left_box">
+                                                                        <BackButton isCancelText={false} />
+                                                                    </div>
+                                                                    <div className="my_new_paggination_right_box">
+                                                                        <div className="page_changer new_page_changer_pagination">
+                                                                            {selectedPage > 1 ? <div className="new_pagination_svg" onClick={() => { changePage(-1) }}>
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
+                                                                                    <g transform="matrix(-1.4400000000000002,1.763491390772189e-16,-1.763491390772189e-16,-1.4400000000000002,156.16000000000003,156.16015357971196)">
+                                                                                        <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ED2024" opacity="1" data-original="#000000"></path>
+                                                                                    </g>
+                                                                                </svg>
+                                                                            </div> : <></>}
+                                                                            <div className="font15Medium">{selectedPage}</div>
+                                                                            {hasMoreData && <div className="new_pagination_svg" onClick={() => { changePage(1) }}>
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="18" height="18" x="0" y="0" viewBox="0 0 128 128">
+                                                                                    <g transform="matrix(1.4400000000000002,0,0,1.4400000000000002,-28.16000000000001,-28.16002769470215)">
+                                                                                        <path d="M44 108a3.988 3.988 0 0 1-2.828-1.172 3.997 3.997 0 0 1 0-5.656L78.344 64 41.172 26.828c-1.563-1.563-1.563-4.094 0-5.656s4.094-1.563 5.656 0l40 40a3.997 3.997 0 0 1 0 5.656l-40 40A3.988 3.988 0 0 1 44 108z" fill="#ED2024" opacity="1" data-original="#000000"></path>
+                                                                                    </g>
+                                                                                </svg>
+                                                                            </div>}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -461,8 +463,10 @@ const EmployeeLeaveList = () => {
                     {/* -------------------- */}
                     <div className="nw_user_offcanvas">
                         <div className={showDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
-                            {showDialog && <LeaveStatusUpdate id={editLeaveId} selectedShortCutID={false} onClose={(updateData) => { setShowDialog(false), updateData && fetchUsers(3, "", selectedPage, '', '') }} isToBeEddited={isToBeEdited} />}
+                            {showDialog && <LeaveStatusUpdate id={editLeaveId} selectedShortCutID={false} onClose={(updateData) => { setShowDialog(false), updateData && fetchUsers(3, "", "", selectedPage, '', '') }} isToBeEddited={isToBeEdited} />}
                         </div>
+                        <div className="overlay_offcanvas"></div>
+
                     </div>
                 </div>
             } />

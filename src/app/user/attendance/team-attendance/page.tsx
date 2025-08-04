@@ -180,7 +180,7 @@ const EmpAttendancePage = () => {
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
-            <LeftPannel menuIndex={leftMenuAttendancePageNumbers} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
+            <LeftPannel menuIndex={21} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
                 <div>
                     <LoadingDialog isLoading={isLoading} />
                     {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {

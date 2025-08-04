@@ -10,7 +10,7 @@ import moment from 'moment';
 
 const UserLeaveStatus = ({ onClose, id }: { onClose: (fetchData: boolean) => void, id: any }) => {
 
-    const { contextClientID, contaxtBranchID, contextSelectedCustId, contextRoleID } = useGlobalContext();
+    const { contextClientID, contaxtBranchID } = useGlobalContext();
     const [leaveData, setLeaveData] = useState<AppliedLeave>();
     const [isLoading, setLoading] = useState(true);
 
@@ -39,8 +39,8 @@ const UserLeaveStatus = ({ onClose, id }: { onClose: (fetchData: boolean) => voi
 
     return (
         <div >
-            <div className='rightpoup_close'>
-                <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close' onClick={(e) => onClose(false)} />
+            <div className='rightpoup_close' onClick={(e) => onClose(false)}>
+                <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close'  />
             </div>
             {/* -------------- */}
             <div className="nw_user_offcanvas_mainbox">
