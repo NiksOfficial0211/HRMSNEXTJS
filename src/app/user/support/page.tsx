@@ -205,15 +205,13 @@ const Support = () => {
 
         if (name == "active_status") {
             setFilters((prev) => ({ ...prev, ['active_status']: value }));
-            setSelectedStatus(value)
             fetchData(1, value, selectedPriority, selectedPage, '', '');
-            
+            setSelectedStatus(value)
         }
         if (name == "priority_level") {
             setFilters((prev) => ({ ...prev, ['priority_level']: value }));
-            setSelectedPriority(value)
             fetchData(2, selectedStatus, value, selectedPage, '', '');
-            
+            setSelectedPriority(value)
         }
     };
     const [showCalendar, setShowCalendar] = useState(false);
@@ -240,6 +238,7 @@ const Support = () => {
             }));
         fetchData('', selectedStatus, selectedPriority, selectedPage, start, end);
         }
+        fetchData('', selectedStatus, selectedPriority, selectedPage, ranges.selection.startDate, ranges.selection.endDate);
     };
     const formattedRange = state[0].startDate! == state[0].endDate! ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
@@ -249,7 +248,7 @@ const Support = () => {
         return parsedDate.format('YYYY-MM-DD');
     };
     return (
-        <div className='mainbox user_mainbox_new_design new_user_support_mainbox user_black_overlay_main'>
+        <div className='mainbox user_mainbox_new_design new_user_support_mainbox'>
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
@@ -366,7 +365,7 @@ const Support = () => {
                                                                     <div className="col-lg-2 text-center new_user_table_head"><div className="label">Priority level</div></div>
                                                                     <div className="col-lg-2 text-center new_user_table_head"><div className="label">Description</div></div>
                                                                     <div className="col-lg-2 text-center new_user_table_head"><div className="label">Status</div></div>
-                                                                    {/* <div className="col-lg-1 text-center new_user_table_head"><div className="label">Action</div></div> */}
+                                                                    <div className="col-lg-1 text-center new_user_table_head"><div className="label">Action</div></div>
                                                                 </div>
                                                                 {supportArray.map((id, index) => (
                                                                     <div className="row list_listbox" key={index}>
