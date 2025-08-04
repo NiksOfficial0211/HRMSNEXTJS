@@ -103,17 +103,27 @@ const OrganizationalDocuments = () => {
 
     };
     const getFileIcon = (type: string, url: string) => {
+        console.log("this is the doc type file ext passed",type);
+        
         switch (type) {
             case "pdf":
                 return <FaFilePdf className="text-danger fs-2" />;
             case "image":
-                return <img src={getImageApiURL + url} alt="Thumbnail" width={50} height={50} />;
+                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />;
+            case "webp":
+                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />;
+            case "jpeg":
+                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />; 
+            case "jpg":
+                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />; 
+            case "png":
+                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />;  
             case "xls":
-                return <FaFileAlt className="text-success fs-2" />;
+                    return <FaFileAlt className="text-success fs-2" />;
             case "doc":
-                return <FaFileAlt className="text-primary fs-2" />;
+                    return <FaFileAlt className="text-primary fs-2" />;
             default:
-                return <FaFileAlt className="text-secondary fs-2" />;
+                    return <FaFileAlt className="text-secondary fs-2" />;
         }
     };
 
@@ -191,7 +201,7 @@ const OrganizationalDocuments = () => {
                                                         
                                                         <div className="row">
                                                             <div className="col-lg-12 mb-3">
-                                                                <div className='document_list_icon'>{getFileIcon(fileExt, baseUrl + doc.bucket_url)}</div>
+                                                                <div className='document_list_icon'>{getFileIcon(fileExt, doc.bucket_url)}</div>
                                                             </div>
                                                             <div className="col-lg-12 mb-3 document_name" style={{ wordWrap: "break-word" }}>
                                                                 {doc.bucket_url.substring(doc.bucket_url.lastIndexOf('/') + 1)}

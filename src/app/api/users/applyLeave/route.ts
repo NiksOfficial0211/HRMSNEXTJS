@@ -13,10 +13,10 @@ export async function POST(request: NextRequest) {
   try {
     const { fields, files } = await parseForm(request);
  
-            if(files || files.file[0]){
-                fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id[0],"applied_leave_docs")
+    if(files || files.file[0]){
+        fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id[0],"applied_leave_docs")
               
-            }
+    }
     const totalLeaveDays = calculateNumDays(new Date(fields.from_date), new Date(fields.to_date));
     
     let query = supabase.from("leap_customer_apply_leave")

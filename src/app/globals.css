@@ -958,6 +958,7 @@ input:checked+.slider:before {
 
 .announcement_heading {
   font-size: 15px;
+  min-height: 50px;
   font-family: Outfit-SemiBold;
 }
 
