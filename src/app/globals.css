@@ -4105,22 +4105,6 @@ input.new_upload_btn_input {
   align-items: center;
 }
 
-.user_blue_chip {
-  color: #1976d2;
-  background-color: #b7dbff;
-  height: fit-content;
-  width: fit-content;
-  margin: 0 auto;
-  padding: 4px 8px;
-  border-radius: 20px;
-  display: grid;
-  grid-template-columns: 15px 1fr;
-  gap: 4px;
-  border: 1px solid #1976d2;
-  box-shadow: 2px 2px 6px 0px #dedede;
-  align-items: center;
-}
-
 /* Support form ends  */
 /* Leave start */
 .new_apply_leave_mainbox {
@@ -8109,26 +8093,15 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 .user_attendance_timer_box .dial_overlay_office {
   /* margin: 0 0 25px 0; */
   margin: 0 0 12px 0;
-  /* margin: 0 0 25px 0; */
-  margin: 0 0 12px 0;
   font-size: 14px;
   font-family: 'Outfit-SemiBold';
   color: #000000;
 }
 
 /* .user_attendance_timer_box .CircularProgressbar-text {
-/* .user_attendance_timer_box .CircularProgressbar-text {
   font-size: 25px !important;
   font-family: Outfit-SemiBold;
   transform: translate(-20px, 20px);
-} */
-
-.user_attendance_timer_box .CircularProgressbar-text {
-  font-size: 16px !important;
-  font-family: Outfit-SemiBold;
-  transform: translate(0px, 15px);
-  dominant-baseline: middle;
-  text-anchor: middle;
 } */
 
 .user_attendance_timer_box .CircularProgressbar-text {
@@ -8195,7 +8168,6 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 .new_user_att_detail_whitelist:has(.new_small_leave_box) .att_detail_whitelist:hover .att_detail_datebox.new_user_small_leftbox {
   background-color: #F57C00;
 }
-
 
 .new_user_att_detail_whitelist:has(.new_small_weekend_box) .att_detail_datebox {
   background-color: #616161;
@@ -8448,6 +8420,22 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 
 /* New announcement page ends */
 
+/* Body scroll bar start */
+body::-webkit-scrollbar {
+    width: 6px;
+}
+body::-webkit-scrollbar-thumb {
+    outline: none;
+    border-radius: 30px;
+    background-color: #ed2024;
+}
+body::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Body scroll bar ends */
+
 /* Bugs css start */
 .user_my_leave_details_box .d_user_leave_balance_listing {
   width: 160px;
@@ -8461,9 +8449,6 @@ body:has(.user_mainbox_new_design) .dash_topbox {
 
 .nw_filter_form_group select,
 .nw_filter_form_group input,
-.nw_user_doc_selectbox select,
-.new_leave_formgoup select,
-.new_leave_formgoup input {
 .nw_user_doc_selectbox select,
 .new_leave_formgoup select,
 .new_leave_formgoup input {
@@ -8501,8 +8486,9 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
     display: block;
 }
 
-
-
+.new_user_notification_listing:last-child .monthely_holiday_listing {
+  border: 0;  
+}
 
 /* Bugs css ends */
 
@@ -8544,10 +8530,6 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
   .user_my_leave_details_box .d_user_leave_balance_listing {
     width: 140px;
     height: 140px;
-  }
-
-  .user_announcement_mainbox .nw_user_inner_heading_tabbox {
-    grid-template-columns: 0.6fr 1fr;
   }
 
   .user_announcement_mainbox .nw_user_inner_heading_tabbox {
@@ -8645,39 +8627,7 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
 
 .my_user_leave_page_mainbox .my_task_tabbing_leave_box .swiper {
     height: auto !important;
-
-  .user_announcement_mainbox .nw_user_inner_heading_tabbox {
-    grid-template-columns: 0.8fr 1fr;
-  }
-
-  .my_user_leave_page_mainbox .my_task_tabbing_leave_main_box {
-    grid-template-columns: 1fr;
 }
-
-.my_user_leave_page_mainbox .my_task_tabbing_leave_box {
-    height: inherit;
-    min-width: 100%;
-    width: 100%;
-}
-
-.my_user_leave_page_mainbox .my_task_tabbing_leave_box .swiper {
-    height: auto !important;
-}
-.my_user_leave_page_mainbox .my_task_tabbing_leave_box .swiper-button-prev-custom {
-    top: unset;
-    right: 0;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%) rotate(0deg);
-    margin: 0 0 0 -30px;
-}
-.my_user_leave_page_mainbox .my_task_tabbing_leave_box .swiper-button-next-custom {
-    top: unset;
-    left: 50%;
-    right: 0;
-    bottom: 0;
-    transform: translateX(-50%) rotate(0deg);
-    margin: 0 0 0 30px;
 .my_user_leave_page_mainbox .my_task_tabbing_leave_box .swiper-button-prev-custom {
     top: unset;
     right: 0;
@@ -8701,16 +8651,7 @@ body:has(.user_black_overlay_main .rightpoupopen) .nw_user_offcanvas .overlay_of
 
 .new_user_team_leave_mainbox .nw_filter_form_group_mainbox {
     grid-template-columns: 1.5fr 1fr 1fr 30px;
-
-.new_user_team_leave_mainbox .nw_user_inner_heading_tabbox {
-    grid-template-columns: 0.5fr 1fr;
 }
-
-.new_user_team_leave_mainbox .nw_filter_form_group_mainbox {
-    grid-template-columns: 1.5fr 1fr 1fr 30px;
-}
-
-
 
 
   /* Bugs ends  */
