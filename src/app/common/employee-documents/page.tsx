@@ -200,7 +200,7 @@ const OrganizationalDocuments = () => {
                                                                 <a className='red_button filter_submit_btn'>
                                                                     <img src={staticIconsBaseURL + "/images/replace_doc_icon.png"} className='img-fluid' /> Replace
                                                                 </a>&nbsp;&nbsp;
-                                                                <a className='red_button filter_submit_btn' href={doc.bucket_url} download >
+                                                                <a className='red_button filter_submit_btn' href={getImageApiURL+ doc.bucket_url} download >
                                                                     <img src={staticIconsBaseURL + "/images/download_doc_icon.png"} className='img-fluid' /> Download 
                                                                 </a>
                                                             </div>

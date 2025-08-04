@@ -132,13 +132,13 @@ const AddEmployeeBasicDetails = () => {
     const [errors, setErrors] = useState<Partial<FormValues>>({});
 
     const [showAlert,setShowAlert]=useState(false);
-        const [alertForSuccess,setAlertForSuccess]=useState(0);
-        const [alertTitle,setAlertTitle]=useState('');
-        const [alertStartContent,setAlertStartContent]=useState('');
-        const [alertMidContent,setAlertMidContent]=useState('');
-        const [alertEndContent,setAlertEndContent]=useState('');
-        const [alertValue1,setAlertValue1]=useState('');
-        const [alertvalue2,setAlertValue2]=useState('');
+    const [alertForSuccess,setAlertForSuccess]=useState(0);
+    const [alertTitle,setAlertTitle]=useState('');
+    const [alertStartContent,setAlertStartContent]=useState('');
+    const [alertMidContent,setAlertMidContent]=useState('');
+    const [alertEndContent,setAlertEndContent]=useState('');
+    const [alertValue1,setAlertValue1]=useState('');
+    const [alertvalue2,setAlertValue2]=useState('');
 
 
     useEffect(() => {
@@ -347,7 +347,8 @@ const AddEmployeeBasicDetails = () => {
     }
 
     const addBankDetailsContactUI = () => {
-
+        console.log("-=-=-=-=-=-==-=-==-=-=addBankDetailsContactUI=-=-=-=-===-=-==-=-",bankFormComponents.length);
+        
         const bankDataArray: BankFormValues[] = [];
         const newArray = bankFormValues;
 
@@ -1127,6 +1128,14 @@ const AddEmployeeBasicDetails = () => {
 
         if (!validator.isMobilePhone(emergencyContactData[0].emergencyContactNumber)) {
             emergencydetailsErrors.emergencyContactNumber = "Enter a valid phone number";
+        }
+
+        for(let i=0;i<bankFormValues.length;i++){
+            for(let j=0;j<bankFormValues[i].form_values.length;j++){
+                if(!bankFormValues[i].form_values[j].value){
+                    bankErrors.component_name="required"
+                }
+            }
         }
         setErrors(newErrors);
         // setBankErrors(bankdetailsErrors);
@@ -2063,7 +2072,7 @@ const AddEmployeeBasicDetails = () => {
                                                                     prev.filter((_, i) => i !== index)
                                                                 );
                                                             }
-
+                                                            setIsMoreLoading(false);
                                                         }}>
 
                                                             <span>Remove</span></div>
@@ -2078,13 +2087,13 @@ const AddEmployeeBasicDetails = () => {
                                                                     <div className="col-md-4" key={form.id}>
                                                                         <div className="form_box mb-3">
                                                                         {/* <label htmlFor="exampleFormControlInput1" className="form-label" >{form.component_name}{index==0 && <span className='req_text'>*</span>}: </label> */}
-                                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >{form.component_name}: </label>
+                                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >{form.component_name}<span className='req_text'>*</span>: </label>
                                                                             <input type="text" className="form-control" onKeyPress={(e) => {
                                                                                 if (form.data_type === 2 && !/[0-9]/.test(e.key)) {
                                                                                     e.preventDefault(); // block non-numeric input 
                                                                                 }
-                                                                            }} value={form.value} name="bankAccountNumber" onChange={(e) => handleBankDataChange(e, index, formValueIndex)} id="bankAccountNumber" />
-                                                                            {bankErrors.value && <span className='error' style={{ color: "red" }}>{bankErrors.value}</span>}
+                                                                            }} value={form.value} name={form.component_name} onChange={(e) => handleBankDataChange(e, index, formValueIndex)} id={form.component_name} />
+                                                                            {bankErrors.component_name && <span className='error' style={{ color: "red" }}>{bankErrors.component_name}</span>}
                                                                         </div>
                                                                     </div>
                                                                 )}
