@@ -3,6 +3,7 @@ import { addDays, calculateNumDays, dashedDateYYYYMMDD, formatDateYYYYMMDD, funD
 import supabase from "../../supabaseConfig/supabase";
 import fs from "fs/promises";
 import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
+import { apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 
 
 export async function POST(request: NextRequest) {
@@ -25,27 +26,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "No files received." }, { status: 400 });
         }
 
-        const uploadedFile = files.file[0];
-        const fileBuffer = await fs.readFile(uploadedFile.path);
-        const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
-            type: uploadedFile.headers["content-type"]
-          });
-        const formData = new FormData();
-        formData.append("client_id", fields.client_id[0]);
-        formData.append("branch_id", fields.branch_id[0]);
-        formData.append("docType", "announcement");
-        formData.append("file", fileBlob, uploadedFile.originalFilename);
-        const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles", {
-            method: "POST",
-            // headers:{"Content-Type":"multipart/form-data"},
-            body: formData,
-        });
-
-
-        const fileUploadResponse = await fileUploadURL.json();
-        if (fileUploadResponse.error) {
-            return NextResponse.json({ error: "File upload api call error" }, { status: 500 });
-        }
+        let fileUploadResponse;
+            if(files || files.file[0]){
+                  fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"announcement_img")
+              
+            }
         // return NextResponse.json({ status: 1, message: "Ann  ouncement Added Successfully",data: designationIDs,departmentIDs }, { status: apiStatusSuccessCode })
         
         // return NextResponse.json({satatus:1,message: " Date issue",data:addDays(formatDate, parseInt(fields.num_of_days[0]))},{status:200})
@@ -69,7 +54,7 @@ export async function POST(request: NextRequest) {
                 announcement_title: fields.announcement_title[0],
                 announcement_details: fields.announcement_details[0],
                 announcement_type_id: parseInt(fields.announcement_type_id[0]),
-                announcement_image: fileUploadResponse.documentURL,
+                announcement_image: fileUploadResponse?fileUploadResponse:"",
                 send_on_date: fields.startDate[0],
                 announcement_date:fields.startDate[0]? formatDateYYYYMMDD(fields.startDate[0]) : formatDateYYYYMMDD(new Date()),
                 num_of_days:num_of_days,
@@ -87,7 +72,7 @@ export async function POST(request: NextRequest) {
             announcement_title: fields.announcement_title[0],
             announcement_details: fields.announcement_details[0],
             announcement_type_id: parseInt(fields.announcement_type_id[0]),
-            announcement_image: fileUploadResponse.documentURL,
+            announcement_image: fileUploadResponse?fileUploadResponse:"",
             announcement_date:fields.startDate[0]? formatDateYYYYMMDD(fields.startDate[0]) : formatDateYYYYMMDD(new Date()),
             send_on_date:fields.startDate[0] || new Date().toISOString(),
             num_of_days:num_of_days,

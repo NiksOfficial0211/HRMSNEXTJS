@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import supabase from "../../supabaseConfig/supabase";
 import { apiStatusInvalidDataCode, apiStatusSuccessCode, clientAddedFailed, clientAddedSuccess, apifailedWithException, apiStatusFailureCode } from "@/app/pro_utils/stringConstants";
 import { funDataAddedSuccessMessage, funSendApiErrorMessage, funSendApiException, parseForm } from "@/app/pro_utils/constant";
+import { apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 
 export async function POST(request: NextRequest) {
 
@@ -26,38 +27,16 @@ export async function POST(request: NextRequest) {
     }
 
     const currentDateTime = new Date();
-    const uploadedFile = files.file[0];
-    const fileBuffer = await fs.readFile(uploadedFile.path);
-
-
-    const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
-            type: uploadedFile.headers["content-type"]
-          });
-
-    const formData = new FormData();
-    formData.append("client_id", fields.client_id[0]);
-    formData.append("customer_id", fields.customer_id[0]);
-    formData.append("docType", "clients");
-    formData.append("file", fileBlob, uploadedFile.originalFilename);
-
-
-
-    const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_UPLOAD_IMAGE_BASE_URL + "/api/UploadFiles", {
-      method: "POST",
-      // headers:{"Content-Type":"multipart/form-data"},
-      body: formData,
-    });
-
-    const fileUploadResponse = await fileUploadURL.json();
-    // return NextResponse.json({ message: "FIle uploaded successfully",status:1,fileUploadResponse }, { status: apiStatusSuccessCode })
-
-    if (fileUploadResponse.error) {
-      return NextResponse.json({ error: "File upload api call error" }, { status: apiStatusFailureCode });
+    
+    let fileUploadResponse;
+    if(files || files.file[0]){
+          fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"clientdocs")
+      
     }
     const {error} = await supabase.from("leap_client_documents")
                         .insert({client_id:fields.client_id[0],branch_id:fields.branch_id[0],
                           document_type_id:fields.document_type_id[0],
-                          document_url:fileUploadResponse.documentURL,
+                          document_url:fileUploadResponse?fileUploadResponse:"",
                           created_at:new Date()
                         });
 

@@ -110,6 +110,7 @@ const AddHolidayForm = ({ onClose }: { onClose: () => void }) => {
 
     const validate = () => {
         const newErrors: Partial<Holiday> = {};
+        if (!formHolidayValues.holiday_year) newErrors.holiday_year = "required";
         if (!formHolidayValues.branch_id) newErrors.branch_id = "required";
         if (!formHolidayValues.holiday_name) newErrors.holiday_name = "required";
         if (!formHolidayValues.date) newErrors.date = "required";
@@ -123,7 +124,7 @@ const AddHolidayForm = ({ onClose }: { onClose: () => void }) => {
         const formData = new FormData();
         e.preventDefault();
         if (!validate()) return;
-
+        setLoading(true);
         formData.append("client_id", contextClientID);
         formData.append("branch_id", formHolidayValues.branch_id);
         formData.append("holiday_name", formHolidayValues.holiday_name);
@@ -136,10 +137,10 @@ const AddHolidayForm = ({ onClose }: { onClose: () => void }) => {
                 method: "POST",
                 body: formData,
             });
-            // const response = await res.json();
+            const res = await response.json();
             console.log(response);
 
-            if (response.ok) {
+            if (response.ok && res.status==1) {
                 setLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Success")
@@ -168,7 +169,7 @@ const AddHolidayForm = ({ onClose }: { onClose: () => void }) => {
 
         <div >
             <LoadingDialog isLoading={isLoading} />
-            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : " this Mid content"} endContent={alertEndContent.length > 0 ? alertEndContent : " this is the last content"} value1={"Hello"} value2={"Nikhil"} onOkClicked={function (): void {
+            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent.length > 0 ? alertEndContent : ""} value1={""} value2={""} onOkClicked={function (): void {
                 setShowAlert(false)
                 if (alertForSuccess == 1) {
                     onClose();
@@ -190,7 +191,7 @@ const AddHolidayForm = ({ onClose }: { onClose: () => void }) => {
                 <div className="row" style={{ alignItems: "center" }}>
                     <div className="col-md-4">
                         <div className="form_box mb-3">
-                            <label htmlFor="exampleFormControlInput1" className="form-label">Holiday year list: </label>
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Holiday year list<span className='req_text'>*</span>: </label>
                         </div>
                     </div>
                     <div className="col-md-6">
@@ -206,7 +207,7 @@ const AddHolidayForm = ({ onClose }: { onClose: () => void }) => {
                     </div>
                     <div className="col-md-4">
                         <div className="form_box mb-3">
-                            <label htmlFor="exampleFormControlInput1" className="form-label">Branch: </label>
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Branch<span className='req_text'>*</span>: </label>
                         </div>
                     </div>
                     <div className="col-md-6">
@@ -223,7 +224,7 @@ const AddHolidayForm = ({ onClose }: { onClose: () => void }) => {
                     </div>
                     <div className="col-md-4">
                         <div className="form_box mb-3">
-                            <label htmlFor="exampleFormControlInput1" className="form-label">Holiday Type: </label>
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Holiday Type<span className='req_text'>*</span>: </label>
                         </div>
                     </div>
                     <div className="col-md-6">
@@ -239,7 +240,7 @@ const AddHolidayForm = ({ onClose }: { onClose: () => void }) => {
                     </div>
                     <div className="col-md-4">
                         <div className="form_box mb-3">
-                            <label htmlFor="exampleFormControlInput1" className="form-label">Holiday name: </label>
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Holiday name<span className='req_text'>*</span>: </label>
                         </div>
                     </div>
                     <div className="col-md-6">
@@ -250,7 +251,7 @@ const AddHolidayForm = ({ onClose }: { onClose: () => void }) => {
                     </div>
                     <div className="col-md-4">
                         <div className="form_box mb-3">
-                            <label htmlFor="exampleFormControlInput1" className="form-label">Date: </label>
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Date<span className='req_text'>*</span>: </label>
                         </div>
                     </div>
                     <div className="col-md-6">

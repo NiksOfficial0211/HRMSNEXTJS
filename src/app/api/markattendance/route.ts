@@ -12,11 +12,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 const supabase = await createClient(supabaseUrl, supabaseAnonKey);
 
-import { parseForm, funSendApiErrorMessage, funSendApiException, funCalculateTimeDifference, formatDateToISO } from '@/app/pro_utils/constant';
+import { parseForm, funSendApiErrorMessage, funSendApiException, funCalculateTimeDifference, formatDateToISO, setUploadFileName } from '@/app/pro_utils/constant';
 import fs from "fs/promises";
 import { apiStatusFailureCode, apiwentWrong, } from '@/app/pro_utils/stringConstants';
 import { log } from 'console';
-import { addUserActivities } from '@/app/pro_utils/constantFunAddData';
+import { addErrorExceptionLog, addUserActivities, apiUploadDocs } from '@/app/pro_utils/constantFunAddData';
+import path from 'path';
 
 export const runtime = "nodejs";
 
@@ -36,7 +37,13 @@ export async function POST(request: NextRequest) {
     //   );
     // }
     // return NextResponse.json({ message: "User logged in Data", status: 1,data:user });
-    const { fields, files } = await parseForm(request);
+    const timeout = (ms: number) => new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
+
+    const { fields, files } = await Promise.race([
+      parseForm(request),
+      timeout(5000) // 5 seconds
+    ])as { fields: any; files: any };
+    // const { fields, files } = await parseForm(request);
     if (fields.attendance_type == 1) {
       return startAttendance(fields, files)
     }
@@ -61,34 +68,46 @@ export async function POST(request: NextRequest) {
 
 
 async function startAttendance(fields: any, files: { file: any; }) {
-  if (!files || !files.file) {
-    return NextResponse.json({ error: "No files received." }, { status: 400 });
-  }
+  // if (!files || !files.file) {
+  //   return NextResponse.json({ error: "No files received." }, { status: 400 });
+  // }
   const currentDateTime = new Date();
-  const uploadedFile = files.file[0];
-          const fileBuffer = await fs.readFile(uploadedFile.path);
-          const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
-              type: uploadedFile.headers["content-type"]
-            });
+  let fileUploadResponse;
 
-  const formData = new FormData();
-  formData.append("client_id", fields.client_id[0]);
-  formData.append("customer_id", fields.customer_id[0]);
-  formData.append("docType","emp_attendance" );
-  formData.append("file", fileBlob, uploadedFile.originalFilename);
-
-
-
-  const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles", {
-    method: "POST",
-    // headers:{"Content-Type":"multipart/form-data"},
-    body: formData,
-  });
-
-  const fileUploadResponse = await fileUploadURL.json();
-  if (fileUploadResponse.error) {
-    return NextResponse.json({ message: "File upload api call error" ,error:fileUploadResponse.error }, { status: 500 });
+  if (files){
+    
+    fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id,"attendance")
+    console.log(fileUploadResponse);
+    
   }
+
+//   if(files){
+  
+//   const uploadedFile = files.file[0];
+//           const fileBuffer = await fs.readFile(uploadedFile.path);
+//           const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
+//               type: uploadedFile.headers["content-type"]
+//             });
+
+//   const formData = new FormData();
+//   formData.append("client_id", fields.client_id[0]);
+//   formData.append("customer_id", fields.customer_id[0]);
+//   formData.append("docType","emp_attendance" );
+//   formData.append("file", uploadedFile);
+
+
+
+//   const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles", {
+//     method: "POST",
+//     // headers:{"Content-Type":"multipart/form-data"},
+//     body: formData,
+//   });
+
+//   fileUploadResponse = await fileUploadURL.json();
+//   if (fileUploadResponse.error) {
+//     return NextResponse.json({ message: "File upload api call error" ,error:fileUploadResponse.error }, { status: 500 });
+//   }
+// }
 
   const { data, error } = await supabase
     .from("leap_customer_attendance")
@@ -100,7 +119,7 @@ async function startAttendance(fields: any, files: { file: any; }) {
         customer_id: fields.customer_id[0],
         date: currentDateTime,
         if_paused: false,
-        img_attachment: fileUploadResponse.documentURL,
+        img_attachment: fileUploadResponse? fileUploadResponse:"",
         in_time: new Date(fields.punch_date_time[0]),
         attendanceStatus:1,
         out_time: null,
@@ -116,6 +135,7 @@ async function startAttendance(fields: any, files: { file: any; }) {
   if (error) {
     return NextResponse.json({ message: "Start Attendance error :- " ,error: error.message }, { status: 401 });
   }
+  
   const { data: latLngData, error: latLngError } = await supabase
     .from("leap_customer_attendance_geolocation")
     .insert([

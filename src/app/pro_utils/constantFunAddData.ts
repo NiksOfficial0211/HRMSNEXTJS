@@ -1,8 +1,10 @@
 import { act } from "react";
 import supabase from "../api/supabaseConfig/supabase";
-import { funSendApiErrorMessage } from "./constant";
+import { funSendApiErrorMessage, setUploadFileName } from "./constant";
 import { funGetActivityTypeId } from "./constantFunGetData";
 import { baseUrl } from "./stringRoutes";
+import fs from "fs/promises";
+import path from "node:path";
 
 export async function funAddCustomerBirthDays(clientId: any, customerId: any,ocassion:any,ocassionDate:any,isEnabled:any) {
     let query = supabase.from("leap_all_birthdays")
@@ -164,3 +166,36 @@ export async function addErrorLog(client_id:any,actionType:any,errorJson:any,
     }
     return "1";
   }
+
+  export async function apiUploadDocs(file:any,customer_id:any,client_id:any,docType:any){
+    const uploadedFile = file;
+    const tempFilePath = uploadedFile.path; // Temporary file path
+    let filename;
+    let uploadDir;
+
+    
+    filename=setUploadFileName("selfie"+"_"+customer_id+"_"+uploadedFile.originalFilename);
+    uploadDir = path.join(process.cwd(), "/uploads/"+docType+"/"+client_id+"/"+getCurrentDateFormatted());
+    const log1=await addErrorExceptionLog(client_id,customer_id,"Upload attendance start api called log 1",JSON.stringify({
+        dirpath:uploadDir
+    }));
+    await fs.mkdir(uploadDir, { recursive: true });
+
+    const destination = path.join(uploadDir, filename);
+    await fs.copyFile(tempFilePath, destination);
+        
+    const fileUploadResponse=docType+"/"+client_id+"/"+getCurrentDateFormatted()+"/"+filename
+    const log2=await addErrorExceptionLog(client_id,customer_id,"Upload attendance start api called log 2",JSON.stringify({
+        fileUplaodRes:fileUploadResponse
+    }));
+    return fileUploadResponse;
+  }
+
+ export function getCurrentDateFormatted(): string {
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const yyyy = today.getFullYear();
+
+  return `${dd}-${mm}-${yyyy}`;
+}

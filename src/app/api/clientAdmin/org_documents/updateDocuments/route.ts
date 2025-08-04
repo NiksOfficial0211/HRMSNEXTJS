@@ -4,6 +4,7 @@ import { getAllActivitiesOfUsers } from "@/app/pro_utils/constantFunGetData";
 import supabase from "../../../supabaseConfig/supabase";
 import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
 import fs from "fs/promises";
+import { apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 
 export async function POST(request: NextRequest) {
 
@@ -23,26 +24,11 @@ export async function POST(request: NextRequest) {
     if (!files || !files.file) {
             return NextResponse.json({ error: "No files received." }, { status: 400 });
         }
-        const uploadedFile = files.file[0];
-                const fileBuffer = await fs.readFile(uploadedFile.path);
-const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
-            type: uploadedFile.headers["content-type"]
-          });                const formData = new FormData();
-                formData.append("client_id", fields.client_id[0]);
-                formData.append("branch_id", fields.branch_id[0]);
-                formData.append("docType", "company");
-                formData.append("file", fileBlob, uploadedFile.originalFilename);
-                const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles", {
-                    method: "POST",
-                    // headers:{"Content-Type":"multipart/form-data"},
-                    body: formData,
-                });
-        
-                const fileUploadResponse = await fileUploadURL.json();
-                if (fileUploadResponse.error) {
-                    return NextResponse.json({ error: "File upload api call error" }, { status: 500 });
-                }
-
+        let fileUploadResponse;
+            if(files || files.file[0]){
+                  fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"client_sub_project_doc")
+              
+            }
     const { data: documents, error } = await supabase.from("leap_client_documents")
       .insert({
         // client_id

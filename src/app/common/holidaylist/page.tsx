@@ -91,13 +91,17 @@ const HolidayList = () => {
         try {
             setBrancheIDFilter(branchId);
             const formData = new FormData();
-            formData.append("client_id", contextClientID || "3");
+            formData.append("client_id", contextClientID);
             formData.append("branch_id", branchId.toString());
             formData.append("holiday_year", yearID.toString());
 
             const res = await fetch("/api/commonapi/getHolidayList", {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "client_id": contextClientID,
+                    "branch_id": branchId.toString(),
+                    "holiday_year": yearID.toString()
+                }),
             });
             const response = await res.json();
 

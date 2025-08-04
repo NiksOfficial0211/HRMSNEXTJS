@@ -188,17 +188,23 @@ const EmpAttendancePage = () => {
         console.log("end date selecte in fetch data", filterValues.end_date);
         setLoading(true);
         try {
-            const formData = new FormData();
-            formData.append("client_id", contextClientID);
-            formData.append("branch_id", contaxtBranchID);
-            formData.append('start_date', filterValues.start_date || formatDateYYYYMMDD(new Date()));
+            // const formData = new FormData();
+            // formData.append("client_id", contextClientID);
+            // formData.append("branch_id", contaxtBranchID);
+            // formData.append('start_date', filterValues.start_date || formatDateYYYYMMDD(new Date()));
             const endDate = filterValues.start_date != filterValues.end_date ? filterValues.end_date : formatDateYYYYMMDD(new Date())
-            formData.append('end_date', endDate);
-            formData.append('customer_id', dashboard_notify_cust_id);
+            // formData.append('end_date', endDate);
+            // formData.append('customer_id', dashboard_notify_cust_id);
 
             const response = await fetch("/api/clientAdmin/getAllEmployeeAttendance", {
                 method: "POST",
-                body: formData,
+                body: JSON.stringify({
+                    "client_id": contextClientID,
+                    "branch_id": contaxtBranchID,
+                    "start_date": filterValues.start_date || formatDateYYYYMMDD(new Date()),
+                    "end_date": endDate,
+                    "customer_id": dashboard_notify_cust_id,
+                }),
             });
             const apiResponse = await response.json();
             console.log(apiResponse);

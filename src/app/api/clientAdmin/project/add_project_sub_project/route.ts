@@ -4,6 +4,7 @@ import supabase from "@/app/api/supabaseConfig/supabase";
 import { apiStatusInvalidDataCode, apiStatusSuccessCode, clientAddedFailed, clientAddedSuccess, apifailedWithException, clientAssetSuccess, apiStatusFailureCode, apiwentWrong, clientSalaryComponentSuccess, clientAddProjectSuccess,  } from "@/app/pro_utils/stringConstants";
 import { calculateNumDays, funSendApiErrorMessage, funSendApiException, parseForm } from "@/app/pro_utils/constant";
 import fs from "fs/promises";
+import { apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 
 
 export async function POST(request: NextRequest) {
@@ -32,26 +33,9 @@ export async function POST(request: NextRequest) {
     
 
     let fileUploadResponse;
-    if (files && files.file && files.file[0] )  {
-          const uploadedFile = files.file[0];
-          const fileBuffer = await fs.readFile(uploadedFile.path);
-          const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
-            type: uploadedFile.headers["content-type"]
-          });
-          const formData = new FormData();
-          formData.append("client_id", fields.client_id[0]);
-          formData.append("customer_id", '');
-          formData.append("docType", "project");
-          formData.append("file", fileBlob, uploadedFile.originalFilename);
-          const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_UPLOAD_IMAGE_BASE_URL + "/api/UploadFiles", {
-            method: "POST",
-            // headers:{"Content-Type":"multipart/form-data"},
-            body: formData,
-          });
-           fileUploadResponse = await fileUploadURL.json();
-          // if (fileUploadResponse.error) {
-          //   return NextResponse.json({ error: "File upload api call error : " + fileUploadResponse.error }, { status: 500 });
-          // }
+        if(files || files.file[0]){
+              fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"client_project_logo")
+          
         }
         const {data:projectData,error} =  await supabase.from("leap_client_project")
     .insert({
@@ -62,7 +46,7 @@ export async function POST(request: NextRequest) {
         project_manager_id:fdata.managerID,
         // team_lead_id:fdata.teamLeadID,
         project_status:1,
-        project_logo:fileUploadResponse! ? fileUploadResponse.documentURL : "",
+        project_logo:fileUploadResponse ? fileUploadResponse : "",
         project_color_code:fdata.project_color_code,
         project_type_id:fdata.projectTypeID,
         created_at:new Date()

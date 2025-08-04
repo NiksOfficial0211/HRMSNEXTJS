@@ -4,6 +4,7 @@ import { getAllActivitiesOfUsers } from "@/app/pro_utils/constantFunGetData";
 import supabase from "../../supabaseConfig/supabase";
 import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
 import fs from "fs/promises";
+import { apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 
 
 export async function POST(request: NextRequest) {
@@ -26,40 +27,11 @@ export async function POST(request: NextRequest) {
         //     return NextResponse.json({ error: "No files received." }, { status: 400 });
         // }
 
-        let fileURL=""
-        if (files && files.file && files.file[0]) {
-            const currentDateTime = new Date();
-            const uploadedFile = files.file[0];
-            const fileBuffer = await fs.readFile(uploadedFile.path);
-const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
-            type: uploadedFile.headers["content-type"]
-          });            const formData = new FormData();
-            formData.append("client_id", fields.client_id[0]);
-            formData.append("branch_id", fields.branch_id[0]);
-            formData.append("docType", "announcement");
-            formData.append("file", fileBlob, uploadedFile.originalFilename);
-            const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles", {
-                method: "POST",
-                // headers:{"Content-Type":"multipart/form-data"},
-                body: formData,
-            });
-
-            const fileUploadResponse = await fileUploadURL.json();
-            if (fileUploadResponse.error) {
-                return NextResponse.json({ error: "File upload api call error" }, { status: 500 });
-            }
-
-            let query = supabase.from('leap_client_announcements').update({
-                announcement_image: fileUploadResponse.documentURL,
-
-            }).eq("announcement_id", fields.announcement_id[0]);
-
-            const { data: announcement, error: annError } = await query;
-            if (annError) {
-                return funSendApiErrorMessage(annError, "Announcemnt insert issue");
-            }
+        let fileUploadResponse;
+        if(files || files.file[0]){
+            fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"announcement_img")
+          
         }
-        console.log("outside of file call -------------------------------1");
         
         let isError=false;
         let num_of_days=0;
@@ -80,6 +52,7 @@ const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
                 announcement_type_id: parseInt(fields.announcement_type_id[0]),
                 announcement_date:fields.startDate[0]? formatDateYYYYMMDD(fields.startDate[0]) : formatDateYYYYMMDD(new Date()),
                 num_of_days:num_of_days,
+                announcement_image:fileUploadResponse?fileUploadResponse:fields.image[0],
                 send_on_date:fields.startDate[0] || new Date().toISOString(),
                 validity_date:formatDateYYYYMMDD(fields.endDate[0]),
                 isEnabled:fields.is_enabled[0],
@@ -93,6 +66,8 @@ const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
             announcement_title: "First Check Static",
             announcement_details: fields.announcement_details[0],
             announcement_type_id: parseInt(fields.announcement_type_id[0]),
+            announcement_image:fileUploadResponse?fileUploadResponse:fields.image[0],
+
             announcement_date:fields.startDate[0]? formatDateYYYYMMDD(fields.startDate[0]) : formatDateYYYYMMDD(new Date()),
             send_on_date:fields.startDate[0] || new Date().toISOString(),
             num_of_days:num_of_days,

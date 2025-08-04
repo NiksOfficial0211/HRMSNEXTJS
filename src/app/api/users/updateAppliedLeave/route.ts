@@ -4,7 +4,7 @@ import { calculateNumDays, formatDateYYYYMMDD, funCalculateTimeDifference, funDa
 import fs from "fs/promises";
 import { error } from "console";
 import { funGetActivityTypeId } from "@/app/pro_utils/constantFunGetData";
-import { addUserActivities } from "@/app/pro_utils/constantFunAddData";
+import { addUserActivities, apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
@@ -13,25 +13,11 @@ export async function POST(request: NextRequest) {
   try {
     const { fields, files } = await parseForm(request);
  
-    if (files && files.file && files.file[0] )  {
-      const uploadedFile = files.file[0];
-      const fileBuffer = await fs.readFile(uploadedFile.path);
-      const fileBlob = new Blob([fileBuffer], { type: uploadedFile.headers["content-type"] });
-      const formData = new FormData();
-      formData.append("client_id", fields.client_id[0]);
-      formData.append("customer_id", fields.customer_id[0]);
-      formData.append("docType", "leave_docs");
-      formData.append("file", fileBlob, uploadedFile.originalFilename);
-      const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_UPLOAD_IMAGE_BASE_URL + "/api/UploadFiles", {
-        method: "POST",
-        // headers:{"Content-Type":"multipart/form-data"},
-        body: formData,
-      });
-      fileUploadResponse = await fileUploadURL.json();
-      // if (fileUploadResponse.error) {
-      //   return NextResponse.json({ error: "File upload api call error : " + fileUploadResponse.error }, { status: 500 });
-      // }
-    }
+     let fileUploadResponse;
+      if(files || files.file[0]){
+                      fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id[0],"applied_leave_docs")
+                    
+                  }
     const totalLeaveDays = calculateNumDays(new Date(fields.from_date), new Date(fields.to_date));
     
     let query = supabase.from("leap_customer_apply_leave")
@@ -44,7 +30,7 @@ export async function POST(request: NextRequest) {
         to_date: fields.to_date[0],
         total_days: fields.duration[0]=="1"? fields.duration[0]:fields.duration[0]=="2"?"0.5":totalLeaveDays,//1-full day leave,2:half day leave
         leave_status: 1,
-        attachments: fileUploadResponse! ? fileUploadResponse.documentURL : "",
+        attachments: fileUploadResponse ? fileUploadResponse : "",
         leave_reason: fields.leave_reason[0],
         duration:fields.duration[0],
         
