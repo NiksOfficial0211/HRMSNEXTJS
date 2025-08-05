@@ -45,6 +45,7 @@ const Dashboard = () => {
     const [taskarray, setTask] = useState<MyTask[]>([]);
     // const [assignedTaskarray, setAssignedTask] = useState<AssignedTask[]>([]);
     const [firstName, setName] = useState<any[]>([]);
+    const [workingTime, setWorkingTime] = useState<any[]>([]);
     const [managerData, setManagerData] = useState<ManagerData>();
     const [teamArray, setTeam] = useState<TeamMember[]>([]);
     const [subordinateArray, setSubArray] = useState<Subordinate[]>([]);
@@ -103,6 +104,8 @@ const Dashboard = () => {
             if (response.status === 1) {
 
                 // console.log("branch",contaxtBranchID);
+                setWorkingTime(response.workingHour.workData[0]);
+                console.log("time: ",workingTime)
                 setHolidays(response.upcommingHolidays.holidays);
                 setBalanceLeave(response.myLeaveBalances.customerLeavePendingCount);
                 // setSalarySlip(response.my_documents[0]);
@@ -200,7 +203,7 @@ const Dashboard = () => {
                                 <div className="new_user_dashbord_leftbox">
                                     <div className="new_user_left_firstmainbox">
                                         < GreetingBlock />
-                                        {attendanceData && < UserAttendanceTimer data={attendanceData} name={firstName} />}
+                                        {attendanceData && < UserAttendanceTimer data={attendanceData} name={firstName} workingHour={workingTime} />}
                                     </div>
                                     {/* {checkPermission(permission_m_leave_7) && */}
                                     <div className="new_user_left_fourthmainbox">

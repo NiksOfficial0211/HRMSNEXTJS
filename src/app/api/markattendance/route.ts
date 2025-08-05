@@ -59,11 +59,8 @@ export async function POST(request: NextRequest) {
       return funSendApiErrorMessage("Invalid Attendance Type", apiwentWrong);
     }
   } catch (err) {
-
     return funSendApiException(err);
   }
-
-
 }
 
 

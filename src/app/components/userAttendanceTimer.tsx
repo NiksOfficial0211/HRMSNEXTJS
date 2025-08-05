@@ -12,7 +12,7 @@ import { formatInTimeZone } from 'date-fns-tz';
 import {
     CircularProgressbar,
     buildStyles,
-    
+
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import supabase from '../api/supabaseConfig/supabase';
@@ -28,7 +28,7 @@ interface breaktimer {
     fullday_working_hours: any
 }
 
-const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any }) => {
+const UserAttendanceTimer = ({ data, name, workingHour }: { data: AttendanceTimer, name: any, workingHour: any }) => {
     const { contextClientID, contextCustomerID, contextRoleID, contaxtBranchID, setGlobalState } = useGlobalContext();
     const [attendanceData, setAttendanceData] = useState<AttendanceTimer>(data);
     const [totalHours, setTotalHours] = useState<breaktimer[]>();
@@ -54,7 +54,7 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
             const clientHour = await getTotalWorkingHours(contextClientID);
             setTotalHours(clientHour);
         };
-        fetchData();
+        // fetchData();
         setAttendanceData(data);
         // fetchAttendanceTimerData();
         const handleScroll = () => {
@@ -80,8 +80,13 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
         const diffMinutes = Math.floor(diffMs / (1000 * 60))
         return diffMinutes;
     }
-    const WORKING_MINUTES = 480;
-
+    const WORKING_MINUTES = 480
+    // || workingHour;
+    function parseDateString(dateStr: string | null): Date | null {
+        if (!dateStr) return null;
+        // Replace space with T for ISO format
+        return new Date(dateStr.replace(' ', 'T'));
+    }
     function getTotalWorkedMinutes(
         inTime: string,
         outTime: string | null,
@@ -105,7 +110,7 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
     };
     const { netMinutes } = getTotalWorkedMinutes(
         attendanceData.in_time,
-        attendanceData.out_time,
+        attendanceData.out_time || null,
         parseInt(attendanceData.paused_duration || '0') || 0
     );
     // const calculateWorkedMinutes = () => {
@@ -118,7 +123,7 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
         const percent = Math.min((netMinutes / WORKING_MINUTES) * 100, 100); // Cap at 100%
         return Math.round(percent);
     };
-
+    console.log('in_time:', attendanceData.in_time, 'out_time:', attendanceData.out_time, 'netMinutes:', netMinutes, 'progress:', calculateProgressPercentage());
     return (
         <div className="new_dashboard_greeting_attendancebox">
             <div className="my_new_greeting_attendancebox">
@@ -144,7 +149,7 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
                                 <div className="wfh_date_listing_content">{moment().format("LL")}</div>
                             </div>
                             <div className="wfh_date_listing">
-                                <div className="wfh_date_listing_content_day">{attendanceData.leap_working_type.type ? attendanceData.leap_working_type.type: "--"}</div>
+                                <div className="wfh_date_listing_content_day">{attendanceData.leap_working_type.type ? attendanceData.leap_working_type.type : "--"}</div>
                             </div>
                         </div>
                         <div className="new_attendancebox_middlebox_first_listing">
@@ -162,11 +167,12 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
                                 <div className="new_attendancebox_middlebox_first_listing_time">
                                     {attendanceData.in_time! ? (
                                         <span>
-                                            {new Date(attendanceData.in_time).toLocaleTimeString('en-US', {
+                                            {formatInTimeZone(new Date(attendanceData.in_time), 'UTC', 'hh:mm a')}
+                                            {/* {new Date(attendanceData.in_time).toLocaleTimeString('en-US', {
                                                 hour: '2-digit',
                                                 minute: '2-digit',
                                                 hour12: true,
-                                            })}
+                                            })} */}
                                         </span>
                                     ) : <span>--</span>}</div>
                             </div>
@@ -197,6 +203,7 @@ const UserAttendanceTimer = ({ data, name }: { data: AttendanceTimer, name: any 
                                 textSize: "14px"
                             })}
                         />
+
                         {/* <ChangingProgressProvider values={[0, 100]}>
                             {(percentage: number) => (
                                 <CircularProgressbar

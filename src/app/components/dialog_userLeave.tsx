@@ -58,7 +58,7 @@ const UserLeaveStatus = ({ onClose, id }: { onClose: (fetchData: boolean) => voi
                         <div className="nw_user_offcanvas_listing_content">{moment(leaveData?.created_at).format('DD-MM-YYYY')}</div>
                     </div>
                     <div className="nw_user_offcanvas_listing">
-                        <div className="nw_user_offcanvas_listing_lable">Date</div>
+                        <div className="nw_user_offcanvas_listing_lable">Leave Date</div>
                         <div className="nw_user_offcanvas_listing_content">
                             {leaveData?.from_date === leaveData?.to_date ?
                                 <div className="ne_user_offcanvas_from_date_mainbox">

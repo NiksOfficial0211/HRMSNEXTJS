@@ -608,11 +608,12 @@ const EmpAttendancePage = () => {
                                                                                                                     <div className="my_attendance_start_time_name">Start Time</div>
                                                                                                                     <div className="my_attendance_start_time">
                                                                                                                         {dates.employeeAttendance?.in_time
-                                                                                                                            ? (new Date(dates.employeeAttendance.in_time).toLocaleTimeString('en-US', {
-                                                                                                                                hour: '2-digit',
-                                                                                                                                minute: '2-digit',
-                                                                                                                                hour12: true,
-                                                                                                                            }))
+                                                                                                                            ? formatInTimeZone(new Date(dates.employeeAttendance.in_time), 'UTC', 'hh:mm a') 
+                                                                                                                            //  (new Date(dates.employeeAttendance.in_time).toLocaleTimeString('en-US', {
+                                                                                                                            //     hour: '2-digit',
+                                                                                                                            //     minute: '2-digit',
+                                                                                                                            //     hour12: true,
+                                                                                                                            // }))
                                                                                                                             : '--'}
                                                                                                                     </div>
                                                                                                                 </div>
@@ -622,11 +623,12 @@ const EmpAttendancePage = () => {
                                                                                                                     <div className="my_attendance_start_time_name">End Time</div>
                                                                                                                     <div className="my_attendance_start_time">
                                                                                                                         {dates.employeeAttendance?.out_time
-                                                                                                                            ? (new Date(dates.employeeAttendance.out_time).toLocaleTimeString('en-US', {
-                                                                                                                                hour: '2-digit',
-                                                                                                                                minute: '2-digit',
-                                                                                                                                hour12: true,
-                                                                                                                            }))
+                                                                                                                            ? formatInTimeZone(new Date(dates.employeeAttendance.out_time), 'UTC', 'hh:mm a') 
+                                                                                                                            // (new Date(dates.employeeAttendance.out_time).toLocaleTimeString('en-US', {
+                                                                                                                            //     hour: '2-digit',
+                                                                                                                            //     minute: '2-digit',
+                                                                                                                            //     hour12: true,
+                                                                                                                            // }))
                                                                                                                             : '--'}
                                                                                                                     </div>
                                                                                                                 </div>
@@ -637,7 +639,6 @@ const EmpAttendancePage = () => {
                                                                                                                 <div className="my_attendance_start_time_box_listing_last">
                                                                                                                     <div className="my_attendance_start_time_name">Work Location:</div>
                                                                                                                     <div className="my_attendance_start_time">
-
                                                                                                                         {dates.employeeAttendance?.leap_working_type?.type || '--'}
                                                                                                                     </div>
                                                                                                                 </div>
@@ -699,11 +700,12 @@ const EmpAttendancePage = () => {
                                                                                         <div className="my_attendance_start_time_name">Start Time</div>
                                                                                         <div className="my_attendance_start_time">
                                                                                             {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time
-                                                                                                ? (new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time).toLocaleTimeString('en-US', {
-                                                                                                    hour: '2-digit',
-                                                                                                    minute: '2-digit',
-                                                                                                    hour12: true,
-                                                                                                }))
+                                                                                                ? formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time), 'UTC', 'hh:mm a') 
+                                                                                                // (new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time).toLocaleTimeString('en-US', {
+                                                                                                //     hour: '2-digit',
+                                                                                                //     minute: '2-digit',
+                                                                                                //     hour12: true,
+                                                                                                // }))
                                                                                                 : '--'}
                                                                                         </div>
                                                                                     </div>
@@ -713,11 +715,12 @@ const EmpAttendancePage = () => {
                                                                                         <div className="my_attendance_start_time_name">End Time</div>
                                                                                         <div className="my_attendance_start_time">
                                                                                             {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time
-                                                                                                ? (new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time).toLocaleTimeString('en-US', {
-                                                                                                    hour: '2-digit',
-                                                                                                    minute: '2-digit',
-                                                                                                    hour12: true,
-                                                                                                }))
+                                                                                                ? formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time), 'UTC', 'hh:mm a') 
+                                                                                                //  (new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time).toLocaleTimeString('en-US', {
+                                                                                                //     hour: '2-digit',
+                                                                                                //     minute: '2-digit',
+                                                                                                //     hour12: true,
+                                                                                                // }))
                                                                                                 : '--'}
                                                                                         </div>
                                                                                     </div>

@@ -671,7 +671,6 @@ const EmployeeLeaveList = () => {
                                                             </div>
                                                         </a>
                                                     }
-
                                                     {viewIndex == 0 &&
                                                         <a href={pageURL_userFillTask}>
                                                             <div className="nw_user_tab_icon">
@@ -688,7 +687,6 @@ const EmployeeLeaveList = () => {
                                                                 Add
                                                             </div>
                                                         </a>
-
                                                     }
                                                     {viewIndex == 1 &&
                                                         <a href={pageURL_userFillTask}>
