@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { funSendApiErrorMessage, funSendApiException, funCalculateTimeDifference, formatDateToISO, formatDateYYYYMMDD } from '@/app/pro_utils/constant';
+import { funSendApiErrorMessage, funSendApiException, funCalculateTimeDifference, formatDateToISO, formatDateYYYYMMDD } from '@/app/pro_utils/constant';
 import { apiwentWrong } from '@/app/pro_utils/stringConstants';
 import { addUserActivities } from '@/app/pro_utils/constantFunAddData';
 import supabase from '../../supabaseConfig/supabase';
@@ -69,7 +70,7 @@ async function startAttendance(body: any) {
 }
 
 async function stopAttendance(body: any) {
-    const now = new Date();
+    // const now = new Date();
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
     if (!attendanceID[0].attendance_id) {
@@ -86,6 +87,7 @@ async function stopAttendance(body: any) {
     const { data, error } = await supabase
         .from("leap_customer_attendance")
         .update({
+            out_time: new Date(),
             out_time: new Date(),
             // total_hours: totalHours,
             attendanceStatus: 2,
@@ -106,6 +108,7 @@ async function stopAttendance(body: any) {
 async function pauseAttendance(body: any) {
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
+    if (!attendanceID[0].attendance_id) {
     if (!attendanceID[0].attendance_id) {
         return funSendApiErrorMessage("Attendance ID is required", apiwentWrong);
     }
@@ -131,6 +134,7 @@ async function pauseAttendance(body: any) {
             paused_reasons,
         })
         .eq('attendance_id', attendanceID[0].attendance_id)
+        .eq('attendance_id', attendanceID[0].attendance_id)
         .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
@@ -148,10 +152,14 @@ async function resumeAttendance(body: any) {
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
     if (!attendanceID[0].attendance_id) {
+    const custID = await getCustomerClientIds(body.whatsapp_number);
+    const attendanceID = await getAttendanceId(custID[0].customer_id);
+    if (!attendanceID[0].attendance_id) {
         return funSendApiErrorMessage("Attendance ID is required", apiwentWrong);
     }
 
     const now = new Date();
+    const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
     const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
     //   const todayLocations = await getAttendanceGeoLocation(body.attendance_id);
 
@@ -177,6 +185,7 @@ async function resumeAttendance(body: any) {
             attendanceStatus: 4,
         })
         .eq('attendance_id', attendanceID[0].attendance_id)
+        .eq('attendance_id', attendanceID[0].attendance_id)
         .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
@@ -192,6 +201,16 @@ async function resumeAttendance(body: any) {
 async function getTodayAttendance(attendanceID: number) {
     const { data, error } = await supabase
         .from('leap_customer_attendance')
+        .select()
+        .eq('attendance_id', attendanceID);
+
+    if (error) throw error;
+    return data;
+}
+
+async function getAttendanceGeoLocation(attendanceID: number) {``
+    const { data, error } = await supabase
+        .from('leap_customer_attendance_geolocation')
         .select()
         .eq('attendance_id', attendanceID);
 
