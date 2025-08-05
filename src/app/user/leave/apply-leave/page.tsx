@@ -3,6 +3,7 @@ import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'reac
 import LeapHeader from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { createLeaveTitle, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { createLeaveTitle } from '@/app/pro_utils/stringConstants'
 import supabase from '@/app/api/supabaseConfig/supabase'
 import { useParams, useRouter } from 'next/navigation';
 import { LeaveType } from '@/app/models/leaveModel'

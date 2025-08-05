@@ -41,6 +41,7 @@ async function startAttendance(body: any) {
             approval_status: null,
             approved_by: null,
             client_id: custID[0].client_id,
+            client_id: custID[0].client_id,
             customer_id: custID[0].customer_id,
             date: now,
             if_paused: false,
@@ -208,7 +209,8 @@ async function getTodayAttendance(attendanceID: number) {
     return data;
 }
 
-async function getAttendanceGeoLocation(attendanceID: number) {``
+async function getAttendanceGeoLocation(attendanceID: number) {
+    ``
     const { data, error } = await supabase
         .from('leap_customer_attendance_geolocation')
         .select()
@@ -221,6 +223,7 @@ async function getAttendanceGeoLocation(attendanceID: number) {``
 async function getCustomerClientIds(contact_number: number) {
     const { data, error } = await supabase
         .from('leap_customer')
+        .select('customer_id, client_id')
         .select('customer_id, client_id')
         .eq('contact_number', contact_number);
 

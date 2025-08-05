@@ -497,7 +497,6 @@ const AssignTask: React.FC = () => {
 
     const handleInputChange = async (e: any) => {
         const { name, value } = e.target;
-        const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
     }
     // const formData = new FormData();

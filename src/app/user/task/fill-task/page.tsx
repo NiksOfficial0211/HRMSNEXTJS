@@ -14,11 +14,9 @@ import { Project, SubProject } from '@/app/models/TaskModel'
 import LeftPannel from '@/app/components/leftPannel'
 import BackButton from '@/app/components/BackButton'
 import { ALERTMSG_exceptionString, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
-import { ALERTMSG_exceptionString, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
 
 interface AddTaskForm {
-  // project_id: string,
   // project_id: string,
   sub_project_id: string,
   task_type_id: string,
@@ -28,7 +26,6 @@ interface AddTaskForm {
 }
 
 const ApplyLeave: React.FC = () => {
-const ApplyLeave: React.FC = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [taskArray, setTask] = useState<TaskType[]>([]);
   const [statusArray, setStatus] = useState<TaskStatus[]>([]);
@@ -36,9 +33,8 @@ const ApplyLeave: React.FC = () => {
   const [projectarray, setProject] = useState<Project[]>([]);
   const [subProjectarray, setSubProject] = useState<SubProject[]>([]);
   // const [selectedProject, setSelectedProject] = useState<string>("");
-  // const [selectedProject, setSelectedProject] = useState<string>("");
   const [loadingCursor, setLoadingCursor] = useState(false);
-  const [showDuration, setShowDuration] = useState('');
+
   const [showAlert, setShowAlert] = useState(false);
   const [alertForSuccess, setAlertForSuccess] = useState(0);
   const [alertTitle, setAlertTitle] = useState('');
@@ -48,20 +44,13 @@ const ApplyLeave: React.FC = () => {
   const [alertValue1, setAlertValue1] = useState('');
   const [alertvalue2, setAlertValue2] = useState('');
 
-  // const handleProjectTypeChange = async (e: ChangeEvent<HTMLSelectElement>) => {
-  //   const { name, value } = e.target;
-  //   setFormValues((prev) => ({ ...prev, [name]: value }));
-  //   // setSelectedProject(value);
-  //   // const subProj = await getSubProject(value);
-  //   // setSubProject(subProj);
-  // };
-  // const handleProjectTypeChange = async (e: ChangeEvent<HTMLSelectElement>) => {
-  //   const { name, value } = e.target;
-  //   setFormValues((prev) => ({ ...prev, [name]: value }));
-  //   // setSelectedProject(value);
-  //   // const subProj = await getSubProject(value);
-  //   // setSubProject(subProj);
-  // };
+  const handleProjectTypeChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormValues((prev) => ({ ...prev, [name]: value })); 
+    setSelectedProject(value);
+    const subProj = await getSubProject(value);
+    setSubProject(subProj);
+  };
   const router = useRouter()
   useEffect(() => {
     setLoadingCursor(true);
@@ -100,7 +89,6 @@ const ApplyLeave: React.FC = () => {
 
   const [formValues, setFormValues] = useState<AddTaskForm>({
     // project_id: "",
-    // project_id: "",
     sub_project_id: "",
     task_type_id: "",
     task_details: "",
@@ -110,14 +98,12 @@ const ApplyLeave: React.FC = () => {
 
   const handleInputChange = async (e: any) => {
     const { name, value } = e.target;
-    const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
   }
   const formData = new FormData();
   const [errors, setErrors] = useState<Partial<AddTaskForm>>({});
   const validate = () => {
     const newErrors: Partial<AddTaskForm> = {};
-    // if (!formValues.project_id) newErrors.project_id = "required";
     // if (!formValues.project_id) newErrors.project_id = "required";
     if (!formValues.sub_project_id) newErrors.sub_project_id = "required";
     if (!formValues.task_type_id) newErrors.task_type_id = "required";
@@ -145,7 +131,7 @@ const ApplyLeave: React.FC = () => {
       const response = await fetch("/api/users/addTask", {
         method: "POST",
         body: JSON.stringify({
-          "client_id": contextClientID, 
+          "client_id": contextClientID,
           "branch_id": contaxtBranchID,
           "customer_id": contextCustomerID,
           // "project_id": formValues.project_id,
@@ -163,7 +149,6 @@ const ApplyLeave: React.FC = () => {
         setAlertStartContent("Task added Successfully");
         setAlertForSuccess(1)
       } else {
-        setLoadingCursor(false);
         setLoadingCursor(false);
         setShowAlert(true);
         setAlertTitle("Error")
@@ -192,17 +177,9 @@ const ApplyLeave: React.FC = () => {
             if (alertForSuccess == 1) {
               router.push(pageURL_userTaskListingPage);
             }
-            setShowAlert(false)
-            if (alertForSuccess == 1) {
-              router.push(pageURL_userTaskListingPage);
-            }
           }} onCloseClicked={function (): void {
             setShowAlert(false)
-            setShowAlert(false)
           }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
-          {/* ------------------ */}
-          <form onSubmit={handleSubmit}>
-            <div className='container'>
           {/* ------------------ */}
           <form onSubmit={handleSubmit}>
             <div className='container'>
@@ -340,9 +317,6 @@ const ApplyLeave: React.FC = () => {
             </div>
           </form>
           {/* ------------------ */}
-            </div>
-          </form>
-          {/* ------------------ */}
         </div>
       }
       />
@@ -356,16 +330,11 @@ const ApplyLeave: React.FC = () => {
 export default ApplyLeave
 
 
-export default ApplyLeave
 
 
-
-
-async function getSubProject(client: any) {
 async function getSubProject(client: any) {
 
   let query = supabase
-    .from('leap_client_sub_projects')
     .from('leap_client_sub_projects')
     .select()
     .eq("client_id", client);
