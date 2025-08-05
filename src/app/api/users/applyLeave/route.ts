@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         leave_type: fields.leave_type[0],
         from_date: fields.from_date[0],
         to_date: fields.to_date[0],
-        total_days: fields.duration[0]=="1"? fields.duration[0]:fields.duration[0]=="2"?"0.5":totalLeaveDays,//1-full day leave,2:half day leave
+        total_days: fields.duration[0]=="1"? fields.duration[0]:fields.duration[0]=="2"?"0.5":totalLeaveDays, //1-full day leave,2:half day leave
         leave_status: 1,
         attachments: fileUploadResponse ? fileUploadResponse : "",
         leave_reason: fields.leave_reason[0],

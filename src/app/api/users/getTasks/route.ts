@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
         const {client_id, customer_id, project_id, sub_project_id, id, task_status, task_date, to_date, from_date } = await request.json();
 
         let query = supabase.from('leap_customer_project_task')
-            .select('*,leap_project_task_types(task_type_name),leap_client_sub_projects(sub_project_name,leap_client_project(project_name)), leap_task_status(*), leap_approval_status(*)')
+            .select('*,leap_project_task_types(task_type_name),leap_client_sub_projects(sub_project_name), leap_task_status(*), leap_approval_status(*)')
             //  .select('id,total_hours, total_minutes, task_details, task_type_id(task_type_id,task_type_name), task_status(id,status), approval_status(id,approval_type),sub_project_id(subproject_id,sub_project_name)')
            
             .order('updated_at', {ascending:false});
