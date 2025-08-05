@@ -497,6 +497,7 @@ const AssignTask: React.FC = () => {
 
     const handleInputChange = async (e: any) => {
         const { name, value } = e.target;
+        const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
     }
     // const formData = new FormData();
@@ -517,38 +518,50 @@ const AssignTask: React.FC = () => {
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!validate()) return;
-        setLoadingCursor(true)
-        try {
-            const response = await fetch("/api/users/assignTask", {
-                method: "POST",
-                body: JSON.stringify({
-                    "client_id": contextClientID,
-                    "assigned_by": contextCustomerID,
-                    "assigned_to": formValues.assigned_to,
-                    // "project_id": formValues.project_id,
-                    "sub_project_id": formValues.sub_project_id,
-                    "task_type_id": formValues.task_type_id,
-                    "task_details": formValues.task_details,
-                    "task_date": formValues.task_date,
-                    "task_priority": formValues.task_priority,
-                    "deadline": formValues.deadline,
-                }),
-            });
-            if (response.ok) {
-                setLoadingCursor(false);
-                setShowAlert(true);
-                setAlertTitle("Success")
-                setAlertStartContent("Task assigned Successfully");
-                setAlertForSuccess(1)
-            } else {
-                setLoadingCursor(false);
-                setShowAlert(true);
-                setAlertTitle("Error")
-                setAlertStartContent("Failed to assign task");
-                setAlertForSuccess(2)
-            }
+    e.preventDefault();
+    if (!validate()) return;
+    setLoadingCursor(true);
+    console.log("handle submit called");
+    //  formData.append("client_id", contextClientID);
+    //  formData.append("assigned_by", contextCustomerID);
+    //  formData.append("assigned_to", formValues.assigned_to);
+    //  formData.append("project_id", formValues.project_id);
+    //  formData.append("sub_project_id", formValues.sub_project_id);
+    //  formData.append("task_type_id", formValues.task_type_id);
+    //  formData.append("task_details", formValues.task_details);
+    // //  formData.append("task_date", formValues.task_date);
+    //  formData.append("task_priority", formValues.task_priority);
+    //  formData.append("deadline", formValues.deadline);
+
+    try {
+      const response = await fetch("/api/users/assignTask", {
+          method: "POST",
+          body:  JSON.stringify({
+          "client_id": contextClientID ,
+          "assigned_by": contextCustomerID,
+         "assigned_to": formValues.assigned_to,
+          "project_id": formValues.project_id,
+          "sub_project_id": formValues.sub_project_id,
+          "task_type_id": formValues.task_type_id,
+          "task_details": formValues.task_details,
+          "task_date": formValues.task_date,
+          "task_priority": formValues.task_priority,
+          "deadline": formValues.deadline,
+        }),
+      });
+      if (response.ok) {
+        setLoadingCursor(false);
+        setShowAlert(true);
+        setAlertTitle("Success")
+        setAlertStartContent("Task assigned Successfully");
+        setAlertForSuccess(1)
+      } else {
+        setLoadingCursor(false);       
+        setShowAlert(true);
+        setAlertTitle("Error")
+        setAlertStartContent("Failed to create task");
+        setAlertForSuccess(2)
+      }
         } catch (error) {
             setLoadingCursor(false);
             setShowAlert(true);
@@ -602,23 +615,23 @@ const AssignTask: React.FC = () => {
                                         <div className="nw_user_inner_content_box nw_user_inner_content_form_box" style={{ minHeight: '60vh' }}>
                                             <div className="new_user_inner_form_mainbox">
                                                 <div className="new_user_inner_form_box">
-                                                    {/* <form onSubmit={handleSubmit}> */}
-                                                    <div className="fill_task_formbox">
-                                                        <div className="form_new_group">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Employee<span className='req_text'>*</span></label>
-                                                            <select id="assigned_to" name="assigned_to" onChange={handleInputChange} className='form-select'>
-                                                                <option value="">Select</option>
-                                                                {empArray.length > 0 ? (
-                                                                    empArray.map((type) => (
-                                                                        <option value={type.customer_id} key={type.customer_id}>{type.emp_id} : {type.name}</option>
-                                                                    ))
-                                                                ) : (
-                                                                    <option value="" disabled>Employee does not exists</option>
-                                                                )}
-                                                            </select>
-                                                            {errors.assigned_to && <span className="error" style={{ color: "red" }}>{errors.assigned_to}</span>}
-                                                        </div>
-                                                        {/* <div className="form_new_group">
+                                                    <form onSubmit={handleSubmit}>
+                                                        <div className="fill_task_formbox">
+                                                            <div className="form_new_group">
+                                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Employee<span className='req_text'>*</span></label>
+                                                                <select id="assigned_to" name="assigned_to" onChange={handleInputChange} className='form-select'>
+                                                                    <option value="">Select</option>
+                                                                    {empArray.length > 0 ? (
+                                                                        empArray.map((type) => (
+                                                                            <option value={type.customer_id} key={type.customer_id}>{type.emp_id} : {type.name}</option>
+                                                                        ))
+                                                                    ) : (
+                                                                        <option value="" disabled>Employee does not exists</option>
+                                                                    )}
+                                                                </select>
+                                                                {errors.assigned_to && <span className="error" style={{ color: "red" }}>{errors.assigned_to}</span>}
+                                                            </div>
+                                                            <div className="form_new_group">
                                                                 <label htmlFor="exampleFormControlInput1" className="form-label" >Project Name<span className='req_text'>*</span>  </label>
                                                                 <select id="project_id" name="project_id" onChange={handleProjectTypeChange} className='form-select'>
                                                                     <option value="">Select</option>

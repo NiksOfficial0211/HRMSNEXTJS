@@ -14,9 +14,11 @@ import { Project, SubProject } from '@/app/models/TaskModel'
 import LeftPannel from '@/app/components/leftPannel'
 import BackButton from '@/app/components/BackButton'
 import { ALERTMSG_exceptionString, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_exceptionString, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
 
 interface AddTaskForm {
+  // project_id: string,
   // project_id: string,
   sub_project_id: string,
   task_type_id: string,
@@ -26,6 +28,7 @@ interface AddTaskForm {
 }
 
 const ApplyLeave: React.FC = () => {
+const ApplyLeave: React.FC = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [taskArray, setTask] = useState<TaskType[]>([]);
   const [statusArray, setStatus] = useState<TaskStatus[]>([]);
@@ -33,8 +36,9 @@ const ApplyLeave: React.FC = () => {
   const [projectarray, setProject] = useState<Project[]>([]);
   const [subProjectarray, setSubProject] = useState<SubProject[]>([]);
   // const [selectedProject, setSelectedProject] = useState<string>("");
+  // const [selectedProject, setSelectedProject] = useState<string>("");
   const [loadingCursor, setLoadingCursor] = useState(false);
-  const [showDuration, setShowDuration] = useState('');
+
   const [showAlert, setShowAlert] = useState(false);
   const [alertForSuccess, setAlertForSuccess] = useState(0);
   const [alertTitle, setAlertTitle] = useState('');
@@ -51,9 +55,24 @@ const ApplyLeave: React.FC = () => {
   //   // const subProj = await getSubProject(value);
   //   // setSubProject(subProj);
   // };
+  // const handleProjectTypeChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+  //   const { name, value } = e.target;
+  //   setFormValues((prev) => ({ ...prev, [name]: value }));
+  //   // setSelectedProject(value);
+  //   // const subProj = await getSubProject(value);
+  //   // setSubProject(subProj);
+  // };
   const router = useRouter()
   useEffect(() => {
     setLoadingCursor(true);
+    const fetchData = async () => {
+      const project = await getSubProject(contextClientID);
+      setSubProject(project);
+      const task = await getTaskTypes();
+      setTask(task);
+      const taskStatus = await getStatus();
+      setStatus(taskStatus);
+      setLoadingCursor(false);
     const fetchData = async () => {
       const project = await getSubProject(contextClientID);
       setSubProject(project);
@@ -81,6 +100,7 @@ const ApplyLeave: React.FC = () => {
 
   const [formValues, setFormValues] = useState<AddTaskForm>({
     // project_id: "",
+    // project_id: "",
     sub_project_id: "",
     task_type_id: "",
     task_details: "",
@@ -90,12 +110,14 @@ const ApplyLeave: React.FC = () => {
 
   const handleInputChange = async (e: any) => {
     const { name, value } = e.target;
+    const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
   }
   const formData = new FormData();
   const [errors, setErrors] = useState<Partial<AddTaskForm>>({});
   const validate = () => {
     const newErrors: Partial<AddTaskForm> = {};
+    // if (!formValues.project_id) newErrors.project_id = "required";
     // if (!formValues.project_id) newErrors.project_id = "required";
     if (!formValues.sub_project_id) newErrors.sub_project_id = "required";
     if (!formValues.task_type_id) newErrors.task_type_id = "required";
@@ -123,7 +145,7 @@ const ApplyLeave: React.FC = () => {
       const response = await fetch("/api/users/addTask", {
         method: "POST",
         body: JSON.stringify({
-          "client_id": contextClientID, 
+          "client_id": contextClientID,
           "branch_id": contaxtBranchID,
           "customer_id": contextCustomerID,
           // "project_id": formValues.project_id,
@@ -141,6 +163,7 @@ const ApplyLeave: React.FC = () => {
         setAlertStartContent("Task added Successfully");
         setAlertForSuccess(1)
       } else {
+        setLoadingCursor(false);
         setLoadingCursor(false);
         setShowAlert(true);
         setAlertTitle("Error")
@@ -169,13 +192,49 @@ const ApplyLeave: React.FC = () => {
             if (alertForSuccess == 1) {
               router.push(pageURL_userTaskListingPage);
             }
+            setShowAlert(false)
+            if (alertForSuccess == 1) {
+              router.push(pageURL_userTaskListingPage);
+            }
           }} onCloseClicked={function (): void {
+            setShowAlert(false)
             setShowAlert(false)
           }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
           {/* ------------------ */}
           <form onSubmit={handleSubmit}>
             <div className='container'>
+          {/* ------------------ */}
+          <form onSubmit={handleSubmit}>
+            <div className='container'>
               <div className="row">
+                <div className="col-lg-12">
+                  <div className="nw_user_inner_mainbox">
+                    <div className="nw_user_inner_heading_tabbox">
+                      <div className="heading25">
+                        Add Tasks
+                      </div>
+                      <div className="nw_user_inner_tabs nw_user_inner_right_tabs">
+                        <ul>
+                          <li className='filter_relative_li' style={{ visibility: 'hidden', opacity: '1' }}>
+                            <a href="#">
+                              <div className="nw_user_tab_icon">
+                                <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
+                                  <g>
+                                    <path fill="#ffffff" d="M20 6h-3V4c0-1.103-.897-2-2-2H9c-1.103 0-2 .897-2 2v2H4c-1.103 0-2 .897-2 2v3h20V8c0-1.103-.897-2-2-2zM9 4h6v2H9zm5 10h-4v-2H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-8z" opacity="1" data-original="#000000"></path>
+                                  </g>
+                                </svg>
+                              </div>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="nw_user_inner_content_box nw_user_inner_content_form_box" style={{ minHeight: '60vh' }}>
+                      <div className="new_user_inner_form_mainbox">
+                        <div className="new_user_inner_form_box">
+                          {/* <form onSubmit={handleSubmit}> */}
+                          <div className="fill_task_formbox">
+                            {/* <div className="form_new_group">
                 <div className="col-lg-12">
                   <div className="nw_user_inner_mainbox">
                     <div className="nw_user_inner_heading_tabbox">
@@ -247,8 +306,7 @@ const ApplyLeave: React.FC = () => {
                               <select id="task_status" name="task_status" onChange={handleInputChange} className='form-select'>
                                 <option value="">Select</option>
                                 {statusArray.map((type, index) => (
-                                  <option value={type.id} key={index}>{type.status}</option> 
-                                  
+                                  <option value={type.id} key={index}>{type.status}</option>
                                 ))}
                               </select>
                               {errors.task_status && <span className="error" style={{ color: "red" }}>{errors.task_status}</span>}
@@ -281,6 +339,9 @@ const ApplyLeave: React.FC = () => {
             </div>
           </form>
           {/* ------------------ */}
+            </div>
+          </form>
+          {/* ------------------ */}
         </div>
       }
       />
@@ -294,11 +355,16 @@ const ApplyLeave: React.FC = () => {
 export default ApplyLeave
 
 
+export default ApplyLeave
+
+
 
 
 async function getSubProject(client: any) {
+async function getSubProject(client: any) {
 
   let query = supabase
+    .from('leap_client_sub_projects')
     .from('leap_client_sub_projects')
     .select()
     .eq("client_id", client);

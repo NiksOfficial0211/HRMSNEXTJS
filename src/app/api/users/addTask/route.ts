@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const { client_id, customer_id, task_status, branch_id, sub_project_id, task_type_id, total_hours, total_minutes, task_details, task_date } = await request.json();
+        const { client_id, customer_id, project_id, task_status, branch_id, sub_project_id, task_type_id, total_hours, total_minutes, task_details, task_date } = await request.json();
 
         const { data: TaskData, error: taskError } = await supabase.from('leap_customer_project_task')
             .insert({
