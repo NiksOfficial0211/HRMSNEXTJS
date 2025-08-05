@@ -228,7 +228,7 @@ interface LeapSalaryComponents {
 
   interface TimeZoneModel {
     id: number
-    time_zone_name: string
+    time_zone: string
   }
 
   interface LeapBranchesNameID{

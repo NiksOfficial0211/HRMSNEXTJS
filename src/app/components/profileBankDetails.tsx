@@ -595,7 +595,11 @@ export const UserBankDetails = () => {
 
                 const res = await fetch("/api/users/getProfile/getEmpSalaryDetails", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id":contextClientID,
+                        "customer_id":contextSelectedCustId,
+                        "role_id": contextRoleID
+                    }),
                 });
 
                 const response = await res.json();

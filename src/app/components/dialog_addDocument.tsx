@@ -21,8 +21,14 @@ interface FormEmpUploadDocDialog {
     emp_id: any,
     branch_id: any,
     docTypeID: any
-    selectedFile: File | null,
+    selectedFile: File | null | string,
     showToUsers: boolean
+}
+interface formvalues{
+    branch_id:string,
+    customer_id:string,
+    docType_id:string,
+    document:string,
 }
 
 const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docType: any }) => {
@@ -104,19 +110,41 @@ const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docTy
         }
 
     }
+
+    const [errors, setErrors] = useState<Partial<formvalues>>({});
+
+    const validate = () => {
+        const newErrors: Partial<formvalues> = {};
+        console.log("formFilledData-----------------------",formFilledData);
+        console.log("inputData---------------------------",inputData);
+        console.log("!formFilledData.docTypeID",!formFilledData.docTypeID);
+        
+        
+        if(docType==companyDocUpload){
+        if(inputData.selectedFile==null ) newErrors.document="required"
+        if(!inputData.docTypeID) newErrors.docType_id="required"
+        }else{
+        if( formFilledData.selectedFile==null) newErrors.document="required"
+        if(!formFilledData.docTypeID) newErrors.docType_id="required"
+        if(!formFilledData.branch_id) newErrors.branch_id="required"
+        if(!formFilledData.customer_id) newErrors.customer_id="required"
+
+        }
+        console.log(newErrors);
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+
+    }
     const uploadDocument = async () => {
         const formData = new FormData();
         formData.append("uploadType", docType);
         
-        
+         if(!validate()){return;}
+           
         
         if (docType == companyDocUpload) {
-            if(inputData.selectedFile==null){
-                return alert("Please select File to upload");
-            }
-            if(inputData.docTypeID.length>0){
-                return alert("Please select type of document");
-            }
+           
             formData.append("client_id", contextClientID);
             formData.append("branch_id", contaxtBranchID);
             formData.append("customer_id", contextCustomerID);
@@ -124,12 +152,7 @@ const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docTy
             formData.append("doc_type_id", inputData.docTypeID);
             formData.append("show_to_users", inputData.showToUsers + "");
         } else {
-            if(formFilledData.selectedFile==null){
-                return alert("Please select File to upload");
-            }
-            if(inputData.docTypeID.length>0){
-                return alert("Please select type of document");
-            }            
+                       
             formData.append("client_id", contextClientID);
             if (contextRoleID == "2" || contextRoleID == "3") {
                 formData.append("customer_id", formFilledData.customer_id);
@@ -157,7 +180,7 @@ const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docTy
                 setAlertTitle("Success")
                 setAlertStartContent(response.message);
                 setAlertForSuccess(1)
-                onClose();
+                
             } else {
                 setLoading(false);
                 setShowAlert(true);
@@ -242,7 +265,9 @@ const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docTy
                     <LoadingDialog isLoading={isLoading} />
                         {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                             setShowAlert(false)
-
+                            if(alertForSuccess==1){
+                                onClose();
+                            }
                         }} onCloseClicked={function (): void {
                             setShowAlert(false)
                         }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
@@ -252,24 +277,28 @@ const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docTy
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-lg-12"><label htmlFor="exampleFormControlInput1" className="form-label" >Document Type:</label></div>
+                        <div className="col-lg-12"><label htmlFor="exampleFormControlInput1" className="form-label" >Document Type<span className='req_text'>*</span>:</label></div>
                         <div className="col-lg-12 mb-4">
                             <div>
                                 {docTypes.map((type, index) => (
                                     <div key={type.id} className={inputData.docTypeID == type.id ?"comp_list comp_select":"comp_list"} onClick={() => handleDocTypeChange(type.id)}>{type.document_name}</div>
                                 ))}
                             </div>
+                            {errors.docType_id && <span className='error' style={{ color: "red" }}>{errors.docType_id}</span>}
+
                         </div>
                     </div>
                     <div className="row">
                         
                         <div className="col-lg-12">
                             <div className="row">
-                                <div className="col-lg-12 mb-1">Document: </div>
+                                <div className="col-lg-12 mb-1">Document<span className='req_text'>*</span>: </div>
                             </div>
                             <div className="row">
                                 <div className="col-lg-12 mb-4">
                                     <input type="file" style={{fontSize:"14px"}} className="upload_document" name="selectedFile" id="selectedFile" onChange={handleInputChange} />
+                                    {errors.document && <span className='error' style={{ color: "red" }}>{errors.document.toString()}</span>}
+
                                 </div>
                                 
                             </div>
@@ -331,20 +360,21 @@ const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docTy
                         </div> */}
                         <div className="col-md-6">
                             <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >Branch:</label>
+                                <label htmlFor="exampleFormControlInput1" className="form-label" >Branch<span className='req_text'>*</span>:</label>
                                 <select id="branch_id" name="branch_id" value={formFilledData.branch_id} onChange={handleEmpInputChange}>
                                     <option value="">Select</option>
                                     {branchArray.map((branch) => (
                                         <option value={branch.id} key={branch.id}>{branch.branch_number}</option>
                                     ))}
                                 </select>
+                                {errors.branch_id && <span className="error" style={{color: "red"}}>{errors.branch_id}</span>}
                                 {/* {errors.typeID && <span className="error" style={{color: "red"}}>{errors.typeID}</span>}                             */}
                             </div>
                         </div>
                         {branchSelected && (contextRoleID == "2" || contextRoleID == "3") ?
                             <div className="col-md-6">
                                 <div className="form_box mb-3">
-                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Employee Name:</label>
+                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Employee Name<span className='req_text'>*</span>:</label>
                                     
                                     <Select
                                         value={selectedEmployee}
@@ -355,7 +385,7 @@ const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docTy
                                         placeholder="Select..."
                                         isSearchable
                                     />
-
+                                    {errors.customer_id && <span className="error" style={{color: "red"}}>{errors.customer_id}</span>}
                                 </div>
                             </div> : <></>
                         }
@@ -364,25 +394,28 @@ const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docTy
 
                         <div className="col-md-6">
                             <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >Document Type:</label>
+                                <label htmlFor="exampleFormControlInput1" className="form-label" >Document Type<span className='req_text'>*</span>:</label>
                                 <select id="docTypeID" name="docTypeID" onChange={handleEmpInputChange}>
                                     <option value="">Select</option>
                                     {docTypes.map((type) => (
                                         <option value={type.id} key={type.id}>{type.document_name}</option>
                                     ))}
                                 </select>
-                                {/* {errors.typeID && <span className="error" style={{color: "red"}}>{errors.typeID}</span>}                             */}
+                                {errors.docType_id && <span className="error" style={{color: "red"}}>{errors.docType_id}</span>}                            
                             </div>
                         </div>
                         <div className="col-md-6">
                             <div className="row">
-                                <div className="col-lg-12 mb-1">Document: </div>
+                                <div className="col-lg-12 mb-1">Document<span className='req_text'>*</span>: </div>
                             </div>
                             <div className="row">
                                 <div className="col-lg-12">
                                     <input type="file" className="upload_document" name="selectedFile" id="selectedFile" onChange={handleEmpInputChange} />
+                                    {errors.document && <span className="error" style={{color: "red"}}>{errors.document}</span>}                            
+
                                 </div>
                             </div>
+                            
                         </div>
 
                     </div>

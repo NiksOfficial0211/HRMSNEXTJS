@@ -492,7 +492,7 @@ const handleInputChange = (e: any) => {
                                                             <select id="time_zone_id" name="time_zone_id" onChange={handleInputChange} >
                                                                 <option value="">Select</option>
                                                                 {timeZone.map((id) => (
-                                                                    <option value={id.id} key={id.id}>{id.time_zone_name}</option>
+                                                                    <option value={id.id} key={id.id}>{id.time_zone}</option>
                                                                 ))}
                                                             </select>
                                                             {/* {errors.time_zone_id && <span className="error" style={{color: "red"}}>{errors.time_zone_id}</span>} */}

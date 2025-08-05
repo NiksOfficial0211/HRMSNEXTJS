@@ -458,8 +458,10 @@ const AnnouncementListing = () => {
                                             </div>
                                         </div>
                                         <div className="col-lg-4 pt-4" style={{ textAlign: "right" }}>
-                                            <BackButton isCancelText={true} />
+                                            
                                             <input type="submit" value="Submit" className="red_button" />
+                                            
+                                            <BackButton isCancelText={true} />
                                         </div>
                                     </div>
                                     

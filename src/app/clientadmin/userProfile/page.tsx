@@ -105,9 +105,9 @@ const EmployeeProfile = () => {
             setEmergencyRelation(relationsType);
 
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
+                // const formData = new FormData();
+                // formData.append("client_id", contextClientID);
+                // formData.append("customer_id", contextSelectedCustId);
 
                 const res = await fetch("/api/users/getProfile", {
                     method: "POST",
@@ -116,7 +116,7 @@ const EmployeeProfile = () => {
                         "customer_id":contextSelectedCustId
                     }),
                 });
-                console.log(res);
+                console.log("this is the res var-----------",res);
 
                 const response = await res.json();
                 console.log(response);

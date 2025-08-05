@@ -21,14 +21,21 @@ export const UserProfileLeaveDetails = () => {
         const fetchData = async () => {
 
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
-
+                const branchId=await getEmployeeBranch(contextClientID,contextSelectedCustId);
+                console.log("kjdbfkabsd fabhfkadsbfbasd fhasbd ",branchId);
+                
+                // const formData = new FormData();
+                // formData.append("client_id", contextClientID);
+                // formData.append("customer_id", contextSelectedCustId);
+                
 
                 const res = await fetch("/api/users/getAppliedLeaves", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id":contextClientID,
+                        "customer_id":contextSelectedCustId,
+                        "branch_id":branchId[0].branch_id
+                    }),
                 });
 
                 const response = await res.json();
@@ -71,6 +78,26 @@ export const UserProfileLeaveDetails = () => {
                 </div>
         </div>
     )
+}
+
+async function getEmployeeBranch(client_id: any,customer_id:any) {
+
+    let query = supabase
+        .from('leap_customer')
+        .select("branch_id")
+        .eq("client_id", client_id)
+        .eq("customer_id", customer_id);
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.log(error);
+
+        return [];
+    } else {
+        return data;
+    }
+
 }
 
 
