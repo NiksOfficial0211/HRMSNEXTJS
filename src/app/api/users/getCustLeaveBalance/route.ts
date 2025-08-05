@@ -70,22 +70,23 @@ export async function POST(request: NextRequest) {
     const calcCurrentYearSpan = calculateNumMonths(new Date(getFirstDateOfYearbyDate(new Date())), new Date());
 
     for (let i = 0; i < custleaveData.length; i++) {
-      console.log(customerData[0].gender);
+      // console.log(customerData[0].gender);
 
       if ((customerData[0].gender == custleaveData[i].gender || custleaveData[i].gender == "All")) {
-        if (custleaveData[i].if_unused == "Carry Forward") {
+        // if (custleaveData[i].if_unused == "Carry Forward") {
 
-          customerLeavePendingCount.push({
-            leaveTypeId: custleaveData[i].leave_id,
-            leaveType: custleaveData[i].leave_name,
-            leaveAllotedCount: calcTotalWorkingSpan * custleaveData[i].leave_count,
-            totalAppliedLeaveDays: 0,
-            leaveBalance: calcTotalWorkingSpan * custleaveData[i].leave_count,
-            isPaid: custleaveData[i].is_paid,
-            color_code: custleaveData[i].color_code
-          })
+        //   customerLeavePendingCount.push({
+        //     leaveTypeId: custleaveData[i].leave_id,
+        //     leaveType: custleaveData[i].leave_name,
+        //     leaveAllotedCount: calcTotalWorkingSpan * custleaveData[i].leave_count,
+        //     totalAppliedLeaveDays: 0,
+        //     leaveBalance: calcTotalWorkingSpan * custleaveData[i].leave_count,
+        //     isPaid: custleaveData[i].is_paid,
+        //     color_code: custleaveData[i].color_code
+        //   })
 
-        } else {
+        // } else 
+          
           customerLeavePendingCount.push({
             leaveTypeId: custleaveData[i].leave_id,
             leaveType: custleaveData[i].leave_name,
@@ -95,18 +96,19 @@ export async function POST(request: NextRequest) {
             isPaid: custleaveData[i].is_paid,
             color_code: custleaveData[i].color_code
           })
-        }
+        
       }
     }
-
+ let totalLeaveAppliedDays = 0, totalLeaveBalance = 0;
     for (let i = 0; i < appliedLeavedata.length; i++) {
       for (let j = 0; j < customerLeavePendingCount.length; j++) {
-        if (appliedLeavedata[i].leave_type === customerLeavePendingCount[j].leaveTypeId) {
+        if (appliedLeavedata[i].leave_type === customerLeavePendingCount[j].leaveTypeId && appliedLeavedata[i].leave_status == 2) {
           customerLeavePendingCount[j].totalAppliedLeaveDays = customerLeavePendingCount[j].totalAppliedLeaveDays + appliedLeavedata[i].total_days;
+          totalLeaveAppliedDays = totalLeaveAppliedDays + customerLeavePendingCount[j].totalAppliedLeaveDays;
           customerLeavePendingCount[j].leaveBalance = customerLeavePendingCount[j].leaveAllotedCount - customerLeavePendingCount[j].totalAppliedLeaveDays;
+          totalLeaveBalance = totalLeaveBalance + customerLeavePendingCount[j].leaveBalance;
         }
       }
-
     }
     if (appliedLeaveError) {
       return funSendApiErrorMessage("Applied Leave Error", appliedLeaveError);

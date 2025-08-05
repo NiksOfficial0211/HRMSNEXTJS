@@ -741,7 +741,6 @@ const EmployeeLeaveList = () => {
                                                                                         <div className="col-lg-1 text-center">
                                                                                             {list.leap_task_status.status == "Completed" ? <img src={staticIconsBaseURL + "/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(false) }} /> :
                                                                                                 <img src={staticIconsBaseURL + "/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(true) }} />
-
                                                                                             }
                                                                                         </div>
                                                                                     </div>

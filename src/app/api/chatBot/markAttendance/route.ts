@@ -43,7 +43,7 @@ async function startAttendance(body: any) {
         .insert([{
             approval_status: null,
             approved_by: null,
-            //   client_id: clientID[0].client_id,
+            client_id: custID[0].client_id,
             customer_id: custID[0].customer_id,
             date: now,
             if_paused: false,
@@ -96,7 +96,7 @@ async function stopAttendance(body: any) {
     // let totalHours = await funCalculateTimeDifference(new Date(todayAttendance[0].in_time), now);
 
     // if (todayAttendance[0].paused_duration > 0) {
-        // totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
+    // totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
     // }
 
     const { data, error } = await supabase
@@ -253,7 +253,8 @@ async function getTodayAttendance(attendanceID: number) {
     return data;
 }
 
-async function getAttendanceGeoLocation(attendanceID: number) {``
+async function getAttendanceGeoLocation(attendanceID: number) {
+    ``
     const { data, error } = await supabase
         .from('leap_customer_attendance_geolocation')
         .select()
@@ -266,7 +267,7 @@ async function getAttendanceGeoLocation(attendanceID: number) {``
 async function getCustomerClientIds(contact_number: number) {
     const { data, error } = await supabase
         .from('leap_customer')
-        .select('customer_id')
+        .select('customer_id, client_id')
         .eq('contact_number', contact_number);
 
     if (error) throw error;

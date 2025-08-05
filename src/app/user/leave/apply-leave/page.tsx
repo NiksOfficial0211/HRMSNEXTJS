@@ -2,14 +2,11 @@
 import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
 import LeapHeader from '@/app/components/header'
 import Footer from '@/app/components/footer'
-import { employeeResponse } from '@/app/models/clientAdminEmployee'
 import { createLeaveTitle } from '@/app/pro_utils/stringConstants'
 import supabase from '@/app/api/supabaseConfig/supabase'
 import { useParams, useRouter } from 'next/navigation';
-import { CustomerProfile } from '@/app/models/employeeDetailsModel'
 import { LeaveType } from '@/app/models/leaveModel'
 import { pageURL_userLeave } from '@/app/pro_utils/stringRoutes'
-import { LeapClientBranchDetail } from '@/app/models/companyModel'
 import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
 import LeftPannel from '@/app/components/leftPannel'
 import BackButton from '@/app/components/BackButton'
@@ -228,7 +225,6 @@ const AssignLeave: React.FC = () => {
                                 onChange={handleChange}
                                 moveRangeOnFirstSelection={false}
                                 ranges={state}
-                                
                               />
                             </div>
                           )}
@@ -290,7 +286,6 @@ async function getGender(customer_id: any) {
     console.error("Error fetching gender:", error);
     return null;
   }
-
   return data.gender;
 }
 
