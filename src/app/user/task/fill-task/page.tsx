@@ -26,6 +26,7 @@ interface AddTaskForm {
 }
 
 const ApplyLeave: React.FC = () => {
+const ApplyLeave: React.FC = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [taskArray, setTask] = useState<TaskType[]>([]);
   const [statusArray, setStatus] = useState<TaskStatus[]>([]);
@@ -34,7 +35,7 @@ const ApplyLeave: React.FC = () => {
   const [subProjectarray, setSubProject] = useState<SubProject[]>([]);
   // const [selectedProject, setSelectedProject] = useState<string>("");
   const [loadingCursor, setLoadingCursor] = useState(false);
-  const [showDuration, setShowDuration] = useState('');
+
   const [showAlert, setShowAlert] = useState(false);
   const [alertForSuccess, setAlertForSuccess] = useState(0);
   const [alertTitle, setAlertTitle] = useState('');
@@ -44,11 +45,16 @@ const ApplyLeave: React.FC = () => {
   const [alertValue1, setAlertValue1] = useState('');
   const [alertvalue2, setAlertValue2] = useState('');
 
-
+  // const handleProjectTypeChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+  //   const { name, value } = e.target;
+  //   setFormValues((prev) => ({ ...prev, [name]: value }));
+  //   // setSelectedProject(value);
+  //   // const subProj = await getSubProject(value);
+  //   // setSubProject(subProj);
+  // };
   const router = useRouter()
   useEffect(() => {
     setLoadingCursor(true);
-    
     const fetchData = async () => {
       const project = await getSubProject(contextClientID);
       setSubProject(project);
@@ -76,6 +82,7 @@ const ApplyLeave: React.FC = () => {
 
   const [formValues, setFormValues] = useState<AddTaskForm>({
     // project_id: "",
+    // project_id: "",
     sub_project_id: "",
     task_type_id: "",
     task_details: "",
@@ -85,12 +92,14 @@ const ApplyLeave: React.FC = () => {
 
   const handleInputChange = async (e: any) => {
     const { name, value } = e.target;
+    const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
   }
   const formData = new FormData();
   const [errors, setErrors] = useState<Partial<AddTaskForm>>({});
   const validate = () => {
     const newErrors: Partial<AddTaskForm> = {};
+    // if (!formValues.project_id) newErrors.project_id = "required";
     // if (!formValues.project_id) newErrors.project_id = "required";
     if (!formValues.sub_project_id) newErrors.sub_project_id = "required";
     if (!formValues.task_type_id) newErrors.task_type_id = "required";
@@ -118,7 +127,7 @@ const ApplyLeave: React.FC = () => {
       const response = await fetch("/api/users/addTask", {
         method: "POST",
         body: JSON.stringify({
-          "client_id": contextClientID, 
+          "client_id": contextClientID,
           "branch_id": contaxtBranchID,
           "customer_id": contextCustomerID,
           // "project_id": formValues.project_id,
@@ -136,6 +145,7 @@ const ApplyLeave: React.FC = () => {
         setAlertStartContent("Task added Successfully");
         setAlertForSuccess(1)
       } else {
+        setLoadingCursor(false);
         setLoadingCursor(false);
         setShowAlert(true);
         setAlertTitle("Error")
@@ -164,9 +174,17 @@ const ApplyLeave: React.FC = () => {
             if (alertForSuccess == 1) {
               router.push(pageURL_userTaskListingPage);
             }
+            setShowAlert(false)
+            if (alertForSuccess == 1) {
+              router.push(pageURL_userTaskListingPage);
+            }
           }} onCloseClicked={function (): void {
             setShowAlert(false)
+            setShowAlert(false)
           }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
+          {/* ------------------ */}
+          <form onSubmit={handleSubmit}>
+            <div className='container'>
           {/* ------------------ */}
           <form onSubmit={handleSubmit}>
             <div className='container'>
@@ -196,7 +214,7 @@ const ApplyLeave: React.FC = () => {
                     <div className="nw_user_inner_content_box nw_user_inner_content_form_box" style={{ minHeight: '60vh' }}>
                       <div className="new_user_inner_form_mainbox">
                         <div className="new_user_inner_form_box">
-                            
+                          {/* <form onSubmit={handleSubmit}> */}
                           <div className="fill_task_formbox">
                             {/* <div className="form_new_group">
                                                 <label htmlFor="exampleFormControlInput1" className="form-label" >Client<span className='req_text'>*</span> </label>
@@ -242,8 +260,7 @@ const ApplyLeave: React.FC = () => {
                               <select id="task_status" name="task_status" onChange={handleInputChange} className='form-select'>
                                 <option value="">Select</option>
                                 {statusArray.map((type, index) => (
-                                  <option value={type.id} key={index}>{type.status}</option> 
-                                  
+                                  <option value={type.id} key={index}>{type.status}</option>
                                 ))}
                               </select>
                               {errors.task_status && <span className="error" style={{ color: "red" }}>{errors.task_status}</span>}
@@ -258,22 +275,21 @@ const ApplyLeave: React.FC = () => {
                               <BackButton isCancelText={true} />
                             </div>
                           </div>
-                         
+                          {/* </form> */}
                         </div>
                         <div className="new_user_inner_img_box">
                           <div className="new_user_inner_img_heading">
                             NEW TASK <br /> SUBMISSION
                           </div>
                           <div className="new_user_inner_img">
-                            <img src={staticIconsBaseURL + "/images/user/task-add-form-image.svg"} alt="Task image" className="img-fluid" />
+                            <img src="/images/user/task-add-form-image.svg" alt="Task image" className="img-fluid" />
                           </div>
                         </div>
-                      
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
             </div>
           </form>
           {/* ------------------ */}
@@ -290,11 +306,16 @@ const ApplyLeave: React.FC = () => {
 export default ApplyLeave
 
 
+export default ApplyLeave
+
+
 
 
 async function getSubProject(client: any) {
+async function getSubProject(client: any) {
 
   let query = supabase
+    .from('leap_client_sub_projects')
     .from('leap_client_sub_projects')
     .select()
     .eq("client_id", client);
