@@ -703,7 +703,8 @@ const EmployeeLeaveList = () => {
                                                             <div className="nw_user_tab_name">
                                                                 Add
                                                             </div>
-                                                        </a>}
+                                                        </a>
+                                                    }
                                                 </li>
                                             </ul>
                                         </div>
@@ -864,7 +865,6 @@ const EmployeeLeaveList = () => {
                                                     : viewIndex == 3 ?
                                                         // Project members task
                                                         <>
-
                                                             <div className="my_task_tabbing_content">
                                                                 <div className="row">
                                                                     <div className="col-lg-12">

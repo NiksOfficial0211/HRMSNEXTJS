@@ -6,14 +6,14 @@ import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
 export async function POST(request: NextRequest) {
 
     try {
-        const {client_id, customer_id, project_id, sub_project_id, id, task_status, task_date, to_date, from_date } = await request.json();
+        const { client_id, customer_id, project_id, sub_project_id, id, task_status, task_date } = await request.json();
 
         let query = supabase.from('leap_customer_project_task')
-            .select('*,leap_project_task_types(task_type_name),leap_client_sub_projects(sub_project_name), leap_task_status(*), leap_approval_status(*)')
+            .select('*,leap_project_task_types(task_type_name),leap_client_sub_projects(sub_project_name), leap_task_status(status, id), leap_approval_status(id,approval_type)')
             //  .select('id,total_hours, total_minutes, task_details, task_type_id(task_type_id,task_type_name), task_status(id,status), approval_status(id,approval_type),sub_project_id(subproject_id,sub_project_name)')
-           
-            .order('updated_at', {ascending:false});
-            
+
+            .order('updated_at', { ascending: false });
+
         if (funISDataKeyPresent(client_id)) {
             query = query.eq('client_id', client_id)
         }
@@ -32,27 +32,28 @@ export async function POST(request: NextRequest) {
         if (funISDataKeyPresent(sub_project_id)) {
             query = query.eq('sub_project_id', sub_project_id)
         }
-        if (funISDataKeyPresent(id))  {
+        if (funISDataKeyPresent(id)) {
             query = query.eq('id', id)
         }
-
-        // if((from_date && from_date!=null ) 
-        //     && (to_date && to_date!=null )){
-        //     query = query
-        //     .gte("task_date", formatDateYYYYMMDD(from_date)) // to_date >= fromDate
-        //     .lte("task_date", formatDateYYYYMMDD(to_date)); // from_date <= fromDate
-        // }else if(from_date && from_date!=null){
-        //     query = query
-        //     .eq("task_date", formatDateYYYYMMDD(from_date));
-        // }
-
         const { data: TaskData, error: taskError } = await query;
+
+        const { data: assignedTask } = await supabase.from("leap_customer_project_task_assignment")
+            .select(
+                'sub_project_id(sub_project_name),task_details,task_type_id(task_type_name),task_status(status, id)'
+            ).eq('assigned_to', customer_id).eq('task_date', formatDateYYYYMMDD(task_date));
+        const myTasks = (TaskData || []).map(task => ({ ...task, type: "mytask" }));
+        const assignedTasks = (assignedTask || []).map(task => ({ ...task, type: "assigned" }));
+
+        const allTasks = [...myTasks, ...assignedTasks];
+       
+
         if (taskError) {
             return funSendApiErrorMessage(taskError, "Failed to add task");
         }
-        return NextResponse.json({ status: 1, message: "All Tasks", data: TaskData }, { status: apiStatusSuccessCode })
+        return NextResponse.json({ status: 1, message: "All Tasks", data: allTasks }, { status: apiStatusSuccessCode })
 
     } catch (error) {
         return funSendApiException(error);
     }
 }
+// 
