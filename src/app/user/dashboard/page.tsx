@@ -273,7 +273,6 @@ const Dashboard = () => {
                                                                         </div>
                                                                     )
                                                                 }
-
                                                                 {/* <div className="new_home_leave_balance_remaining new_home_leave_balance_remaining_three">
                                                                     {balance.leaveBalance + "/" + balance.leaveAllotedCount}
                                                                 </div> */}
@@ -361,7 +360,6 @@ const Dashboard = () => {
                                             </div>
                                         </a>
                                         {/* }  */}
-
                                         {/* {checkPermission(permission_m_document_8) && */}
                                         <a href={pageURL_userDoc}>
                                             <div className="new_user_btnlist">
@@ -384,7 +382,6 @@ const Dashboard = () => {
                                                     Need Help
                                                 </div>
                                             </div>
-
                                         </a>
                                         {/* } */}
                                     </div>
@@ -577,7 +574,7 @@ const Dashboard = () => {
                                                                             {taskarray && taskarray.length > 0 ? (
                                                                                 taskarray?.map((data, index) =>
                                                                                     <div className='new_user_home_task_listing' key={index}>
-                                                                                        {data.task_status.id == 1 ?
+                                                                                        {data.task_status.id == 1 ||  data.task_status.id == 4 ?
                                                                                             <> <div className="new_home_task_listing new_home_task_type_todo">
                                                                                                 <div className="new_home_task_project_namebox">
                                                                                                     <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
