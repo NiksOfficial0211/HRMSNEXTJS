@@ -194,7 +194,7 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
         <div className='text-center'>
             {/* <form ></form> */}
             <LoadingDialog isLoading={isLoading} />
-            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : " this Mid content"} endContent={alertEndContent.length > 0 ? alertEndContent : " this is the last content"} value1={"Hello"} value2={"Nikhil"} onOkClicked={function (): void {
+            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent.length > 0 ? alertEndContent : " "} value1={""} value2={""} onOkClicked={function (): void {
                 setShowAlert(false)
 
             }} onCloseClicked={function (): void {
