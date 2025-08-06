@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
           let query = supabase
           .from("leap_client_sub_projects")
           .select(`subproject_id, sub_project_name`)
+          .select(`subproject_id, sub_project_name`)
           .eq('client_id',client_id);
-   
    
           const {data:projectData,error:error}=await query;
           
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
                   { status: apiStatusFailureCode });
           }
            if(projectData){
-            return NextResponse.json({ message: "All Project list" ,status:1 ,data:{projectData , TaskTypeData, TaskStatusData, TaskPriorityData}}, 
+            return NextResponse.json({ message: "All Project list" ,status:1 ,data:{projectData , TaskTypeData, TaskStatusData}}, 
                   { status: apiStatusSuccessCode });
           }
   
