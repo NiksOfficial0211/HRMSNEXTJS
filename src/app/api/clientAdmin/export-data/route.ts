@@ -12,7 +12,9 @@ export async function POST(req: NextRequest) {
         const exportType = formData.get('export_type');
         // Fetch data from Supabase
         if (exportType == exportTypeHoliday) {
-            return exportHolidayList(clientid);
+            const yearID = formData.get('yearID');
+            const branch_id = formData.get('branch_id');
+            return exportHolidayList(clientid,yearID,branch_id);
         } else if (exportType == exportTypeBirthdays) {
             return exportBirthdayList(clientid);
         }else if (exportType == exportTypeAsset) {
@@ -21,16 +23,27 @@ export async function POST(req: NextRequest) {
             return exportLeaveList(clientid,formData.get("start_date"),formData.get("end_date"));
         }
     } catch (err) {
+        console.log("Error in export_data route:", err);
+        
         return funSendApiException(err)
     }
 }
 
 
-async function exportHolidayList(clientID: any) {
-    const { data, error } = await supabase.from("leap_holiday_list")
+async function exportHolidayList(clientID: any,yearID:any,branch_id:any) {
+    console.log("exportHolidayList is called with clientID:", clientID);
+    let queryBuilder = supabase.from("leap_holiday_list")
         .select("holiday_name,date,leap_holiday_types(holiday_type),leap_client_branch_details(id,branch_number)")
-        .eq("client_id", clientID)as unknown as { data: ExportHolidaysParse[]; error: any };
+        .eq("client_id", clientID);
 
+    if (branch_id) {
+        queryBuilder = queryBuilder.eq('branch_id', branch_id);
+    }
+    if (yearID ) {
+            queryBuilder = queryBuilder.eq('holiday_year', yearID);
+        }
+
+    const { data, error } = await queryBuilder as unknown as { data: ExportHolidaysParse[]; error: any };
     if (error) {
         return funSendApiErrorMessage(error, "Unable to extract data");
     }
@@ -46,6 +59,8 @@ async function exportHolidayList(clientID: any) {
         date:item.date
         
       }));
+      
+      
     // Convert data to CSV
     const csv = Papa.unparse(flatData);
 
@@ -54,7 +69,7 @@ async function exportHolidayList(clientID: any) {
         status: 200,
         headers: {
             "Content-Type": "text/csv",
-            "Content-Disposition": 'attachment; filename="data.csv"',
+            "Content-Disposition": 'attachment; filename="holidays.csv"',
         },
     });
 }

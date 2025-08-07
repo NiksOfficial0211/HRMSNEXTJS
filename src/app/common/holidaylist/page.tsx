@@ -139,6 +139,8 @@ const HolidayList = () => {
         const formData = new FormData();
         formData.append("client_id", contextClientID);
         formData.append("export_type", exportTypeHoliday);
+        formData.append("yearID", filters.yearID || "");
+        formData.append("branch_id", brancheIDFilter ? brancheIDFilter.toString() : "");
         const response = await fetch("/api/clientAdmin/export-data", {
             method: "POST",
             body: formData,
