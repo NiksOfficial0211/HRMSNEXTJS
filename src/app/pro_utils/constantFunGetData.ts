@@ -934,6 +934,8 @@ export async function funGetAnnouncements(clientId: any, customer_id: any, role_
     .select('*')
     .eq('client_id', clientId)
     .eq("send_to_all", true)
+    .eq("isEnabled", false)
+    .eq("isDeleted", false)
     .or(`send_on_date.lte.${today},validity_date.gte.${today}`)
     .order('announcement_date', { ascending: true });
 

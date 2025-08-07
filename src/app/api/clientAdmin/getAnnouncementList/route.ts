@@ -30,8 +30,10 @@ async function sendAllAnnouncements(client_id: any, branch_id: any){
     .select('*,leap_show_announcement_users(announcement_id, role_id)')
     .eq('client_id', client_id)
     .eq('branch_id', branch_id)
-    .eq('isEnabled', true)
-    .eq('isDeleted', true);
+    // .eq('isEnabled', true)
+    // .eq('isDeleted', true);
+    .eq("isEnabled", true)
+    .eq("isDeleted", false);
 
     const { data: TaskData, error: taskError } =await query;
     if (taskError) {

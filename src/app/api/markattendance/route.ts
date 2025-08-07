@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const { fields, files } = await Promise.race([
       parseForm(request),
       timeout(5000) // 5 seconds
-    ])as { fields: any; files: any };
+    ]) as { fields: any; files: any };
     // const { fields, files } = await parseForm(request);
     if (fields.attendance_type == 1) {
       return startAttendance(fields, files)
@@ -71,40 +71,40 @@ async function startAttendance(fields: any, files: { file: any; }) {
   const currentDateTime = new Date();
   let fileUploadResponse;
 
-  if (files){
-    
-    fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id,"attendance")
+  if (files) {
+
+    fileUploadResponse = await apiUploadDocs(files.file[0], fields.customer_id[0], fields.client_id, "attendance")
     console.log(fileUploadResponse);
-    
+
   }
 
-//   if(files){
-  
-//   const uploadedFile = files.file[0];
-//           const fileBuffer = await fs.readFile(uploadedFile.path);
-//           const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
-//               type: uploadedFile.headers["content-type"]
-//             });
+  //   if(files){
 
-//   const formData = new FormData();
-//   formData.append("client_id", fields.client_id[0]);
-//   formData.append("customer_id", fields.customer_id[0]);
-//   formData.append("docType","emp_attendance" );
-//   formData.append("file", uploadedFile);
+  //   const uploadedFile = files.file[0];
+  //           const fileBuffer = await fs.readFile(uploadedFile.path);
+  //           const fileBlob = new Blob([new Uint8Array(fileBuffer)], {
+  //               type: uploadedFile.headers["content-type"]
+  //             });
+
+  //   const formData = new FormData();
+  //   formData.append("client_id", fields.client_id[0]);
+  //   formData.append("customer_id", fields.customer_id[0]);
+  //   formData.append("docType","emp_attendance" );
+  //   formData.append("file", uploadedFile);
 
 
 
-//   const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles", {
-//     method: "POST",
-//     // headers:{"Content-Type":"multipart/form-data"},
-//     body: formData,
-//   });
+  //   const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles", {
+  //     method: "POST",
+  //     // headers:{"Content-Type":"multipart/form-data"},
+  //     body: formData,
+  //   });
 
-//   fileUploadResponse = await fileUploadURL.json();
-//   if (fileUploadResponse.error) {
-//     return NextResponse.json({ message: "File upload api call error" ,error:fileUploadResponse.error }, { status: 500 });
-//   }
-// }
+  //   fileUploadResponse = await fileUploadURL.json();
+  //   if (fileUploadResponse.error) {
+  //     return NextResponse.json({ message: "File upload api call error" ,error:fileUploadResponse.error }, { status: 500 });
+  //   }
+  // }
 
   const { data, error } = await supabase
     .from("leap_customer_attendance")
@@ -116,9 +116,9 @@ async function startAttendance(fields: any, files: { file: any; }) {
         customer_id: fields.customer_id[0],
         date: currentDateTime,
         if_paused: false,
-        img_attachment: fileUploadResponse? fileUploadResponse:"",
+        img_attachment: fileUploadResponse ? fileUploadResponse : "",
         in_time: new Date(fields.punch_date_time[0]),
-        attendanceStatus:1,
+        attendanceStatus: 1,
         out_time: null,
         pause_end_time: null,
         pause_start_time: null,
@@ -126,13 +126,13 @@ async function startAttendance(fields: any, files: { file: any; }) {
         remark: null,
         total_hours: null,
         working_type_id: fields.working_type_id[0],
-        created_at:new Date(),
+        created_at: new Date(),
       },
     ]).select();
   if (error) {
-    return NextResponse.json({ message: "Start Attendance error :- " ,error: error.message }, { status: 401 });
+    return NextResponse.json({ message: "Start Attendance error :- ", error: error.message }, { status: 401 });
   }
-  
+
   const { data: latLngData, error: latLngError } = await supabase
     .from("leap_customer_attendance_geolocation")
     .insert([
@@ -148,11 +148,11 @@ async function startAttendance(fields: any, files: { file: any; }) {
     return NextResponse.json({ error: "latlng Error :- " + latLngError.message }, { status: 401 });
   } else {
     // return Response.json({"data":data});
-    const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],"","Attendance",new Date(fields.punch_date_time[0]),data[0].attendance_id);
-    if(addActivity=="1"){
-                  return NextResponse.json({ message: "Attendance started successfully but no Activity Added", status: 1, data: data, latLngData });
+    const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", new Date(fields.punch_date_time[0]), data[0].attendance_id);
+    if (addActivity == "1") {
+      return NextResponse.json({ message: "Attendance started successfully but no Activity Added", status: 1, data: data, latLngData });
 
-                }
+    }
     return NextResponse.json({ message: "Attendance started successfully", status: 1, data: data, latLngData });
   }
 }
@@ -163,7 +163,7 @@ async function stopAttendance(fields: any) {
     const currentDateTime = new Date();
     // return NextResponse.json({ error: currentDateTime }, { status: 401 });
     if (!fields.attendance_id) {
-      return funSendApiErrorMessage("Attendance id is required",apiwentWrong)
+      return funSendApiErrorMessage("Attendance id is required", apiwentWrong)
     }
     const todayAttendance: any = await getTodayAttendance(fields.attendance_id);
 
@@ -175,20 +175,18 @@ async function stopAttendance(fields: any) {
     console.log("Calculated total hours:", totalHours);
     const { data, error } = await supabase
       .from("leap_customer_attendance")
-      .update({ out_time: fields.punch_date_time[0], total_hours: totalHours ,attendanceStatus:2,})
+      .update({ out_time: fields.punch_date_time[0], total_hours: totalHours, attendanceStatus: 2, })
       .eq('attendance_id', fields.attendance_id[0])
-
       .select();
 
     if (error) {
-      return NextResponse.json({ message: "Stop Attendance Error :-" ,error: error.message }, { status: 401 });
+      return NextResponse.json({ message: "Stop Attendance Error :-", error: error.message }, { status: 401 });
     }
 
     const { data: latLngData, error: latLngError } = await supabase
       .from("leap_customer_attendance_geolocation")
       .update([
         {
-
           stop_location: `SRID=4326;POINT(${fields.lng[0]} ${fields.lat[0]})`,
           total_working_hours: totalHours
         },
@@ -197,14 +195,13 @@ async function stopAttendance(fields: any) {
     if (latLngError) {
       return NextResponse.json({ error: "latlng Stop error :- " + latLngError.message }, { status: 401 });
     } else {
-      const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],"","Attendance","Attendance stoped:-"+new Date(fields.punch_date_time[0]),fields.attendance_id[0]);
-      if(addActivity=="1"){
-                  return NextResponse.json({ message: "Attendance Stoped Successfully but no Activity Added", status: 1, data: data, latLngData });
+      const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", "Attendance stoped:-" + new Date(fields.punch_date_time[0]), fields.attendance_id[0]);
+      if (addActivity == "1") {
+        return NextResponse.json({ message: "Attendance Stoped Successfully but no Activity Added", status: 1, data: data, latLngData });
 
-                }
+      }
       return NextResponse.json({ message: "Attendance Stop Successfull", status: 1, data: data, latLngData });
     }
-
   } catch (err) {
     return funSendApiException(err);
   }
@@ -215,7 +212,7 @@ async function pauseAttendance(fields: any) {
 
     // return NextResponse.json({ error: currentDateTime }, { status: 401 });
     if (!fields.attendance_id) {
-      return funSendApiErrorMessage("Attendance id is required",apiwentWrong)
+      return funSendApiErrorMessage("Attendance id is required", apiwentWrong)
     }
     const todayAttendance: any = await getTodayAttendance(fields.attendance_id);
     if (todayAttendance[0].if_paused) {
@@ -239,20 +236,20 @@ async function pauseAttendance(fields: any) {
     console.log(`SRID=4326;POINT(${fields.lng[0]} ${fields.lat[0]})`);
 
     pausedLatlngArray.push(`SRID=4326;POINT(${fields.lng[0]} ${fields.lat[0]})`);
-    const pauseReason:any[]=todayAttendance[0]?.paused_reasons? todayAttendance[0].paused_reasons
-    : [];
+    const pauseReason: any[] = todayAttendance[0]?.paused_reasons ? todayAttendance[0].paused_reasons
+      : [];
     pauseReason.push(fields.pause_reason[0])
 
     console.log("Type of Paused Time Array:", typeof pausedTimeArray);
 
     const { data, error } = await supabase
       .from("leap_customer_attendance")
-      .update({ pause_start_time: pausedTimeArray, if_paused: true ,attendanceStatus:3,paused_reasons:pauseReason})
+      .update({ pause_start_time: pausedTimeArray, if_paused: true, attendanceStatus: 3, paused_reasons: pauseReason })
       .eq('attendance_id', fields.attendance_id[0])
       .select();
 
     if (error) {
-      return NextResponse.json({ message: "Stop Attendance Error :-" ,error:error.message }, { status: 401 });
+      return NextResponse.json({ message: "Stop Attendance Error :-", error: error.message }, { status: 401 });
     }
 
     const { data: latLngData, error: latLngError } = await supabase
@@ -260,7 +257,7 @@ async function pauseAttendance(fields: any) {
       .update([
         {
           is_paused: true,
-          
+
           pause_location: pausedLatlngArray,
         },
       ]).eq('attendance_id', fields.attendance_id[0]).select();
@@ -268,11 +265,11 @@ async function pauseAttendance(fields: any) {
     if (latLngError) {
       return NextResponse.json({ error: "latlng Stop error :- " + latLngError.message }, { status: 401 });
     } else {
-      const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],"","Attendance","Attendance paused:-"+new Date(fields.punch_date_time[0]),fields.attendance_id[0]);
-                if(addActivity=="1"){
-                  return NextResponse.json({ message: "Attendance Paused Successfully but no Activity Added", status: 1, data: data, latLngData });
+      const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", "Attendance paused:-" + new Date(fields.punch_date_time[0]), fields.attendance_id[0]);
+      if (addActivity == "1") {
+        return NextResponse.json({ message: "Attendance Paused Successfully but no Activity Added", status: 1, data: data, latLngData });
 
-                }
+      }
       return NextResponse.json({ message: "Attendance Paused Successfull", status: 1, data: data, latLngData });
     }
 
@@ -291,7 +288,7 @@ async function resumeAttendance(fields: any) {
 
     // return NextResponse.json({ error: currentDateTime }, { status: 401 });
     if (!fields.attendance_id) {
-      return funSendApiErrorMessage("Attendance id is required",apiwentWrong)
+      return funSendApiErrorMessage("Attendance id is required", apiwentWrong)
     }
     const todayAttendance: any = await getTodayAttendance(fields.attendance_id);
     // if (todayAttendance[0].if_paused) {
@@ -318,14 +315,14 @@ async function resumeAttendance(fields: any) {
     let totalHours = await funCalculateTimeDifference(new Date(todayAttendance[0].in_time), new Date(fields.punch_date_time[0]));
     const { data, error } = await supabase
       .from("leap_customer_attendance")
-      .update({ pause_end_time: pausedTimeEndArray, if_paused: false, paused_duration: parseFloat((totalPausedTime * 100) / 60 + "").toFixed(2),attendanceStatus:4, })
+      .update({ pause_end_time: pausedTimeEndArray, if_paused: false, paused_duration: parseFloat((totalPausedTime * 100) / 60 + "").toFixed(2), attendanceStatus: 4, })
       .eq('attendance_id', fields.attendance_id[0])
 
       .select();
 
 
     if (error) {
-      return NextResponse.json({ message: "Stop Attendance Error :-" ,error: error.message }, { status: 401 });
+      return NextResponse.json({ message: "Stop Attendance Error :-", error: error.message }, { status: 401 });
     }
 
     const { data: latLngData, error: latLngError } = await supabase
@@ -341,22 +338,22 @@ async function resumeAttendance(fields: any) {
     if (latLngError) {
       return NextResponse.json({ error: "latlng Stop error :- " + latLngError.message }, { status: 401 });
     } else {
-      const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],"","Attendance","Attendance resumed:-"+new Date(fields.punch_date_time[0]),fields.attendance_id[0]);
-      if(addActivity=="1"){
-                  return NextResponse.json({ message: "Attendance Resumed Successfully but no Activity Added", status: 1 });
+      const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", "Attendance resumed:-" + new Date(fields.punch_date_time[0]), fields.attendance_id[0]);
+      if (addActivity == "1") {
+        return NextResponse.json({ message: "Attendance Resumed Successfully but no Activity Added", status: 1 });
 
-                }
+      }
       return NextResponse.json({ message: "Attendance Resumed Successfull", status: 1, data: data, latLngData });
     }
 
   } catch (err) {
     console.log(err);
-    
+
     return funSendApiException(err);
   }
 }
 
- async function getTodayAttendance(attendanceID: number) {
+async function getTodayAttendance(attendanceID: number) {
 
 
   const { data, error } = await supabase
@@ -372,7 +369,7 @@ async function resumeAttendance(fields: any) {
   }
 }
 
- async function getAttendanceGeoLocation(attendanceID: number) {
+async function getAttendanceGeoLocation(attendanceID: number) {
 
 
   const { data, error } = await supabase

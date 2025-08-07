@@ -85,19 +85,22 @@ async function startAttendance(body: any) {
 }
 
 async function stopAttendance(body: any) {
-    // const now = new Date();
+    const now = new Date();
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
     if (!attendanceID[0].attendance_id) {
         return funSendApiErrorMessage("Attendance ID is required", apiwentWrong);
     }
+//  let totalHours = await funCalculateTimeDifference(new Date(attendanceID[0].in_time), new Date(fields.punch_date_time[0]));
+//     if (attendanceID[0].paused_duration > 0) {
+//       totalHours = (Number(totalHours) - attendanceID[0].paused_duration) + ""
+//     }
+    const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
+    let totalHours = await funCalculateTimeDifference(new Date(todayAttendance[0].in_time), now);
 
-    // const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
-    // let totalHours = await funCalculateTimeDifference(new Date(todayAttendance[0].in_time), now);
-
-    // if (todayAttendance[0].paused_duration > 0) {
-    // totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
-    // }
+    if (todayAttendance[0].paused_duration > 0) {
+    totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
+    }
 
     const { data, error } = await supabase
         .from("leap_customer_attendance")

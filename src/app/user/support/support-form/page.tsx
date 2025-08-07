@@ -22,14 +22,14 @@ const SupportRequestForm: React.FC = () => {
   const [masterArray, setMaster] = useState<LeapRequestMaster[]>([]);
   const [loadingCursor, setLoadingCursor] = useState(false);
 
-      const [showAlert, setShowAlert] = useState(false);
-    const [alertForSuccess, setAlertForSuccess] = useState(0);
-    const [alertTitle, setAlertTitle] = useState('');
-    const [alertStartContent, setAlertStartContent] = useState('');
-    const [alertMidContent, setAlertMidContent] = useState('');
-    const [alertEndContent, setAlertEndContent] = useState('');
-    const [alertValue1, setAlertValue1] = useState('');
-    const [alertvalue2, setAlertValue2] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertForSuccess, setAlertForSuccess] = useState(0);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertStartContent, setAlertStartContent] = useState('');
+  const [alertMidContent, setAlertMidContent] = useState('');
+  const [alertEndContent, setAlertEndContent] = useState('');
+  const [alertValue1, setAlertValue1] = useState('');
+  const [alertvalue2, setAlertValue2] = useState('');
   const router = useRouter()
   useEffect(() => {
     setLoadingCursor(true);
@@ -93,7 +93,7 @@ const SupportRequestForm: React.FC = () => {
       const response = await fetch("/api/users/support/raiseSupport", {
         method: "POST",
         body: JSON.stringify({
-          "client_id": contextClientID ,
+          "client_id": contextClientID,
           "customer_id": contextCustomerID,
           "branch_id": contaxtBranchID,
           "type_id": formValues.type_id,
@@ -117,12 +117,12 @@ const SupportRequestForm: React.FC = () => {
       }
     } catch (error) {
       setLoadingCursor(false);
-        e.preventDefault()
-        console.log("Error submitting form:", error);
-        setShowAlert(true);
-        setAlertTitle("Exception")
-        setAlertStartContent(ALERTMSG_FormExceptionString);
-        setAlertForSuccess(2)
+      e.preventDefault()
+      console.log("Error submitting form:", error);
+      setShowAlert(true);
+      setAlertTitle("Exception")
+      setAlertStartContent(ALERTMSG_FormExceptionString);
+      setAlertForSuccess(2)
     }
   }
 
@@ -134,23 +134,23 @@ const SupportRequestForm: React.FC = () => {
       <LeftPannel menuIndex={27} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
         <div className={`${loadingCursor ? "cursorLoading" : ""}`}>
           {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
-              setShowAlert(false)
-              if (alertForSuccess == 1) {
-                  router.push(pageURL_userSupport);
-              }
+            setShowAlert(false)
+            if (alertForSuccess == 1) {
+              router.push(pageURL_userSupport);
+            }
           }} onCloseClicked={function (): void {
-              setShowAlert(false)
+            setShowAlert(false)
           }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
-
-          <div className='container'>
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="new_support_mainbox">
-                  <div className="new_support_leftbox">
-                    <div className="new_support_form_heading">
-                      Raise <span>Support</span>
-                    </div>
-                    <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
+            <div className='container'>
+              <div className="row">
+                <div className="col-lg-12">
+                  <div className="new_support_mainbox">
+                    <div className="new_support_leftbox">
+                      <div className="new_support_form_heading">
+                        Raise <span>Support</span>
+                      </div>
+                      {/* <form onSubmit={handleSubmit}> */}
                       <div className="form_group_support">
                         <select id="type_id" name="type_id" onChange={handleInputChange} className="form-select">
                           <option value="">Request Type *</option>
@@ -170,7 +170,7 @@ const SupportRequestForm: React.FC = () => {
                         {errors.priority_level && <span className="error" style={{ color: "red" }}>{errors.priority_level}</span>}
                       </div>
                       <div className="form_group_support">
-                        <textarea className="form-control" rows={2} id="description" name="description" value={formValues.description} onChange={handleInputChange} placeholder='Description'/>
+                        <textarea className="form-control" rows={2} id="description" name="description" value={formValues.description} onChange={handleInputChange} placeholder='Description' />
                         {errors.description && <span className="error" style={{ color: "red" }}>{errors.description}</span>}
                       </div>
                       {/* <div className="form_group_support_upload">
@@ -178,18 +178,19 @@ const SupportRequestForm: React.FC = () => {
                         <label htmlFor="file" className='new_upload_btn'><span><img src="/images/user/upload.gif" alt="Upload Icon" className="img-fluid" /></span>Upload File</label>
                       </div> */}
                       <div className="new_leave_formgoup_btn new_leave_formgoup_back_btn">
-                          <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
-                          <BackButton isCancelText={true} />
-                        </div>
-                    </form>
-                  </div>
-                  <div className="new_support_rightbox">
-                    <img src={staticIconsBaseURL + "/images/user/support-image.webp"} alt="Support image" className="img-fluid" />
+                        <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
+                        <BackButton isCancelText={true} />
+                      </div>
+                      {/* </form> */}
+                    </div>
+                    <div className="new_support_rightbox">
+                      <img src={staticIconsBaseURL + "/images/user/support-image.webp"} alt="Support image" className="img-fluid" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </form>
         </div>
       }
       />

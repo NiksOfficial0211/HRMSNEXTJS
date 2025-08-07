@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
         my_tasks: await funGetUserDailyTask(customer_id, new Date()),
         // assigned_tasks: await funGetUserAssignedTask(customer_id, new Date() ),
         my_name: await funGetUserFirstName(customer_id),
-        // announcements:await funGetAnnouncements(client_id,customer_id,role_id),
+        announcements:await funGetAnnouncements(client_id,customer_id,role_id),
         birthdays: await funGetEmpBirthdayList(client_id)
         // mypresentTeam:null,
       },

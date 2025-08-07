@@ -50,36 +50,17 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         selectedFile: null,
         showToUsers: false
     });
-    const { contextClientID, contaxtBranchID, contextRoleID, contextCustomerID } = useGlobalContext();
+    const { contextClientID, contaxtBranchID, contextCustomerID } = useGlobalContext();
 
     useEffect(() => {
         const fetchData = async () => {
-            const docTypes = await getDocumentsTypes(contextRoleID, docType)
+            const docTypes = await getDocumentsTypes()
             setDocTypes(docTypes);
-            const branch = await getBranches(contextClientID);
-            setBranchArray(branch);
-            fetchEmployeeData(contextClientID, 0)
         };
         fetchData();
     }, []);
 
-    const fetchEmployeeData = async (client_id: any, branch_id: any) => {
-        if (contextRoleID == "2" || contextRoleID == "3") {
-            const empData = await getEmployees(client_id, branch_id)
-            setEmployee(empData);
-            let name: any[] = []
-            for (let i = 0; i < empData.length; i++) {
 
-                name.push({
-                    value: empData[i].customer_id,
-                    label: empData[i].emp_id + "  " + empData[i].name,
-                })
-            }
-            // console.log(name);
-            setEmployeeNames(name);
-        }
-
-    }
     const [errors, setErrors] = useState<Partial<FormCompanyUploadDocDialog>>({});
 
     const validate = () => {
@@ -95,40 +76,22 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         const formData = new FormData();
         formData.append("uploadType", docType);
 
-        if (docType == companyDocUpload) {
-            if (inputData.selectedFile == null) {
-                // return alert("Please select File to upload");
-                setShowAlert(true);
-                setAlertTitle("Error")
-                setAlertStartContent("No documents uploaded yet!");
-                setAlertForSuccess(2)
-            }
-            if (inputData.docTypeID.length > 0) {
-                return alert("Please select type of document");
-            }
-            formData.append("client_id", contextClientID);
-            formData.append("branch_id", contaxtBranchID);
-            formData.append("customer_id", contextCustomerID);
-            formData.append("file", inputData.selectedFile!);
-            formData.append("doc_type_id", inputData.docTypeID);
-            formData.append("show_to_users", inputData.showToUsers + "");
-        } else {
-            if (formFilledData.selectedFile == null) {
-                // return alert("Please select File to upload");
-                setShowAlert(true);
-                setAlertTitle("Error")
-                setAlertStartContent("No documents uploaded yet!");
-                setAlertForSuccess(2)
-            }
-            if (inputData.docTypeID.length > 0) {
-                return alert("Please select type of document");
-            }
-            formData.append("client_id", contextClientID);
-            formData.append("customer_id", contextCustomerID);
-            formData.append("file", formFilledData.selectedFile!);
-            formData.append("branch_id", formFilledData.branch_id!);
-            formData.append("doc_type_id", formFilledData.docTypeID);
+        if (formFilledData.selectedFile == null) {
+            // return alert("Please select File to upload");
+            setShowAlert(true);
+            setAlertTitle("Error")
+            setAlertStartContent("No documents uploaded yet!");
+            setAlertForSuccess(2)
         }
+        if (inputData.docTypeID.length > 0) {
+            return alert("Please select type of document");
+        }
+        formData.append("client_id", contextClientID);
+        formData.append("customer_id", contextCustomerID);
+        formData.append("file", formFilledData.selectedFile!);
+        formData.append("branch_id", contaxtBranchID);
+        formData.append("doc_type_id", formFilledData.docTypeID);
+
         try {
             const res = await fetch("/api/clientAdmin/org_documents", {
                 method: "POST",
@@ -149,17 +112,7 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         }
     };
 
-    const handleInputChange = (e: any) => {
-        const { name, value, checked, type, files } = e.target;
-        if (type === "file") {
-            setInputData((prev) => ({ ...prev, [name]: files[0] }));
-        }
-        else if (name === "showToUsers") {
-            setInputData((prev) => ({ ...prev, [name]: checked }));
-        } else {
-            setInputData((prev) => ({ ...prev, [name]: value }));
-        }
-    };
+
 
     const handleEmpInputChange = (e: any) => {
         const { name, value, type, files } = e.target;
@@ -167,18 +120,6 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
             setformFilledData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
             setformFilledData((prev) => ({ ...prev, [name]: value }));
-        }
-        if (name == "branch_id") {
-            setSelectedEmployee(null);
-            setformFilledData((prev) => ({ ...prev, ['customer_id']: '' }))
-            if (value) {
-                console.log("on select branch dropdown value of branch id", value);
-
-                setBranchSelected(true);
-            } else {
-                setBranchSelected(false)
-            }
-            fetchEmployeeData(contextClientID, value);
         }
     };
 
@@ -206,8 +147,8 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                                     <label htmlFor="exampleFormControlInput1" className="form-label" >Document Type</label>
                                     <select id="docTypeID" name="docTypeID" className='form-select' onChange={handleEmpInputChange}>
                                         <option value="">Select</option>
-                                        {docTypes.map((type) => (
-                                            <option value={type.id} key={type.id}>{type.document_name}</option>
+                                        {docTypes.map((type, index) => (
+                                            <option value={type.id} key={index}>{type.document_name}</option>
                                         ))}
                                     </select>
                                     {errors.docTypeID && <span className="error" style={{ color: "red" }}>{errors.docTypeID}</span>}
@@ -222,7 +163,8 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                                             </svg>
                                         </div>
                                         <div className="user_upload_headingbox">
-                                            Choose a file or drag & drop it here.
+                                            Choose a file
+                                            {/* or drag & drop it here. */}
                                         </div>
                                         <div className="user_upload_subheadingbox">
                                             DOC, PDF formats, up to 5 MB.
@@ -250,25 +192,14 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
 export default DialogUserUploadDocument
 
 
-async function getDocumentsTypes(roleID: any, docTypes: any) {
+async function getDocumentsTypes() {
 
     let query = supabase
         .from('leap_document_type')
-        .select();
-    if (roleID == "2" || roleID == "3") {
-        if (docTypes == companyDocUpload) {
-            query = query.eq("document_type_id", 2);
-        } else {
-            query = query.eq("document_type_id", 5);
-        }
-    }
-    if (roleID == "4" || roleID == "5" || roleID == "9") {
-        query = query.eq("document_type_id", 5);
-    }
-
+        .select()
+        .eq("document_type_id", 5);
 
     const { data, error } = await query;
-
 
     if (error) {
         // console.log(error);
@@ -278,7 +209,6 @@ async function getDocumentsTypes(roleID: any, docTypes: any) {
         // console.log(data);
         return data;
     }
-
 }
 
 async function getBranches(clientID: any) {
