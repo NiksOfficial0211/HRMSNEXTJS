@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
                   { status: apiStatusFailureCode });
           }
            if(projectData){
-            return NextResponse.json({ message: "All Project list" ,status:1 ,data:{projectData , TaskTypeData, TaskStatusData}}, 
+            return NextResponse.json({ message: "All Project list" ,status:1 ,data:{projectData , TaskTypeData, TaskStatusData, TaskPriorityData}}, 
                   { status: apiStatusSuccessCode });
           }
   

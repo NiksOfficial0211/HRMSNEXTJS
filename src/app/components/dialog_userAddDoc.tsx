@@ -53,18 +53,17 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         showToUsers: false
     });
     const { contextClientID, contaxtBranchID, contextCustomerID } = useGlobalContext();
-    const { contextClientID, contaxtBranchID, contextCustomerID } = useGlobalContext();
 
     useEffect(() => {
         const fetchData = async () => {
-            const docTypes = await getDocumentsTypes()
             const docTypes = await getDocumentsTypes()
             setDocTypes(docTypes);
         };
         fetchData();
     }, []);
 
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+    const [errors, setErrors] = useState<Partial<FormCompanyUploadDocDialog>>({});
 
     const validate = () => {
         const newErrors: { [key: string]: string } = {};
@@ -82,32 +81,21 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         const formData = new FormData();
         formData.append("uploadType", docType);
 
-        // if (formFilledData.selectedFile == null) {
-        //     // return alert("Please select File to upload");
-        //     // setShowAlert(true);
-        //     setAlertTitle("Error")
-        //     setAlertStartContent("No documents uploaded yet!");
-        //     setAlertForSuccess(2)
-        // }
-        // if (formFilledData.docTypeID.length > 0) {
-        //     return alert("Please select type of document");
-        // }
-        // if (formFilledData.selectedFile == null) {
-        //     // return alert("Please select File to upload");
-        //     // setShowAlert(true);
-        //     setAlertTitle("Error")
-        //     setAlertStartContent("No documents uploaded yet!");
-        //     setAlertForSuccess(2)
-        // }
-        // if (formFilledData.docTypeID.length > 0) {
-        //     return alert("Please select type of document");
-        // }
+        if (formFilledData.selectedFile == null) {
+            // return alert("Please select File to upload");
+            setShowAlert(true);
+            setAlertTitle("Error")
+            setAlertStartContent("No documents uploaded yet!");
+            setAlertForSuccess(2)
+        }
+        if (inputData.docTypeID.length > 0) {
+            return alert("Please select type of document");
+        }
         formData.append("client_id", contextClientID);
         formData.append("customer_id", contextCustomerID);
         formData.append("file", formFilledData.selectedFile!);
         formData.append("branch_id", contaxtBranchID);
-        formData.append("doc_type_id", formFilledData.doc_type_id);
-        formData.append("doc_type_id", formFilledData.doc_type_id);
+        formData.append("doc_type_id", formFilledData.docTypeID);
 
         try {
             const res = await fetch("/api/clientAdmin/org_documents", {
@@ -145,11 +133,12 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         }
     };
 
-    const handleEmpInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value, type, files } = e.target as HTMLInputElement;
+
+
+    const handleEmpInputChange = (e: any) => {
+        const { name, value, type, files } = e.target;
         if (type === "file") {
-            const file = files ? files[0] : null;
-            setformFilledData((prev) => ({ ...prev, [name]: file }));
+            setformFilledData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
             setformFilledData((prev) => ({ ...prev, [name]: value }));
         }
@@ -186,8 +175,8 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
 
                                     <select id="doc_type_id" name="doc_type_id" className='form-select' onChange={handleEmpInputChange}>
                                         <option value="">Select</option>
-                                        {docTypes.map((type) => (
-                                            <option value={type.id} key={type.id}>{type.document_name}</option>
+                                        {docTypes.map((type, index) => (
+                                            <option value={type.id} key={index}>{type.document_name}</option>
                                         ))}
                                     </select>
                                     {errors.doc_type_id && <span className="error" style={{ color: "red" }}>{errors.doc_type_id}</span>}
@@ -247,10 +236,11 @@ export default DialogUserUploadDocument
 
 
 async function getDocumentsTypes() {
-async function getDocumentsTypes() {
 
     let query = supabase
         .from('leap_document_type')
+        .select()
+        .eq("document_type_id", 5);
         .select()
         .eq("document_type_id", 5);
 

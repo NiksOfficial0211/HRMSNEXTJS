@@ -3,7 +3,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { funSendApiErrorMessage, funSendApiException, funCalculateTimeDifference, formatDateToISO, formatDateYYYYMMDD } from '@/app/pro_utils/constant';
-import { funSendApiErrorMessage, funSendApiException, funCalculateTimeDifference, formatDateToISO, formatDateYYYYMMDD } from '@/app/pro_utils/constant';
 import { apiwentWrong } from '@/app/pro_utils/stringConstants';
 import { addUserActivities } from '@/app/pro_utils/constantFunAddData';
 import supabase from '../../supabaseConfig/supabase';
@@ -41,7 +40,6 @@ async function startAttendance(body: any) {
             approval_status: null,
             approved_by: null,
             client_id: custID[0].client_id,
-            client_id: custID[0].client_id,
             customer_id: custID[0].customer_id,
             date: now,
             if_paused: false,
@@ -71,16 +69,22 @@ async function startAttendance(body: any) {
 }
 
 async function stopAttendance(body: any) {
-    // const now = new Date();
+    const now = new Date();
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
     if (!attendanceID[0].attendance_id) {
         return funSendApiErrorMessage("Attendance ID is required", apiwentWrong);
     }
-
+//  let totalHours = await funCalculateTimeDifference(new Date(attendanceID[0].in_time), new Date(fields.punch_date_time[0]));
+//     if (attendanceID[0].paused_duration > 0) {
+//       totalHours = (Number(totalHours) - attendanceID[0].paused_duration) + ""
+//     }
     const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
     let totalHours = await funCalculateTimeDifference(new Date(todayAttendance[0].in_time), now);
 
+    if (todayAttendance[0].paused_duration > 0) {
+    totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
+    }
     if (todayAttendance[0].paused_duration > 0) {
     totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
     }
@@ -88,7 +92,6 @@ async function stopAttendance(body: any) {
     const { data, error } = await supabase
         .from("leap_customer_attendance")
         .update({
-            out_time: new Date(),
             out_time: new Date(),
             // total_hours: totalHours,
             attendanceStatus: 2,
@@ -148,6 +151,7 @@ async function pauseAttendance(body: any) {
         // latLngData
     });
 }
+}
 
 async function resumeAttendance(body: any) {
     const custID = await getCustomerClientIds(body.whatsapp_number);
@@ -160,7 +164,6 @@ async function resumeAttendance(body: any) {
     }
 
     const now = new Date();
-    const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
     const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
     //   const todayLocations = await getAttendanceGeoLocation(body.attendance_id);
 
@@ -197,6 +200,7 @@ async function resumeAttendance(body: any) {
         data
         // latLngData
     });
+}
 }
 
 async function getTodayAttendance(attendanceID: number) {
