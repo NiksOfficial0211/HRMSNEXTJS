@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
                 client_id: client_id,
                 branch_id: branch_id,
                 assigned_to: assigned_to || null,
-                project_id: project_id || null,
+                // project_id: project_id || null,
                 sub_project_id: sub_project_id || null,
                 task_type_id: task_type_id || null,
                 task_details: task_details || null,
@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
                 task_priority: task_priority || null,
                 deadline: deadline || null,
                 assigned_by: assigned_by || null,
-                // task_status: fdata.task_status || null,
                 created_at: new Date().toISOString()
             }).select();
         if (taskError) {

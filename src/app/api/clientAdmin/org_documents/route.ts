@@ -27,13 +27,11 @@ export async function POST(request: NextRequest) {
     const { data: docType, error: docTypeError } = await supabase.from("leap_document_type").select("document_name").eq("id", fields.doc_type_id[0]);
     if (docTypeError) {
       return funSendApiErrorMessage(docTypeError, "Failed to get Document Type");
-
     }
     console.log("thsi is the doc type response ----==-=-=-", docType);
     let fileUploadResponse;
     if(files || files.file[0]){
           fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"client_org_docs")
-      
     }
     let query = null;
     if (fields.uploadType[0] == companyDocUpload) {
@@ -46,7 +44,6 @@ export async function POST(request: NextRequest) {
           created_at: new Date(),
           show_to_employees: fields.show_to_users[0],
         });
-
     } else {
       query = supabase.from("leap_customer_documents")
         .insert({
@@ -66,9 +63,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 1, message: "Document uploaded", data: documents },
         { status: apiStatusSuccessCode });
     }
-
-
-
   } catch (error) {
 
     console.log(error);

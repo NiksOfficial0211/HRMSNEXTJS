@@ -103,7 +103,6 @@ const Dashboard = () => {
             const response = await res.json();
             if (response.status === 1) {
 
-                // console.log("branch",contaxtBranchID);
                 setWorkingTime(response.workingHour.workData[0]);
                 console.log("time: ",workingTime)
                 setHolidays(response.upcommingHolidays.holidays);
@@ -111,7 +110,6 @@ const Dashboard = () => {
                 // setSalarySlip(response.my_documents[0]);
                 setAttendanceData(response.myattendance[0]);
                 setTask(response.my_tasks);
-                // setAssignedTask(response.assigned_tasks.taskData);
                 setName(response.my_name.firstName)
                 // setAnnouncementData(response.announcements[0]);
             } else {

@@ -30,7 +30,9 @@ export async function POST(request: NextRequest) {
                 .eq('role_id', role_id)
                 .eq('client_id', client_id)
                 .eq('branch_id', branch_id)
-                .lt('leap_client_announcements.validity_date', today); 
+                .eq("leap_client_announcements.isEnabled", true)
+                .eq("leap_client_announcements.isDeleted", false)
+                .lt('leap_client_announcements.validity_date', today);
 
             if (previousError) {
                 return funSendApiErrorMessage(previousError, "Unable to fetch announcement data");
@@ -43,7 +45,7 @@ export async function POST(request: NextRequest) {
                 .eq('role_id', role_id)
                 .eq('client_id', client_id)
                 .eq('branch_id', branch_id)
-                .gte('leap_client_announcements.announcement_date', today) 
+                .gte('leap_client_announcements.announcement_date', today)
                 .order('validity_date', { foreignTable: 'leap_client_announcements', ascending: true });
 
 

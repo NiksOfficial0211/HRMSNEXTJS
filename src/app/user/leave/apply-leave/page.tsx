@@ -2,7 +2,7 @@
 import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
 import LeapHeader from '@/app/components/header'
 import Footer from '@/app/components/footer'
-import { createLeaveTitle } from '@/app/pro_utils/stringConstants'
+import { createLeaveTitle, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import supabase from '@/app/api/supabaseConfig/supabase'
 import { useParams, useRouter } from 'next/navigation';
 import { LeaveType } from '@/app/models/leaveModel'
@@ -87,7 +87,6 @@ const AssignLeave: React.FC = () => {
   }
   const formData = new FormData();
   const [errors, setErrors] = useState<Partial<AssignEmpLeave>>({});
-  const [selected, setSelected] = React.useState(formValues.duration);
 
   const validate = () => {
     const newErrors: Partial<AssignEmpLeave> = {};
@@ -255,10 +254,9 @@ const AssignLeave: React.FC = () => {
                         </div>
                     </div>
                     <div className="new_apply_leave_rightbox">
-                      <img src="/images/user/apply-leave.webp" alt="Apply leave image" className="img-fluid" />
+                      <img src={staticIconsBaseURL + "/images/user/apply-leave.webp"} alt="Apply leave image" className="img-fluid" />
                     </div>
                   </div>
-                 
                 </div>
               </div>
             </div>

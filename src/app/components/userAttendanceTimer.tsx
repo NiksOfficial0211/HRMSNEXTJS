@@ -85,34 +85,59 @@ const UserAttendanceTimer = ({ data, name, workingHour }: { data: AttendanceTime
     function parseDateString(dateStr: string | null): Date | null {
         if (!dateStr) return null;
         // Replace space with T for ISO format
-        return new Date(dateStr.replace(' ', 'T'));
+        return new Date(dateStr.replace(' ', 'T')); 
     }
-    function getTotalWorkedMinutes(
-        inTime: string,
-        outTime: string | null,
-        pauseDurationMinutes: number
-    ): { totalMinutes: number; netMinutes: number } {
-        const now = new Date();
-        const start = new Date(inTime);
-        const end = outTime ? new Date(outTime) : now;
 
-        const totalMinutes = (end.getTime() - start.getTime()) / 1000 / 60;
-        const netMinutes = totalMinutes - pauseDurationMinutes;
-        return {
-            totalMinutes: Math.max(0, Math.floor(totalMinutes)),
-            netMinutes: Math.max(0, Math.floor(netMinutes)),
-        };
-    }
+    function getTotalWorkedMinutes(
+  inTime: string,
+  outTime: string | null,
+  pauseDurationMinutes: number
+): { totalMinutes: number; netMinutes: number } {
+  if (!inTime) return { totalMinutes: 0, netMinutes: 0 };
+
+  try {
+    const now = new Date();
+
+    // Fix format from "YYYY-MM-DD HH:MM:SS+00" → "YYYY-MM-DDTHH:MM:SS+00"
+    const start = new Date(inTime.replace(' ', 'T'));
+    const end = outTime ? new Date(outTime.replace(' ', 'T')) : now;
+
+    const totalMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+    const netMinutes = totalMinutes - pauseDurationMinutes;
+
+    console.log({
+      inTime,
+      outTime,
+      start,
+      end,
+      pauseDurationMinutes,
+      totalMinutes,
+      netMinutes
+    });
+
+    return {
+      totalMinutes: Math.max(0, Math.floor(totalMinutes)),
+      netMinutes: Math.max(0, Math.floor(netMinutes)),
+    };
+  } catch (e) {
+    console.error("Invalid date or parsing error:", e);
+    return { totalMinutes: 0, netMinutes: 0 };
+  }
+}
+
     const formatMinutesToHours = (minutes: number) => {
         const hrs = Math.floor(minutes / 60);
         const mins = minutes % 60;
         return `${hrs}h ${mins}m`;
     };
-    const { netMinutes } = getTotalWorkedMinutes(
-        attendanceData.in_time,
-        attendanceData.out_time || null,
-        parseInt(attendanceData.paused_duration || '0') || 0
-    );
+    const { netMinutes } = attendanceData.in_time
+  ? getTotalWorkedMinutes(
+      attendanceData.in_time,
+      attendanceData.out_time || null,
+      Number(attendanceData.paused_duration) || 0
+    )
+  : { netMinutes: 0 };
+
     // const calculateWorkedMinutes = () => {
     //     if (!attendanceData.in_time || !attendanceData.out_time) return 0;
     //     return calculateTimeDuration(attendanceData.in_time, attendanceData.out_time);

@@ -170,19 +170,15 @@ const OrganizationalDocuments = () => {
                                                         />
                                                     </div>
                                                 </div>
-
-                                            </div> 
-                                        
+                                            </div>
                                     </div>
                                     <div className="col-lg-5">
                                         <a className="red_button" onClick={() => { setShowUploadDialog(true) }}>Add Document</a>&nbsp;
                                     </div>
                                     {/* </div> */}
-
                                 </div>
                             </div>
                         </div>
-                        
                         <div className={showUploadDialog ? "rightpoup rightpoupopen" : "rightpoup"}>                                  
                             {showUploadDialog && <DialogUploadDocument onClose={() => { setShowUploadDialog(false); fetchEmployeeData() }} docType={employeeDocUpload} />}
                         </div>

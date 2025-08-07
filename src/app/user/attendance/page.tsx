@@ -482,8 +482,7 @@ const EmpAttendancePage = () => {
                                                                         )}
                                                                     </div>
                                                                     <div className="nw_filter_form_group">
-                                                                        <a
-                                                                            className={`red_button filter_submit_btn ${loadingCursor ? 'loading' : ''}`}
+                                                                        <a className={`red_button filter_submit_btn ${loadingCursor ? 'loading' : ''}`}
                                                                             onClick={() => {
                                                                                 setLoadingCursor(true);
                                                                                 fetchData();
@@ -861,12 +860,8 @@ const EmpAttendancePage = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-
-
                                                 </div>
-                                                
                                             </div>
-                                            
                                         </div>
                                     </div>
                                 </div>
@@ -879,7 +874,6 @@ const EmpAttendancePage = () => {
             <Footer />
         </div>
     );
-
 }
 export default EmpAttendancePage;
 
@@ -905,14 +899,9 @@ const generateDateRange = (start: string, end: string) => {
             actual_date: isoDate,
             isWeekend: dayOfWeek === 0 || dayOfWeek === 6, // Sunday or Saturday
         });
-
-
         currentDate.setDate(currentDate.getDate() + 1); // safely increment
     }
-
-
     return tempDates;
-
 };
 function getOrdinalSuffix(day: number) {
     if (day > 3 && day < 21) return 'th';

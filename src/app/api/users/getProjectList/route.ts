@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
         //     { status: 401 }
         //   );
         // }
-        const {client_id, branch_id }  = await request.json();
+        const {client_id}  = await request.json();
     
           let query = supabase
           .from("leap_client_sub_projects")
@@ -54,8 +54,20 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ message: apiwentWrong ,error:error}, 
                   { status: apiStatusFailureCode });
           }
+          let query3 = supabase
+          .from("leap_task_priority_level")
+          .select(`id, priority_type`)
+          .eq('is_deleted',false)
+          .order('updated_at', { ascending: true });
+        
+          const {data:TaskPriorityData,error:error3}=await query3;
+          
+          if(error3){
+            return NextResponse.json({ message: apiwentWrong ,error:error}, 
+                  { status: apiStatusFailureCode });
+          }
            if(projectData){
-            return NextResponse.json({ message: "All Project list" ,status:1 ,data:{projectData , TaskTypeData, TaskStatusData}}, 
+            return NextResponse.json({ message: "All Project list" ,status:1 ,data:{projectData , TaskTypeData, TaskStatusData, TaskPriorityData}}, 
                   { status: apiStatusSuccessCode });
           }
   
