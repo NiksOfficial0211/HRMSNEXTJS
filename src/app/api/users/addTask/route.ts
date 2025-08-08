@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
                 sub_project_id: sub_project_id,
                 task_type_id: task_type_id,
                 task_status: task_status,
-                // total_hours: total_hours,
-                // total_minutes: total_minutes,
+                total_hours: total_hours || 0,
+                total_minutes: total_minutes || 0,
                 task_details: task_details,
                 task_date: task_date,
                 created_at: new Date().toISOString()
