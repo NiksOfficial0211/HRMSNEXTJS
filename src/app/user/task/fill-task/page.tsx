@@ -35,7 +35,7 @@ const ApplyLeave: React.FC = () => {
   const [subProjectarray, setSubProject] = useState<SubProject[]>([]);
   // const [selectedProject, setSelectedProject] = useState<string>("");
   const [loadingCursor, setLoadingCursor] = useState(false);
-
+  const [showDuration, setShowDuration] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [alertForSuccess, setAlertForSuccess] = useState(0);
   const [alertTitle, setAlertTitle] = useState('');
@@ -127,7 +127,7 @@ const ApplyLeave: React.FC = () => {
       const response = await fetch("/api/users/addTask", {
         method: "POST",
         body: JSON.stringify({
-          "client_id": contextClientID,
+          "client_id": contextClientID, 
           "branch_id": contaxtBranchID,
           "customer_id": contextCustomerID,
           // "project_id": formValues.project_id,
@@ -260,7 +260,8 @@ const ApplyLeave: React.FC = () => {
                               <select id="task_status" name="task_status" onChange={handleInputChange} className='form-select'>
                                 <option value="">Select</option>
                                 {statusArray.map((type, index) => (
-                                  <option value={type.id} key={index}>{type.status}</option>
+                                  <option value={type.id} key={index}>{type.status}</option> 
+                                  
                                 ))}
                               </select>
                               {errors.task_status && <span className="error" style={{ color: "red" }}>{errors.task_status}</span>}
