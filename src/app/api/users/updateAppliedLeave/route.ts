@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const { fields, files } = await parseForm(request);
  
      let fileUploadResponse;
-      if(files || files.file[0]){
+      if(files && files.file && files.file.length>0){
                       fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id[0],"applied_leave_docs")
                     
                   }

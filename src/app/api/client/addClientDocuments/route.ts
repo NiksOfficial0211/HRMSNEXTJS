@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const currentDateTime = new Date();
 
     let fileUploadResponse;
-    if(files || files.file){
+    if(files && files.file && files.file.length>0){
           fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"clientdocs")
       
     }

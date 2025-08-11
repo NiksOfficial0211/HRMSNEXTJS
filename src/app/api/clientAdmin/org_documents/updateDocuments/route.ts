@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "No files received." }, { status: 400 });
         }
         let fileUploadResponse;
-            if(files || files.file[0]){
+            if(files && files.file && files.file.length>0){
                   fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"client_sub_project_doc")
               
             }
