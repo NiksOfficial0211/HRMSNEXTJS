@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     //     { status: 401 }
     //   );
     // }
-   const {client_id, branch_id, customer_id, platform, version, auth_token, id } = await request.json();
+    const { client_id, branch_id, customer_id, platform, version, auth_token, id } = await request.json();
     // const fdata = {
     //   clientId: formData.get('client_id'),
     //   branch_id: formData.get('branch_id'),
@@ -34,12 +34,15 @@ export async function POST(request: NextRequest) {
       .from('leap_document_type')
       .select('*,leap_customer_documents(*)')
       .or(`document_type_id.eq.2,document_type_id.eq.5`)
-      .eq('leap_customer_documents.customer_id', customer_id); // Correct filtering
-      // .filter('id', 'eq', fdata.docId); 
+      .eq('is_deleted', false)
+      .eq('leap_customer_documents.customer_id', customer_id)
+      .eq('leap_customer_documents.isEnabled', true)
+      // .order('leap_customer_documents.updated_at', { ascending: true });
+    // .filter('id', 'eq', fdata.docId); 
 
-      if (funISDataKeyPresent(id)) {
-            query = query.eq('id', id)
-        }
+    if (funISDataKeyPresent(id)) {
+      query = query.eq('id', id)
+    }
 
     const { data, error } = await query;
     if (error) {
@@ -49,8 +52,8 @@ export async function POST(request: NextRequest) {
       const filteredData = data.filter(item =>
         item.leap_customer_documents && item.leap_customer_documents.length > 0
       );
-      const type2Docs:any = [];
-      const type5Docs:any = [];
+      const type2Docs: any = [];
+      const type5Docs: any = [];
 
       filteredData.forEach(item => {
         if (item.document_type_id === 2) {
@@ -64,7 +67,7 @@ export async function POST(request: NextRequest) {
         message: "All Documents",
         status: 1,
         organization_specific: type2Docs,
-        employee_personal:type5Docs
+        employee_personal: type5Docs
       }, { status: apiStatusSuccessCode })
     }
 

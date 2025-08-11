@@ -10,7 +10,6 @@ import LoadingDialog from './PageLoader';
 import { getImageApiURL, staticIconsBaseURL } from '../pro_utils/stringConstants';
 
 
-
 interface FormCompanyUploadDocDialog {
     docTypeID: any
     selectedFile: File | null,
@@ -67,7 +66,6 @@ const DialogUploadDocument = ({ onClose, docType }: { onClose: () => void, docTy
         const [alertEndContent, setAlertEndContent] = useState('');
         const [alertValue1, setAlertValue1] = useState('');
         const [alertvalue2, setAlertValue2] = useState('');
-
 
     useEffect(() => {
         const fetchData = async () => {
