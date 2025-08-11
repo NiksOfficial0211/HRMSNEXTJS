@@ -13,11 +13,12 @@ import Select from "react-select";
 import AddBranchDetails from '@/app/components/dialog_addClientBranch'
 import DialogClientAddDesignationDepartment from '@/app/components/dialog_addDesignationsDepartment'
 import DeleteConfirmation from '@/app/components/dialog_deleteConfirmation'
-import { ALERTMSG_exceptionString, deleteDataTypeBankComponent, deleteDataTypeDepartment, deleteDataTypeDesignation, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_exceptionString, deleteDataTypeBankComponent, deleteDataTypeDepartment, deleteDataTypeDesignation, deleteDataTypeHolidayYear, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import DialogAddEditBankComponents from '@/app/components/dialog_addEditBankComponents'
 import { useRouter } from 'next/navigation'
 import ShowAlertMessage from '@/app/components/alert'
 import LeaveTypeUpdate from '@/app/components/dialog_leaveType'
+import AddHolidayYear from '@/app/components/dialog_addHolidayYear'
 
 interface SearchValues {
     designationSearchText: any,
@@ -72,15 +73,19 @@ const ClientAdminSettings = () => {
 
     const [showDeleteDesignation, setShowDeleteDesignation] = useState(false);
     const [showDeleteDepartment, setShowDeleteDepartment] = useState(false);
+    const [showDeleteHolidayYear, setShowDeleteHolidayYear] = useState(false);
 
     const [dataEditID, setDataEditID] = useState(-1);
     const [dataEditDetail, setDataEditDetail] = useState('');
 
     const [showEditDesignation, setShowEditDesignation] = useState(false);
     const [showEditDepartment, setShowEditDepartment] = useState(false);
+    const [showEditHolidayYear, setShowEdithHolidayYear] = useState(false);
 
     const [arePermissionChanged, setArePermissionsChanged] = useState(false);
     const [errors, setErrors] = useState<Partial<WorkingFormValues>>({});
+        const [holidayYearArray, setholidayYear] = useState<HolidayListYear[]>([]);
+    
     const [workingDayformValues, setWorkingDayFormValues] = useState<WorkingFormValues>({
         id:0,
         full_day: '',
@@ -172,6 +177,8 @@ const ClientAdminSettings = () => {
         setLeaveType(leaveTypes);
         const workingHours = await getBranchWorkingHours(contextClientID, selectedWorkingHourBranch.value != '' ? selectedWorkingHourBranch.value : contaxtBranchID);
         setWorkingHour(workingHours);
+         const holidayYear = await getHolidayYear(contextClientID);
+         setholidayYear(holidayYear);
         if(workingHours.length>0){
         setWorkingDayFormValues({
             id:workingHours[0].id,
@@ -839,6 +846,60 @@ const ClientAdminSettings = () => {
                                         </div>
                                     </div>
                                 </div>
+
+
+                                 <div className="row mb-3">
+
+                                    <div className="grey_box">
+                                        <div className="row settings-title-bg mb-3" style={{ alignItems: "center" }}>
+                                            <div className="col-lg-9 settings_title">Holiday Years</div>
+
+
+                                            <div className="col-lg-3">
+                                                <Select
+                                                    className="custom-select"
+                                                    classNamePrefix="custom"
+                                                    options={searchBranchArray}
+                                                    value={selectedWorkingHourBranch}
+                                                    onChange={(selectedOption) =>
+                                                        handleBranchChange(selectedOption, 3)
+                                                    }
+                                                    placeholder="Search Branch"
+                                                    isSearchable
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        {holidayYearArray && holidayYearArray.length>0 ? holidayYearArray.map((holiday, index) => (
+                                               
+
+                                                <div className="announcement_branch_box mb-2" key={holiday.id} >
+
+                                                    <a>
+                                                        <div className="list_view_heading text-center"> {holiday.list_name}
+                                                            <img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid mr-2" style={{ maxHeight: '18px', marginLeft: "8px" }}
+                                                                onClick={() => {
+                                                                    setDataEditID(holiday.id);
+                                                                    setShowEdithHolidayYear(true);
+                                                                    setDataEditDetail(holiday.list_name);
+                                                                }}
+                                                            />
+
+                                                            <img src={staticIconsBaseURL+"/images/delete.png"} className="img-fluid mr-2" style={{ maxHeight: '18px', marginLeft: "5px" }}
+                                                                onClick={() => {
+                                                                    setdataDeleteID(holiday.id);
+                                                                    setShowDeleteHolidayYear(true);
+                                                                    setDataDeleteDetail(holiday.list_name);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            )) : <div className="d-flex justify-content-center align-items-center" style={{ height: "40px" }}>
+                                                {<h5 className="text-muted">No holiday years available</h5>}
+                                            </div>}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -854,8 +915,18 @@ const ClientAdminSettings = () => {
                     <div className={showAddDesignation ? "rightpoup rightpoupopen" : "rightpoup"}>
                         {showAddDesignation && <DialogClientAddDesignationDepartment onClose={() => { setShowAddDesignation(false)}} isDesignationAdd={true} editDataType={''} editID={-1} dataToEdit={''} />}
                     </div>
+
+                    <div className={showEditHolidayYear ? "rightpoup rightpoupopen" : "rightpoup"}>
+                        {showEditHolidayYear && <AddHolidayYear onClose={() => { setShowEdithHolidayYear(false) } } isedit={true} editid={dataEditID} />}
+                    </div>
                     
-                    
+                    {showDeleteHolidayYear && <DeleteConfirmation
+                        onClose={() => { setShowDeleteDesignation(false), fetchData() }}
+                        id={dataDeleteID}
+                        deletionType={deleteDataTypeHolidayYear}
+                        deleteDetail={dataDeleteDetail}
+                    />
+                    }
                     {showDeleteDesignation && <DeleteConfirmation
                         onClose={() => { setShowDeleteDesignation(false), fetchData() }}
                         id={dataDeleteID}
@@ -1089,6 +1160,23 @@ async function getBranchWorkingHours(clientID: any, branch_id: any) {
     if (branch_id) {
         query = query.eq("branch_id", branch_id)
     }
+    const { data, error } = await query;
+    if (error) {
+        console.log(error);
+
+        return [];
+    } else {
+        return data;
+    }
+
+}
+
+async function getHolidayYear(clientID: any) {
+
+    let query = supabase
+        .from('leap_holiday_year')
+        .select()
+        .eq("client_id", clientID);
     const { data, error } = await query;
     if (error) {
         console.log(error);

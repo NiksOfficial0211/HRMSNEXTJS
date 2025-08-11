@@ -721,19 +721,18 @@ const EmpAttendancePage = () => {
                                                 Attendance <span>List</span>
                                             </div>
 
-                                            <div className="col-lg-5" style={{ textAlign: "right" }}>
+                                            {/* <div className="col-lg-5" style={{ textAlign: "right" }}>
                                                 <div className="row" >
 
                                                     <div className="col-lg-12 mb-2">
 
                                                         <a className="red_button">Export All</a>&nbsp;&nbsp;
                                                         <a className="red_button red_button2">Export Selected</a>
-                                                        {/* <div className="filtermenu red_button" onClick={filter_whitebox}>Filter</div> */}
 
                                                     </div>
 
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>
                                         <div className="row" style={{ marginBottom: "20px" }}>
                                             <div className="col-lg-12 p-0">

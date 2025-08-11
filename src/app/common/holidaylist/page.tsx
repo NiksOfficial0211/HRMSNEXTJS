@@ -139,6 +139,8 @@ const HolidayList = () => {
         const formData = new FormData();
         formData.append("client_id", contextClientID);
         formData.append("export_type", exportTypeHoliday);
+        formData.append("yearID", filters.yearID || "");
+        formData.append("branch_id", brancheIDFilter ? brancheIDFilter.toString() : "");
         const response = await fetch("/api/clientAdmin/export-data", {
             method: "POST",
             body: formData,
@@ -177,17 +179,17 @@ const HolidayList = () => {
                                     Holiday <span>List</span>
                                 </div>
                                 <div className="col-lg-6 mb-2" style={{ textAlign: "right" }}>
-                                    <button className="red_button red_button2" onClick={() => setShowUploadDialog(true)}>Import</button>&nbsp;
-                                    <button className="red_button red_button2" onClick={() => setShowAddDialog(true)}>Add Holiday</button>&nbsp;
+                                    {holidayYearArray && holidayYearArray.length>0 && <button className="red_button red_button2" style={{ marginRight: "6px" }} onClick={() => setShowUploadDialog(true)}>Import</button>}
+                                    {holidayYearArray && holidayYearArray.length>0 && <button className="red_button red_button2 " style={{ marginRight: "6px" }} onClick={() => setShowAddDialog(true)}>Add Holiday</button>}
                                     <button className="red_button red_button2" onClick={() => setShowHolidayDialog(true)}>Add Holiday Year</button>&nbsp;
-                                    <button className="red_button red_button2" onClick={() => downloadCSV()}>Export</button>
+                                    {holidays && holidays.length>0 && <button className="red_button red_button2" onClick={() => downloadCSV()}>Export</button>}
 
                                 </div>
                                 <div className={showAddDialog ? "rightpoup rightpoupopen" : "rightpoup"}> 
                                 {showAddDialog && <AddHolidayForm onClose={() => setShowAddDialog(false)} />}
                                 </div>
                                  <div className={showHolidayDialog ? "rightpoup rightpoupopen" : "rightpoup"}>    
-                                {showHolidayDialog && <AddHolidayYear onClose={() => setShowHolidayDialog(false)} />}
+                                {showHolidayDialog && <AddHolidayYear onClose={() => setShowHolidayDialog(false)} isedit={false} editid={0}  />}
                                 </div>
                                 <div className={showUploadDialog ? "rightpoup rightpoupopen" : "rightpoup"}> 
 
