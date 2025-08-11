@@ -161,9 +161,6 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                                     {errors.doc_type_id && <span className="error" style={{ color: "red" }}>{errors.doc_type_id}</span>}
 
 
-                                    {errors.doc_type_id && <span className="error" style={{ color: "red" }}>{errors.doc_type_id}</span>}
-
-
                                 </div>
                                 <div className="nw_user_doc_uploadbox">
                                     <label htmlFor="selectedFile" className='nw_user_doc_upload_lablebox'>
