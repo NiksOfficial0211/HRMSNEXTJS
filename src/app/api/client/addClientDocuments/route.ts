@@ -27,28 +27,28 @@ export async function POST(request: NextRequest) {
     }
 
     const currentDateTime = new Date();
-    
+
     let fileUploadResponse;
-    if(files || files.file[0]){
-          fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"clientdocs")
-      
+    if (files || files.file[0]) {
+      fileUploadResponse = await apiUploadDocs(files.file[0], fields.branch_id[0], fields.client_id, "clientdocs")
+
     }
-    const {error} = await supabase.from("leap_client_documents")
-                        .insert({client_id:fields.client_id[0],branch_id:fields.branch_id[0],
-                          document_type_id:fields.document_type_id[0],
-                          document_url:fileUploadResponse?fileUploadResponse:"",
-                          created_at:new Date()
-                        });
+    const { error } = await supabase.from("leap_client_documents")
+      .insert({
+        client_id: fields.client_id[0], branch_id: fields.branch_id[0],
+        document_type_id: fields.document_type_id[0],
+        document_url: fileUploadResponse ? fileUploadResponse : "",
+        created_at: new Date()
+      });
 
-
-if (error) {
+    if (error) {
       console.log(error);
-      
-      return NextResponse.json({ message: "file upload data insert error :- ",error:error ,status:0}, { status: apiStatusFailureCode });
+
+      return NextResponse.json({ message: "file upload data insert error :- ", error: error, status: 0 }, { status: apiStatusFailureCode });
     }
-  else{
-    return NextResponse.json({ message: "FIle uploaded successfully",status:1 }, { status: apiStatusSuccessCode })
-  }  
+    else {
+      return NextResponse.json({ message: "FIle uploaded successfully", status: 1 }, { status: apiStatusSuccessCode })
+    }
 
   } catch (error) {
     return funSendApiException(error);

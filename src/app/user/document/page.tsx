@@ -727,7 +727,7 @@ const EmployeeDocuments = () => {
                                                                                     <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
                                                                                 </div>
                                                                                 <div className="user_document_right_card_download">
-                                                                                    <a href={doc.leap_customer_documents[0].bucket_url}>
+                                                                                    <a href={doc.leap_customer_documents[0].bucket_url} download>
                                                                                         <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
                                                                                             <g>
                                                                                                 <g fill="#000">
@@ -779,7 +779,7 @@ const EmployeeDocuments = () => {
                                                                                         <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
                                                                                     </div>
                                                                                     <div className="user_document_right_card_download">
-                                                                                        <a href={doc.leap_customer_documents[0].bucket_url}>
+                                                                                        <a href={doc.leap_customer_documents[0].bucket_url} download> 
                                                                                             <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
                                                                                                 <g>
                                                                                                     <g fill="#000">
@@ -799,7 +799,7 @@ const EmployeeDocuments = () => {
                                                                                         {doc.document_name}
                                                                                     </div>
                                                                                 </div>
-                                                                                {/* ------ */}
+                                                                                {/*------*/}
                                                                             </div>
                                                                         )
                                                                     })}

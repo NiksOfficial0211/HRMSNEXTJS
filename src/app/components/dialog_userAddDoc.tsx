@@ -16,7 +16,7 @@ interface FormEmpUploadDocDialog {
     customer_id: any
     emp_id: any,
     branch_id: any,
-    docTypeID: any
+    doc_type_id: any
     selectedFile: File | null,
     showToUsers: boolean
 }
@@ -24,10 +24,6 @@ interface FormEmpUploadDocDialog {
 const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, docType: any }) => {
 
     const [docTypes, setDocTypes] = useState<LeapDocumentType[]>([]);
-    const [employeeData, setEmployee] = useState<LeapEmployeeBasic[]>([]);
-    const [branchArray, setBranchArray] = useState<ClientBranchTableModel[]>([]);
-    const [branchSelected, setBranchSelected] = useState(false);
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
     const [alertForSuccess, setAlertForSuccess] = useState(0);
     const [alertTitle, setAlertTitle] = useState('');
@@ -36,17 +32,16 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
     const [alertEndContent, setAlertEndContent] = useState('');
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
-    const [employeeName, setEmployeeNames] = useState([{ value: '', label: '' }]);
-    const [inputData, setInputData] = useState<FormCompanyUploadDocDialog>({
-        docTypeID: "",
-        selectedFile: null,
-        showToUsers: false
-    });
+    // const [inputData, setInputData] = useState<FormCompanyUploadDocDialog>({
+    //     docTypeID: "",
+    //     selectedFile: null,
+    //     showToUsers: false
+    // });
     const [formFilledData, setformFilledData] = useState<FormEmpUploadDocDialog>({
         customer_id: "",
         emp_id: '',
         branch_id: '',
-        docTypeID: "",
+        doc_type_id: "",
         selectedFile: null,
         showToUsers: false
     });
@@ -60,13 +55,12 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         fetchData();
     }, []);
 
-
-    const [errors, setErrors] = useState<Partial<FormCompanyUploadDocDialog>>({});
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     const validate = () => {
-        const newErrors: Partial<FormCompanyUploadDocDialog> = {};
-        if (!inputData.docTypeID) newErrors.docTypeID = "required";
-        // if (!inputData.selectedFile) newErrors.selectedFile = "required";
+        const newErrors: { [key: string]: string } = {};
+        if (!formFilledData.doc_type_id) newErrors.doc_type_id = "required";
+        if (formFilledData.selectedFile == null) newErrors.selectedFile = "required";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -76,21 +70,21 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         const formData = new FormData();
         formData.append("uploadType", docType);
 
-        if (formFilledData.selectedFile == null) {
-            // return alert("Please select File to upload");
-            setShowAlert(true);
-            setAlertTitle("Error")
-            setAlertStartContent("No documents uploaded yet!");
-            setAlertForSuccess(2)
-        }
-        if (inputData.docTypeID.length > 0) {
-            return alert("Please select type of document");
-        }
+        // if (formFilledData.selectedFile == null) {
+        //     // return alert("Please select File to upload");
+        //     // setShowAlert(true);
+        //     setAlertTitle("Error")
+        //     setAlertStartContent("No documents uploaded yet!");
+        //     setAlertForSuccess(2)
+        // }
+        // if (formFilledData.docTypeID.length > 0) {
+        //     return alert("Please select type of document");
+        // }
         formData.append("client_id", contextClientID);
         formData.append("customer_id", contextCustomerID);
         formData.append("file", formFilledData.selectedFile!);
         formData.append("branch_id", contaxtBranchID);
-        formData.append("doc_type_id", formFilledData.docTypeID);
+        formData.append("doc_type_id", formFilledData.doc_type_id);
 
         try {
             const res = await fetch("/api/clientAdmin/org_documents", {
@@ -101,10 +95,17 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
             // console.log(response);
 
             if (response.status == 1) {
-                alert(response.message)
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent("Documents uploaded!");
+                setAlertForSuccess(2)
+                // alert(response.message)
                 onClose();
             } else {
-                alert(response.message)
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent("No Documents uploaded yet!");
+                setAlertForSuccess(2)
             }
         } catch (e) {
             console.log(e);
@@ -112,17 +113,15 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
         }
     };
 
-
-
-    const handleEmpInputChange = (e: any) => {
-        const { name, value, type, files } = e.target;
+    const handleEmpInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value, type, files } = e.target as HTMLInputElement;
         if (type === "file") {
-            setformFilledData((prev) => ({ ...prev, [name]: files[0] }));
+            const file = files ? files[0] : null;
+            setformFilledData((prev) => ({ ...prev, [name]: file }));
         } else {
             setformFilledData((prev) => ({ ...prev, [name]: value }));
         }
     };
-
     return (
         <div >
             <div className='rightpoup_close' onClick={onClose}>
@@ -145,13 +144,23 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                             <div className="nw_user_doc_mainbox">
                                 <div className="nw_user_doc_selectbox">
                                     <label htmlFor="exampleFormControlInput1" className="form-label" >Document Type</label>
-                                    <select id="docTypeID" name="docTypeID" className='form-select' onChange={handleEmpInputChange}>
+                                    {/* <select id="docTypeID" name="docTypeID" className='form-select' onChange={handleEmpInputChange}>
                                         <option value="">Select</option>
                                         {docTypes.map((type, index) => (
                                             <option value={type.id} key={index}>{type.document_name}</option>
                                         ))}
+                                    </select> */}
+
+
+                                    <select id="doc_type_id" name="doc_type_id" className='form-select' onChange={handleEmpInputChange}>
+                                        <option value="">Select</option>
+                                        {docTypes.map((type) => (
+                                            <option value={type.id} key={type.id}>{type.document_name}</option>
+                                        ))}
                                     </select>
-                                    {errors.docTypeID && <span className="error" style={{ color: "red" }}>{errors.docTypeID}</span>}
+                                    {errors.doc_type_id && <span className="error" style={{ color: "red" }}>{errors.doc_type_id}</span>}
+
+
                                 </div>
                                 <div className="nw_user_doc_uploadbox">
                                     <label htmlFor="selectedFile" className='nw_user_doc_upload_lablebox'>
@@ -163,17 +172,22 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                                             </svg>
                                         </div>
                                         <div className="user_upload_headingbox">
-                                            Choose a file
-                                            {/* or drag & drop it here. */}
+                                            {formFilledData.selectedFile
+                                                ? formFilledData.selectedFile.name
+                                                : "Choose a file"}
                                         </div>
                                         <div className="user_upload_subheadingbox">
-                                            DOC, PDF formats, up to 5 MB.
+                                            {formFilledData.selectedFile
+                                                ? `${(formFilledData.selectedFile.size / 1024).toFixed(1)} KB`
+                                                : "DOC, PDF formats, up to 5 MB."}
                                         </div>
+
                                         <div className="user_upload_btnbox">
                                             Browse File
                                         </div>
                                     </label>
                                     <input type="file" className="upload_document" name="selectedFile" id="selectedFile" onChange={handleEmpInputChange} />
+                                    {errors.selectedFile && <span className="error" style={{ color: "red" }}>{errors.selectedFile}</span>}
                                 </div>
                                 <div className="nw_user_doc_btnbox new_leave_formgoup_back_btn">
                                     <a className="red_button" onClick={uploadDocument}>Upload</a>

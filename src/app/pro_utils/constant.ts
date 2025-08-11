@@ -14,6 +14,7 @@ import { addErrorExceptionLog } from "./constantFunAddData";
 
 
 export function setUploadFileName(fileName: String) {
+  console.log("setUploadFileName called with fileName:", fileName);
   const name = fileName.replaceAll(" ", "_");
   const subSt = name.substring(0, name.lastIndexOf("."));
   return subSt + new Date().toLocaleDateString().replaceAll("/", "") + new Date().toLocaleTimeString().substring(0, 4).replaceAll(":", "") + name.substring(name.lastIndexOf("."));
