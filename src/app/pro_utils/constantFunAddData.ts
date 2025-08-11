@@ -175,7 +175,7 @@ export async function addErrorLog(client_id:any,actionType:any,errorJson:any,
 // console.log("uploaded file", uploadedFile.originalFilename)
     const originalFilename = uploadedFile.originalFilename.split("."); ;
     filename=setUploadFileName(originalFilename[0]+"_"+docType+"_"+customer_id+"."+originalFilename[originalFilename.length-1]);
-    console.log("filename", filename);
+    // console.log("filename", filename);
     uploadDir = path.join(process.cwd(), "/uploads/"+docType+"/"+client_id+"/"+getCurrentDateFormatted());
     const log1=await addErrorExceptionLog(client_id,customer_id,"Upload attendance start api called log 1",JSON.stringify({
         dirpath:uploadDir
