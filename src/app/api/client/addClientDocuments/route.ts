@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
   try {
     // const { data: user, error: userError } = await supabase.auth.getUser();
 
-
     // // Handle case where the user is not authenticated
     // if (userError || !user) {
     //   return NextResponse.json(

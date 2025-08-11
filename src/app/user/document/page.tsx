@@ -769,8 +769,9 @@ const EmployeeDocuments = () => {
                                                                         const docEntry = doc.leap_customer_documents?.[0]; // ✅ might be undefined
 
                                                                         const fileUrl = docEntry?.bucket_url ?? ""; // fallback to empty string
-                                                                        const fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
-                                                                        const fileExt = fileName.split(".").pop()?.toLowerCase() ?? "";
+                                                                        const fullFileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+                                                                        const fileExt = fullFileName.split(".").pop()?.toLowerCase() ?? "";
+                                                                        const originalFileName = fullFileName.replace(/_client_org_docs.*$/, "") + "." + fileExt;
                                                                         return (
                                                                             <div className="user_document_right_card_listing" key={index}>
                                                                                 {/* ------ */}
@@ -793,7 +794,8 @@ const EmployeeDocuments = () => {
                                                                                 </div>
                                                                                 <div className="user_document_right_card_content">
                                                                                     <div className="user_document_right_card_heading">
-                                                                                        {doc.leap_customer_documents[0].bucket_url.substring(doc.leap_customer_documents[0].bucket_url.lastIndexOf('/') + 1)}
+                                                                                        {/* {doc.leap_customer_documents[0].bucket_url.substring(doc.leap_customer_documents[0].bucket_url.lastIndexOf('/') + 1)} */}
+                                                                                        {originalFileName}
                                                                                     </div>
                                                                                     <div className="user_document_right_card_type">
                                                                                         {doc.document_name}
