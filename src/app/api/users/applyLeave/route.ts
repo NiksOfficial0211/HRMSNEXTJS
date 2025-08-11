@@ -6,15 +6,18 @@ import { error } from "console";
 import { funGetActivityTypeId } from "@/app/pro_utils/constantFunGetData";
 import { addUserActivities, apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 import { file } from "googleapis/build/src/apis/file";
+import { file } from "googleapis/build/src/apis/file";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   // console.log(request);
+  // console.log(request);
   let fileUploadResponse;
   try {
     const { fields, files } = await parseForm(request);
- 
-    if(files && files.file && files.file.length>0){
+      // console.log("------------------------",files);
+      
+    if(files && files.file && files.file.length>0) {
         fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id[0],"applied_leave_docs")
               
     }
