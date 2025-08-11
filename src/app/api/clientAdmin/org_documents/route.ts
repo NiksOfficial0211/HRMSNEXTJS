@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
     console.log("thsi is the doc type response ----==-=-=-", docType);
     let fileUploadResponse;
-    if(files || files.file[0]){
+    if(files || files.file){
           fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"client_org_docs")
       
     }

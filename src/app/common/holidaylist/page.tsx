@@ -179,10 +179,10 @@ const HolidayList = () => {
                                     Holiday <span>List</span>
                                 </div>
                                 <div className="col-lg-6 mb-2" style={{ textAlign: "right" }}>
-                                    <button className="red_button red_button2" onClick={() => setShowUploadDialog(true)}>Import</button>&nbsp;
-                                    <button className="red_button red_button2" onClick={() => setShowAddDialog(true)}>Add Holiday</button>&nbsp;
+                                    {holidayYearArray && holidayYearArray.length>0 && <button className="red_button red_button2" style={{ marginRight: "6px" }} onClick={() => setShowUploadDialog(true)}>Import</button>}
+                                    {holidayYearArray && holidayYearArray.length>0 && <button className="red_button red_button2 " style={{ marginRight: "px" }} onClick={() => setShowAddDialog(true)}>Add Holiday</button>}
                                     <button className="red_button red_button2" onClick={() => setShowHolidayDialog(true)}>Add Holiday Year</button>&nbsp;
-                                    <button className="red_button red_button2" onClick={() => downloadCSV()}>Export</button>
+                                    {holidays && holidays.length>0 && <button className="red_button red_button2" onClick={() => downloadCSV()}>Export</button>}
 
                                 </div>
                                 <div className={showAddDialog ? "rightpoup rightpoupopen" : "rightpoup"}> 
