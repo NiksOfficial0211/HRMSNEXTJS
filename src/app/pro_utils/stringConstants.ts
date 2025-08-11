@@ -132,6 +132,7 @@ export const deleteDataTypeProject="Project"
 export const deleteDataTypeSubProject="Sub Project"
 export const deleteDataTypeDepartment="Department"
 export const deleteDataTypeDesignation="Designation"
+export const deleteDataTypeHolidayYear="Holiday Year"
 export const deleteDataTypeBankComponent="Bank Component"
 export const deleteDataTypeAnnouncement="Announcement"
 

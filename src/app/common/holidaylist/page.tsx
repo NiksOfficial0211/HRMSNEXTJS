@@ -180,7 +180,7 @@ const HolidayList = () => {
                                 </div>
                                 <div className="col-lg-6 mb-2" style={{ textAlign: "right" }}>
                                     {holidayYearArray && holidayYearArray.length>0 && <button className="red_button red_button2" style={{ marginRight: "6px" }} onClick={() => setShowUploadDialog(true)}>Import</button>}
-                                    {holidayYearArray && holidayYearArray.length>0 && <button className="red_button red_button2 " style={{ marginRight: "px" }} onClick={() => setShowAddDialog(true)}>Add Holiday</button>}
+                                    {holidayYearArray && holidayYearArray.length>0 && <button className="red_button red_button2 " style={{ marginRight: "6px" }} onClick={() => setShowAddDialog(true)}>Add Holiday</button>}
                                     <button className="red_button red_button2" onClick={() => setShowHolidayDialog(true)}>Add Holiday Year</button>&nbsp;
                                     {holidays && holidays.length>0 && <button className="red_button red_button2" onClick={() => downloadCSV()}>Export</button>}
 
@@ -189,7 +189,7 @@ const HolidayList = () => {
                                 {showAddDialog && <AddHolidayForm onClose={() => setShowAddDialog(false)} />}
                                 </div>
                                  <div className={showHolidayDialog ? "rightpoup rightpoupopen" : "rightpoup"}>    
-                                {showHolidayDialog && <AddHolidayYear onClose={() => setShowHolidayDialog(false)} />}
+                                {showHolidayDialog && <AddHolidayYear onClose={() => setShowHolidayDialog(false)} isedit={false} editid={0}  />}
                                 </div>
                                 <div className={showUploadDialog ? "rightpoup rightpoupopen" : "rightpoup"}> 
 

@@ -13,11 +13,12 @@ import Select from "react-select";
 import AddBranchDetails from '@/app/components/dialog_addClientBranch'
 import DialogClientAddDesignationDepartment from '@/app/components/dialog_addDesignationsDepartment'
 import DeleteConfirmation from '@/app/components/dialog_deleteConfirmation'
-import { ALERTMSG_exceptionString, deleteDataTypeBankComponent, deleteDataTypeDepartment, deleteDataTypeDesignation, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_exceptionString, deleteDataTypeBankComponent, deleteDataTypeDepartment, deleteDataTypeDesignation, deleteDataTypeHolidayYear, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import DialogAddEditBankComponents from '@/app/components/dialog_addEditBankComponents'
 import { useRouter } from 'next/navigation'
 import ShowAlertMessage from '@/app/components/alert'
 import LeaveTypeUpdate from '@/app/components/dialog_leaveType'
+import AddHolidayYear from '@/app/components/dialog_addHolidayYear'
 
 interface SearchValues {
     designationSearchText: any,
@@ -72,12 +73,14 @@ const ClientAdminSettings = () => {
 
     const [showDeleteDesignation, setShowDeleteDesignation] = useState(false);
     const [showDeleteDepartment, setShowDeleteDepartment] = useState(false);
+    const [showDeleteHolidayYear, setShowDeleteHolidayYear] = useState(false);
 
     const [dataEditID, setDataEditID] = useState(-1);
     const [dataEditDetail, setDataEditDetail] = useState('');
 
     const [showEditDesignation, setShowEditDesignation] = useState(false);
     const [showEditDepartment, setShowEditDepartment] = useState(false);
+    const [showEditHolidayYear, setShowEdithHolidayYear] = useState(false);
 
     const [arePermissionChanged, setArePermissionsChanged] = useState(false);
     const [errors, setErrors] = useState<Partial<WorkingFormValues>>({});
@@ -877,16 +880,16 @@ const ClientAdminSettings = () => {
                                                             <img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid mr-2" style={{ maxHeight: '18px', marginLeft: "8px" }}
                                                                 onClick={() => {
                                                                     setDataEditID(holiday.id);
-                                                                    setShowEditDepartment(true);
-                                                                    setDataEditDetail(holiday.list_name)
+                                                                    setShowEdithHolidayYear(true);
+                                                                    setDataEditDetail(holiday.list_name);
                                                                 }}
                                                             />
 
                                                             <img src={staticIconsBaseURL+"/images/delete.png"} className="img-fluid mr-2" style={{ maxHeight: '18px', marginLeft: "5px" }}
                                                                 onClick={() => {
                                                                     setdataDeleteID(holiday.id);
-                                                                    setShowDeleteDepartment(true);
-                                                                    setDataDeleteDetail(holiday.list_name)
+                                                                    setShowDeleteHolidayYear(true);
+                                                                    setDataDeleteDetail(holiday.list_name);
                                                                 }}
                                                             />
                                                         </div>
@@ -912,8 +915,18 @@ const ClientAdminSettings = () => {
                     <div className={showAddDesignation ? "rightpoup rightpoupopen" : "rightpoup"}>
                         {showAddDesignation && <DialogClientAddDesignationDepartment onClose={() => { setShowAddDesignation(false)}} isDesignationAdd={true} editDataType={''} editID={-1} dataToEdit={''} />}
                     </div>
+
+                    <div className={showEditHolidayYear ? "rightpoup rightpoupopen" : "rightpoup"}>
+                        {showEditHolidayYear && <AddHolidayYear onClose={() => { setShowEdithHolidayYear(false) } } isedit={true} editid={dataEditID} />}
+                    </div>
                     
-                    
+                    {showDeleteHolidayYear && <DeleteConfirmation
+                        onClose={() => { setShowDeleteDesignation(false), fetchData() }}
+                        id={dataDeleteID}
+                        deletionType={deleteDataTypeHolidayYear}
+                        deleteDetail={dataDeleteDetail}
+                    />
+                    }
                     {showDeleteDesignation && <DeleteConfirmation
                         onClose={() => { setShowDeleteDesignation(false), fetchData() }}
                         id={dataDeleteID}
