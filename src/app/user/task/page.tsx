@@ -5,7 +5,6 @@
 import React, { ChangeEvent } from 'react'
 import LeapHeader from '@/app/components/header'
 import Footer from '@/app/components/footer'
-import LoadingDialog from '@/app/components/PageLoader'
 import { useEffect, useState } from 'react'
 import supabase from '@/app/api/supabaseConfig/supabase'
 import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
@@ -22,17 +21,17 @@ import EmployeeTaskData from '@/app/components/dialog_userTaskDetails'
 import TeamTaskData from '@/app/components/dialog_teamTask'
 
 interface filterApply {
-    date: any,
-    projectID: any,
-    empName: any,
-    taskStatus: any,
-    customerID: any
+    date: string,
+    projectID: string,
+    empName: string,
+    taskStatus: string,
+    customerID: string
 }
 const EmployeeLeaveList = () => {
-    const [taskarray, setTask] = useState<Task[]>([]);
+    const [taskArray, setTask] = useState<Task[]>([]);
     const [teamTaskarray, setTeamTask] = useState<Task[]>([]);
     const [projectTaskarray, setProjectTask] = useState<Task[]>([]);
-    const [assignedTaskarray, setAssignedTask] = useState<AssignedTask[]>([]);
+    const [assignedTaskArray, setAssignedTaskArray] = useState<AssignedTask[]>([]);
     const { contextClientID, contextRoleID, contextCustomerID, contaxtBranchID } = useGlobalContext();
     const [scrollPosition, setScrollPosition] = useState(0);
     const [selectedPage, setSelectedPage] = useState(1);
@@ -58,24 +57,26 @@ const EmployeeLeaveList = () => {
     const [selectedEmployee, setSelectedEmp] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const subProject = await getProjects(contextClientID);
-            setProject(subProject);
-            const statusID = await getStatus();
-            setStatus(statusID);
-            const empData = await getEmployee(contextCustomerID, contaxtBranchID);
-            let name: any[] = []
-            for (let i = 0; i < empData.length; i++) {
-                name.push({
-                    value: empData[i].customer_id,
-                    label: empData[i].emp_id + "  " + empData[i].name,
-                })
-            }
-            setEmployeeNames(name);
+    // Move fetchData outside useEffect
+    const fetchData = async (contextClientID: any, contextCustomerID: any, contaxtBranchID: any) => {
+        const subProject = await getProjects(contextClientID);
+        setProject(subProject);
+        const statusID = await getStatus();
+        setStatus(statusID);
+        const empData = await getEmployee(contextCustomerID, contaxtBranchID);
+        let name: any[] = []
+        for (let i = 0; i < empData.length; i++) {
+            name.push({
+                value: empData[i].customer_id,
+                label: empData[i].emp_id + "  " + empData[i].name,
+            })
         }
+        setEmployeeNames(name);
+        console.log("manager id", contextCustomerID)
+    }
 
-        fetchData();
+    useEffect(() => {
+        fetchData(contextClientID, contextCustomerID, contaxtBranchID);
         fetchTasks("", "", "", "");
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
@@ -91,7 +92,7 @@ const EmployeeLeaveList = () => {
             window.removeEventListener('scroll', handleScroll);
         };
 
-    }, [selectedPage])
+    }, [selectedPage, contextClientID, contextCustomerID, contaxtBranchID])
 
     const fetchTasks = async (filterID: any, valueDate: any, valueProject: any, valueStatus: any) => {
         setViewIndex(0)
@@ -159,7 +160,7 @@ const EmployeeLeaveList = () => {
         try {
             let formData = {
                 "assigned_to": contextCustomerID,
-                "task_date": formatDateYYYYMMDD(selectedDate),
+                "task_date": selectedDate,
                 "sub_project_id": selectedProject
             }
             if (filterID == 1) {
@@ -181,9 +182,9 @@ const EmployeeLeaveList = () => {
 
             const taskData = response.data;
             if (response.status == 1) {
-                setAssignedTask(taskData);
+                setAssignedTaskArray(taskData);
             } else {
-                setAssignedTask([]);
+                setAssignedTaskArray([]);
                 // setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("Failed to load tasks");
@@ -200,11 +201,11 @@ const EmployeeLeaveList = () => {
     };
     const fetchTeamTasks = async (filterID: any, valueDate: any, valueEmp: any) => {
         setViewIndex(2)
-        console.log("index: ", viewIndex)
+        // console.log("index: ", viewIndex)
         try {
             let formData = {
                 "manager_id": contextCustomerID,
-                "task_date": formatDateYYYYMMDD(selectedDate),
+                "task_date": selectedDate,
                 "customer_id": selectedEmployee,
                 // "sub_project_id": "",
                 // "task_status": ""
@@ -249,8 +250,9 @@ const EmployeeLeaveList = () => {
             setAlertTitle("Exception")
             setAlertStartContent(ALERTMSG_exceptionString);
             setAlertForSuccess(2)
+        } finally {
+            setLoadingCursor(false);
         }
-        setLoadingCursor(false);
     };
     const fetchProjectTasks = async (filterID: any, valueDate: any, valueProject: any) => {
         setViewIndex(3)
@@ -259,11 +261,10 @@ const EmployeeLeaveList = () => {
             let formData = {
                 "project_manager_id": contextCustomerID,
                 "task_date": selectedDate,
-                // "customer_id": 0,
                 "sub_project_id": selectedProject
             }
             if (filterID == 1) {
-                let taskDate = filters.date.length > 0 && filters.date == valueDate ? filters.date : valueDate;
+                let taskDate = formatDateYYYYMMDD(filters.date == valueDate ? filters.date : valueDate);
                 formData = {
                     ...formData,
                     "task_date": taskDate
@@ -277,15 +278,14 @@ const EmployeeLeaveList = () => {
                 }
             }
 
-
             const res = await fetch(`/api/users/getProjectTasks`, {
                 method: "POST",
                 body: JSON.stringify({
-
+                    formData
                 }),
             });
             const response = await res.json();
-            console.log(response);
+            // console.log(response);
 
             const taskData = response.taskdata;
             if (response.status == 1) {
@@ -325,13 +325,13 @@ const EmployeeLeaveList = () => {
             // fetchAssignedTasks(1,selectedDate,  value );
             // fetchTeamTasks(2, value);
             fetchProjectTasks(2, selectedDate, value);
-        }
-        if (name == "taskStatus") {
-            setFilters((prev) => ({ ...prev, ['taskStatus']: value }));
-            setSelectedProject(value);
-            fetchTasks(3, selectedDate, selectedProject, value);
-            // fetchTeamTasks(3, value)
-            // fetchProjectTasks(3, value);
+            if (name == "taskStatus") {
+                setFilters((prev) => ({ ...prev, ['taskStatus']: value }));
+                setSelectedStatus(value);
+                fetchTasks(3, selectedDate, selectedProject, value);
+                // fetchTeamTasks(3, value)
+                // fetchProjectTasks(3, value);
+            }
         }
     };
 
@@ -354,7 +354,6 @@ const EmployeeLeaveList = () => {
         }
     };
     const handleEmpSelectChange = async (values: any) => {
-        setEmployeeNames(values)
         setSelectedEmp(values)
         // fetchProjectTasks(4, selectedDate, values.value);
         fetchTeamTasks(4, selectedDate, values.value);
@@ -725,8 +724,8 @@ const EmployeeLeaveList = () => {
                                                                         <div className="col-lg-4 text-center"><div className="label">Details</div></div>
                                                                         <div className="col-lg-1 text-center"><div className="label">Status</div></div>
                                                                     </div>
-                                                                    {taskarray.length > 0 ? (
-                                                                        taskarray?.map((list) => (
+                                                                    {taskArray.length > 0 ? (
+                                                                        taskArray?.map((list) => (
                                                                             <div className="list_listbox" key={list.id}>
                                                                                 <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                     <div className="row">
@@ -734,11 +733,25 @@ const EmployeeLeaveList = () => {
                                                                                         <div className="col-lg-2 text-center">{list.leap_client_sub_projects.sub_project_name}</div>
                                                                                         <div className="col-lg-2 text-center">{list.leap_project_task_types.task_type_name}</div>
                                                                                         <div className="col-lg-4 text-center restrict_two_lines">{list.task_details || "--"}</div>
-                                                                                        {list.task_status === 3 ? (
+                                                                                        {/* {list.task_status === 3 ? (
                                                                                             <><div className="col-lg-1 text-center" style={{ color: "green" }}>{list.leap_task_status.status}</div></>
                                                                                         ) :
                                                                                             <><div className="col-lg-1 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
-                                                                                        }
+                                                                                        } */}
+                                                                                        {list.task_status === 1 ? (
+                                                                                                    <><div className="col-lg-1 text-center" style={{ color: "#9e9e9e" }}>{list.leap_task_status.status}</div></>
+                                                                                                ) : list.task_status === 2 ? (
+                                                                                                    <><div className="col-lg-1 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
+                                                                                                ) : list.task_status === 3 ? (
+                                                                                                    <><div className="col-lg-1 text-center" style={{ color: "#388e3c" }}>{list.leap_task_status.status}</div></>
+                                                                                                ): list.task_status === 4 ? (
+                                                                                                    <><div className="col-lg-1 text-center" style={{ color: "#d32f2f" }}>{list.leap_task_status.status}</div></>
+                                                                                                ): list.task_status === 5 ? (
+                                                                                                    <><div className="col-lg-1 text-center" style={{ color: "#1976d2" }}>{list.leap_task_status.status}</div></>
+                                                                                                ): list.task_status === 6 ? (
+                                                                                                    <><div className="col-lg-1 text-center" style={{ color: "#d32f2f" }}>{list.leap_task_status.status}</div></>
+                                                                                                ) : < div />
+                                                                                                    }
                                                                                         <div className="col-lg-1 text-center">
                                                                                             {list.leap_task_status.status == "Completed" ? <img src={staticIconsBaseURL + "/images/ic_eye.png"} style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(false) }} /> :
                                                                                                 <img src={staticIconsBaseURL + "/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setShowDialog(true); setisToBeEdited(true) }} />
@@ -778,8 +791,8 @@ const EmployeeLeaveList = () => {
                                                                             <div className="col-lg-2 text-center"><div className="label">Deadline</div></div>
                                                                             <div className="col-lg-2 text-center"><div className="label">Assigned By</div></div>
                                                                         </div>
-                                                                        {assignedTaskarray.length > 0 ? (
-                                                                            assignedTaskarray?.map((list) => (
+                                                                        {assignedTaskArray.length > 0 ? (
+                                                                            assignedTaskArray?.map((list) => (
                                                                                 <div className="list_listbox" key={list.id}>
                                                                                     <div className="list_listing" style={{ backgroundColor: "#fff" }}>
                                                                                         <div className="row">
@@ -822,8 +835,8 @@ const EmployeeLeaveList = () => {
                                                                             <div className="row list_label mb-4">
                                                                                 <div className="col-lg-2 text-center"><div className="label">Employee Name</div></div>
                                                                                 <div className="col-lg-2 text-center"><div className="label">Date</div></div>
-                                                                                <div className="col-lg-2 text-center"><div className="label">Client</div></div>
                                                                                 <div className="col-lg-2 text-center"><div className="label">Project</div></div>
+                                                                                <div className="col-lg-2 text-center"><div className="label">Description</div></div>
                                                                                 <div className="col-lg-2 text-center"><div className="label">Status</div></div>
                                                                             </div>
                                                                             {teamTaskarray.length > 0 ? (
@@ -833,13 +846,23 @@ const EmployeeLeaveList = () => {
                                                                                             <div className="row">
                                                                                                 <div className="col-lg-2 text-center">{list.leap_customer.name}</div>
                                                                                                 <div className="col-lg-2 text-center">{list.task_date}</div>
-                                                                                                <div className="col-lg-2 text-center">{list.leap_client_sub_projects.leap_client_project.project_name}</div>
+                                                                                                {/* <div className="col-lg-2 text-center">{list.leap_client_sub_projects.leap_client_project.project_name}</div> */}
                                                                                                 <div className="col-lg-2 text-center">{list.leap_client_sub_projects.sub_project_name}</div>
-                                                                                                {list.task_status === 3 ? (
-                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "green" }}>{list.leap_task_status.status}</div></>
-                                                                                                ) :
+                                                                                                <div className="col-lg-2 text-center">{list.task_details}</div>
+                                                                                                {list.task_status === 1 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#9e9e9e" }}>{list.leap_task_status.status}</div></>
+                                                                                                ) : list.task_status === 2 ? (
                                                                                                     <><div className="col-lg-2 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
-                                                                                                }
+                                                                                                ) : list.task_status === 3 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#388e3c" }}>{list.leap_task_status.status}</div></>
+                                                                                                ): list.task_status === 4 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#d32f2f" }}>{list.leap_task_status.status}</div></>
+                                                                                                ): list.task_status === 5 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#1976d2" }}>{list.leap_task_status.status}</div></>
+                                                                                                ): list.task_status === 6 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#d32f2f" }}>{list.leap_task_status.status}</div></>
+                                                                                                ) : < div />
+                                                                                                    }
                                                                                                 <div className="col-lg-1 text-center">
                                                                                                     {list.leap_approval_status.approval_type == "Pending" ?
                                                                                                         <img src={staticIconsBaseURL + "/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
@@ -855,6 +878,27 @@ const EmployeeLeaveList = () => {
                                                                                     <PageErrorCenterContent content={"No tasks yet"} />
                                                                                 </div>
                                                                             )}
+                                                                            {/* <div className="list_listbox" >
+                                                                                <div className="list_listing" style={{ backgroundColor: "#fff" }}>
+                                                                                    <div className="row">
+                                                                                        <div className="col-lg-2 text-center">Deeksha Gupta</div>
+                                                                                        <div className="col-lg-2 text-center">12-08-2025</div>
+
+                                                                                        <div className="col-lg-2 text-center">Solar County</div>
+                                                                                        <div className="col-lg-2 text-center">Ui changes testing</div>
+                                                                                        <><div className="col-lg-2 text-center" style={{ color: "green" }}>Completed</div></>
+
+
+
+                                                                                        <div className="col-lg-1 text-center">
+                                                                                            <img src={staticIconsBaseURL + "/images/edit.png"} className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(0); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
+
+                                                                                            
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div> */}
+
                                                                             {/* {showDialog && <TaskUpdate id={editTaskId} onClose={() => { setShowDialog(false), fetchTasks("","") }} />} */}
                                                                         </div>
                                                                     </div>
@@ -871,9 +915,9 @@ const EmployeeLeaveList = () => {
                                                                         <div className="row">
                                                                             <div className="col-lg-12">
                                                                                 <div className="row list_label mb-4">
-                                                                                    <div className="col-lg-2 text-center"><div className="label">Client</div></div>
-                                                                                    <div className="col-lg-3 text-center"><div className="label">Project</div></div>
-                                                                                    <div className="col-lg-2 text-center"><div className="label">Employee Name</div></div>
+                                                                                    <div className="col-lg-2 text-center"><div className="label">Project</div></div>
+                                                                                    <div className="col-lg-3 text-center"><div className="label">Employee Name</div></div>
+                                                                                    <div className="col-lg-2 text-center"><div className="label">Description</div></div>
                                                                                     <div className="col-lg-2 text-center"><div className="label">Date</div></div>
                                                                                     <div className="col-lg-2 text-center"><div className="label">Status</div></div>
                                                                                 </div>
@@ -886,11 +930,20 @@ const EmployeeLeaveList = () => {
                                                                                                     <div className="col-lg-3 text-center">{list.leap_client_sub_projects.sub_project_name}</div>
                                                                                                     <div className="col-lg-2 text-center">{list.leap_customer.name}</div>
                                                                                                     <div className="col-lg-2 text-center">{list.task_date}</div>
-                                                                                                    {/* <div className="col-lg-2 text-center">{list.leap_task_status.status}</div> */}
-                                                                                                    {list.task_status === 3 ? (
-                                                                                                        <><div className="col-lg-2 text-center" style={{ color: "green" }}>{list.leap_task_status.status}</div></>
-                                                                                                    ) :
-                                                                                                        <><div className="col-lg-2 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
+                                                                                                    <div className="col-lg-2 text-center">{list.leap_task_status.status}</div>
+                                                                                                    {list.task_status === 1 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#9e9e9e" }}>{list.leap_task_status.status}</div></>
+                                                                                                ) : list.task_status === 2 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "orange" }}>{list.leap_task_status.status}</div></>
+                                                                                                ) : list.task_status === 3 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#388e3c" }}>{list.leap_task_status.status}</div></>
+                                                                                                ): list.task_status === 4 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#d32f2f" }}>{list.leap_task_status.status}</div></>
+                                                                                                ): list.task_status === 5 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#1976d2" }}>{list.leap_task_status.status}</div></>
+                                                                                                ): list.task_status === 6 ? (
+                                                                                                    <><div className="col-lg-2 text-center" style={{ color: "#d32f2f" }}>{list.leap_task_status.status}</div></>
+                                                                                                ) : < div />
                                                                                                     }
                                                                                                     <div className="col-lg-1 text-center ">
                                                                                                         {list.leap_approval_status.approval_type == "Pending" ?
@@ -907,6 +960,26 @@ const EmployeeLeaveList = () => {
                                                                                         <PageErrorCenterContent content={"No tasks yet"} />
                                                                                     </div>
                                                                                 )}
+                                                                                {/* <div className="list_listbox" >
+                                                                                            <div className="list_listing" style={{ backgroundColor: "#fff" }}>
+                                                                                                <div className="row">
+                                                                                                    <div className="col-lg-2 text-center">Byyu</div>
+                                                                                                    <div className="col-lg-3 text-center">Ritika</div>
+                                                                                                    <div className="col-lg-2 text-center">API changes for user module</div>
+                                                                                                    <div className="col-lg-2 text-center">12-08-25</div>
+                                                                                                     <div className="col-lg-2 text-center">{list.leap_task_status.status}</div>
+                                                                                                    
+                                                                                                        <><div className="col-lg-2 text-center" style={{ color: "orange" }}>To do</div></>
+                                                                                                
+                                                                                                    <div className="col-lg-1 text-center ">
+                                                                                                        
+                                                                                                            <img src="/images/edit.png" className="img-fluid edit-icon" title='View/Edit' alt="Search Icon" style={{ width: "20px", cursor: "pointer", paddingBottom: "0px", alignItems: "center" }} onClick={() => { setEditTaskId(list.id); setNumId(2); setShowDialog1(true); setisToBeEdited(true) }} /> :
+                                                                                                            <img src="/images/ic_eye.png" style={{ width: "20px", paddingBottom: "5px", alignItems: "center" }} alt="Search Icon" onClick={() => { setEditTaskId(0); setNumId(2); setShowDialog(true); setisToBeEdited(false) }} />
+                                                                                                       
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>*/}
                                                                                 {/* {showDialog && <TaskUpdate id={editTaskId} onClose={() => { setShowDialog(false), fetchTasks("","") }} />} */}
                                                                             </div>
                                                                         </div>

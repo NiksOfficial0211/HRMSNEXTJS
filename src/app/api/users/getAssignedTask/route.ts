@@ -6,7 +6,7 @@ import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
 export async function POST(request: NextRequest) {
 
     try {
-        const {client_id, assigned_to, project_id, task_date, task_status, id, branch_id } = await request.json();
+        const {client_id, assigned_to, task_date, task_status, id, branch_id } = await request.json();
         // const fdata = {
         //     clientID: formData.get('client_id'),
         //     assigned_to: formData.get('assigned_to'),
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
         //     id: formData.get('id')
         // }
         let query = supabase.from('leap_customer_project_task_assignment')
-            .select('*, leap_task_priority_level(*), leap_task_status(*), leap_client_sub_projects(sub_project_name,leap_client_project(project_name)),leap_project_task_types(task_type_name),  leap_customer!leap_task_assignment_assigned_by_fkey(name)')
+            .select('*, leap_task_priority_level(*), leap_task_status(*), leap_client_sub_projects(sub_project_name),leap_project_task_types(task_type_name),  leap_customer!leap_task_assignment_assigned_by_fkey(name)')
             
             .order('updated_at', {ascending:false});
 
@@ -29,9 +29,7 @@ export async function POST(request: NextRequest) {
         if (funISDataKeyPresent(assigned_to)) {
             query = query.eq('assigned_to', assigned_to)
         }
-        if (funISDataKeyPresent(project_id)) {
-            query = query.eq('project_id', project_id)
-        }
+       
         if (funISDataKeyPresent(task_date)) {
             query = query.eq('task_date', task_date)
         }

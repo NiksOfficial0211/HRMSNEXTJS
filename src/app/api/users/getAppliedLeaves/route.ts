@@ -12,9 +12,8 @@ export async function POST(request: NextRequest) {
     const pageSize = parseInt(searchParams.get("limit") || ""); // Default: 20 per page
 
     let leaveBalances;
-    const { client_id, branch_id, start_date, end_date, id, leave_status, customer_id } = await request.json();
+    const { client_id, branch_id, start_date, end_date, id, leave_status, customer_id,  leave_type } = await request.json();
    
-
     const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
 
@@ -34,6 +33,9 @@ export async function POST(request: NextRequest) {
     if (customer_id && customer_id != "0") {
       query = query.eq('customer_id', customer_id);
       leaveBalances = await funGetMyLeaveBalance(client_id, branch_id, customer_id, 5);
+    }
+    if (leave_type && leave_type !== "0") {
+      query = query.eq('leave_type', leave_type);
     }
     // if(funISDataKeyPresent(start_date) && funISDataKeyPresent(end_date)!){
     //       query=query.gte('from_date',start_date).lte('to_date',start_date);
