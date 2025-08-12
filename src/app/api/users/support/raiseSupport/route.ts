@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     if (supportError) {
       return funSendApiErrorMessage(supportError, "Failed to raise support ticket");
     }
-    const addActivity= await addUserActivities(client_id, customer_id, branch_id, "Support", type_id, supportData[0].id);
+    const addActivity= await addUserActivities(client_id, customer_id, branch_id, "Support", type_id, supportData[0].id,false);
         if(addActivity=="1"){
           return funSendApiErrorMessage(addActivity, "Customer Support Activity Insert Issue");
         }

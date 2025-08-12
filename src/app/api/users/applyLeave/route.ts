@@ -6,7 +6,6 @@ import { error } from "console";
 import { funGetActivityTypeId } from "@/app/pro_utils/constantFunGetData";
 import { addUserActivities, apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 import { file } from "googleapis/build/src/apis/file";
-import { file } from "googleapis/build/src/apis/file";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
@@ -45,7 +44,7 @@ export async function POST(request: NextRequest) {
       return funSendApiErrorMessage(error, "Customer Apply Leave Insert Issue");
     }
     
-    const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],fields.branch_id[0],"Leave",fields.leave_type[0],data[0].id);
+    const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],fields.branch_id[0],"Leave",fields.leave_type[0],data[0].id,false);
     if(addActivity=="1"){
       return funSendApiErrorMessage(addActivity, "Customer Leave Activity Insert Issue");
     }

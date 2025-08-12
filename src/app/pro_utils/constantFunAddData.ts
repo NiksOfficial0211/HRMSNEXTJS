@@ -51,7 +51,7 @@ export async function funAddSubProject(
 }
 
 export async function addUserActivities(client_id:any,customer_id:any,branchId:any,
-                                    activityType:any,activityDetail:any,activityRelatedID:any){
+                                    activityType:any,activityDetail:any,activityRelatedID:any,user_notify:boolean){
     let getEmployeeQwery = supabase.from("leap_customer")
     .select(`*,leap_client_designations(*),leap_client_departments(*)`)
           .eq('client_id', client_id)
@@ -83,7 +83,7 @@ export async function addUserActivities(client_id:any,customer_id:any,branchId:a
         customer_image:employeeData[0].profile_pic ? employeeData[0].profile_pic: "",
         activity_related_id:activityRelatedID,
         activity_status:1,
-        
+        user_notify:user_notify,
         created_at: new Date()
       });
       

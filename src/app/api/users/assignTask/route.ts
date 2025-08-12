@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         if (taskError) {
             return funSendApiErrorMessage(taskError, "Failed to add task");
         }
-        const addActivity= await addUserActivities(client_id,assigned_to,"","Work task", task_details, TaskData[0].id);
+        const addActivity= await addUserActivities(client_id,assigned_to,"","Work task", task_details, TaskData[0].id,true);
             if(addActivity=="1"){
               return funSendApiErrorMessage(addActivity, "Customer Leave Activity Insert Issue");
             }

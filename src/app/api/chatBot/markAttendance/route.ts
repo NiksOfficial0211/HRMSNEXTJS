@@ -227,7 +227,6 @@ async function getCustomerClientIds(contact_number: number) {
     const { data, error } = await supabase
         .from('leap_customer')
         .select('customer_id, client_id')
-        .select('customer_id, client_id')
         .eq('contact_number', contact_number);
 
     if (error) throw error;

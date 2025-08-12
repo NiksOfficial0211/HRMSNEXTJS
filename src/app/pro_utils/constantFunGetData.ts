@@ -526,7 +526,7 @@ export async function getDashboardAllActivitiesOfUsers(clientId: any, branchId: 
     const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
     const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
     let qwery = supabase.from("leap_client_useractivites")
-      .select(`*,leap_user_activity_type(*)`).eq('client_id', clientId).gte("created_at", startOfDay)
+      .select(`*,leap_user_activity_type(*)`).eq('client_id', clientId).eq("user_notify",false).gte("created_at", startOfDay)
       .lt("created_at", endOfDay);
 
 
