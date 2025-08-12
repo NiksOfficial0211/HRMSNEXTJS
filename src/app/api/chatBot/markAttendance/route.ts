@@ -256,8 +256,7 @@ async function getTodayAttendance(attendanceID: number) {
     return data;
 }
 
-async function getAttendanceGeoLocation(attendanceID: number) {
-    ``
+async function getAttendanceGeoLocation(attendanceID: number) {``
     const { data, error } = await supabase
         .from('leap_customer_attendance_geolocation')
         .select()
