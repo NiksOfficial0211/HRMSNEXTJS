@@ -161,6 +161,9 @@ const DialogUserUploadDocument = ({ onClose, docType }: { onClose: () => void, d
                                     {errors.doc_type_id && <span className="error" style={{ color: "red" }}>{errors.doc_type_id}</span>}
 
 
+                                    {errors.doc_type_id && <span className="error" style={{ color: "red" }}>{errors.doc_type_id}</span>}
+
+
                                 </div>
                                 <div className="nw_user_doc_uploadbox">
                                     <label htmlFor="selectedFile" className='nw_user_doc_upload_lablebox'>
@@ -212,6 +215,7 @@ async function getDocumentsTypes() {
         .from('leap_document_type')
         .select()
         .eq("document_type_id", 5);
+        
 
     const { data, error } = await query;
 

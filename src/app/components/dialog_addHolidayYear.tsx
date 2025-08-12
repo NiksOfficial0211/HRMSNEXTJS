@@ -156,14 +156,15 @@ const AddHolidayYear = ({ isedit,editid,onClose }: { isedit:boolean,editid:numbe
                 body: formData,
                 });
             }
-            // const response = await res.json();
+            const res = await response.json();
             console.log(response);
-            if (response.ok) {
+            if (response.ok && res.status == 1) {
 
                 setLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Success")
-                setAlertStartContent("Holiday year added successfully.");
+                
+                setAlertStartContent(isedit?"Holiday year updated successfully.":"Holiday year added successfully.");
                 setAlertForSuccess(1)
 
             } else {
@@ -260,7 +261,7 @@ const AddHolidayYear = ({ isedit,editid,onClose }: { isedit:boolean,editid:numbe
                             </div>
                             <div className="col-lg-12">
                                 <label className="switch">
-                                    <input type="checkbox" name="show_employee" onChange={handleInputChange} />
+                                    <input type="checkbox" name="show_employee" checked={formHolidayValues.show_employee} onChange={handleInputChange} />
                                     <span className="slider round"></span>
                                 </label>
                             </div>

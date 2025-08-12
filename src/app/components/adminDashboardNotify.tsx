@@ -45,7 +45,7 @@ const AdminDashboardNotify = ({ activity }: { activity: LeapUserActivitiesModel 
             setLeaveToBeEdited(false)
             router.push(pageURL_leaveListingPage); 
             // return pageURL_leaveListingPage;
-        }else if(activity.activity_type_id==3){
+        }else if(activity.activity_type_id==2){
             setGlobalState({
                 contextUserName: contextUserName,
                 contextClientID: contextClientID,
@@ -70,7 +70,7 @@ const AdminDashboardNotify = ({ activity }: { activity: LeapUserActivitiesModel 
             setLeaveToBeEdited(false)
             router.push(pageURL_ProjectsTaskPage); 
             // return pageURL_leaveListingPage;
-        }else{
+        }else if(activity.activity_type_id==1){
             setGlobalState({
                 contextUserName: contextUserName,
                 contextClientID: contextClientID,

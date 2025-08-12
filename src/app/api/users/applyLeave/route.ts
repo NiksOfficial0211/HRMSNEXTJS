@@ -10,6 +10,7 @@ export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   // console.log(request);
+  // console.log(request);
   let fileUploadResponse;
   try {
     const { fields, files } = await parseForm(request);
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
       return funSendApiErrorMessage(error, "Customer Apply Leave Insert Issue");
     }
     
-    const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],fields.branch_id[0],"Leave",fields.leave_type[0],data[0].id);
+    const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],fields.branch_id[0],"Leave",fields.leave_type[0],data[0].id,false);
     if(addActivity=="1"){
       return funSendApiErrorMessage(addActivity, "Customer Leave Activity Insert Issue");
     }

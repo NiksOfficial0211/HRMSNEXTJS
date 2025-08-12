@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
     else{
         let fileUploadResponse;
-            if(files || files.file[0]){
+            if(files && files.file && files.file.length>0){
                   fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"client_project_logo")
               
             }

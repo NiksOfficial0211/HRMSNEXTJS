@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const { fields, files } = await parseForm(request);
  
      let fileUploadResponse;
-      if(files || files.file[0]){
+      if(files && files.file && files.file.length>0){
                       fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id[0],"applied_leave_docs")
                     
                   }
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       return funSendApiErrorMessage(error, "Customer Apply Leave Insert Issue");
     }
     
-    const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],fields.branch_id[0],"Leave",fields.leave_type[0],fields.leave_id[0]);
+    const addActivity= await addUserActivities(fields.client_id[0],fields.customer_id[0],fields.branch_id[0],"Leave",fields.leave_type[0],fields.leave_id[0],false);
     if(addActivity=="1"){
       return funSendApiErrorMessage(addActivity, "Customer Leave Activity Insert Issue");
 

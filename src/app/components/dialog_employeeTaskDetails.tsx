@@ -299,8 +299,8 @@ const DialogEmployeeTaskData = ({ passedData, startDate, endDate, onClose }: { p
                                         <div className="row text-center">
                                             <div className="col-lg-2">{index + 1}</div>
                                             <div className="col-lg-2">{task.task_details}</div>
-                                            <div className="col-lg-2">{task.leap_client_sub_projects.sub_project_name}</div>
-                                            <div className="col-lg-2">{task.leap_client_project.project_client}</div>
+                                            <div className="col-lg-2">{task.leap_client_sub_projects && task.leap_client_sub_projects.sub_project_name?task.leap_client_sub_projects.sub_project_name : "--"}</div>
+                                            <div className="col-lg-2">{task.leap_client_project && task.leap_client_project.project_client?task.leap_client_project.project_client : "--"}</div>
                                             <div className="col-lg-2">{task.total_hours}</div>
                                             <div className="col-lg-2">{task.total_minutes}</div>
                                         </div>

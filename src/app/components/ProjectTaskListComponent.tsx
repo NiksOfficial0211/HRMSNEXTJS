@@ -793,8 +793,8 @@ const ProjectTaskListComponent = () => {
                                         <div className="col-lg-1">{task.leap_customer.emp_id}</div>
                                         <div className="col-lg-1">{task.leap_customer.name}</div>
                                         <div className="col-lg-2">{task.task_details}</div>
-                                        <div className="col-lg-1">{task.leap_client_project.project_client}</div>
-                                        <div className="col-lg-2">{task.leap_client_sub_projects.sub_project_name}</div>
+                                        <div className="col-lg-1">{task.leap_client_project && task.leap_client_project.project_client ?task.leap_client_project.project_client:"--"}</div>
+                                        <div className="col-lg-2">{task.leap_client_sub_projects && task.leap_client_sub_projects.sub_project_name?task.leap_client_sub_projects.sub_project_name:"--"}</div>
                                         <div className="col-lg-2">{task.leap_project_task_types.task_type_name}</div>
                                         <div className="col-lg-1">{task.leap_task_status.status}</div>
                                         <div className="col-lg-1">{task.total_hours}</div>

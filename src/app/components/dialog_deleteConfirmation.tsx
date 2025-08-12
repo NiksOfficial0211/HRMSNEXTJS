@@ -85,7 +85,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import supabase from '@/app/api/supabaseConfig/supabase';
-import { ALERTMSG_exceptionString, deleteDataTypeAnnouncement, deleteDataTypeAsset, deleteDataTypeDepartment, deleteDataTypeProject, deleteDataTypeSalaryComponent, deleteDataTypeSubProject, staticIconsBaseURL } from '../pro_utils/stringConstants';
+import { ALERTMSG_exceptionString, deleteDataTypeAnnouncement, deleteDataTypeAsset, deleteDataTypeDepartment, deleteDataTypeHolidayYear, deleteDataTypeProject, deleteDataTypeSalaryComponent, deleteDataTypeSubProject, staticIconsBaseURL } from '../pro_utils/stringConstants';
 import ShowAlertMessage from './alert';
 import LoadingDialog from './PageLoader';
 
@@ -136,6 +136,15 @@ const DeleteConfirmation = ({ onClose, id,deletionType,deleteDetail }: { onClose
                 body: formData,
             });
         setAlertStartContent("Announcement deleted successfully");
+
+        }
+        else if(deletionType==deleteDataTypeHolidayYear ){
+            formData.append("isDelete", "True"); 
+            response = await fetch("/api/commonapi/delete-holiday-year", {
+                method: "DELETE",
+                body: formData,
+            });
+            setAlertStartContent("Holiday year deleted successfully");
 
         }
         else if(deletionType==deleteDataTypeSubProject ||deletionType==deleteDataTypeProject){
@@ -192,7 +201,7 @@ const DeleteConfirmation = ({ onClose, id,deletionType,deleteDetail }: { onClose
                 <div className="row">
                 <div className="col-lg-12" style={{textAlign: "right"}}>
                         <img src={staticIconsBaseURL + "/images/close.png"} className="img-fluid edit-icon" alt="Search Icon" style={{ width: "15px", paddingBottom: "5px", alignItems: "right", position: "absolute", margin:"-10px 0 0 -4px", cursor:"pointer" }}
-                     onClick={onClose}/>
+                     onClick={()=>onClose()}/>
                 </div>
                 </div>
                 {/* <form onSubmit={handleSubmit}> */}

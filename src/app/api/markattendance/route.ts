@@ -148,7 +148,7 @@ async function startAttendance(fields: any, files: { file: any; }) {
     return NextResponse.json({ error: "latlng Error :- " + latLngError.message }, { status: 401 });
   } else {
     // return Response.json({"data":data});
-    const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", new Date(fields.punch_date_time[0]), data[0].attendance_id);
+    const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", new Date(fields.punch_date_time[0]), data[0].attendance_id,false);
     if (addActivity == "1") {
       return NextResponse.json({ message: "Attendance started successfully but no Activity Added", status: 1, data: data, latLngData });
 
@@ -195,7 +195,7 @@ async function stopAttendance(fields: any) {
     if (latLngError) {
       return NextResponse.json({ error: "latlng Stop error :- " + latLngError.message }, { status: 401 });
     } else {
-      const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", "Attendance stoped:-" + new Date(fields.punch_date_time[0]), fields.attendance_id[0]);
+      const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", "Attendance stoped:-" + new Date(fields.punch_date_time[0]), fields.attendance_id[0],false);
       if (addActivity == "1") {
         return NextResponse.json({ message: "Attendance Stoped Successfully but no Activity Added", status: 1, data: data, latLngData });
 
@@ -265,7 +265,7 @@ async function pauseAttendance(fields: any) {
     if (latLngError) {
       return NextResponse.json({ error: "latlng Stop error :- " + latLngError.message }, { status: 401 });
     } else {
-      const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", "Attendance paused:-" + new Date(fields.punch_date_time[0]), fields.attendance_id[0]);
+      const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", "Attendance paused:-" + new Date(fields.punch_date_time[0]), fields.attendance_id[0],false);
       if (addActivity == "1") {
         return NextResponse.json({ message: "Attendance Paused Successfully but no Activity Added", status: 1, data: data, latLngData });
 
@@ -338,7 +338,7 @@ async function resumeAttendance(fields: any) {
     if (latLngError) {
       return NextResponse.json({ error: "latlng Stop error :- " + latLngError.message }, { status: 401 });
     } else {
-      const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", "Attendance resumed:-" + new Date(fields.punch_date_time[0]), fields.attendance_id[0]);
+      const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], "", "Attendance", "Attendance resumed:-" + new Date(fields.punch_date_time[0]), fields.attendance_id[0],false);
       if (addActivity == "1") {
         return NextResponse.json({ message: "Attendance Resumed Successfully but no Activity Added", status: 1 });
 
