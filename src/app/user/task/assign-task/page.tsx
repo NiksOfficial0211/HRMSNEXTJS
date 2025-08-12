@@ -419,7 +419,7 @@ interface AssignTaskForm {
     sub_project_id: string,
     task_type_id: string,
     task_details: string,
-    task_date: string,
+    // task_date: string,
     task_priority: string,
     deadline: string,
 }
@@ -490,13 +490,12 @@ const AssignTask: React.FC = () => {
         sub_project_id: "",
         task_type_id: "",
         task_details: "",
-        task_date: "",
+        // task_date: "",
         task_priority: "",
         deadline: "",
     });
 
     const handleInputChange = async (e: any) => {
-        const { name, value } = e.target;
         const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
     }
@@ -510,7 +509,7 @@ const AssignTask: React.FC = () => {
         if (!formValues.sub_project_id) newErrors.sub_project_id = "required";
         if (!formValues.task_type_id) newErrors.task_type_id = "required";
         if (!formValues.task_details) newErrors.task_details = "required";
-        if (!formValues.task_date) newErrors.task_date = "required";
+        // if (!formValues.task_date) newErrors.task_date = "required";
         if (!formValues.task_priority) newErrors.task_priority = "required";
         if (!formValues.deadline) newErrors.deadline = "required";
         setErrors(newErrors);
@@ -532,7 +531,7 @@ const AssignTask: React.FC = () => {
                     "sub_project_id": formValues.sub_project_id,
                     "task_type_id": formValues.task_type_id,
                     "task_details": formValues.task_details,
-                    "task_date": formValues.task_date,
+                    // "task_date": formValues.task_date,
                     "task_priority": formValues.task_priority,
                     "deadline": formValues.deadline,
                 }),
@@ -675,11 +674,10 @@ const AssignTask: React.FC = () => {
                                                             {errors.task_details && <span className="error" style={{ color: "red" }}>{errors.task_details}</span>}
                                                         </div>
                                                         <div className="form_new_group form_new_group_btn new_leave_formgoup_back_btn">
-                                                            <input type='submit' value="Submit" className="red_button" onClick={handleSubmit} />
+                                                            <input type='submit' value="Submit" className="red_button"/>
                                                             <BackButton isCancelText={true} />
                                                         </div>
                                                     </div>
-                                                    {/* </form> */}
                                                 </div>
                                                 <div className="new_user_inner_img_box">
                                                     <div className="new_user_inner_img_heading">
