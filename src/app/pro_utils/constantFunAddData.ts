@@ -83,6 +83,7 @@ export async function addUserActivities(client_id:any,customer_id:any,branchId:a
         customer_image:employeeData[0].profile_pic ? employeeData[0].profile_pic: "",
         activity_related_id:activityRelatedID,
         activity_status:1,
+        
         created_at: new Date()
       });
       

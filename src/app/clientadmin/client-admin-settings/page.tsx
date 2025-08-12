@@ -855,19 +855,7 @@ const ClientAdminSettings = () => {
                                             <div className="col-lg-9 settings_title">Holiday Years</div>
 
 
-                                            <div className="col-lg-3">
-                                                <Select
-                                                    className="custom-select"
-                                                    classNamePrefix="custom"
-                                                    options={searchBranchArray}
-                                                    value={selectedWorkingHourBranch}
-                                                    onChange={(selectedOption) =>
-                                                        handleBranchChange(selectedOption, 3)
-                                                    }
-                                                    placeholder="Search Branch"
-                                                    isSearchable
-                                                />
-                                            </div>
+                                            
                                         </div>
                                         
                                         {holidayYearArray && holidayYearArray.length>0 ? holidayYearArray.map((holiday, index) => (
@@ -917,11 +905,11 @@ const ClientAdminSettings = () => {
                     </div>
 
                     <div className={showEditHolidayYear ? "rightpoup rightpoupopen" : "rightpoup"}>
-                        {showEditHolidayYear && <AddHolidayYear onClose={() => { setShowEdithHolidayYear(false) } } isedit={true} editid={dataEditID} />}
+                        {showEditHolidayYear && <AddHolidayYear onClose={() => { setShowEdithHolidayYear(false),fetchData() } } isedit={true} editid={dataEditID} />}
                     </div>
                     
                     {showDeleteHolidayYear && <DeleteConfirmation
-                        onClose={() => { setShowDeleteDesignation(false), fetchData() }}
+                        onClose={() => { setShowDeleteHolidayYear(false), fetchData() }}
                         id={dataDeleteID}
                         deletionType={deleteDataTypeHolidayYear}
                         deleteDetail={dataDeleteDetail}
@@ -1176,7 +1164,7 @@ async function getHolidayYear(clientID: any) {
     let query = supabase
         .from('leap_holiday_year')
         .select()
-        .eq("client_id", clientID);
+        .eq("client_id", clientID).eq("is_deleted", false);
     const { data, error } = await query;
     if (error) {
         console.log(error);

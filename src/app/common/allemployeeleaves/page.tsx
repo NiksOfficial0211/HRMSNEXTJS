@@ -313,7 +313,7 @@ if (filterID == 3) {
                             <div className='inner_heading_sticky'>
                                 <div className="row heading25 pt-2" style={{ alignItems: "center" }}>
                                     <div className="col-lg-6">
-                                        Employee <span>Leave {dashboard_notify_cust_id}</span>
+                                        Employee <span>Leave</span>
                                     </div>
                                     <div className="col-lg-6 mt-1" style={{ textAlign: "right" }}>
                                         <div className="filtermenu red_button" onClick={filter_whitebox}>Filter</div>&nbsp;
