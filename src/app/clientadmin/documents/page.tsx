@@ -19,17 +19,21 @@ import DOCXFilePreview from '@/app/components/DOCXFilePreview'
 import XLSXFilePreview from '@/app/components/XLSXFilePreview'
 import DialogUploadDocument from '@/app/components/dialog_addDocument'
 import { companyDocUpload, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import DialogUpdateDocument from '@/app/components/dialog_updateDocument'
 
 const OrganizationalDocuments = () => {
 
 
     const [scrollPosition, setScrollPosition] = useState(0);
     const [showUploadDialog, setShowUploadDialog] = useState(false);
+    const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+    const [replaceDocID, setReplaceDocID] = useState(0);
     const { contextClientID, contextCustomerID, contextRoleID } = useGlobalContext();
     const [documentsArray, setDocumentsArray] = useState<LeapClientDocuments[]>([]);
     // const [documentURL,setDocumentUrls]=useState<any[]>([]);
     // const [empDocumentsArray, setEmpDocumentArray] = useState<LeapCustomerDocuments[]>([]);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
     useEffect(() => {
         fetchData();
 
@@ -65,10 +69,7 @@ const OrganizationalDocuments = () => {
         const docs = await getDocuments(contextClientID);
         setDocumentsArray(docs);
     }
-    const handleInputChange = async (e: any) => {
-        const { name, value, type, files } = e.target;
-        // console.log("Form values updated:", formValues);
-    }
+    
     const getFileIcon = (type: string, url: string) => {
         switch (type) {
             case "pdf":
@@ -97,7 +98,7 @@ const OrganizationalDocuments = () => {
                         <div className='container'>
                             <div className="row heading25 mb-3">
                                 <div className="col-lg-9">
-                                    Company <span>Document</span>
+                                    Company <span>Documents</span>
                                 </div>
                                 {contextRoleID == "2" ?
                                     <div className="col-lg-3" style={{ textAlign: "right" }}>
@@ -111,6 +112,9 @@ const OrganizationalDocuments = () => {
                             </div>
                             <div className={showUploadDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
                             {showUploadDialog && <DialogUploadDocument onClose={() => {setShowUploadDialog(false);fetchData()}} docType={companyDocUpload} />}
+                            </div>
+                            <div className={showUpdateDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
+                            {showUpdateDialog && <DialogUpdateDocument onClose={() => { setShowUpdateDialog(false); fetchData() } } replaceType={companyDocUpload} edit_id={replaceDocID} />}
                             </div>
                             <div className="row">
                                 <div className="col-lg-12">
@@ -131,7 +135,7 @@ const OrganizationalDocuments = () => {
                                                                 {doc.document_url.substring(doc.document_url.lastIndexOf('/') + 1)}
                                                             </div>
                                                             <div className="col-lg-12 mb-3">
-                                                                <a className='red_button filter_submit_btn '>
+                                                                <a className='red_button filter_submit_btn ' onClick={()=>{setShowUpdateDialog(true),setReplaceDocID(doc.id)}} >
                                                                     <img src={staticIconsBaseURL + "/images/replace_doc_icon.png"} className='img-fluid' /> Replace
                                                                 </a>&nbsp;&nbsp;
                                                                 <a className='red_button filter_submit_btn ' href={doc.document_url} download >
