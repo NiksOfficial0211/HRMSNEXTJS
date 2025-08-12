@@ -1,4 +1,3 @@
-// i want to create an api for chatbot where the user will mark their attendance when 1 is passed in the body it means the user is starting their attendance and 2 means stop attendance, 3 means pause and 4 means resume attendance. refer to this above api but dont use formData use json request format instead, also remove img_attachment. let me know if you need any clarity on this.
 
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -8,9 +7,6 @@ import { apiwentWrong } from '@/app/pro_utils/stringConstants';
 import { addUserActivities } from '@/app/pro_utils/constantFunAddData';
 import supabase from '../../supabaseConfig/supabase';
 
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-// const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const runtime = "nodejs";
 
@@ -63,19 +59,7 @@ async function startAttendance(body: any) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
 
-    //   const { data: latLngData, error: latLngError } = await supabase
-    //     .from("leap_customer_attendance_geolocation")
-    //     .insert([{
-    //       attendance_id: data[0].attendance_id,
-    //       start_location: `SRID=4326;POINT(${body.lng} ${body.lat})`,
-    //       created_at: now,
-    //     }])
-    //     .select();
-
-    //   if (latLngError) return NextResponse.json({ error: latLngError.message }, { status: 401 });
-
-    //   const activity = await addUserActivities(body.client_id, body.customer_id, "", "Attendance", new Date(body.punch_date_time), data[0].attendance_id);
-
+    
     return NextResponse.json({
         message: "Attendance started successfully",
         status: 1,
@@ -91,10 +75,7 @@ async function stopAttendance(body: any) {
     if (!attendanceID[0].attendance_id) {
         return funSendApiErrorMessage("Attendance ID is required", apiwentWrong);
     }
-//  let totalHours = await funCalculateTimeDifference(new Date(attendanceID[0].in_time), new Date(fields.punch_date_time[0]));
-//     if (attendanceID[0].paused_duration > 0) {
-//       totalHours = (Number(totalHours) - attendanceID[0].paused_duration) + ""
-//     }
+
     const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
     let totalHours = await funCalculateTimeDifference(new Date(todayAttendance[0].in_time), now);
 
@@ -113,19 +94,6 @@ async function stopAttendance(body: any) {
         .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
-
-    //   const { data: latLngData, error: latLngError } = await supabase
-    //     .from("leap_customer_attendance_geolocation")
-    //     .update({
-    //       stop_location: `SRID=4326;POINT(${body.lng} ${body.lat})`,
-    //       total_working_hours: totalHours,
-    //     })
-    //     .eq('attendance_id', body.attendance_id)
-    //     .select();
-
-    //   if (latLngError) return NextResponse.json({ error: latLngError.message }, { status: 401 });
-
-    //   const activity = await addUserActivities(body.client_id, body.customer_id, "", "Attendance", `Attendance stopped: ${now}`, body.attendance_id);
 
     return NextResponse.json({
         message: "Attendance stopped successfully",
@@ -167,18 +135,6 @@ async function pauseAttendance(body: any) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
 
-    //   const { data: latLngData, error: latLngError } = await supabase
-    //     .from("leap_customer_attendance_geolocation")
-    //     .update({
-    //       is_paused: true,
-    //       pause_location,
-    //     })
-    //     .eq('attendance_id', body.attendance_id)
-    //     .select();
-
-    //   if (latLngError) return NextResponse.json({ error: latLngError.message }, { status: 401 });
-
-    //   const activity = await addUserActivities(body.client_id, body.customer_id, "", "Attendance", `Attendance paused: ${now}`, body.attendance_id);
 
     return NextResponse.json({
         message: "Attendance paused successfully",
@@ -225,19 +181,6 @@ async function resumeAttendance(body: any) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
 
-    //   const { data: latLngData, error: latLngError } = await supabase
-    //     .from("leap_customer_attendance_geolocation")
-    //     .update({
-    //       is_paused: false,
-    //       resume_location,
-    //     })
-    //     .eq('attendance_id', body.attendance_id)
-    //     .select();
-
-    //   if (latLngError) return NextResponse.json({ error: latLngError.message }, { status: 401 });
-
-    //   const activity = await addUserActivities(body.client_id, body.customer_id, "", "Attendance", `Attendance resumed: ${now}`, body.attendance_id);
-
     return NextResponse.json({
         message: "Attendance resumed successfully",
         status: 1,
@@ -249,17 +192,6 @@ async function resumeAttendance(body: any) {
 async function getTodayAttendance(attendanceID: number) {
     const { data, error } = await supabase
         .from('leap_customer_attendance')
-        .select()
-        .eq('attendance_id', attendanceID);
-
-    if (error) throw error;
-    return data;
-}
-
-async function getAttendanceGeoLocation(attendanceID: number) {
-    ``
-    const { data, error } = await supabase
-        .from('leap_customer_attendance_geolocation')
         .select()
         .eq('attendance_id', attendanceID);
 
