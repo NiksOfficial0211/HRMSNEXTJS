@@ -70,10 +70,7 @@ export async function POST(request: NextRequest) {
             { status: apiStatusSuccessCode });
 
     } catch (error) {
-
-
         return funSendApiException(error);
-
     }
 
 }

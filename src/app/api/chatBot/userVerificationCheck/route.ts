@@ -5,15 +5,7 @@ import { apiStatusFailureCode, apiStatusInvalidDataCode, apiStatusSuccessCode } 
 
 export async function POST(request: NextRequest) {
     try {
-        // const { data: user, error: userError } = await supabase.auth.getUser();
 
-        // // Handle case where the user is not authenticated
-        // if (userError || !user) {
-        //   return NextResponse.json(
-        //     { error: 'User not authenticated' },
-        //     { status: 401 }
-        //   );
-        // }
         const { client_id, branch_id, phone_number } = await request.json();
         if (!phone_number) {
             return NextResponse.json({ error: "Phone number needed" }, { status: apiStatusInvalidDataCode }
@@ -37,5 +29,3 @@ export async function POST(request: NextRequest) {
         return funSendApiException(error);
     }
 }
-
-// api to check if user is there in the database by checking their phone_number, if not present then display "new user", if present then display "verified user"
