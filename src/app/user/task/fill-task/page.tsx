@@ -44,7 +44,7 @@ const ApplyLeave: React.FC = () => {
   const [alertValue1, setAlertValue1] = useState('');
   const [alertvalue2, setAlertValue2] = useState('');
 
- 
+
   const router = useRouter()
   useEffect(() => {
     setLoadingCursor(true);
@@ -196,35 +196,7 @@ const ApplyLeave: React.FC = () => {
                     <div className="nw_user_inner_content_box nw_user_inner_content_form_box" style={{ minHeight: '60vh' }}>
                       <div className="new_user_inner_form_mainbox">
                         <div className="new_user_inner_form_box">
-                          {/* <form onSubmit={handleSubmit}> */}
-                          <div className="fill_task_formbox">
-                            {/* <div className="form_new_group">
-                <div className="col-lg-12">
-                  <div className="nw_user_inner_mainbox">
-                    <div className="nw_user_inner_heading_tabbox">
-                      <div className="heading25">
-                        Add Tasks
-                      </div>
-                      <div className="nw_user_inner_tabs nw_user_inner_right_tabs">
-                        <ul>
-                          <li className='filter_relative_li' style={{ visibility: 'hidden', opacity: '1' }}>
-                            <a href="#">
-                              <div className="nw_user_tab_icon">
-                                <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
-                                  <g>
-                                    <path fill="#ffffff" d="M20 6h-3V4c0-1.103-.897-2-2-2H9c-1.103 0-2 .897-2 2v2H4c-1.103 0-2 .897-2 2v3h20V8c0-1.103-.897-2-2-2zM9 4h6v2H9zm5 10h-4v-2H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-8z" opacity="1" data-original="#000000"></path>
-                                  </g>
-                                </svg>
-                              </div>
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="nw_user_inner_content_box nw_user_inner_content_form_box" style={{ minHeight: '60vh' }}>
-                      <div className="new_user_inner_form_mainbox">
-                        <div className="new_user_inner_form_box">
-                          {/* <form onSubmit={handleSubmit}> */}
+                            
                           <div className="fill_task_formbox">
                             {/* <div className="form_new_group">
                                                 <label htmlFor="exampleFormControlInput1" className="form-label" >Client<span className='req_text'>*</span> </label>
@@ -286,21 +258,22 @@ const ApplyLeave: React.FC = () => {
                               <BackButton isCancelText={true} />
                             </div>
                           </div>
-                          {/* </form> */}
+                         
                         </div>
                         <div className="new_user_inner_img_box">
                           <div className="new_user_inner_img_heading">
                             NEW TASK <br /> SUBMISSION
                           </div>
                           <div className="new_user_inner_img">
-                            <img src="/images/user/task-add-form-image.svg" alt="Task image" className="img-fluid" />
+                            <img src={staticIconsBaseURL + "/images/user/task-add-form-image.svg"} alt="Task image" className="img-fluid" />
                           </div>
                         </div>
-                      </div>
+                      
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
             </div>
           </form>
           {/* ------------------ */}
