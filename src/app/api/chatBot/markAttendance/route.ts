@@ -75,11 +75,7 @@ async function stopAttendance(body: any) {
     if (!attendanceID[0].attendance_id) {
         return funSendApiErrorMessage("Attendance ID is required", apiwentWrong);
     }
-//  let totalHours = await funCalculateTimeDifference(new Date(attendanceID[0].in_time), new Date(fields.punch_date_time[0]));
-//     if (attendanceID[0].paused_duration > 0) {
-//       totalHours = (Number(totalHours) - attendanceID[0].paused_duration) + ""
-//     }
-   
+
     const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
     let totalHours = await funCalculateTimeDifference(new Date(todayAttendance[0].in_time), now);
 
@@ -198,17 +194,6 @@ async function resumeAttendance(body: any) {
 async function getTodayAttendance(attendanceID: number) {
     const { data, error } = await supabase
         .from('leap_customer_attendance')
-        .select()
-        .eq('attendance_id', attendanceID);
-
-    if (error) throw error;
-    return data;
-}
-
-async function getAttendanceGeoLocation(attendanceID: number) {
-    ``
-    const { data, error } = await supabase
-        .from('leap_customer_attendance_geolocation')
         .select()
         .eq('attendance_id', attendanceID);
 
