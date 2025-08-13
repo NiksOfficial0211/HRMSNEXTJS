@@ -79,12 +79,10 @@ async function stopAttendance(body: any) {
 //     if (attendanceID[0].paused_duration > 0) {
 //       totalHours = (Number(totalHours) - attendanceID[0].paused_duration) + ""
 //     }
+   
     const todayAttendance = await getTodayAttendance(attendanceID[0].attendance_id);
     let totalHours = await funCalculateTimeDifference(new Date(todayAttendance[0].in_time), now);
 
-    if (todayAttendance[0].paused_duration > 0) {
-    totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
-    }
     if (todayAttendance[0].paused_duration > 0) {
     totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
     }

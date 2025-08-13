@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
       parseForm(request),
       timeout(5000) // 5 seconds
     ]) as { fields: any; files: any };
+    ]) as { fields: any; files: any };
     // const { fields, files } = await parseForm(request);
     if (fields.attendance_type == 1) {
       return startAttendance(fields, files)
@@ -99,7 +100,17 @@ async function startAttendance(fields: any, files: { file: any; }) {
   //     // headers:{"Content-Type":"multipart/form-data"},
   //     body: formData,
   //   });
+  //   const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles", {
+  //     method: "POST",
+  //     // headers:{"Content-Type":"multipart/form-data"},
+  //     body: formData,
+  //   });
 
+  //   fileUploadResponse = await fileUploadURL.json();
+  //   if (fileUploadResponse.error) {
+  //     return NextResponse.json({ message: "File upload api call error" ,error:fileUploadResponse.error }, { status: 500 });
+  //   }
+  // }
   //   fileUploadResponse = await fileUploadURL.json();
   //   if (fileUploadResponse.error) {
   //     return NextResponse.json({ message: "File upload api call error" ,error:fileUploadResponse.error }, { status: 500 });
@@ -117,7 +128,9 @@ async function startAttendance(fields: any, files: { file: any; }) {
         date: currentDateTime,
         if_paused: false,
         img_attachment: fileUploadResponse ? fileUploadResponse : "",
+        img_attachment: fileUploadResponse ? fileUploadResponse : "",
         in_time: new Date(fields.punch_date_time[0]),
+        attendanceStatus: 1,
         attendanceStatus: 1,
         out_time: null,
         pause_end_time: null,
@@ -127,11 +140,14 @@ async function startAttendance(fields: any, files: { file: any; }) {
         total_hours: null,
         working_type_id: fields.working_type_id[0],
         created_at: new Date(),
+        created_at: new Date(),
       },
     ]).select();
   if (error) {
     return NextResponse.json({ message: "Start Attendance error :- ", error: error.message }, { status: 401 });
+    return NextResponse.json({ message: "Start Attendance error :- ", error: error.message }, { status: 401 });
   }
+
 
   const { data: latLngData, error: latLngError } = await supabase
     .from("leap_customer_attendance_geolocation")
@@ -153,6 +169,7 @@ async function startAttendance(fields: any, files: { file: any; }) {
       return NextResponse.json({ message: "Attendance started successfully but no Activity Added", status: 1, data: data, latLngData });
 
     }
+    }
     return NextResponse.json({ message: "Attendance started successfully", status: 1, data: data, latLngData });
   }
 }
@@ -163,6 +180,7 @@ async function stopAttendance(fields: any) {
     const currentDateTime = new Date();
     // return NextResponse.json({ error: currentDateTime }, { status: 401 });
     if (!fields.attendance_id) {
+      return funSendApiErrorMessage("Attendance id is required", apiwentWrong)
       return funSendApiErrorMessage("Attendance id is required", apiwentWrong)
     }
     const todayAttendance: any = await getTodayAttendance(fields.attendance_id);
@@ -176,10 +194,12 @@ async function stopAttendance(fields: any) {
     const { data, error } = await supabase
       .from("leap_customer_attendance")
       .update({ out_time: fields.punch_date_time[0], total_hours: totalHours, attendanceStatus: 2, })
+      .update({ out_time: fields.punch_date_time[0], total_hours: totalHours, attendanceStatus: 2, })
       .eq('attendance_id', fields.attendance_id[0])
       .select();
 
     if (error) {
+      return NextResponse.json({ message: "Stop Attendance Error :-", error: error.message }, { status: 401 });
       return NextResponse.json({ message: "Stop Attendance Error :-", error: error.message }, { status: 401 });
     }
 
@@ -200,6 +220,7 @@ async function stopAttendance(fields: any) {
         return NextResponse.json({ message: "Attendance Stoped Successfully but no Activity Added", status: 1, data: data, latLngData });
 
       }
+      }
       return NextResponse.json({ message: "Attendance Stop Successfull", status: 1, data: data, latLngData });
     }
   } catch (err) {
@@ -212,6 +233,7 @@ async function pauseAttendance(fields: any) {
 
     // return NextResponse.json({ error: currentDateTime }, { status: 401 });
     if (!fields.attendance_id) {
+      return funSendApiErrorMessage("Attendance id is required", apiwentWrong)
       return funSendApiErrorMessage("Attendance id is required", apiwentWrong)
     }
     const todayAttendance: any = await getTodayAttendance(fields.attendance_id);

@@ -255,7 +255,6 @@ const AssignLeave: React.FC = () => {
                     </div>
                     <div className="new_apply_leave_rightbox">
                       <img src={staticIconsBaseURL + "/images/user/apply-leave.webp"} alt="Apply leave image" className="img-fluid" />
-                      <img src={staticIconsBaseURL + "/images/user/apply-leave.webp"} alt="Apply leave image" className="img-fluid" />
                     </div>
                   </div>
                 </div>
