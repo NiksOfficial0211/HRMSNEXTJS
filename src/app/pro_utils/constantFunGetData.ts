@@ -551,9 +551,7 @@ export async function getDashboardAllActivitiesOfUsers(clientId: any, branchId: 
 }
 export async function getUserDashboardAllActivitiesOfUsers(clientId: any, customer_id: any, platform: any) {
   console.log("================" + "getDashboardAllActivitiesOfUsers" + "=================");
-if (!platform || (platform.toLowerCase() != "web") ){
-  return[]
-}
+
   try {
     const today = new Date();
     const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();

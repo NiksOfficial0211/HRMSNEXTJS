@@ -48,7 +48,6 @@ const ApplyLeave: React.FC = () => {
   const router = useRouter()
   useEffect(() => {
     setLoadingCursor(true);
-    
     const fetchData = async () => {
       const project = await getSubProject(contextClientID);
       setSubProject(project);
@@ -75,6 +74,7 @@ const ApplyLeave: React.FC = () => {
   }, [])
 
   const [formValues, setFormValues] = useState<AddTaskForm>({
+    // project_id: "",
     // project_id: "",
     sub_project_id: "",
     task_type_id: "",

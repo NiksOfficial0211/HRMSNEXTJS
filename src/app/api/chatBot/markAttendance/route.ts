@@ -83,9 +83,6 @@ async function stopAttendance(body: any) {
     if (todayAttendance[0].paused_duration > 0) {
     totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
     }
-    if (todayAttendance[0].paused_duration > 0) {
-    totalHours = (Number(totalHours) - todayAttendance[0].paused_duration).toString();
-    }
 
     const { data, error } = await supabase
         .from("leap_customer_attendance")
@@ -111,7 +108,6 @@ async function pauseAttendance(body: any) {
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
     if (!attendanceID[0].attendance_id) {
-    if (!attendanceID[0].attendance_id) {
         return funSendApiErrorMessage("Attendance ID is required", apiwentWrong);
     }
 
@@ -136,7 +132,6 @@ async function pauseAttendance(body: any) {
             paused_reasons,
         })
         .eq('attendance_id', attendanceID[0].attendance_id)
-        .eq('attendance_id', attendanceID[0].attendance_id)
         .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
@@ -149,12 +144,9 @@ async function pauseAttendance(body: any) {
         // latLngData
     });
 }
-}
+
 
 async function resumeAttendance(body: any) {
-    const custID = await getCustomerClientIds(body.whatsapp_number);
-    const attendanceID = await getAttendanceId(custID[0].customer_id);
-    if (!attendanceID[0].attendance_id) {
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
     if (!attendanceID[0].attendance_id) {
@@ -187,7 +179,6 @@ async function resumeAttendance(body: any) {
             attendanceStatus: 4,
         })
         .eq('attendance_id', attendanceID[0].attendance_id)
-        .eq('attendance_id', attendanceID[0].attendance_id)
         .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
@@ -199,7 +190,7 @@ async function resumeAttendance(body: any) {
         // latLngData
     });
 }
-}
+
 
 async function getTodayAttendance(attendanceID: number) {
     const { data, error } = await supabase

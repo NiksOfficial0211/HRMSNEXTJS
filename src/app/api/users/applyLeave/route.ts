@@ -5,7 +5,6 @@ import fs from "fs/promises";
 import { error } from "console";
 import { funGetActivityTypeId } from "@/app/pro_utils/constantFunGetData";
 import { addUserActivities, apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
-import { file } from "googleapis/build/src/apis/file";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {

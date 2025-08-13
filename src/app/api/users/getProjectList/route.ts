@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
           .select(`subproject_id, sub_project_name`)
           .eq('client_id',client_id);
    
+   
           const {data:projectData,error:error}=await query;
           
           if(error){

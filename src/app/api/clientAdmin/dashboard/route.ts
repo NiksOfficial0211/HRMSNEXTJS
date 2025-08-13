@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
         // assigned_tasks: await funGetUserAssignedTask(customer_id, new Date()),
         my_name: await funGetUserFirstName(customer_id),
         birthdays: await funGetEmpBirthdayList(client_id),
-        notification: await getUserDashboardAllActivitiesOfUsers(client_id, customer_id, platform)
+        notification:!platform && platform=="web"? await getUserDashboardAllActivitiesOfUsers(client_id, customer_id, platform):""
         // mypresentTeam:await getMyPresentTeam(client_id,customer_id),
       },
         { status: apiStatusSuccessCode });
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
         my_name: await funGetUserFirstName(customer_id),
         announcements:await funGetAnnouncements(client_id,customer_id,role_id),
         birthdays: await funGetEmpBirthdayList(client_id),
-         notification: await getUserDashboardAllActivitiesOfUsers(client_id, customer_id, platform)
+        notification:!platform && platform=="web"? await getUserDashboardAllActivitiesOfUsers(client_id, customer_id, platform):""
         // mypresentTeam:null,
       },
         { status: apiStatusSuccessCode });
