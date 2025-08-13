@@ -139,7 +139,7 @@ const LeapHeader = ({ title }: any) => {
                                 {subTitle}<span>{title} {contextUserName}</span>
                                 <div style={{ display: "none" }}>{contextLogoURL}</div>
                             </div>
-                            {contextRoleID == "3" ?
+                            {contextRoleID == "3" || contextRoleID == "2" ?
                                 <div className="dash_topotherbox">
                                     <div className="option">
                                         {!isSearchVisible && (

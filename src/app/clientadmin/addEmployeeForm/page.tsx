@@ -1571,7 +1571,14 @@ const AddEmployeeBasicDetails = () => {
                                                     <div className="col-md-3">
                                                         <div className="form_box mb-3">
                                                             <label htmlFor="formFile" className="form-label">Contact Number<span className='req_text'>*</span>:</label>
-                                                            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Enter Primary Number" value={formValues.contactPrimary} name="contactPrimary" inputMode="numeric" maxLength={12} onChange={handleInputChange} />
+                                                            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Enter Primary Number" value={formValues.contactPrimary} name="contactPrimary" inputMode="numeric" maxLength={12} onChange={(e)=>{
+                                                                const onlyNums = e.target.value.replace(/\D/g, ""); // Remove all non-digits
+                                                                                handleInputChange({
+                                                                                target: {
+                                                                                    name: e.target.name,
+                                                                                    value: onlyNums
+                                                                                }
+                                                                                });}} />
                                                             <span>(Primary)</span>
                                                             {errors.contactPrimary && <span className='error' style={{ color: "red" }}>{errors.contactPrimary}</span>}
                                                         </div>
@@ -1579,7 +1586,14 @@ const AddEmployeeBasicDetails = () => {
                                                     <div className="col-md-3">
                                                         <div className="form_box mb-3">
                                                             <label htmlFor="formFile" className="form-label">&nbsp;</label>
-                                                            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Enter Alternate Number" value={formValues.contactAlternate} name="contactAlternate" inputMode="numeric" maxLength={12} onChange={handleInputChange} />
+                                                            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Enter Alternate Number" value={formValues.contactAlternate} name="contactAlternate" inputMode="numeric" maxLength={12} onChange={(e)=>{
+                                                                const onlyNums = e.target.value.replace(/\D/g, ""); // Remove all non-digits
+                                                                                handleInputChange({
+                                                                                target: {
+                                                                                    name: e.target.name,
+                                                                                    value: onlyNums
+                                                                                }
+                                                                                });}} />
                                                             <span>(Alternate)</span>
 
                                                         </div>
