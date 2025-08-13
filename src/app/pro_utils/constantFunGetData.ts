@@ -549,7 +549,40 @@ export async function getDashboardAllActivitiesOfUsers(clientId: any, branchId: 
 
   }
 }
+export async function getUserDashboardAllActivitiesOfUsers(clientId: any, customer_id: any, platform: any) {
+  console.log("================" + "getDashboardAllActivitiesOfUsers" + "=================");
 
+  try {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+    let qwery = supabase.from("leap_client_useractivites")
+      .select(`*,leap_user_activity_type(*)`)
+      .eq('client_id', clientId)
+      .eq('customer_id', customer_id)
+      .eq("user_notify",true)
+      .gte("created_at", startOfDay)
+      .lt("created_at", endOfDay);
+
+    qwery = qwery.order('id', { ascending: false })
+    const { data: userActivities, error } = await qwery;
+
+    if (error) {
+      console.log(error);
+
+      return []
+
+    }
+
+    return userActivities;
+
+
+  } catch (error) {
+    console.log(error);
+    return funSendApiException(error);
+
+  }
+}
 export async function funGetClientDocumentStatus(clientId: any, branchId: any) {
   console.log("================" + "funGetClientDocumentStatus" + "=================");
 
