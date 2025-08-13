@@ -69,7 +69,7 @@ async function startAttendance(body: any) {
 }
 
 async function stopAttendance(body: any) {
-    // const now = new Date();
+    const now = new Date();
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
     if (!attendanceID[0].attendance_id) {
@@ -113,10 +113,6 @@ async function pauseAttendance(body: any) {
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
     if (!attendanceID[0].attendance_id) {
-<<<<<<< HEAD
-    if (!attendanceID[0].attendance_id) {
-=======
->>>>>>> 20cd5f2 (R: chatbot attendance api changes)
         return funSendApiErrorMessage("Attendance ID is required", apiwentWrong);
     }
 
@@ -141,10 +137,6 @@ async function pauseAttendance(body: any) {
             paused_reasons,
         })
         .eq('attendance_id', attendanceID[0].attendance_id)
-<<<<<<< HEAD
-        .eq('attendance_id', attendanceID[0].attendance_id)
-=======
->>>>>>> 20cd5f2 (R: chatbot attendance api changes)
         .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
@@ -157,18 +149,12 @@ async function pauseAttendance(body: any) {
         // latLngData
     });
 }
-}
+
 
 async function resumeAttendance(body: any) {
     const custID = await getCustomerClientIds(body.whatsapp_number);
     const attendanceID = await getAttendanceId(custID[0].customer_id);
     if (!attendanceID[0].attendance_id) {
-<<<<<<< HEAD
-    const custID = await getCustomerClientIds(body.whatsapp_number);
-    const attendanceID = await getAttendanceId(custID[0].customer_id);
-    if (!attendanceID[0].attendance_id) {
-=======
->>>>>>> 20cd5f2 (R: chatbot attendance api changes)
         return funSendApiErrorMessage("Attendance ID is required", apiwentWrong);
     }
 
@@ -198,10 +184,6 @@ async function resumeAttendance(body: any) {
             attendanceStatus: 4,
         })
         .eq('attendance_id', attendanceID[0].attendance_id)
-<<<<<<< HEAD
-        .eq('attendance_id', attendanceID[0].attendance_id)
-=======
->>>>>>> 20cd5f2 (R: chatbot attendance api changes)
         .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
@@ -213,7 +195,7 @@ async function resumeAttendance(body: any) {
         // latLngData
     });
 }
-}
+
 
 async function getTodayAttendance(attendanceID: number) {
     const { data, error } = await supabase

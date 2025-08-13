@@ -215,8 +215,7 @@ async function getDocumentsTypes() {
         .from('leap_document_type')
         .select()
         .eq("document_type_id", 5);
-        .select()
-        .eq("document_type_id", 5);
+      
 
     const { data, error } = await query;
 
