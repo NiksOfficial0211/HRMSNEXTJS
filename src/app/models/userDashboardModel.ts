@@ -95,6 +95,7 @@ export interface LeapClientDesignations3 {
 export interface Root {
   message: string
   status: number
+   workingHour: WorkingHour
   employees: Employees
   leaveRequest: LeaveRequest
   upcommingHolidays: UpcommingHolidays
@@ -105,8 +106,14 @@ export interface Root {
   my_tasks: MyTask[]
   my_name: MyName
   birthdays: Birthday[]
+  notification: UserNotification[]
 }
-
+export interface WorkingHour {
+  workData: WorkDaum[]
+}
+export interface WorkDaum {
+  full_day: number
+}
 export interface Employees {}
 
 export interface LeaveRequest {
@@ -280,4 +287,32 @@ export interface Birthday {
 
 export interface LeapCustomer2 {
   name: string
+}
+
+export interface UserNotification {
+  id: number
+  client_id: number
+  branch_id: any
+  customer_id: number
+  activity_type_id: number
+  designation_name: string
+  department_name: string
+  activity_details: string
+  customer_image: string
+  created_at: string
+  updated_at: string
+  customer_name: string
+  activity_related_id: number
+  activity_status: number
+  user_notify: boolean
+  leap_user_activity_type: LeapUserActivityType
+  type: string
+}
+
+export interface LeapUserActivityType {
+  id: number
+  created_at: string
+  is_deleted: boolean
+  updated_at: string
+  activity_type: string
 }

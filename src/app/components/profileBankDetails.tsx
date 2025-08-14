@@ -530,29 +530,33 @@ import { funSendApiErrorMessage, funSendApiException, parseForm } from "@/app/pr
 import supabase from '@/app/api/supabaseConfig/supabase';
 import { useRouter } from 'next/navigation';
 import { error } from 'console';
-import { Bank, BankDetail, BankModel, SalaryDetail, TotalSalary } from '../models/employeeDetailsModel';
+import { Bank, BankDetail, BankDetailNew, BankModel, SalaryDetail, TotalSalary } from '../models/employeeDetailsModel';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
+import { pageURL_addUserDocumentsForm } from '../pro_utils/stringRoutes';
+import ShowAlertMessage from './alert';
+import { set } from 'date-fns';
+import LoadingDialog from './PageLoader';
+
+interface SalaryComponentsModel {
+    data_id: number;
+    data_type: 0,
+    value: ''
+}
 
 export const UserBankDetails = () => {
 
     const [salaryComponentsArray, setSalaryComponents] = useState<SalaryComponentsModel[]>([]);
 
-    const [bankDetails, setbankDetails] = useState<BankDetail>({
-        id: 0,
-        created_at: '',
-        customer_id: 0,
-        client_id: 0,
-        bank_name: '',
-        account_number: '',
-        IFSC_code: '',
-        UAN_number: '',
-        ESIC_number: '',
-        PAN_number: '',
-        updated_at: '',
-        TIN_number: 0,
-        security_insurance_no: 0,
-        branch_name: ''
-    });
+    const [bankDetails, setbankDetails] = useState<BankDetailNew[]>([{
+        bank_account_count_id: 0,
+        details: [{
+            pk_row_id: 0,
+            row_value: '',
+            data_type: 0,
+            component_name: '',
+            component_id: 0
+        }]
+    }]);
     const [salaryDetails, setSalaryDetails] = useState<SalaryDetail[]>([{
         id: 0,
         client_id: 0,
@@ -577,7 +581,17 @@ export const UserBankDetails = () => {
         total_deduction: 0,
         net_pay: 0,
         customer_id: 0,
-    })
+    });
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertForSuccess, setAlertForSuccess] = useState(0);
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertStartContent, setAlertStartContent] = useState('');
+    const [alertMidContent, setAlertMidContent] = useState('');
+    const [alertEndContent, setAlertEndContent] = useState('');
+    const [alertValue1, setAlertValue1] = useState('');
+    const [alertvalue2, setAlertValue2] = useState('');
 
     const { contextClientID, contextCustomerID, contextRoleID, contextSelectedCustId, contaxtBranchID } = useGlobalContext();
 
@@ -596,57 +610,40 @@ export const UserBankDetails = () => {
                 const res = await fetch("/api/users/getProfile/getEmpSalaryDetails", {
                     method: "POST",
                     body: JSON.stringify({
-                        "client_id":contextClientID,
-                        "customer_id":contextSelectedCustId,
+                        "client_id": contextClientID,
+                        "customer_id": contextSelectedCustId,
                         "role_id": contextRoleID
                     }),
                 });
 
                 const response = await res.json();
                 console.log(response);
-                if (res.ok) {
-                    const bankDeta = response.data.bankDetails[0];
+                if (res.ok && response.status == 1) {
+                    const bankDeta = response.data.bankDetails;
                     const salaryData = response.data.salaryDetails;
                     const totalSalaryData = response.data.totalSalary[0];
 
                     setbankDetails(bankDeta);
+                    console.log("this is the bank salaryData", salaryData);
+
 
                     if (salaryData.length == 0) {
-                        console.log("hello the data is not present conditon called");
 
                         const arraySalaryDetails: SalaryDetail[] = [];
                         const employeebranchID = await getEmployeeBranch(contextClientID, contextSelectedCustId)
                         const salaryComponents = await getSalaryComponents(contextClientID, employeebranchID);
                         console.log("this are the salary components retrived", salaryComponents);
-                        // {
-                        //     "id": 22,//this is the leap client salary component id
-                        //     "client_id": 3,
-                        //     "branch_id": 3,
-                        //     "salary_component_id": 2,
-                        //     "is_active": true,
-                        //     "created_at": "2025-03-18T14:01:42+00:00",
-                        //     "updated_at": "2025-03-18T14:01:49.589662+00:00",
-                        //     "pay_accural": 4,
-                        //     "is_deleted": false,
-                        //     "leap_salary_components": {
-                        //         "id": 2,
-                        //         "created_at": "2024-12-31T10:54:28+00:00",
-                        //         "salary_add": true,
-                        //         "updated_at": "2024-12-31T10:54:35.463779+00:00",
-                        //         "is_basic_component": null,
-                        //         "salary_component_name": "HRA",
-                        //         "is_other_component_client_id": null
-                        //     }
-                        // },
+
                         setSalaryComponents(salaryComponents);
+                        console.log("this is the salaryComponents", salaryComponents);
 
                         for (let i = 0; i < salaryComponents.length; i++) {
 
                             const data: SalaryDetail = {
                                 id: 0,
-                                client_id: bankDetails.client_id ? bankDetails.client_id : parseInt(contextClientID),
+                                client_id: salaryComponents[i].client_id ? salaryComponents[i].client_id : parseInt(contextClientID),
                                 branch_id: parseInt(employeebranchID),
-                                customer_id: bankDetails.customer_id,
+                                customer_id: salaryComponents[i].customer_id,
                                 salary_component_id: salaryComponents[i].salary_component_id,
                                 amount: '',
 
@@ -664,22 +661,24 @@ export const UserBankDetails = () => {
                             arraySalaryDetails.push(data);
 
                         }
+                        console.log("=-===-=-=-=-=-==-=-=--=-=-=-=-=-=-=-=-=-=", arraySalaryDetails);
+
                         setSalaryDetails(arraySalaryDetails);
 
 
                     } else {
                         setSalaryDetails(salaryData);
-                        if (totalSalaryData.length == 0) {
-                            setTotalSalaryDetails({
-                                id: 0,
-                                gross_salary: 0,
-                                total_deduction: 0,
-                                net_pay: 0,
-                                customer_id: parseInt(contextSelectedCustId),
-                            });
-                        } else {
-                            setTotalSalaryDetails(totalSalaryData);
-                        }
+                    }
+                    if (totalSalaryData && totalSalaryData.length == 0) {
+                        setTotalSalaryDetails({
+                            id: 0,
+                            gross_salary: 0,
+                            total_deduction: 0,
+                            net_pay: 0,
+                            customer_id: parseInt(contextSelectedCustId),
+                        });
+                    } else {
+                        setTotalSalaryDetails(totalSalaryData);
                     }
                 }
             } catch (error) {
@@ -692,21 +691,12 @@ export const UserBankDetails = () => {
     const formData = new FormData();
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
+        formData.append("customer_id", contextSelectedCustId);
+        formData.append("client_id", contextClientID);
 
-        formData.append("customer_id", bankDetails.customer_id ? bankDetails.customer_id + '' : contextSelectedCustId);
-        formData.append("client_id", bankDetails.client_id ? bankDetails.client_id + '' : contextClientID);
-        // formData.append("client_id", bankDetails.client_id+'');
-        formData.append("account_number", bankDetails.account_number + '');
-        formData.append("bank_id", bankDetails.id ? bankDetails.id + '' : "");
-        formData.append("bank_name", bankDetails.bank_name + '');
-        formData.append("branch_name", bankDetails.branch_name + '');
-        formData.append("PAN_number", bankDetails.PAN_number + '');
-        formData.append("IFSC_code", bankDetails.IFSC_code + '');
-        formData.append("TIN_number", bankDetails.TIN_number + '');
-        formData.append("UAN_number", bankDetails.UAN_number + '');
-        formData.append("ESIC_number", bankDetails.ESIC_number + '');
-        formData.append("security_insurance_no", bankDetails.security_insurance_no + '');
 
+        formData.append("bankdetails", JSON.stringify(bankDetails));
         formData.append("salaryAmountsArray", JSON.stringify(salaryDetails))
 
         formData.append("total_salary_table_id", totalSalaryDetails.id + '');
@@ -723,15 +713,27 @@ export const UserBankDetails = () => {
             });
             const response = await res.json();
 
-            if (res.ok) {
-                alert(response.message);
+            if (res.ok && response.status == 1) {
+                setIsLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Success");
+                setAlertStartContent("Bank details updated successfully.");
+                setAlertForSuccess(1);
             } else {
-                alert(response.message);
+                setIsLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Error");
+                setAlertStartContent("Failed to update bank details.");
+                setAlertForSuccess(2);
             }
         } catch (e) {
             console.log("this is page exception error", e);
 
-            alert(e);
+            setIsLoading(false);
+            setShowAlert(true);
+            setAlertTitle("Success");
+            setAlertStartContent("Exception occurred while updating bank details.");
+            setAlertForSuccess(2);
         }
 
 
@@ -755,15 +757,22 @@ export const UserBankDetails = () => {
         })
 
     }
-    function isReadonly(){
-        if(contextRoleID == "2" || contextRoleID == "3"){
+    function isReadonly() {
+        if (contextRoleID == "2" || contextRoleID == "3") {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
     return (
         <>
+            <LoadingDialog isLoading={isLoading} />
+            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                setShowAlert(false)
+            }} onCloseClicked={function (): void {
+                setShowAlert(false)
+            }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
+
             <form onSubmit={handleSubmit}>
                 <div>
                     <div className="row">
@@ -781,30 +790,55 @@ export const UserBankDetails = () => {
                                                     Bank Details
                                                 </div>
                                             </div>
-                                            <div className="row" style={{ alignItems: "center" }}>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Account No:  </label>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="account_number" readOnly={isReadonly()} value={bankDetails?.account_number || ""} name="account_number" onChange={(e) => setbankDetails((prev) => ({ ...prev, ["account_number"]: e.target.value }))} />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-2">
-                                                    <div className="form_box mb-3">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Bank Name: </label>
-                                                    </div>
+                                            {bankDetails && bankDetails.length > 0 && bankDetails.map((bankdata, mainindex) =>
+
+                                                <div className="row mb-3 mt-3" style={{ alignItems: "center", borderBottom: bankDetails.length - 1 > mainindex ? "1px solid #ccc" : "" }} key={mainindex}>
+                                                    {bankdata.details.map((componentData, detailIndex) => (
+                                                        <div className="col-lg-6" key={detailIndex}>
+                                                            <div className="col-md-12">
+                                                                <div className="form_box mb-3">
+                                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >{componentData.component_name}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-md-12">
+                                                                <div className="form_box mb-3">
+                                                                    <input type="text" className="form-control" id="account_number"
+                                                                    onKeyPress={(e) => {
+                                                                                if (componentData.data_type === 2 && !/[0-9]/.test(e.key)) {
+                                                                                    e.preventDefault(); // block non-numeric input 
+                                                                                }
+                                                                            }}
+                                                                     readOnly={isReadonly()} value={componentData.row_value || ""} name="account_number"
+                                                                        onChange={(e) => {
+                                                                            const newValue = e.target.value;
+                                                                            setbankDetails((prev) =>
+                                                                                prev.map((bank, i) =>
+                                                                                    i === mainindex
+                                                                                        ? {
+                                                                                            ...bank,
+                                                                                            details: bank.details.map((detail, j) =>
+                                                                                                j === detailIndex
+                                                                                                    ? { ...detail, row_value: newValue }
+                                                                                                    : detail
+                                                                                            ),
+                                                                                        }
+                                                                                        : bank
+                                                                                )
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    ))}
+
                                                 </div>
 
-                                                <div className="col-md-4">
-                                                    <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="bank_name" readOnly={isReadonly()} value={bankDetails?.bank_name || ""} name="bank_name" onChange={(e) => setbankDetails((prev) => ({ ...prev, ["bank_name"]: e.target.value }))} />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="row" style={{ alignItems: "center" }}>
+                                            )
+
+                                            }
+                                            {/* <div className="row" style={{ alignItems: "center" }}>
                                                 <div className="col-md-2">
                                                     <div className="form_box mb-3">
                                                         <label htmlFor="exampleFormControlInput1" className="form-label" >Branch Name:  </label>
@@ -826,8 +860,8 @@ export const UserBankDetails = () => {
                                                         <input type="text" className="form-control" id="IFSC_code" readOnly={isReadonly()} value={bankDetails?.IFSC_code || ""} name="IFSC_code" onChange={(e) => setbankDetails((prev) => ({ ...prev, ["IFSC_code"]: e.target.value }))} />
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div className="row" style={{ alignItems: "center" }}>
+                                            </div> */}
+                                            {/* <div className="row" style={{ alignItems: "center" }}>
                                                 <div className="col-md-2">
                                                     <div className="form_box mb-3">
                                                         <label htmlFor="exampleFormControlInput1" className="form-label" >TAX Insurance Number:  </label>
@@ -880,7 +914,7 @@ export const UserBankDetails = () => {
                                                         }} value={bankDetails?.security_insurance_no || ""} readOnly={isReadonly()} name="security_insurance_no" onChange={(e) => setbankDetails((prev) => ({ ...prev, ["security_insurance_no"]: e.target.value }))} />
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> */}
 
                                         </div>
                                     </div>
@@ -1055,4 +1089,6 @@ async function getEmployeeBranch(client_id: any, customer_id: any) {
     }
 
 }
+
+
 

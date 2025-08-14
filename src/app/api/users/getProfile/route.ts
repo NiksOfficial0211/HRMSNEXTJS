@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
           .from("leap_customer")
           .select(`
             *,
-            leap_client_branch_details(*),leap_client(*),department_id(department_name),designation_id(designation_name),work_mode(type),employment_type(employeement_type), manager_id(name)
+            leap_client_branch_details(*),leap_client(*),department_id(department_id, department_name),designation_id(designation_id,designation_name),work_mode(id, type),employment_type(employment_type_id, employeement_type), manager_id(customer_id,name)
           `).eq('client_id',client_id);
           
           

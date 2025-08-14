@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     try {
         
-        const {client_id, branch_id, customer_id, id, platform, auth_token, version, holiday_year } = await request.json();
+        const {client_id, branch_id, customer_id, id, platform, auth_token, version, show_employee } = await request.json();
         
         if (auth_token && customer_id) {
             if (!await isAuthTokenValid(platform, customer_id, auth_token)) {
@@ -17,8 +17,9 @@ export async function POST(request: NextRequest) {
             }
         }
         let query = supabase.from("leap_holiday_list")
-            .select(`*,leap_holiday_types(*),leap_client_branch_details(branch_number)`)
-            .eq('client_id', client_id);
+            .select(`*,holiday_type_id(id, holiday_type),leap_client_branch_details(branch_number),leap_holiday_year(id, list_name, is_deleted, show_employee)`)
+            .eq('client_id', client_id)
+            .eq('leap_holiday_year.is_deleted', false);
 
         if (branch_id ) {
             query = query.eq('branch_id', branch_id);
@@ -26,8 +27,8 @@ export async function POST(request: NextRequest) {
         if (id ) {
             query = query.eq('id', id);
         }
-        if (holiday_year ) {
-            query = query.eq('holiday_year', holiday_year);
+        if (show_employee ) {
+            query = query.eq('leap_holiday_year.show_employee', show_employee);
         }
         query = query.gte('date', formatDateYYYYMMDD(getFirstDateOfYear())) // `to_date` must be >= `fromDate`
             .lte('date', formatDateYYYYMMDD(getLastDateOfYear())).order('date', { ascending: true });

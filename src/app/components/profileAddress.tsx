@@ -453,7 +453,7 @@ import React, { useEffect, useState } from 'react'
 import supabase from '@/app/api/supabaseConfig/supabase';
 import { useRouter } from 'next/navigation';
 import { error } from 'console';
-import { Address, AddressModel, CustomerAddress, EmergencyContact, LeapRelations } from '../models/employeeDetailsModel';
+import { Address, AddressModel, CustomerAddress, EmergencyContact, EmergencyContactNew, LeapRelations } from '../models/employeeDetailsModel';
 import LoadingDialog from '@/app/components/PageLoader';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 
@@ -499,11 +499,11 @@ export const UserAddress = () => {
         updated_at: '',
         address_type: '',
     });
-    const [emergencyContact, setEmergencyContact] = useState<EmergencyContact>({
+    const [emergencyContact, setEmergencyContact] = useState<EmergencyContactNew>({
         emergency_contact: '',
         contact_name: '',
-        relation: '',
-        leap_relations: {
+        
+        relation: {
             id: 0,
             relation_type: '',
         }
@@ -595,7 +595,7 @@ export const UserAddress = () => {
 
         formData.append("emergency_contact", emergencyContact.emergency_contact+'');
         formData.append("contact_name", emergencyContact.contact_name);
-        formData.append("relation", emergencyContact.relation);
+        formData.append("relation", emergencyContact.relation.id+"");
         try{
            
             const res = await fetch("/api/users/updateEmployee/updateEmpAddress", {
@@ -853,8 +853,16 @@ export const UserAddress = () => {
                                                 </div>
                                                 <div className="col-md-3">
                                                     <div className="form_box">
-                                                        <select id="relation" name="relation" onChange={(e) => setEmergencyContact((prev) => ({ ...prev, ["relation"]: e.target.value }))}>
-                                                            <option value={emergencyContact.leap_relations?.relation_type|| ""}>{emergencyContact?.leap_relations?.relation_type || ""}</option>
+                                                        <select id="relation" name="relation" onChange={(e) =>
+                                                                setEmergencyContact((prev) => ({
+                                                                ...prev,
+                                                                relation: {
+                                                                    ...prev.relation,
+                                                                    id: parseInt(e.target.value)
+                                                                }
+                                                                }))
+                                                            }>
+                                                            <option value={emergencyContact.relation?.id|| ""}>{emergencyContact?.relation?.relation_type || ""}</option>
                                                             {emergencyContactRelation.map((relationsType, index) => (
                                                                 <option value={relationsType.id} key={relationsType.id} disabled={isReadonly()}>{relationsType.relation_type}</option>
                                                             ))}

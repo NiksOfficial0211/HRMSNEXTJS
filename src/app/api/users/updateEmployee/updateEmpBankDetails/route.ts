@@ -24,18 +24,10 @@ export async function POST(request: NextRequest) {
       client_id: formData.get('client_id'),
       branch_id: formData.get('branch_id'),
 
-      bank_id: formData.get('bank_id'),
-      bank_name: formData.get('bank_name'),
-      account_number: formData.get('account_number'),
-      IFSC_code: formData.get('IFSC_code'),
-      UAN_number: formData.get('UAN_number'),
-      ESIC_number: formData.get('ESIC_number'),
-      PAN_number: formData.get('PAN_number'),
-      TIN_number: formData.get('TIN_number'),
-      security_insurance_no: formData.get('security_insurance_no'),
-      branch_name: formData.get('branch_name'),
+     
 
       salaryAmountsArray: formData.get('salaryAmountsArray') as string,
+      bankdetails: formData.get('bankdetails') as string,
 
       total_salary_table_id: formData.get('total_salary_table_id') ,
       total_gross_salary: formData.get('total_gross_salary'),
@@ -47,51 +39,71 @@ export async function POST(request: NextRequest) {
 
     }
     const salaryAmounts = JSON.parse(fdata.salaryAmountsArray);
+    const bankdet = JSON.parse(fdata.bankdetails);
+    console.log("bankdet------=-=-=------", bankdet);
     let eContactUpQuery ;
-    console.log("1======================",fdata.bank_id);
-    
-    if(fdata.bank_id && fdata.bank_id != "0"){
+    for (let i = 0; i < bankdet.length; i++) {
+    if(bankdet.bank_account_count_id && bankdet.bank_account_count_id != null){
+
+
       console.log("2======================");
+      for(let j=0;j<bankdet[i].details.length;j++){
        eContactUpQuery = supabase
       .from("leap_customer_bank_details")
       .update({
-         bank_name: fdata.bank_name,
-        account_number: fdata.account_number,
-        IFSC_code: fdata.IFSC_code,
-        UAN_number: fdata.UAN_number,
-        ESIC_number: fdata.ESIC_number,
-        PAN_number: fdata.PAN_number,
-        TIN_number: fdata.TIN_number,
-        security_insurance_no: fdata.security_insurance_no || 0,
-        branch_name: fdata.branch_name,
-      }).eq("id",fdata.bank_id);
+         component_value: bankdet.row_value,
+        
+      }).eq("id",bankdet.pk_row_id);
+      const { error } = await eContactUpQuery;
+      if (error) {
+        console.log(error);
+
+        return NextResponse.json({ message: updateBankFailure, error: error },
+          { status: apiStatusFailureCode });
+
+      }
+    }
     }else{
       console.log("3======================");
-      eContactUpQuery = supabase
-      .from("leap_customer_bank_details")
-      .insert({
-        client_id:fdata.client_id,
-        customer_id: fdata.customerId,
-        bank_name: fdata.bank_name,
-        account_number: fdata.account_number,
-        IFSC_code: fdata.IFSC_code,
-        UAN_number: fdata.UAN_number,
-        ESIC_number: fdata.ESIC_number,
-        PAN_number: fdata.PAN_number,
-        TIN_number: fdata.TIN_number,
-        security_insurance_no: fdata.security_insurance_no,
-        branch_name: fdata.branch_name,
-        created_at:new Date()
-      })
-    }
-    const { error } = await eContactUpQuery;
-    if (error) {
-      console.log(error);
+      let addBankDataCOunt = supabase.from('leap_employee_bank_accounte_count').insert([
+                {
+                    customer_id: fdata.customerId,
+                    bank_data_count: i,
+                    created_at: new Date(),
+                    
+                    
+                }
+            ]).select("*");
+      const {data:bankCountData, error: bankCountError } = await addBankDataCOunt;
+      if(bankCountError){
+                console.log(bankCountError);
+                
+            }
+      for(let j=0;j<bankdet[i].details.length;j++){
+          eContactUpQuery = supabase
+          .from("leap_customer_bank_details")
+          .insert({
+            client_id:fdata.client_id,
+            customer_id: fdata.customerId,
+            bank_component_id: bankdet[i].details[j].component_id,
+            component_value: bankdet[i].details[j].row_value,
+            bank_account_count_id: bankCountData?bankCountData[0].bank_account_count_id:null,
+            created_at:new Date()
+          })
+          const { error } = await eContactUpQuery;
+          console.log("1======================",eContactUpQuery);
+          if (error) {
+            console.log(error);
 
-      return NextResponse.json({ message: updateBankFailure, error: error },
-        { status: apiStatusFailureCode });
+            return NextResponse.json({ message: updateBankFailure, error: error },
+              { status: apiStatusFailureCode });
 
+          }
+        }
+      
+    
     }
+  }
 
     for (let i = 0; i < salaryAmounts.length; i++) {
       console.log("4======================");

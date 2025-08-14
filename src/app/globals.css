@@ -339,10 +339,19 @@
 }
 
 
-.header-logo {
+/* .header-logo {
   margin: 0px;
   border-radius: 100px;
   max-height: 90px;
+} */
+
+.header-logo {
+    margin: 0px;
+    max-height: 90px;
+    transition-duration: 0.3s;
+}
+.sticky .header-logo{
+  max-height: 50px;
 }
 
 .headeroptions-container {
@@ -1151,15 +1160,22 @@ body {
 }
 
 .login_logo {
-  float: left;
-  margin: 250px 0 0 230px;
-  width: 270px;
-  text-align: center;
+float: left;
+    margin: 250px 0 0 230px;
+    width: 270px;
+    text-align: center;
+    min-height: 230px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login_logo img{
+  max-height: 230px;
 }
 
-.login_logo img {
+/* .login_logo img {
   border-radius: 100%;
-}
+} */
 
 .login_rightbox {
   float: left;
@@ -1304,7 +1320,7 @@ header {
   position: absolute;
   display: flex;
   left: 0;
-  padding: 20px 50px 50px 60px;
+  padding: 20px 0px 50px 0px;
   text-align: center;
   justify-content: center;
   transition-duration: 0.3s;
@@ -1313,7 +1329,7 @@ header {
 .sticky .dash_logo {
   width: 140px;
   height: 90px;
-  padding: 6px 20px 20px 30px;
+  padding: 6px 20px 20px 10px;
 }
 
 .sticky .welcome_text span {

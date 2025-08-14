@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
                   { status: apiStatusFailureCode });
           }
           let emergencyCon = supabase
-          .from("leap_customer")
-          .select('emergency_contact,contact_name,relation,leap_relations(*)').eq('client_id',client_id);
+          .from("leap_employee_emergency_contacts")
+          .select('emergency_contact,contact_name,relation(id, relation_type)').eq('customer_id',customer_id);
           if(branch_id){
             emergencyCon=emergencyCon.eq('branch_id',branch_id)
           }
