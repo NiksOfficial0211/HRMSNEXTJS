@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     try {
         
-        const {client_id, branch_id, customer_id, id, platform, auth_token, version, show_employee } = await request.json();
+        const {client_id, branch_id, customer_id, id, platform, auth_token, version, show_employee,holiday_year } = await request.json();
         
         if (auth_token && customer_id) {
             if (!await isAuthTokenValid(platform, customer_id, auth_token)) {
@@ -26,6 +26,9 @@ export async function POST(request: NextRequest) {
         }
         if (id ) {
             query = query.eq('id', id);
+        }
+        if (holiday_year) {
+            query = query.eq('holiday_year', holiday_year);
         }
         if (show_employee ) {
             query = query.eq('leap_holiday_year.show_employee', show_employee);

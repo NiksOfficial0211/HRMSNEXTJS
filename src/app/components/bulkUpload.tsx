@@ -6,7 +6,7 @@ import Papa from 'papaparse';
 import { error } from 'console';
 import LoadingDialog from './PageLoader';
 import ExcelJS, { CellRichTextValue } from "exceljs";
-import { staticIconsBaseURL } from '../pro_utils/stringConstants';
+import { getImageApiURL, staticIconsBaseURL } from '../pro_utils/stringConstants';
 import { ALERTMSG_exceptionString, bulkUploadTypeEmployee, bulkUploadTypeHolidays } from '../pro_utils/stringConstants';
 import ShowAlertMessage from './alert';
 
@@ -20,7 +20,8 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
     const { contextClientID } = useGlobalContext();
     const [showResponseMessage, setResponseMessage] = useState(false);
     const [loadingCursor, setLoadingCursor] = useState(false);
-
+    const [csvFileURL, setCsvFileURL] = useState("");
+    const [xlsxFileURL, setXlsxFileURL] = useState("");
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertForSuccess, setAlertForSuccess] = useState(0);
@@ -31,11 +32,21 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
 
+    useEffect(() => {
+        if (uploadType === bulkUploadTypeEmployee) {
+            setCsvFileURL(getImageApiURL + "/sampleFiles/emp_sample.csv");
+            setXlsxFileURL(getImageApiURL + "/sampleFiles/employees.xlsx");
+        } else if (uploadType === bulkUploadTypeHolidays) {
+            setCsvFileURL(getImageApiURL + "/sampleFiles/holidaysBulk.csv");
+            setXlsxFileURL(getImageApiURL + "/sampleFiles/holidaysBulk.xlsx");
+        }
+    }, [])
+
     const uploadData = async (e: React.FormEvent) => {
 
         setLoading(true);
         if (!(uploadFile instanceof File)) {
-           
+
             setLoading(false);
             setShowAlert(true);
             setAlertTitle("Error")
@@ -58,60 +69,18 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
                 setAlertTitle("Error")
                 setAlertStartContent("Failed to get last emp id");
                 setAlertForSuccess(2)
-                
+
             }
             try {
                 if (uploadFile.type === "text/csv") {
 
-                    const result=await uploadThroughCSVFile(uploadFile, contextClientID, lastCustomerEmpID![0].emp_id)
-                    if(result){
-                    setLoading(false);
-                
-                    setShowAlert(true);
-                    setAlertTitle("Employee Add");
-                    setAlertStartContent(result);
-                    setAlertForSuccess(3);
-                    }
-                }
-                else if (
-                    uploadFile.type ===
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-                    uploadFile.type === "application/vnd.ms-excel"
-                ) {
-                    // console.log("Upload thorugh xlsx coniditon is invoked");
-                    const result=await uploadThroghXLSX(uploadFile, contextClientID, lastCustomerEmpID![0].emp_id)
-                    if(result){
-                    setLoading(false);
-                
-                    setShowAlert(true);
-                    setAlertTitle("Employee Add");
-                    setAlertStartContent(ALERTMSG_exceptionString);
-                    setAlertForSuccess(3);
-                    }
-                    
-                }
-            }
-            catch (e) {
-                setLoading(false);
-                
-                setShowAlert(true);
-                setAlertTitle("Exception");
-                setAlertStartContent(ALERTMSG_exceptionString);
-                setAlertForSuccess(2);
-                console.error("Error:", e);
-            }
-        } else if (uploadType === bulkUploadTypeHolidays) {
-
-            try {
-                if (uploadFile.type === "text/csv") {
-
-                    const res =await  uploadHolidaysCSVFile(uploadFile, contextClientID)
-                    if(res){
+                    const result = await uploadThroughCSVFile(uploadFile, contextClientID, lastCustomerEmpID![0].emp_id)
+                    if (result) {
                         setLoading(false);
-                
+
                         setShowAlert(true);
-                        setAlertTitle("Result");
-                        setAlertStartContent(res);
+                        setAlertTitle("Employee Add");
+                        setAlertStartContent(result);
                         setAlertForSuccess(3);
                     }
                 }
@@ -121,20 +90,74 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
                     uploadFile.type === "application/vnd.ms-excel"
                 ) {
                     // console.log("Upload thorugh xlsx coniditon is invoked");
+                    const result = await uploadThroghXLSX(uploadFile, contextClientID, lastCustomerEmpID![0].emp_id)
+                    if (result) {
+                        setLoading(false);
+
+                        setShowAlert(true);
+                        setAlertTitle("Employee Add");
+                        setAlertStartContent(ALERTMSG_exceptionString);
+                        setAlertForSuccess(3);
+                    }
+
+                }
+            }
+            catch (e) {
+                setLoading(false);
+
+                setShowAlert(true);
+                setAlertTitle("Exception");
+                setAlertStartContent(ALERTMSG_exceptionString);
+                setAlertForSuccess(2);
+                console.error("Error:", e);
+            }
+        } else if (uploadType === bulkUploadTypeHolidays) {
+        const { data: yearIds, error: custError } = await supabase.from('leap_holiday_year')
+                .select('id')
+                .eq('client_id', contextClientID).eq("is_deleted", false);
+            try {
+                if (uploadFile.type === "text/csv") {
+    
+                    console.log("yearIds-=-=-=-=-=-=-=-=-=-==-====-=-=-=-=-=", yearIds);
+                    
+                    if (yearIds && yearIds.length > 0) {        
+                    const res = await uploadHolidaysCSVFile(uploadFile, contextClientID,yearIds!)
+                    if (res) {
+                        setLoading(false);
+
+                        setShowAlert(true);
+                        setAlertTitle("Result");
+                        setAlertStartContent(res);
+                        setAlertForSuccess(3);
+                    }
+                }else{
+                    setLoading(false);
+                    setShowAlert(true);
+                    setAlertTitle("Error");
+                    setAlertStartContent("No holiday year found. Please create a holiday year first.");
+                    setAlertForSuccess(2);
+                }
+                }
+                else if (
+                    uploadFile.type ===
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+                    uploadFile.type === "application/vnd.ms-excel"
+                ) {
+                    // console.log("Upload thorugh xlsx coniditon is invoked");
 
                     console.log("Upload data is called", uploadType);
-                    const uploadResult= await uploadHolidaysThroghXLSX(uploadFile, contextClientID)
+                    const uploadResult = await uploadHolidaysThroghXLSX(uploadFile, contextClientID)
                     setLoading(false);
-                    
+
                     setShowAlert(true);
                     setAlertTitle("Result");
                     setAlertStartContent(uploadResult);
                     setAlertForSuccess(2);
-                    
+
                 }
             } catch (e) {
                 setLoading(false);
-                
+
                 setShowAlert(true);
                 setAlertTitle("Exception");
                 setAlertStartContent(ALERTMSG_exceptionString);
@@ -212,10 +235,12 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
                     <div className="grey_box text-center">
                         <div className="row">
                             <div className="col-lg-6 ">
-                                <div className='red_button filter_submit_btn ' onClick={() => downloadFile('csv')} style={{ cursor: "pointer", padding:"10px 12px", fontSize:"16px" }}>Sample csv</div>
+                                <a className='red_button filter_submit_btn ' style={{ cursor: "pointer", padding: "10px 12px", fontSize: "16px" }} href={csvFileURL} download>
+                                    Sample csv
+                                </a>
                             </div>
                             <div className="col-lg-6">
-                                <div className='red_button filter_submit_btn ' onClick={() => downloadFile('xlsx')} style={{ cursor: "pointer", padding: "10px 12px", fontSize: "16px" }}>Sample xlsx</div>
+                                <a className='red_button filter_submit_btn ' style={{ cursor: "pointer", padding: "10px 12px", fontSize: "16px" }} href={xlsxFileURL} download>Sample xlsx</a>
                             </div>
                             <div className="col-lg-12">
                                 <div className="form_box mt-3">
@@ -228,7 +253,7 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
                                             if (e.target.files && e.target.files.length > 0) {
                                                 setUploadFile(e.target.files[0]); // ✅ Now TypeScript understands the type
                                             }
-                                        }} style={{backgroundColor:"#fff", borderRadius:"8px", padding:"10px"}}
+                                        }} style={{ backgroundColor: "#fff", borderRadius: "8px", padding: "10px" }}
 
                                     />
                                     {/* <label
@@ -247,7 +272,7 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
 
@@ -484,7 +509,10 @@ const isValidEmail = (email: any) => {
     return emailRegex.test(email);
 };
 
-async function uploadHolidaysCSVFile(uploadFile: File, contextClientID: any) {
+async function uploadHolidaysCSVFile(uploadFile: File, contextClientID: any,yearIds:any[]) {
+    
+
+    console.log("yearIds-=-=-=-=-=-=-=-=-=-==-====-=-=-=-=-=");
 
 
     const text = await new Promise<string>((resolve, reject) => {
@@ -525,13 +553,15 @@ async function uploadHolidaysCSVFile(uploadFile: File, contextClientID: any) {
         let formattedDate = "";
         if (row["Date"]!) {
             formattedDate = row["Date"].split("/").reverse().join("-");
-
-            uploadData.push({
-                client_id: contextClientID,
-                branch_id: row["Branch_ID"],
-                holiday_name: row["Name"],
-                date: formattedDate,
-            });
+            for (let i = 0; i < yearIds!.length; i++) {
+                uploadData.push({
+                    client_id: contextClientID,
+                    branch_id: row["Branch_ID"],
+                    holiday_name: row["Name"],
+                    holiday_year: yearIds![i].id,
+                    date: formattedDate,
+                });
+            }
         }
 
 
@@ -557,7 +587,11 @@ async function uploadHolidaysCSVFile(uploadFile: File, contextClientID: any) {
 
 async function uploadHolidaysThroghXLSX(uploadFile: File, contextClientID: any) {
     console.log("uploadHolidaysThroghXLSX is called");
-    
+    const { data: yearIds, error: custError } = await supabase.from('leap_holiday_year')
+        .select('id')
+        .eq('client_id', contextClientID).eq("is_deleted", false);
+
+    console.log("yearIds-=-=-=-=-=-=-=-=-=-==-====-=-=-=-=-=", yearIds);
     const reader = new FileReader();
     reader.readAsArrayBuffer(uploadFile)
     reader.onload = async (e) => {
@@ -605,13 +639,21 @@ async function uploadHolidaysThroghXLSX(uploadFile: File, contextClientID: any) 
                 `${String(holiday.getDate()).padStart(2, '0')}/${String(holiday.getMonth() + 1).padStart(2, '0')}/${holiday.getFullYear()}` :
                 holiday;
 
-
-            uploadData.push({
-                client_id: contextClientID,
-                branch_id: row.getCell(1).value,
-                holiday_name: row.getCell(2).value,
-                date: formattedDob,
-            });
+            for (let i = 0; i < yearIds!.length; i++) {
+                uploadData.push({
+                    client_id: contextClientID,
+                    branch_id: row.getCell(1).value,
+                    holiday_name: row.getCell(2).value,
+                    holiday_year: yearIds![i].id,
+                    date: formattedDob,
+                });
+            }
+            // uploadData.push({
+            //     client_id: contextClientID,
+            //     branch_id: row.getCell(1).value,
+            //     holiday_name: row.getCell(2).value,
+            //     date: formattedDob,
+            // });
 
             // })());
         });
@@ -629,9 +671,6 @@ async function uploadHolidaysThroghXLSX(uploadFile: File, contextClientID: any) 
             // alert("Data Added Successfully");
             return "Data Added Successfully";
         }
-
-
-
     }
     return "";
 
