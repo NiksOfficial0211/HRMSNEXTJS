@@ -274,7 +274,7 @@ const AddEmployeeEmployementDetails: React.FC = () => {
             <LeftPannel menuIndex={leftMenuAddEmployeePageNumbers} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
                 <form onSubmit={handleSubmit}>
                     <LoadingDialog isLoading={isLoading} />
-                    {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length>0?alertMidContent: "added successfully."} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                    {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length>0?alertMidContent: ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                                            router.push(pageURL_addUserDocumentsForm);
                                             setShowAlert(false)
                                         } } onCloseClicked={function (): void {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import supabase from "../api/supabaseConfig/supabase";
 import { calculateNumMonths, dashedDateYYYYMMDD, formatDateYYYYMMDD, funSendApiErrorMessage, funSendApiException, getFirstDateOfYear, getFirstDateOfYearbyDate, getLastDateOfYear } from "./constant";
 import { allEmployeeListData, apiStatusSuccessCode, apiwentWrong, dashedString } from "./stringConstants";
+import { is } from "date-fns/locale";
 
 export async function getSupportComments(id: number) {
 
@@ -549,38 +550,87 @@ export async function getDashboardAllActivitiesOfUsers(clientId: any, branchId: 
 
   }
 }
-export async function getUserDashboardAllActivitiesOfUsers(clientId: any, customer_id: any, platform: any) {
+export async function getUserDashboardAllActivitiesOfUsers(clientId: any, customer_id: any, isManager: boolean) {
   console.log("================" + "getDashboardAllActivitiesOfUsers" + "=================");
 
-  try {
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
-    let qwery = supabase.from("leap_client_useractivites")
-      .select(`*,leap_user_activity_type(*)`)
-      .eq('client_id', clientId)
-      .eq('customer_id', customer_id)
-      .eq("user_notify",true)
-      .gte("created_at", startOfDay)
-      .lt("created_at", endOfDay);
+  if (!isManager) {
+    try {
+      const today = new Date();
+      const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+      const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+      let qwery = supabase.from("leap_client_useractivites")
+        .select(`customer_id,activity_details,activity_type_id(activity_type )`)
+        // .eq('client_id', clientId)
+        .eq('customer_id', customer_id)
+        .eq("user_notify", true)
+        .gte("created_at", startOfDay)
+        .lt("created_at", endOfDay);
 
-    qwery = qwery.order('id', { ascending: false })
-    const { data: userActivities, error } = await qwery;
+      qwery = qwery.order('id', { ascending: false });
+      const { data: userActivities, error } = await qwery;
 
-    if (error) {
+      if (error) {
+        console.log(error);
+        return [];
+      }
+      const userNotiActivities = userActivities.map(a => ({ ...a, type: "user" }));
+        return userNotiActivities;
+      } catch (error) {
+        console.log(error);
+        return funSendApiException(error);
+      }
+    } else {
+      try {
+        const { data: subordinates, error: subError } = await supabase
+        .from("leap_customer")
+        .select("name, customer_id")
+        .eq("manager_id", customer_id);
+      if (subError) {
+        console.log(subError);
+          return [];
+        }
+     const subordinateIds = subordinates.map((s) => s.customer_id);
+     const today = new Date();
+      const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+      const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+      const { data: teamActivities, error: error1 } = await supabase
+        .from("leap_client_useractivites")
+        .select(`*, leap_user_activity_type(*)`)
+        .in("customer_id", subordinateIds)
+        .gte("created_at", startOfDay)
+        .lt("created_at", endOfDay)
+        .order("id", { ascending: false });
+
+      if (error1) {
+        console.log(error1);
+        return [];
+      }
+      const { data: userActivities, error } = await supabase
+        .from("leap_client_useractivites")
+        .select(`customer_id, activity_details, activity_type_id(activity_type), created_at`)
+        .eq("customer_id", customer_id)
+        .eq("user_notify", true)
+        .gte("created_at", startOfDay)
+        .lt("created_at", endOfDay)
+        .order("id", { ascending: false });
+
+      if (error) {
+        console.log(error);
+        return [];
+      }
+      const userNotiActivities = userActivities.map(a => ({ ...a, type: "user" }));
+      const teamNotiActivities = teamActivities.map(a => ({ ...a, type: "team" }));
+
+      
+      const mergedActivities = [...userNotiActivities, ...teamNotiActivities]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      return mergedActivities;
+      // return {userActivities, teamActivities};
+    } catch (error) {
       console.log(error);
-
-      return []
-
+      return funSendApiException(error);
     }
-
-    return userActivities;
-
-
-  } catch (error) {
-    console.log(error);
-    return funSendApiException(error);
-
   }
 }
 export async function funGetClientDocumentStatus(clientId: any, branchId: any) {
@@ -2268,5 +2318,4 @@ export async function funGetCompanyWorkingHour(clientID: any, branch_id: any ) {
 //     return holidays.length;
 
 // }
-
 

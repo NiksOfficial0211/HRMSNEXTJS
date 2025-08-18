@@ -65,9 +65,9 @@ const AddEmployeeDocuments = () => {
 
 
 useEffect(() => {
-    // if(contextAddFormEmpID.length==0 || contextAddFormCustID.length==0 ){
-    //     router.push(pageURL_userList);
-    // }
+    if(contextAddFormEmpID.length==0 || contextAddFormCustID.length==0 ){
+        router.push(pageURL_userList);
+    }
     const handleScroll = () => {
         setScrollPosition(window.scrollY); // Update scroll position
         const element = document.querySelector('.mainbox');

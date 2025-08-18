@@ -68,18 +68,44 @@ export async function POST(request: NextRequest) {
     if (leaveError) {
       return NextResponse.json({ status: 0, message: apiwentWrong, error: leaveError }, { status: apiStatusFailureCode });
     } else if (leaves.length == 0 && (start_date || end_date)) {
-      if (page == 1) {
-        return NextResponse.json({ message: "start date present if condition", status: 1, page: page, leavedata: [] }, { status: apiStatusSuccessCode });
-      } else {
-        return NextResponse.json({ message: allLeavesData, status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
-      }
+      return NextResponse.json({
+        message: allLeavesData,
+        status: 1,
+        page,
+        leavedata: []
+      }, { status: apiStatusSuccessCode });
     }
+
     else if (leaves.length == 0 && !start_date && page) {
-      return NextResponse.json({ message: allLeavesData, status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+      return NextResponse.json({
+        message: allLeavesData,
+        status: 1,
+        page,
+        leavedata: []
+      }, { status: apiStatusSuccessCode });
     }
+
     else if (leaves.length == 0 && !leave_status && page) {
-      return NextResponse.json({ message: allLeavesData, status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+      return NextResponse.json({
+        message: allLeavesData,
+        status: 1,
+        page,
+        leavedata: []
+      }, { status: apiStatusSuccessCode });
     }
+    // else if (leaves.length == 0 && (start_date || end_date)) {
+    //   if (page == 1) {
+    //     return NextResponse.json({ message: "start date present if condition", status: 1, page: page, leavedata: [] }, { status: apiStatusSuccessCode });
+    //   } else {
+    //     return NextResponse.json({ message: allLeavesData, status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+    //   }
+    // }
+    // else if (leaves.length == 0 && !start_date && page) {
+    //   return NextResponse.json({ message: allLeavesData, status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+    // }
+    // else if (leaves.length == 0 && !leave_status && page) {
+    //   return NextResponse.json({ message: allLeavesData, status: 0, page: page - 1 }, { status: apiStatusSuccessCode });
+    // }
     else {
       if (!leaveBalances) {
         leaveBalances = await funGetMyLeaveBalance(client_id, branch_id, leaves[0].customer_id, 5);

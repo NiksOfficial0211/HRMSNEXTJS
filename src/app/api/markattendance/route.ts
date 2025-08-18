@@ -226,7 +226,6 @@ async function pauseAttendance(fields: any) {
     // return NextResponse.json({ error: currentDateTime }, { status: 401 });
     if (!fields.attendance_id) {
       return funSendApiErrorMessage("Attendance id is required", apiwentWrong)
-      return funSendApiErrorMessage("Attendance id is required", apiwentWrong)
     }
     const todayAttendance: any = await getTodayAttendance(fields.attendance_id);
     if (todayAttendance[0].if_paused) {

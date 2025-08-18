@@ -514,11 +514,11 @@ import { funSendApiErrorMessage, funSendApiException, parseForm } from "@/app/pr
 import supabase from '@/app/api/supabaseConfig/supabase';
 import { useRouter } from 'next/navigation';
 
-import { CustomerProfile, LeapWorkingType } from '../models/employeeDetailsModel';
+import { CustomerProfile, CustomerProfileNew, LeapWorkingType } from '../models/employeeDetailsModel';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 
 export const UserEmployement = () => {
-    const [userData, setUserData] = useState<CustomerProfile>({
+    const [userData, setUserData] = useState<CustomerProfileNew>({
         id: '',
         customer_id: 0,
         created_at: '',
@@ -534,11 +534,10 @@ export const UserEmployement = () => {
         salary_structure: '',
         user_role: 0,
         profile_pic: '',
-        emergency_contact: 0,
+        emergency_contact: '',
         contact_name: '',
-        relation: 0,
-        manager_id: 0,
-        designation_id: 0,
+        relation: '',
+
         authUuid: '',
         branch_id: 0,
         emp_id: '',
@@ -546,14 +545,33 @@ export const UserEmployement = () => {
         marital_status: '',
         nationality: '',
         blood_group: '',
-        department_id: 0,
-        employment_type: 0,
+
         work_location: '',
         probation_period: '',
         official_onboard_date: '',
         alternateContact: '',
         personalEmail: '',
-        work_mode: 0,
+        auth_token: '',
+        manager_id: {
+            name: '',
+            customer_id: 0
+        },
+        designation_id: {
+            designation_id: 0,
+            designation_name: ''
+        },
+        department_id: {
+            department_id: 0,
+            department_name: ''
+        },
+        employment_type: {
+            employeement_type: '',
+            employment_type_id: 0
+        },
+        work_mode: {
+            id: 0,
+            type: ''
+        },
         leap_client_branch_details: {
             id: 0,
             uuid: '',
@@ -564,23 +582,24 @@ export const UserEmployement = () => {
             updated_at: '',
             branch_city: '',
             branch_email: '',
-            time_zone_id: undefined,
+            time_zone_id: '',
             branch_number: '',
             branch_address: '',
+
             is_main_branch: false,
             contact_details: 0,
-            total_employees: 0
+            total_employees: 0,
         },
         leap_client: {
             user_id: '',
             client_id: 0,
-            parent_id: undefined,
+            parent_id: '',
             created_at: '',
             is_deleted: false,
             updated_at: '',
             is_a_parent: false,
             sector_type: '',
-            timezone_id: undefined,
+            timezone_id: '',
             company_name: '',
             company_email: '',
             company_number: '',
@@ -590,28 +609,8 @@ export const UserEmployement = () => {
             company_website_url: '',
             fullday_working_hours: 0,
             halfday_working_hours: 0
-        },
-        leap_client_designations: {
-            id: 0,  
-            department: undefined,
-            designation_name: ''
-        },
-        leap_client_departments: {
-            id: 0,
-            is_active: false,
-            department_name: ''
-        },
-        leap_working_type: {
-            id: 0,
-            type: '',
-            created_at: ''
-        },
-        leap_employement_type: {
-            created_at: '',
-            updated_at: '',
-            employeement_type: '',
-            employment_type_id: 0
         }
+
     });
     const router = useRouter();
     const { contextClientID, contextRoleID, contextSelectedCustId } = useGlobalContext();
@@ -649,8 +648,8 @@ export const UserEmployement = () => {
                 const res = await fetch("/api/users/getProfile", {
                     method: "POST",
                     body: JSON.stringify({
-                        "client_id":contextClientID,
-                        "customer_id":contextSelectedCustId
+                        "client_id": contextClientID,
+                        "customer_id": contextSelectedCustId
                     }),
                 });
                 console.log(res);
@@ -751,8 +750,14 @@ export const UserEmployement = () => {
 
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
-                                                <select className='form-select' id="department_id" name="designation_id" value={userData?.designation_id || ""} onChange={(e) => setUserData((prev) => ({ ...prev, ['designation_id']: parseInt(e.target.value) }))}>
-                                                    <option value={userData?.designation_id || ""} key={userData?.leap_client_designations?.designation_name!}>{userData?.leap_client_designations?.designation_name! || ""}</option>
+                                                <select className='form-select' id="department_id" name="designation_id" value={userData?.designation_id.designation_id + "" || ""} onChange={(e) => setUserData((prev) => ({
+                                                    ...prev,
+                                                    designation_id: {
+                                                        ...prev.designation_id,
+                                                        designation_id: parseInt(e.target.value)
+                                                    }
+                                                }))}>
+                                                    <option value={userData?.designation_id.designation_id || ""} key={userData?.designation_id?.designation_name!}>{userData?.designation_id?.designation_name! || ""}</option>
                                                     {designationArray.map((designationType, index) => (
                                                         <option value={designationType.designation_id} key={designationType.designation_id} disabled={isReadonly()}>{designationType.designation_name}</option>
                                                     ))}
@@ -769,8 +774,14 @@ export const UserEmployement = () => {
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="exampleFormControlInput1" value={userData[0]?.leap_client_departments.department_name} name="middleName" onChange={handleInputChange} /> */}
-                                                <select className='form-select' id="department_id" name="department_id" onChange={(e) => setUserData((prev) => ({ ...prev, ['department_id']: parseInt(e.target.value) }))}>
-                                                    <option value={userData?.department_id || ""} >{userData?.leap_client_departments?.department_name || ""}</option>
+                                                <select className='form-select' id="department_id" name="department_id" onChange={(e) => setUserData((prev) => ({
+                                                    ...prev,
+                                                    department_id: {
+                                                        ...prev.department_id,
+                                                        department_id: parseInt(e.target.value)
+                                                    }
+                                                }))}>
+                                                    <option value={userData?.department_id.department_id || ""} >{userData?.department_id?.department_name || ""}</option>
                                                     {departmentArray.map((departmentType, index) => (
                                                         <option value={departmentType.department_id} key={departmentType.department_id} disabled={isReadonly()}>{departmentType.department_name}</option>
                                                     ))}
@@ -786,8 +797,18 @@ export const UserEmployement = () => {
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="exampleFormControlInput1" value={userData[0]?.leap_customer[0]?.name} name="middleName" onChange={handleInputChange} /> */}
-                                                <select className='form-select' id="manager_id" name="manager_id" onChange={(e) => setUserData((prev) => ({ ...prev, ['manager_id']: parseInt(e.target.value) }))}>
-                                                    <option value={userData?.manager_id || ""}>{userData?.name || ""}</option>
+                                                <select className='form-select' id="manager_id" name="manager_id"
+                                                    onChange={(e) =>
+                                                        setUserData((prev) => ({
+                                                            ...prev,
+                                                            manager_id: {
+                                                                ...prev.manager_id,
+                                                                customer_id: parseInt(e.target.value)
+                                                            }
+                                                        }))
+                                                    }
+                                                >
+                                                    <option value={userData?.manager_id.customer_id || ""}>{userData?.manager_id.name || ""}</option>
                                                     {managerArray.map((managerName, index) => (
                                                         <option value={managerName.customer_id} key={managerName.customer_id} disabled={isReadonly()}>{managerName.name}</option>
                                                     ))}
@@ -805,10 +826,16 @@ export const UserEmployement = () => {
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="exampleFormControlInput1" value={userData[0]?.leap_employement_type.employeement_type} name="middleName" onChange={handleInputChange} /> */}
-                                                <select className='form-select' id="employment_type" name="employment_type" onChange={(e) => {
-                                                    setUserData((prev) => ({ ...prev, ['employment_type']: parseInt(e.target.value) }));
-                                                }}>
-                                                    <option value={userData?.leap_employement_type?.employeement_type || ""}>{userData?.leap_employement_type?.employeement_type || ""}</option>
+                                                <select className='form-select' id="employment_type" name="employment_type" onChange={(e) =>
+                                                    setUserData((prev) => ({
+                                                        ...prev,
+                                                        employment_type: {
+                                                            ...prev.employment_type,
+                                                            employment_type_id: parseInt(e.target.value)
+                                                        }
+                                                    }))
+                                                }>
+                                                    <option value={userData?.employment_type?.employeement_type || ""}>{userData?.employment_type?.employeement_type || ""}</option>
                                                     {EmploymentTypeArray.map((employmentsType, index) => (
                                                         <option value={employmentsType.employment_type_id} key={employmentsType.employment_type_id} disabled={isReadonly()}>{employmentsType.employeement_type}</option>
                                                     ))}
@@ -844,8 +871,16 @@ export const UserEmployement = () => {
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="exampleFormControlInput1" value={userData[0]?.leap_employement_type.employeement_type} name="middleName" onChange={handleInputChange} /> */}
-                                                <select className='form-select' id="employment_type" name="work_mode" onChange={(e) => setUserData((prev) => ({ ...prev, ['work_mode']: parseInt(e.target.value) }))}>
-                                                    <option value={userData?.leap_working_type?.type || ""}>{userData?.leap_working_type?.type || ""}</option>
+                                                <select className='form-select' id="employment_type" name="work_mode" onChange={(e) =>
+                                                    setUserData((prev) => ({
+                                                        ...prev,
+                                                        work_mode: {
+                                                            ...prev.work_mode,
+                                                            id: parseInt(e.target.value)
+                                                        }
+                                                    }))
+                                                }>
+                                                    <option value={userData?.work_mode?.type || ""}>{userData?.work_mode?.type || ""}</option>
                                                     {workingTypeArray.map((workingType, index) => (
                                                         <option value={workingType.id} key={workingType.id} disabled={isReadonly()}>{workingType.type}</option>
                                                     ))}

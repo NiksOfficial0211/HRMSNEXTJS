@@ -28,7 +28,7 @@ import UserAttendanceTimer from '@/app/components/userAttendanceTimer';
 import { CustomerLeavePendingCount } from '@/app/models/leaveModel';
 import moment from 'moment';
 import { pageURL_userAnnouncement, pageURL_userApplyLeaveForm, pageURL_userAsset, pageURL_userDoc, pageURL_userFillTask, pageURL_userSupportForm, pageURL_userTeamLeave } from '@/app/pro_utils/stringRoutes';
-import { AttendanceTimer, ManagerData, MyTask, Subordinate, TeamMember } from '@/app/models/userDashboardModel';
+import { AttendanceTimer, ManagerData, MyTask, Subordinate, TeamMember, UserNotification } from '@/app/models/userDashboardModel';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { AssignedTask, Task } from '@/app/models/TaskModel';
 
@@ -52,6 +52,7 @@ const Dashboard = () => {
     const [loadingCursor, setLoadingCursor] = useState(false);
     const [tabSelectedIndex, setTabSelectedIndex] = useState(0);
     const [attendanceData, setAttendanceData] = useState<AttendanceTimer>();
+    const [notificationData, setNotifyData] = useState<UserNotification[]>([]);
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertForSuccess, setAlertForSuccess] = useState(0);
@@ -97,20 +98,22 @@ const Dashboard = () => {
                     "client_id": contextClientID,
                     "branch_id": contaxtBranchID,
                     "customer_id": contextCustomerID,
-                    "role_id": contextRoleID
+                    "role_id": contextRoleID,
+                    "platform": "web",
                 }),
             });
             const response = await res.json();
             if (response.status === 1) {
 
                 setWorkingTime(response.workingHour.workData[0]);
-                console.log("time: ",workingTime)
+                console.log("time: ", workingTime)
                 setHolidays(response.upcommingHolidays.holidays);
                 setBalanceLeave(response.myLeaveBalances.customerLeavePendingCount);
                 // setSalarySlip(response.my_documents[0]);
                 setAttendanceData(response.myattendance[0]);
                 setTask(response.my_tasks);
                 setName(response.my_name.firstName)
+                setNotifyData(response.notification);
                 // setAnnouncementData(response.announcements[0]);
             } else {
                 setLoading(false);
@@ -572,7 +575,7 @@ const Dashboard = () => {
                                                                             {taskarray && taskarray.length > 0 ? (
                                                                                 taskarray?.map((data, index) =>
                                                                                     <div className='new_user_home_task_listing' key={index}>
-                                                                                        {data.task_status.id == 1 ||  data.task_status.id == 4 ?
+                                                                                        {data.task_status.id == 1 || data.task_status.id == 4 ?
                                                                                             <> <div className="new_home_task_listing new_home_task_type_todo">
                                                                                                 <div className="new_home_task_project_namebox">
                                                                                                     <div className="new_home_task_project">{data.sub_project_id.sub_project_name}</div>
@@ -653,18 +656,18 @@ const Dashboard = () => {
                                             <div className="new_user_notification_heading">Notification Corner</div>
                                         </div>
                                         <div className="new_user_notification_listing">
-                                            <ul className="user_notification_list">
-                                                <li><a href="">Happy Birthday Sahil Khambe<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                <li><a href="">Celebration  of International Workers Day on 1 May 2025<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                <li><a href="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, repudiandae!<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                <li><a href="">Lorem ipsum dolor sit amet consectetur adipisicing elit.<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                <li><a href="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt?<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                <li><a href="">Happy Birthday Sahil Khambe<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                <li><a href="">Celibration  of International Workers Day on 1 May 2025<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                <li><a href="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, repudiandae!<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                <li><a href="">Lorem ipsum dolor sit amet consectetur adipisicing elit.<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                <li><a href="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt?<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                            </ul>
+                                            {notificationData && notificationData.length > 0 ?
+                                                notificationData.map((noti, index) => (
+                                                    noti.type == "user" ?
+                                                        <ul className="user_notification_list" key={index}>
+                                                            <li><a href="">{noti.activity_details}<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
+                                                        </ul> : noti.type == "team" ?
+                                                            <ul className="user_notification_list" key={index}>
+                                                            <li><a href="">{noti.customer_name} : {noti.activity_details}<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
+                                                        </ul> : <></>
+                                                )) : (
+                                                    <div className="user_notification_list">No Notifications!</div>
+                                                )}
                                         </div>
                                     </div>
                                     {/* } */}
@@ -709,19 +712,7 @@ const Dashboard = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    {/* <div className="new_user_meeting_mainbox">
-                                        <div className="new_user_meeting_btn_mainbox">
-                                            <div className="new_user_meeting_btn_leftbox">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 512.237 512.237">
-                                                    <g fill="#7492a9"><path d="M55.224 265.937h38.882c7.302 0 13.242-5.94 13.242-13.243v-38.881c0-7.302-5.94-13.243-13.242-13.243H55.224c-7.302 0-13.242 5.94-13.242 13.243v38.881c-.001 7.303 5.94 13.243 13.242 13.243zm1.757-50.367h35.366v35.367H56.981V215.57zm88.968 50.367h38.881c7.303 0 13.243-5.94 13.243-13.243v-38.881c0-7.302-5.94-13.243-13.243-13.243h-38.881c-7.303 0-13.243 5.94-13.243 13.243v38.881c0 7.303 5.94 13.243 13.243 13.243zm1.757-50.367h35.367v35.367h-35.367V215.57zm88.968 50.367h38.881c7.303 0 13.243-5.94 13.243-13.243v-38.881c0-7.302-5.94-13.243-13.243-13.243h-38.881c-7.303 0-13.243 5.94-13.243 13.243v38.881c0 7.303 5.94 13.243 13.243 13.243zm1.757-50.367h35.367v35.367h-35.367V215.57zm127.848 50.367c7.303 0 13.243-5.94 13.243-13.243v-38.881c0-7.302-5.94-13.243-13.243-13.243h-38.881c-7.303 0-13.243 5.94-13.243 13.243v38.881c0 7.302 5.94 13.243 13.243 13.243h38.881zm-37.124-50.367h35.367v35.367h-35.367V215.57zm127.85-15h-38.882c-7.302 0-13.242 5.94-13.242 13.243v38.881c0 7.302 5.94 13.243 13.242 13.243h38.882c7.302 0 13.242-5.94 13.242-13.243v-38.881c0-7.302-5.94-13.243-13.242-13.243zm-1.758 50.367h-35.366V215.57h35.366v35.367zm-413.266 85.32c0 7.302 5.94 13.243 13.242 13.243h38.882c7.302 0 13.242-5.94 13.242-13.243v-38.881c0-7.302-5.94-13.243-13.242-13.243H55.224c-7.302 0-13.242 5.94-13.242 13.243v38.881zm15-37.124h35.366V334.5H56.981v-35.367zm75.725 37.124c0 7.302 5.94 13.243 13.243 13.243h38.881c7.303 0 13.243-5.94 13.243-13.243v-38.881c0-7.302-5.94-13.243-13.243-13.243h-38.881c-7.303 0-13.243 5.94-13.243 13.243v38.881zm15-37.124h35.367V334.5h-35.367v-35.367zm75.725 37.124c0 7.302 5.94 13.243 13.243 13.243h38.881c7.303 0 13.243-5.94 13.243-13.243v-38.881c0-7.302-5.94-13.243-13.243-13.243h-38.881c-7.303 0-13.243 5.94-13.243 13.243v38.881zm15-37.124h35.367V334.5h-35.367v-35.367zM41.981 419.819c0 7.302 5.94 13.243 13.242 13.243h38.882c7.302 0 13.242-5.94 13.242-13.243v-38.881c0-7.302-5.94-13.243-13.242-13.243H55.224c-7.302 0-13.242 5.94-13.242 13.243v38.881zm15-37.124h35.366v35.367H56.981v-35.367zm75.725 37.124c0 7.302 5.94 13.243 13.243 13.243h38.881c7.303 0 13.243-5.94 13.243-13.243v-38.881c0-7.302-5.94-13.243-13.243-13.243h-38.881c-7.303 0-13.243 5.94-13.243 13.243v38.881zm15-37.124h35.367v35.367h-35.367v-35.367zm75.725 37.124c0 7.302 5.94 13.243 13.243 13.243h38.881c7.303 0 13.243-5.94 13.243-13.243v-38.881c0-7.302-5.94-13.243-13.243-13.243h-38.881c-7.303 0-13.243 5.94-13.243 13.243v38.881zm15-37.124h35.367v35.367h-35.367v-35.367zm153.771 56.549c41.352 0 75.822-30.972 80.184-72.043a7.5 7.5 0 0 0-6.666-8.25 7.497 7.497 0 0 0-8.25 6.666c-3.549 33.423-31.607 58.627-65.268 58.627-36.197 0-65.646-29.449-65.646-65.646s29.449-65.646 65.646-65.646a65.506 65.506 0 0 1 21.052 3.47 7.501 7.501 0 0 0 4.811-14.208 80.495 80.495 0 0 0-25.862-4.262c-44.469 0-80.646 36.178-80.646 80.646s36.176 80.646 80.645 80.646z" data-original="#000000" /><path d="m447.996 289.964-62.718 58.354-7.717-7.669c-2.162-2.149-5.016-3.367-8.079-3.316a11.339 11.339 0 0 0-8.058 3.368l-15.634 15.733a11.335 11.335 0 0 0-3.316 8.079 11.337 11.337 0 0 0 3.368 8.058l23.063 22.919a22.363 22.363 0 0 0 15.86 6.539c5.705 0 11.147-2.14 15.325-6.027l78.558-73.091c4.605-4.286 4.866-11.519.581-16.126l-15.108-16.238c-4.283-4.607-11.517-4.87-16.125-.583zm-58.121 95.054a7.48 7.48 0 0 1-5.108 2.009 7.455 7.455 0 0 1-5.288-2.18l-20.517-20.389 10.573-10.64 10.285 10.222a7.5 7.5 0 0 0 10.396.171l65.369-60.821 10.218 10.982-75.928 70.646z" data-original="#000000" />
-                                                        <path d="M471.044 75.817h-45.98V58.19c0-10.64-8.656-19.296-19.296-19.296h-6.806c-10.641 0-19.297 8.656-19.297 19.296v17.626H132.572V58.19c0-10.64-8.656-19.296-19.296-19.296h-6.806c-10.641 0-19.297 8.656-19.297 19.296v17.626h-45.98C18.479 75.817 0 94.296 0 117.01v244.844c0 4.142 3.357 7.5 7.5 7.5s7.5-3.358 7.5-7.5V174.621h78.892c4.143 0 7.5-3.358 7.5-7.5s-3.357-7.5-7.5-7.5H15V117.01c0-14.443 11.75-26.193 26.193-26.193h45.98v17.626c0 10.64 8.656 19.296 19.297 19.296h6.806c10.64 0 19.296-8.656 19.296-19.296V90.817h247.093v17.626c0 10.64 8.656 19.296 19.297 19.296h6.806c10.64 0 19.296-8.656 19.296-19.296V90.817h45.98c14.443 0 26.193 11.75 26.193 26.193v42.611H125.854c-4.143 0-7.5 3.358-7.5 7.5s3.357 7.5 7.5 7.5h371.383v257.53c0 14.443-11.75 26.193-26.193 26.193H41.193C26.75 458.343 15 446.593 15 432.15v-38.334c0-4.142-3.357-7.5-7.5-7.5s-7.5 3.358-7.5 7.5v38.334c0 22.714 18.479 41.193 41.193 41.193h429.851c22.714 0 41.193-18.479 41.193-41.193V117.01c0-22.714-18.479-41.193-41.193-41.193zm-353.472 32.626a4.3 4.3 0 0 1-4.296 4.296h-6.806a4.301 4.301 0 0 1-4.297-4.296V58.19a4.301 4.301 0 0 1 4.297-4.296h6.806a4.3 4.3 0 0 1 4.296 4.296v50.253zm292.491 0a4.3 4.3 0 0 1-4.296 4.296h-6.806a4.301 4.301 0 0 1-4.297-4.296V58.19a4.301 4.301 0 0 1 4.297-4.296h6.806a4.3 4.3 0 0 1 4.296 4.296v50.253z" data-original="#000000" /></g>
-                                                </svg>
-                                            </div>
-                                            <div className="new_user_meeting_btn_rightbox">
-                                                MEETINGS
-                                            </div>
-                                        </div>
-                                    </div> */}
+
                                 </div>
                             </div>
                         </div>
@@ -734,4 +725,3 @@ const Dashboard = () => {
     )
 }
 export default Dashboard
-

@@ -114,7 +114,7 @@ const HolidayList = () => {
                 body: JSON.stringify({
                     "client_id": contextClientID,
                     "branch_id": contaxtBranchID,
-                    "holiday_year": "1"
+                    "show_employee": true
                 }),
             });
             const response = await res.json();
@@ -413,7 +413,7 @@ const HolidayList = () => {
                                                                                 <div className="new_org_holiday_date_type_box">
                                                                                     <div className="new_org_holiday_type_box">
                                                                                         <div className="nw_leave_table_lable">Holiday Type</div>
-                                                                                        <div className="nw_leave_table_content">{holiday.leap_holiday_types?.holiday_type || "N/A"}</div>
+                                                                                        <div className="nw_leave_table_content">{holiday.holiday_type_id.holiday_type || "N/A"}</div>
                                                                                     </div>
                                                                                     <div className="new_org_holiday_day_box">
                                                                                         <div className="nw_leave_table_lable">Holiday Day</div>
