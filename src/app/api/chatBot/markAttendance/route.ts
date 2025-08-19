@@ -60,7 +60,6 @@ async function startAttendance(body: any) {
     if (error) return NextResponse.json({ error: error.message }, { status: 401 });
 
     
-    
     return NextResponse.json({
         message: "Attendance started successfully",
         status: 1,

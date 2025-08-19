@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
           let query = supabase
           .from("leap_client_sub_projects")
           .select(`subproject_id, sub_project_name`)
-          .select(`subproject_id, sub_project_name`)
           .eq('client_id',client_id);
    
    
