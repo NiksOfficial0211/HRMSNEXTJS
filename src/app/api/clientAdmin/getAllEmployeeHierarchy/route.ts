@@ -20,10 +20,10 @@ export async function POST(request: NextRequest) {
         const fdata = {
 
             clientID: formData.get('client_id'),
-            branchID: formData.get('branch_id'),
-            departmentID: formData.get('department_id'),
-            designationID: formData.get('designation_id'),
-            sortOrder: formData.get("sortOrder"),
+            // branchID: formData.get('branch_id'),
+            // departmentID: formData.get('department_id'),
+            // designationID: formData.get('designation_id'),
+            // sortOrder: formData.get("sortOrder"),
             customer_id: formData.get("customer_id"),
             
         };
@@ -32,18 +32,22 @@ export async function POST(request: NextRequest) {
 
         let query= supabase.from("leap_customer")
             .select(`*,leap_client_designations(*),leap_client_departments(*)`)
-            .eq('client_id', fdata.clientID).or("user_role.is.null,user_role.neq.2");
+            .eq('client_id', fdata.clientID)
+            .not("department_id", "is", null)      // department_id must NOT be NULL
+            .not("designation_id", "is", null) 
+            .or("user_role.is.null");//,user_role.neq.2
+            //.not("manager_id", "is", null)
         
         // filter
-        if (fdata.branchID) {
-            query = query.eq("branch_id", fdata.branchID);
-        }
-        if (fdata.departmentID) {
-            query = query.eq("department_id", fdata.departmentID);
-        }
-        if (fdata.designationID) {
-            query = query.eq("designation_id", fdata.designationID);
-        }
+        // if (fdata.branchID) {
+        //     query = query.eq("branch_id", fdata.branchID);
+        // }
+        // if (fdata.departmentID) {
+        //     query = query.eq("department_id", fdata.departmentID);
+        // }
+        // if (fdata.designationID) {
+        //     query = query.eq("designation_id", fdata.designationID);
+        // }
         if (fdata.customer_id) {
             query = query.eq("customer_id", fdata.customer_id);
         }
@@ -99,40 +103,109 @@ export async function POST(request: NextRequest) {
 }
 
 
-function buildHierarchy(flatData: any[]) {
-    // console.log("98889qd8qdyqhd0q89d09qd0-q9d0-9q0-d9-0q90-9q-0dq-0=-=-=-=-===-=-==-",flatData.length);
+// function buildHierarchy(flatData: any[]) {
+//     // console.log("98889qd8qdyqhd0q89d09qd0-q9d0-9q0-d9-0q90-9q-0dq-0=-=-=-=-===-=-==-",flatData.length);
     
-    const map = new Map<number, any>();
-    const roots: any[] = [];
+//     const map = new Map<number, any>();
+//     const roots: any[] = [];
 
-    // Step 1: Map each customer and initialize reports array
-    flatData.forEach(customer => {
-        map.set(Number(customer.customer_id), { ...customer, children: [] });
-    });
-    // console.log("98889qd8qdyqhd0q89d09qd0-q9d0-9q0-d9-0q90-9q-0dq-0=-=-=-=-===-=-==-flatData-=-=-=2 ",flatData.length);
+//     // Step 1: Map each customer and initialize reports array
+//     flatData.forEach(customer => {
+//         map.set(Number(customer.customer_id), { ...customer, children: [] });
+//     });
+//     // console.log("98889qd8qdyqhd0q89d09qd0-q9d0-9q0-d9-0q90-9q-0dq-0=-=-=-=-===-=-==-flatData-=-=-=2 ",flatData.length);
 
-    // Step 2: Assign customers to their manager
-    flatData.forEach(customer => {
-        const custId = Number(customer.customer_id);
-        const mgrId = customer.manager_id != null ? Number(customer.manager_id) : null;
-        // console.log(`custId: ${custId}, manager_id:`, customer.manager_id);
+//     // Step 2: Assign customers to their manager
+//     flatData.forEach(customer => {
+//         const custId = Number(customer.customer_id);
+//         const mgrId = customer.manager_id != null ? Number(customer.manager_id) : null;
+//         // console.log(`custId: ${custId}, manager_id:`, customer.manager_id);
 
-        if (mgrId != null) {
-            const manager = map.get(mgrId);
-            if (manager) {
-                manager.children.push(map.get(custId));
-            }
+//         if (mgrId != null) {
+//             const manager = map.get(mgrId);
+//             if (manager) {
+//                 manager.children.push(map.get(custId));
+//             }
+//         } else {
+//             const root = map.get(custId);
+//             if (root) {
+//                 roots.push(root);
+//             }
+//         }
+//     });
+//     // console.log("98889qd8qdyqhd0q89d09qd0-q9d0-9q0-d9-0q90-9q-0dq-0=-=-=-=-===-=-==-roots-==-",roots.length);
+
+//     return roots;
+// }
+
+function buildHierarchy(flatData: any[]) {
+  const map = new Map<number, any>();
+  const roots: any[] = [];
+
+  // Step 1: map all customers
+  flatData.forEach(customer => {
+    map.set(Number(customer.customer_id), { ...customer, children: [] });
+  });
+
+  let directorNode: any = null;
+  const managers: any[] = [];
+
+  // Step 2: find Director + Managers
+  flatData.forEach(c => {
+    if (c.designation_name?.toLowerCase() === "director") {
+      directorNode = map.get(Number(c.customer_id));
+    }
+    if (c.user_role === 2) {
+      managers.push(map.get(Number(c.customer_id)));
+    }
+  });
+
+  // Step 3: First assign all normal manager relations
+  flatData.forEach(customer => {
+    const custId = Number(customer.customer_id);
+    const mgrId = customer.manager_id != null ? Number(customer.manager_id) : null;
+    const node = map.get(custId);
+
+    if (mgrId != null) {
+      const manager = map.get(mgrId);
+      if (manager) {
+        manager.children.push(node);
+      }
+    }
+  });
+
+  // Step 4: Handle special cases (no manager_id)
+  flatData.forEach(customer => {
+    const custId = Number(customer.customer_id);
+    const node = map.get(custId);
+
+    if (customer.manager_id == null) {
+      if (customer.designation_name?.toLowerCase() === "director") {
+        roots.push(node); // Director always root
+      } else if (customer.user_role === 2) {
+        // Managers go under Director
+        if (directorNode) {
+          directorNode.children.push(node);
         } else {
-            const root = map.get(custId);
-            if (root) {
-                roots.push(root);
-            }
+          roots.push(node);
         }
-    });
-    // console.log("98889qd8qdyqhd0q89d09qd0-q9d0-9q0-d9-0q90-9q-0dq-0=-=-=-=-===-=-==-roots-==-",roots.length);
+      } else {
+        // Other users with no manager_id → under first manager
+        if (managers.length > 0) {
+          managers[0].children.push(node);
+        } else if (directorNode) {
+          directorNode.children.push(node);
+        } else {
+          roots.push(node);
+        }
+      }
+    }
+  });
 
-    return roots;
+  return roots;
 }
+
+
 
 
   

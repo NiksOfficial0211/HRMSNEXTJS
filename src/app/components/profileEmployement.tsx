@@ -670,6 +670,8 @@ export const UserEmployement = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         {/* Address details 1 */ }
+        console.log("userData in employment", userData);
+        
         setLoading(true)
         e.preventDefault();
         const formData = new FormData();
@@ -677,12 +679,12 @@ export const UserEmployement = () => {
         formData.append("branch_id", userData.branch_id + '');
         formData.append("customer_id", userData.customer_id + '');
         formData.append("role_id", contextRoleID);
-        formData.append("designation_id", userData?.designation_id + "");
-        formData.append("department_id", userData?.department_id + "");
-        formData.append("manager_id", userData?.manager_id + "");
-        formData.append("employment_type", userData?.employment_type + "");
+        formData.append("designation_id", userData?.designation_id.designation_id + "");
+        formData.append("department_id", userData?.department_id.department_id + "");
+        formData.append("manager_id", userData?.manager_id.customer_id+ "");
+        formData.append("employment_type", userData?.employment_type.employment_type_id + "");
         formData.append("branch_id", userData?.branch_id + "");
-        formData.append("work_mode", userData?.work_mode + "");
+        formData.append("work_mode", userData?.work_mode.id + "");
         formData.append("work_location", userData?.work_location + "");
         formData.append("date_of_joining", userData?.date_of_joining + "");
         formData.append("email_id", userData?.email_id + "");
@@ -750,14 +752,14 @@ export const UserEmployement = () => {
 
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
-                                                <select className='form-select' id="department_id" name="designation_id" value={userData?.designation_id.designation_id + "" || ""} onChange={(e) => setUserData((prev) => ({
+                                                <select className='form-select' id="designation_id" name="designation_id" value={userData?.designation_id?.designation_id || ""} onChange={(e) => setUserData((prev) => ({
                                                     ...prev,
                                                     designation_id: {
                                                         ...prev.designation_id,
                                                         designation_id: parseInt(e.target.value)
                                                     }
                                                 }))}>
-                                                    <option value={userData?.designation_id.designation_id || ""} key={userData?.designation_id?.designation_name!}>{userData?.designation_id?.designation_name! || ""}</option>
+                                                    {/* <option value="" key={userData?.designation_id?.designation_name!}>Select Designation</option> */}
                                                     {designationArray.map((designationType, index) => (
                                                         <option value={designationType.designation_id} key={designationType.designation_id} disabled={isReadonly()}>{designationType.designation_name}</option>
                                                     ))}
@@ -774,14 +776,14 @@ export const UserEmployement = () => {
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="exampleFormControlInput1" value={userData[0]?.leap_client_departments.department_name} name="middleName" onChange={handleInputChange} /> */}
-                                                <select className='form-select' id="department_id" name="department_id" onChange={(e) => setUserData((prev) => ({
+                                                <select className='form-select' id="department_id" name="department_id" value={userData?.department_id?.department_id || ""} onChange={(e) => setUserData((prev) => ({
                                                     ...prev,
                                                     department_id: {
                                                         ...prev.department_id,
                                                         department_id: parseInt(e.target.value)
                                                     }
                                                 }))}>
-                                                    <option value={userData?.department_id.department_id || ""} >{userData?.department_id?.department_name || ""}</option>
+                                                    {/* <option value={userData?.department_id?.department_id || ""} >{userData?.department_id?.department_name || ""}</option> */}
                                                     {departmentArray.map((departmentType, index) => (
                                                         <option value={departmentType.department_id} key={departmentType.department_id} disabled={isReadonly()}>{departmentType.department_name}</option>
                                                     ))}
@@ -797,7 +799,7 @@ export const UserEmployement = () => {
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="exampleFormControlInput1" value={userData[0]?.leap_customer[0]?.name} name="middleName" onChange={handleInputChange} /> */}
-                                                <select className='form-select' id="manager_id" name="manager_id"
+                                                <select className='form-select' id="manager_id" name="manager_id" value={userData?.manager_id?.customer_id || ""}
                                                     onChange={(e) =>
                                                         setUserData((prev) => ({
                                                             ...prev,
@@ -808,7 +810,7 @@ export const UserEmployement = () => {
                                                         }))
                                                     }
                                                 >
-                                                    <option value={userData?.manager_id.customer_id || ""}>{userData?.manager_id.name || ""}</option>
+                                                    {/* <option >{userData?.manager_id?.name || ""}</option> */}
                                                     {managerArray.map((managerName, index) => (
                                                         <option value={managerName.customer_id} key={managerName.customer_id} disabled={isReadonly()}>{managerName.name}</option>
                                                     ))}
@@ -826,7 +828,9 @@ export const UserEmployement = () => {
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="exampleFormControlInput1" value={userData[0]?.leap_employement_type.employeement_type} name="middleName" onChange={handleInputChange} /> */}
-                                                <select className='form-select' id="employment_type" name="employment_type" onChange={(e) =>
+                                                <select className='form-select' id="employment_type" name="employment_type" 
+                                                value={userData?.employment_type?.employeement_type || ""}
+                                                onChange={(e) =>
                                                     setUserData((prev) => ({
                                                         ...prev,
                                                         employment_type: {
@@ -835,7 +839,7 @@ export const UserEmployement = () => {
                                                         }
                                                     }))
                                                 }>
-                                                    <option value={userData?.employment_type?.employeement_type || ""}>{userData?.employment_type?.employeement_type || ""}</option>
+                                                    {/* <option >{userData?.employment_type?.employeement_type || ""}</option> */}
                                                     {EmploymentTypeArray.map((employmentsType, index) => (
                                                         <option value={employmentsType.employment_type_id} key={employmentsType.employment_type_id} disabled={isReadonly()}>{employmentsType.employeement_type}</option>
                                                     ))}
@@ -852,7 +856,7 @@ export const UserEmployement = () => {
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="" value={userData?.leap_client_branch_details.branch_number} name="work_location" onChange={(e)=>setUserData((prev) => ({ ...prev, ['designation_id']: parseInt(e.target.value) }))} /> */}
                                                 <select className='form-select' id="branch_id" name="branch_id" onChange={(e) => setUserData((prev) => ({ ...prev, ['branch_id']: parseInt(e.target.value) }))}>
-                                                    <option value={userData?.leap_client_branch_details?.branch_number || ""}>{userData?.leap_client_branch_details?.branch_number || ""}</option>
+                                                    {/* <option value={userData?.leap_client_branch_details?.branch_number || ""}>{userData?.leap_client_branch_details?.branch_number || ""}</option> */}
                                                     {branchesArray.map((branch) => (
                                                         <option value={branch.id} key={branch.id} disabled={isReadonly()}>{branch.branch_number}</option>
                                                     ))}
@@ -880,7 +884,7 @@ export const UserEmployement = () => {
                                                         }
                                                     }))
                                                 }>
-                                                    <option value={userData?.work_mode?.type || ""}>{userData?.work_mode?.type || ""}</option>
+                                                    {/* <option value={userData?.work_mode?.type || ""}>{userData?.work_mode?.type || ""}</option> */}
                                                     {workingTypeArray.map((workingType, index) => (
                                                         <option value={workingType.id} key={workingType.id} disabled={isReadonly()}>{workingType.type}</option>
                                                     ))}

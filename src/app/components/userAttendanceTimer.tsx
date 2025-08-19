@@ -22,7 +22,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import ShowAlertMessage from '@/app/components/alert'
-import { ALERTMSG_addAssetSuccess, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_addAssetSuccess, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 
 interface breaktimer {
     fullday_working_hours: any
@@ -159,7 +159,7 @@ const UserAttendanceTimer = ({ data, name, workingHour }: { data: AttendanceTime
                     setShowAlert(false)
                 }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
                 <div className="new_attendancebox_firstbox">
-                    <img src={staticIconsBaseURL + "/images/user/40_profile13182025112.jpeg"} alt="User Image" className="img-fluid" />
+                    <img src= {attendanceData.img_attachment ? getImageApiURL + "/uploads/" + attendanceData.img_attachment : staticIconsBaseURL + "/images/user/user.png"}  alt="User Image" className="img-fluid" />
                 </div>
                 <div className="new_attendancebox_middlebox">
                     <div className="new_attendance_middlebox_new_name">

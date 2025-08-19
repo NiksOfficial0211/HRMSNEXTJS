@@ -21,7 +21,7 @@ if(card.leap_client_designations == null ){
                         <label htmlFor={card.emp_id} className="userlist_white">
                             <div className="tick"></div>
                                 <div className="row text-center">
-                                    <div className="grid grid-cols-1 p-0 userlist_img"><img src={card?.profile_pic ? getImageApiURL+card.profile_pic : staticIconsBaseURL+"/images/userpic.png"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/attendance_profile_img.png"; }} className="img-fluid"/></div>
+                                    <div className="grid grid-cols-1 p-0 userlist_img"><img src={card?.profile_pic ? getImageApiURL+"/uploads/"+card.profile_pic : staticIconsBaseURL+"/images/userpic.png"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/attendance_profile_img.png"; }} className="img-fluid"/></div>
                                     <div className="grid grid-cols-1 p-0 mb-1">Employee Id: <b>{card.emp_id}</b></div>
                                     <div className="grid grid-cols-1 p-0 mb-1"><b>{card.name}</b></div>
                                     <div className="grid grid-cols-1 p-0 mb-1">Department: <b>{card.leap_client_departments?.department_name?.toString()|| "--"}</b></div>

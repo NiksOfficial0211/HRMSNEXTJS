@@ -132,7 +132,7 @@ const LeapHeader = ({ title }: any) => {
                 <div className="row">
                     <div className="grid grid-cols-1 p-0">
                         {/* "/images/dashboard-logo.png" */}
-                        <div className="dash_logo"><img src={getImageApiURL + "/" + contextLogoURL} className="header-logo" style={{ cursor: "pointer" }} onClick={() => { navigateToDashboard() }} /></div>
+                        <div className="dash_logo"><img src={getImageApiURL + "/uploads/" + contextLogoURL} className="header-logo" style={{ cursor: "pointer" }} onClick={() => { navigateToDashboard() }} /></div>
                         {/* <div className="dash_logo"><img src="/images/dashboard-logo.png" className="img-fluid" /></div> */}
                         <div className="dash_topbox">
                             <div className="welcome_text">
@@ -172,7 +172,7 @@ const LeapHeader = ({ title }: any) => {
                                         onMouseLeave={() => setDropdownVisible(false)} // Hide dropdown when not hovering
                                     >
                                         <div className="option profile_box" onClick={toggleDropdown} style={{ cursor: "pointer" }}>
-                                            <img src={getImageApiURL + contextProfileImage} className="img-fluid" style={{ maxHeight: "35px" }} />
+                                            <img src={getImageApiURL +"/uploads/"+ contextProfileImage} className="img-fluid" style={{ maxHeight: "35px" }} />
                                             <div className="profile_dropdown">
                                                 <div onClick={(e) => { navigateToProfile(1) }}>Profile</div>
                                                 <div>Setting</div>

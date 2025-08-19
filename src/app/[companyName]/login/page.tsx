@@ -55,7 +55,7 @@ const Login = () => {
       {clientBasicInfo && clientBasicInfo.company_logo ? (
         <div className="login_logo">
             <img
-              src={getImageApiURL + clientBasicInfo.company_logo}
+              src={getImageApiURL+"/uploads/" + clientBasicInfo.company_logo}
               className="img-fluid"
             />
             </div>

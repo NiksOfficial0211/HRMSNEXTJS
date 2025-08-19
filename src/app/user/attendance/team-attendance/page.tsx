@@ -14,7 +14,7 @@ import dynamic from 'next/dynamic'
 import { leftMenuAttendancePageNumbers, pageURL_userTeamAttendanceDetails } from '@/app/pro_utils/stringRoutes'
 import Select from "react-select";
 import { useRouter } from 'next/navigation'
-import { staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
 import { el } from 'date-fns/locale'
 import BackButton from '@/app/components/BackButton'
@@ -222,14 +222,14 @@ const EmpAttendancePage = () => {
                                                                 </div>
                                                                 <div className="nw_filter_submit_btn">
                                                                     <a onClick={() => resetFilter()}>
-                                                                        <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                        <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                     </a>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                            <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
-                                                            <img src="/images/user/filter-icon-red.svg" alt="Filter icon" className="img-fluid new_filter_color_change_red" />
+                                                            <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
+                                                            <img src={staticIconsBaseURL + "/images/user/filter-icon-red.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_red" />
                                                             <div className="new_filter_tooltip_box">
                                                                 Filter
                                                             </div>
@@ -254,7 +254,7 @@ const EmpAttendancePage = () => {
                                                 {empAttendanceData.map((emp, index) => (
                                                     <div className='attendance_listbox' key={index}>
                                                         <div className="row" style={{ cursor: "pointer" }} onClick={() => { go_to_details_Page(emp.customer_id) }}>
-                                                            <div className="col-lg-3 attendance_memberimg" style={{ paddingLeft: "60px" }}><img src={emp.profile_pic != null && emp.profile_pic.length > 0 ? process.env.NEXT_PUBLIC_BASE_URL + emp.profile_pic : "/images/user.png"} className="img-fluid" />{emp.name}</div>
+                                                            <div className="col-lg-3 attendance_memberimg" style={{ paddingLeft: "60px" }}><img src={emp.profile_pic != null && emp.profile_pic.length > 0 ? getImageApiURL + "/uploads/" + emp.profile_pic : "/images/user/user.png"} className="img-fluid" />{emp.name}</div>
                                                             <div className="col-lg-3 text-center">{emp.leap_client_designations?.designation_name || "--"}</div>
                                                             <div className="col-lg-1 text-center">{emp.emp_id}</div>
                                                             <div className="col-lg-2 text-center">{emp.contact_number}</div>

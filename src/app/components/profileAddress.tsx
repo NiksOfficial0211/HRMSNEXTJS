@@ -830,7 +830,7 @@ export const UserAddress = () => {
                                                 </div>
                                                 <div className="col-md-3">
                                                     <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="emergency_contact" readOnly={isReadonly()} value={emergencyContact.emergency_contact|| ""} name="emergency_contact" onChange={(e) => setEmergencyContact((prev) => ({ ...prev, ["emergency_contact"]: e.target.value }))} />
+                                                        <input type="text" className="form-control" id="emergency_contact" readOnly={isReadonly()} value={emergencyContact?.emergency_contact|| ""} name="emergency_contact" onChange={(e) => setEmergencyContact((prev) => ({ ...prev, ["emergency_contact"]: e.target.value }))} />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-3">
@@ -841,7 +841,7 @@ export const UserAddress = () => {
 
                                                 <div className="col-md-3">
                                                     <div className="form_box mb-3">
-                                                        <input type="text" className="form-control" id="contact_name" readOnly={isReadonly()} value={emergencyContact.contact_name|| ""} name="contact_name" onChange={(e) => setEmergencyContact((prev) => ({ ...prev, ["contact_name"]: e.target.value }))} />
+                                                        <input type="text" className="form-control" id="contact_name" readOnly={isReadonly()} value={emergencyContact?.contact_name|| ""} name="contact_name" onChange={(e) => setEmergencyContact((prev) => ({ ...prev, ["contact_name"]: e.target.value }))} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -853,7 +853,9 @@ export const UserAddress = () => {
                                                 </div>
                                                 <div className="col-md-3">
                                                     <div className="form_box">
-                                                        <select id="relation" name="relation" onChange={(e) =>
+                                                        <select id="relation" name="relation" 
+                                                        value={emergencyContact?.relation?.id|| ""}
+                                                        onChange={(e) =>
                                                                 setEmergencyContact((prev) => ({
                                                                 ...prev,
                                                                 relation: {
@@ -862,7 +864,7 @@ export const UserAddress = () => {
                                                                 }
                                                                 }))
                                                             }>
-                                                            <option value={emergencyContact.relation?.id|| ""}>{emergencyContact?.relation?.relation_type || ""}</option>
+                                                            {(!emergencyContact || !emergencyContact.relation) && <option value="">Select Relation</option>}
                                                             {emergencyContactRelation.map((relationsType, index) => (
                                                                 <option value={relationsType.id} key={relationsType.id} disabled={isReadonly()}>{relationsType.relation_type}</option>
                                                             ))}

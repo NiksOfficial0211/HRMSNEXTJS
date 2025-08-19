@@ -14,6 +14,7 @@ import LoadingDialog from '@/app/components/PageLoader';
 import PageErrorCenterContent from '@/app/components/pageError';
 import ShowAlertMessage from '@/app/components/alert'
 import { ALERTMSG_addAssetSuccess, ALERTMSG_exceptionString, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { stat } from 'fs';
 
 const HolidayList = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -319,7 +320,7 @@ const HolidayList = () => {
                                                 </div>
                                                 <div className="org_compony_image_box">
                                                     <div className="org_compony_logo_background">
-                                                        <img src="/images/user/organization-icon-background.png" alt="Background image" className="img-fluid" />
+                                                        <img src={staticIconsBaseURL + "/images/user/organization-icon-background.png"} alt="Background image" className="img-fluid" />
                                                     </div>
                                                     <div className="org_compony_logo_box">
                                                         <img src={staticIconsBaseURL + "/images/user/evonixLogo.jpg"} alt="Organization icon" className="img-fluid" />

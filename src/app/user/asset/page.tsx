@@ -171,7 +171,7 @@ const Asset = () => {
                                                                 <SwiperSlide >
                                                                     <div className='new_asset_thumb_img'>
                                                                         {/* <img src={getImageApiURL+assetList.asset_pic} className="img-fluid" alt="Image not uploaded" /> */}
-                                                                        <img src={assetList.asset_pic  ? getImageApiURL + assetList.asset_pic : staticIconsBaseURL + "/images/"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/user/laptop-wooden-table.webp"; }} alt='text' className="img-fluid" />
+                                                                        <img src={assetList.asset_pic  ? getImageApiURL + "/uploads/" + assetList.asset_pic : staticIconsBaseURL + "/images/user/laptop-wooden-table.webp"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/user/laptop-wooden-table.webp"; }} alt='text' className="img-fluid" />
 
                                                                         {/* <img src={getImageApiURL + announcement.leap_client_announcements.announcement_image : staticIconsBaseURL + "/images/"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/user/laptop-wooden-table.webp"; }} alt='text' className="img-fluid" style={{ objectFit: 'cover', }} /> */}
                                                                     </div>

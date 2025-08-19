@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
           branch_id:fdata.branchID,
           asset_id:fdata.assetID,
           customer_id:fdata.customerID,
-            asset_pic: fdata.assetPicUrl || null,
+            asset_pic: fdata.assetPicUrl || [],
             remark:fdata.remark || null,
             date_given:fdata.givenDate || null,
 

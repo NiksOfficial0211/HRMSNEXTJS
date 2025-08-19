@@ -675,7 +675,7 @@ const EmployeeDocuments = () => {
                                                                         {/* ------ */}
                                                                         <div className="user_document_right_card_icon_download_box">
                                                                             <div className="user_document_right_card_icon">
-                                                                                <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
+                                                                                <img src={staticIconsBaseURL + "/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
                                                                             </div>
                                                                             <div className="user_document_right_card_download">
                                                                                 <a href={doc.leap_client_documents[0].document_url}>
@@ -724,7 +724,7 @@ const EmployeeDocuments = () => {
                                                                             {/* ------ */}
                                                                             <div className="user_document_right_card_icon_download_box">
                                                                                 <div className="user_document_right_card_icon">
-                                                                                    <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
+                                                                                    <img src={staticIconsBaseURL + "/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
                                                                                 </div>
                                                                                 <div className="user_document_right_card_download">
                                                                                     <a href={doc.leap_customer_documents[0].bucket_url} download>
@@ -777,7 +777,7 @@ const EmployeeDocuments = () => {
                                                                                 {/* ------ */}
                                                                                 <div className="user_document_right_card_icon_download_box">
                                                                                     <div className="user_document_right_card_icon">
-                                                                                        <img src="/images/user/adobe-pdf-icon.png" alt="PDF icon" className="img-fluid" />
+                                                                                        <img src={staticIconsBaseURL + "/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
                                                                                     </div>
                                                                                     <div className="user_document_right_card_download">
                                                                                         <a href={doc.leap_customer_documents[0].bucket_url} download> 

@@ -86,7 +86,7 @@ const ForgotPassword = () => {
         {contextLogoURL && contextLogoURL.length > 0 ? (
           <div className="login_logo">
             <img
-              src={getImageApiURL + contextLogoURL}
+              src={getImageApiURL+"/uploads/" + contextLogoURL}
               className="img-fluid"
             />
           </div>

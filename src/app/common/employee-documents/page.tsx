@@ -109,15 +109,15 @@ const OrganizationalDocuments = () => {
             case "pdf":
                 return <FaFilePdf className="text-danger fs-2" />;
             case "image":
-                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />;
+                return <img src={getImageApiURL+"/uploads/" + url} alt="Thumbnail" width={80} height={50} />;
             case "webp":
-                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />;
+                return <img src={getImageApiURL+"/uploads/" + url} alt="Thumbnail" width={80} height={50} />;
             case "jpeg":
-                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />; 
+                return <img src={getImageApiURL+"/uploads/" + url} alt="Thumbnail" width={80} height={50} />; 
             case "jpg":
-                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />; 
+                return <img src={getImageApiURL+"/uploads/" + url} alt="Thumbnail" width={80} height={50} />; 
             case "png":
-                return <img src={getImageApiURL + url} alt="Thumbnail" width={80} height={50} />;  
+                return <img src={getImageApiURL+"/uploads/" + url} alt="Thumbnail" width={80} height={50} />;  
             case "xls":
                     return <FaFileAlt className="text-success fs-2" />;
             case "doc":
@@ -206,7 +206,7 @@ const OrganizationalDocuments = () => {
                                                                 <a className='red_button filter_submit_btn'>
                                                                     <img src={staticIconsBaseURL + "/images/replace_doc_icon.png"} className='img-fluid' /> Replace
                                                                 </a>&nbsp;&nbsp;
-                                                                <a className='red_button filter_submit_btn' href={getImageApiURL+ doc.bucket_url} download >
+                                                                <a className='red_button filter_submit_btn' href={getImageApiURL+"/uploads/"+ doc.bucket_url} download >
                                                                     <img src={staticIconsBaseURL + "/images/download_doc_icon.png"} className='img-fluid' /> Download 
                                                                 </a>
                                                             </div>

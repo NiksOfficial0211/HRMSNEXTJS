@@ -421,9 +421,9 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
                             <div onClick={handleIconClick} className='com_project_logo'>
                                 <img src={staticIconsBaseURL + "/images/edit_round_black.png"} className="img-fluid edit-icon" style={{ width: "25px", paddingBottom: "0px", alignItems: "center", marginRight: '10px', cursor: "pointer" }} />
                             </div>
-                            <a href={`${getImageApiURL}${formValues.logoURL}`} download className='com_project_edit'>
+                            <a href={`${getImageApiURL}/uploads/${formValues.logoURL}`} download className='com_project_edit'>
                                 {imageURL ? <img src={`${imageURL}`} className="img-fluid" style={{ borderRadius: "10px" }} /> :
-                                    <img src={`${getImageApiURL}${formValues.logoURL}`} className="img-fluid" />
+                                    <img src={`${getImageApiURL}/uploads/${formValues.logoURL}`} className="img-fluid" />
                                 }
                             </a>
                             <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
