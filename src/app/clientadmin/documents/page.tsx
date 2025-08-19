@@ -75,7 +75,7 @@ const OrganizationalDocuments = () => {
             case "pdf":
                 return <FaFilePdf className="text-danger fs-2" />;
             case "image":
-                return <img src={getImageApiURL + url} alt="Thumbnail" width={50} height={50} />;
+                return <img src={getImageApiURL+"/uploads/" + url} alt="Thumbnail" width={50} height={50} />;
             case "xls":
             case "xlsx":
                 return <FaFileAlt className="text-success fs-2" />;

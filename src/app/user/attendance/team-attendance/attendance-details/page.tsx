@@ -19,7 +19,7 @@ import { formatInTimeZone } from 'date-fns-tz';
 
 import { start } from 'repl'
 import { EmployeeLeave_Approval_LeaveType } from '@/app/models/leaveModel'
-import { ALERTMSG_exceptionString } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_exceptionString, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
 import BackButton from '@/app/components/BackButton'
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
@@ -503,19 +503,19 @@ const EmpAttendancePage = () => {
                                                                     </div>
                                                                     <div className="nw_filter_submit_btn">
                                                                         <a onClick={() => resetFilter()}>
-                                                                            <img src="/images/user/undo.svg" alt="Undo Filter" className="img-fluid" />
+                                                                            <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Undo Filter" className="img-fluid" />
                                                                         </a>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="nw_filter_icon" onClick={filter_whitebox}>
                                                                 <img
-                                                                    src="/images/user/filter-icon.svg"
+                                                                    src={staticIconsBaseURL + "/images/user/filter-icon.svg"}
                                                                     alt="Filter icon"
                                                                     className="img-fluid new_filter_color_change_blue"
                                                                 />
                                                                 <img
-                                                                    src="/images/user/filter-icon-red.svg"
+                                                                    src={staticIconsBaseURL + "/images/user/filter-icon-red.svg"}
                                                                     alt="Filter icon"
                                                                     className="img-fluid new_filter_color_change_red"
                                                                 />
@@ -523,7 +523,7 @@ const EmpAttendancePage = () => {
                                                             </div>
                                                         </div>
                                                     </li>
-                                                    
+
                                                 </ul>
                                             </div>
                                         </div>
@@ -608,7 +608,7 @@ const EmpAttendancePage = () => {
                                                                                                                     <div className="my_attendance_start_time_name">Start Time</div>
                                                                                                                     <div className="my_attendance_start_time">
                                                                                                                         {dates.employeeAttendance?.in_time
-                                                                                                                            ? formatInTimeZone(new Date(dates.employeeAttendance.in_time), 'UTC', 'hh:mm a') 
+                                                                                                                            ? formatInTimeZone(new Date(dates.employeeAttendance.in_time), 'UTC', 'hh:mm a')
                                                                                                                             //  (new Date(dates.employeeAttendance.in_time).toLocaleTimeString('en-US', {
                                                                                                                             //     hour: '2-digit',
                                                                                                                             //     minute: '2-digit',
@@ -623,7 +623,7 @@ const EmpAttendancePage = () => {
                                                                                                                     <div className="my_attendance_start_time_name">End Time</div>
                                                                                                                     <div className="my_attendance_start_time">
                                                                                                                         {dates.employeeAttendance?.out_time
-                                                                                                                            ? formatInTimeZone(new Date(dates.employeeAttendance.out_time), 'UTC', 'hh:mm a') 
+                                                                                                                            ? formatInTimeZone(new Date(dates.employeeAttendance.out_time), 'UTC', 'hh:mm a')
                                                                                                                             // (new Date(dates.employeeAttendance.out_time).toLocaleTimeString('en-US', {
                                                                                                                             //     hour: '2-digit',
                                                                                                                             //     minute: '2-digit',
@@ -672,13 +672,11 @@ const EmpAttendancePage = () => {
                                                                     <div className="col-lg-3 text-center">
                                                                         <div className="my_attendance_right_mainbox">
                                                                             <div className="my_attendance_right_imgbox">
-                                                                                <img
-                                                                                    // src={
-                                                                                    //     dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.img_attachment
-                                                                                    //         ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/uploads?imagePath=${dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment}`
-                                                                                    //         : `${process.env.NEXT_PUBLIC_BASE_URL}/images/attendance_profile_img.png`
-                                                                                    // }
-                                                                                    src="/images/user/40_profile13182025112.jpeg" className="img-fluid" alt="Profile"
+                                                                                <img src=
+                                                                                    {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.img_attachment ?
+                                                                                        getImageApiURL + "/uploads/" + dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.img_attachment :
+                                                                                        staticIconsBaseURL + "/images/user/profile-image.jpg"}
+                                                                                    // src="/images/user/40_profile13182025112.jpeg" className="img-fluid" alt="Profile"
                                                                                 />
                                                                             </div>
                                                                             <div className="my_attendance_right_name_id_box">
@@ -700,7 +698,7 @@ const EmpAttendancePage = () => {
                                                                                         <div className="my_attendance_start_time_name">Start Time</div>
                                                                                         <div className="my_attendance_start_time">
                                                                                             {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time
-                                                                                                ? formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time), 'UTC', 'hh:mm a') 
+                                                                                                ? formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time), 'UTC', 'hh:mm a')
                                                                                                 // (new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time).toLocaleTimeString('en-US', {
                                                                                                 //     hour: '2-digit',
                                                                                                 //     minute: '2-digit',
@@ -715,7 +713,7 @@ const EmpAttendancePage = () => {
                                                                                         <div className="my_attendance_start_time_name">End Time</div>
                                                                                         <div className="my_attendance_start_time">
                                                                                             {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time
-                                                                                                ? formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time), 'UTC', 'hh:mm a') 
+                                                                                                ? formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time), 'UTC', 'hh:mm a')
                                                                                                 //  (new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.out_time).toLocaleTimeString('en-US', {
                                                                                                 //     hour: '2-digit',
                                                                                                 //     minute: '2-digit',
@@ -840,7 +838,7 @@ const EmpAttendancePage = () => {
                                             </div>
                                             <div className="row mt-4">
                                                 <div className="col-lg-12">
-                                                        <BackButton isCancelText={false} />
+                                                    <BackButton isCancelText={false} />
                                                 </div>
                                             </div>
                                         </div>

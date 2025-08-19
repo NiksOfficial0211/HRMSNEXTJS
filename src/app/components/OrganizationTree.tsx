@@ -141,7 +141,7 @@ const OrganizationTree = ({
   // Custom node rendering
   const renderCustomNode = ({ nodeDatum }: any) => {
     const imageURL = nodeDatum?.profile_pic
-      ? getImageApiURL + nodeDatum.profile_pic
+      ? getImageApiURL +"/uploads/"+ nodeDatum.profile_pic
       : staticIconsBaseURL + "/images/userpic.png";
 
     return (

@@ -267,7 +267,7 @@ const AnnouncementListing = () => {
                                                 {announcementList && announcementList.length > 0 ? (announcementList.map((announcement, index) => (
                                                     <div className="new_user_announcement_listing" key={index}>
                                                         <div className="new_user_announcement_imgbox">
-                                                            <img src={announcement.leap_client_announcements.announcement_image && announcement.leap_client_announcements.announcement_image.length > 0 ? getImageApiURL + announcement.leap_client_announcements.announcement_image : staticIconsBaseURL + "/images/"}
+                                                            <img src={announcement.leap_client_announcements.announcement_image && announcement.leap_client_announcements.announcement_image.length > 0 ? getImageApiURL + "/uploads/" + announcement.leap_client_announcements.announcement_image : staticIconsBaseURL + "/images/"}
                                                                 onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/announcement_default_img.png"; }}
                                                                 alt='text' className="img-fluid" />
                                                         </div>

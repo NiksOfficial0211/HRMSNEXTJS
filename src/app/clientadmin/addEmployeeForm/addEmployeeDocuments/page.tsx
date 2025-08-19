@@ -535,7 +535,7 @@ useEffect(() => {
 
 
                                             <img
-                                                src={formValues.profileTempURL ? getImageApiURL+ formValues.profileTempURL : staticIconsBaseURL+"/images/user.png"} className="img-fluid"
+                                                src={formValues.profileTempURL ? getImageApiURL+"/uploads/"+ formValues.profileTempURL : staticIconsBaseURL+"/images/user.png"} className="img-fluid"
                                                 style={{
                                                     // backgroundImage: "url(/images/user.png)",
                                                     width: "140px",

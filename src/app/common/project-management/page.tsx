@@ -304,8 +304,8 @@ const CompanyProjectList = () => {
                                                                         <div className='row list_listbox mr-4' key={subproject.subproject_id}>
                                                                             {/* <div className="col-lg-2 text-center font12_Medium"> {subproject.sub_project_name}</div> */}
                                                                             <div className="col-lg-1 text-center">
-                                                                                <a href={project.project_logo != null && project.project_logo.length > 0 ?getImageApiURL+project.project_logo:""} download={project.project_logo != null && project.project_logo.length > 0}>
-                                                                                    <img src={project.project_logo != null && project.project_logo.length > 0 ? getImageApiURL + project.project_logo : staticIconsBaseURL+"/images/project_default_logo1.png"} 
+                                                                                <a href={project.project_logo != null && project.project_logo.length > 0 ?getImageApiURL+"/uploads/"+project.project_logo:""} download={project.project_logo != null && project.project_logo.length > 0}>
+                                                                                    <img src={project.project_logo != null && project.project_logo.length > 0 ? getImageApiURL+"/uploads/" + project.project_logo : staticIconsBaseURL+"/images/project_default_logo1.png"} 
                                                                                     className="img-fluid" style={{ maxHeight: "25px", borderRadius: "40px" }} 
                                                                                     onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/project_default_logo1.png"; }}
                                                                                     />

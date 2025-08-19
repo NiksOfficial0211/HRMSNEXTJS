@@ -3,7 +3,7 @@ import { pageURL_attendanceDetails, pageURL_attendanceList, pageURL_leaveListing
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 import { useRouter } from 'next/navigation';
 import LeaveStatusUpdate from './dialog_approvalStatus';
-import { staticIconsBaseURL } from '../pro_utils/stringConstants';
+import { getImageApiURL, staticIconsBaseURL } from '../pro_utils/stringConstants';
 
 const AdminDashboardNotify = ({ activity }: { activity: LeapUserActivitiesModel }) => {
     
@@ -104,7 +104,14 @@ const AdminDashboardNotify = ({ activity }: { activity: LeapUserActivitiesModel 
                         <div className="col-lg-12 mb-2"><b>{activity.leap_user_activity_type.activity_type}</b></div>
                     </div>
                     <div className="row">
-                        <div className="col-lg-3" style={{height:"60px"}}><img src={staticIconsBaseURL+"/images/userlist/userimg2.png"} className="img-fluid" style={{ height: "100%", width: "auto", objectFit: "contain" }}/></div>
+                        <div className="col-lg-3" style={{height:"60px"}}>
+                            <img src={activity.customer_image && activity.customer_image.length>0?getImageApiURL+"/uploads/"+activity.customer_image  :staticIconsBaseURL+"/images/userlist/userimg2.png"} 
+                            className="img-fluid" style={{ height: "100%", width: "auto", objectFit: "contain" }}
+                            onError={(e) => {
+                                    e.currentTarget.src = staticIconsBaseURL + "/images/attendance_profile_img.png"; // fallback
+                                }}
+                            />
+                            </div>
                         <div className="col-lg-9">
                             <div className="row">
                                 <div className="col-lg-12"><b>{activity.customer_name}</b></div>

@@ -632,7 +632,7 @@ const AssetUpdate = ({ onClose, id }: { onClose: () => void, id: any }) => {
                                         {formValues.asset_pic.length > 0 ? formValues.asset_pic.map((img, index) => (
                                             <SwiperSlide key={index}>
                                                 <div className='asset_thumb_img'>
-                                                    <img src={getImageApiURL + img} className="img-fluid" />
+                                                    <img src={getImageApiURL+"/uploads/" + img} className="img-fluid" />
                                                 </div>
                                             </SwiperSlide>
                                         )) : <></>}
@@ -653,7 +653,7 @@ const AssetUpdate = ({ onClose, id }: { onClose: () => void, id: any }) => {
                     <div className="col-lg-3">
                         <div className="asset_thumb_img">
                             {(() => {
-                                const fileUrl = getImageApiURL + formValues.vendor_bill;
+                                const fileUrl = getImageApiURL+"/uploads/" + formValues.vendor_bill;
                                 const fileExtension = formValues.vendor_bill.toString().split('.').pop()?.toLowerCase() || "";
 
                                 if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileExtension)) {

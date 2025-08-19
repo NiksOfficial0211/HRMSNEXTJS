@@ -539,7 +539,7 @@ const UpdateAnnouncement = () => {
                                     <div className="profile-picture-container" style={{ marginBottom: "20px", alignContent: "center", height: "200px" }}>
 
                                         <img
-                                            src={announceImage.length > 0 ? announceImage : announcementFormValues.image ? getImageApiURL + announcementFormValues.image : staticIconsBaseURL + "/images/user.png"} className="img-fluid"
+                                            src={announceImage.length > 0 ? announceImage : announcementFormValues.image ? getImageApiURL+"/uploads/" + announcementFormValues.image : staticIconsBaseURL + "/images/user.png"} className="img-fluid"
                                             style={{
                                                 // backgroundImage: "url(/images/user.png)",
                                                 width: "180px",

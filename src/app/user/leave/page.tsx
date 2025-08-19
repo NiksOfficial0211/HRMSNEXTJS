@@ -303,14 +303,14 @@ const EmployeeLeaveList = () => {
                                                                 </div>
                                                                 <div className="nw_filter_submit_btn">
                                                                     <a onClick={() => resetFilter()}>
-                                                                        <img src="/images/user/undo.svg" alt="Filter icon" className="img-fluid" />
+                                                                        <img src={staticIconsBaseURL + "/images/user/undo.svg"} alt="Filter icon" className="img-fluid" />
                                                                     </a>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="nw_filter_icon" onClick={filter_whitebox}>
-                                                            <img src="/images/user/filter-icon.svg" alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
-                                                            <img src="/images/user/filter-icon-red.svg" alt="Filter icon" className="img-fluid new_filter_color_change_red" />
+                                                            <img src={staticIconsBaseURL + "/images/user/filter-icon.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_blue" />
+                                                            <img src={staticIconsBaseURL + "/images/user/filter-icon-red.svg"} alt="Filter icon" className="img-fluid new_filter_color_change_red" />
                                                             <div className="new_filter_tooltip_box">
                                                                 Filter
                                                             </div>

@@ -9,7 +9,7 @@ import LeftPannel from '../../components/leftPannel';
 import { useRouter } from 'next/navigation';
 import Footer from '../../components/footer';
 import { useGlobalContext } from '../../contextProviders/loggedInGlobalContext';
-import { ALERTMSG_addAssetSuccess, clientAdminDashboard, staticIconsBaseURL } from '../../pro_utils/stringConstants';
+import { ALERTMSG_addAssetSuccess, clientAdminDashboard, getImageApiURL, staticIconsBaseURL } from '../../pro_utils/stringConstants';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 
@@ -27,7 +27,7 @@ import GreetingBlock from '@/app/components/userGreetingBlock';
 import UserAttendanceTimer from '@/app/components/userAttendanceTimer';
 import { CustomerLeavePendingCount } from '@/app/models/leaveModel';
 import moment from 'moment';
-import { pageURL_userAnnouncement, pageURL_userApplyLeaveForm, pageURL_userAsset, pageURL_userDoc, pageURL_userFillTask, pageURL_userSupportForm, pageURL_userTeamLeave } from '@/app/pro_utils/stringRoutes';
+import { pageURL_leaveListingPage, pageURL_userAnnouncement, pageURL_userApplyLeaveForm, pageURL_userAsset, pageURL_userAttendance, pageURL_userDoc, pageURL_userFillTask, pageURL_userLeave, pageURL_userSupport, pageURL_userSupportForm, pageURL_userTaskListingPage, pageURL_userTeamAttendanceList, pageURL_userTeamLeave } from '@/app/pro_utils/stringRoutes';
 import { AttendanceTimer, ManagerData, MyTask, Subordinate, TeamMember, UserNotification } from '@/app/models/userDashboardModel';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { AssignedTask, Task } from '@/app/models/TaskModel';
@@ -441,7 +441,7 @@ const Dashboard = () => {
                                                                     <div className="new_home_team_member_mainbox">
                                                                         {managerData ? <div className="new_home_team_member_listing" >
                                                                             <div className="new_home_team_member_img">
-                                                                                <img src={staticIconsBaseURL + "/images/user/40_profile13182025112.jpeg"} alt="Member image" className="img-fluid" />
+                                                                                <img src={managerData.profile_pic ? getImageApiURL + "/uploads/" + managerData.profile_pic : staticIconsBaseURL + "/images/user/user.png"} alt="Member image" className="img-fluid" />
                                                                             </div>
                                                                             <div className="new_home_team_member_name" style={{ color: "red" }}>
                                                                                 {managerData?.name}
@@ -469,7 +469,7 @@ const Dashboard = () => {
                                                                             teamArray?.map((details, index) =>
                                                                                 <div className="new_home_team_member_listing" key={index}>
                                                                                     <div className="new_home_team_member_img">
-                                                                                        <img src={staticIconsBaseURL + "/images/user/40_profile13182025112.jpeg"} alt="Member image" className="img-fluid" />
+                                                                                        <img src={details.profile_pic ? getImageApiURL + "/uploads/" + details.profile_pic : staticIconsBaseURL + "/images/user/user.png"} alt="Member image" className="img-fluid" />
                                                                                     </div>
                                                                                     <div className="new_home_team_member_name" style={{ color: "red" }}>
                                                                                         {details.name}
@@ -500,7 +500,7 @@ const Dashboard = () => {
                                                                             subordinateArray?.map((details, index) =>
                                                                                 <div className="new_home_team_member_listing" key={index}>
                                                                                     <div className="new_home_team_member_img">
-                                                                                        <img src={staticIconsBaseURL + "/images/user/40_profile13182025112.jpeg"} alt="Member image" className="img-fluid" />
+                                                                                        <img src={details.profile_pic ? getImageApiURL + "/uploads/" + details.profile_pic : staticIconsBaseURL + "/images/user/user.png"} alt="Member image" className="img-fluid" />
                                                                                     </div>
                                                                                     <div className="new_home_team_member_name" style={{ color: "red" }}>
                                                                                         {details.name}
@@ -656,18 +656,92 @@ const Dashboard = () => {
                                             <div className="new_user_notification_heading">Notification Corner</div>
                                         </div>
                                         <div className="new_user_notification_listing">
+                                            {/*activity_type_id:- 1 - attendance, 
+                                                    2 - task,
+                                                    3 - leave,
+                                                    5 - support */}
                                             {notificationData && notificationData.length > 0 ?
                                                 notificationData.map((noti, index) => (
                                                     noti.type == "user" ?
                                                         <ul className="user_notification_list" key={index}>
-                                                            <li><a href="">{noti.activity_details}<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
+                                                            <li>
+                                                                {noti.activity_type_id === 1 ? (
+                                                                    <a href={pageURL_userAttendance}>
+                                                                        {noti.activity_details}
+                                                                        <span className='notification_detail_icon'>
+                                                                            <img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" />
+                                                                        </span>
+                                                                    </a>
+                                                                ) : noti.activity_type_id === 2 ? (
+                                                                    <a href={pageURL_userTaskListingPage}>
+                                                                        {noti.activity_details}
+                                                                        <span className='notification_detail_icon'>
+                                                                            <img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" />
+                                                                        </span>
+                                                                    </a>
+                                                                ): noti.activity_type_id === 3 ? (
+                                                                    <a href={pageURL_userLeave}>
+                                                                        {noti.activity_details}
+                                                                        <span className='notification_detail_icon'>
+                                                                            <img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" />
+                                                                        </span>
+                                                                    </a>
+                                                                ): noti.activity_type_id === 5 ? (
+                                                                    <a href={pageURL_userSupport}>
+                                                                        {noti.activity_details}
+                                                                        <span className='notification_detail_icon'>
+                                                                            <img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" />
+                                                                        </span>
+                                                                    </a>
+                                                                ): (
+                                                                    <a href="">
+                                                                        {noti.activity_details}
+                                                                        <span className='notification_detail_icon'>
+                                                                            <img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" />
+                                                                        </span>
+                                                                    </a>
+                                                                )}
+                                                            </li>
                                                         </ul> : noti.type == "team" ?
                                                             <ul className="user_notification_list" key={index}>
-                                                            <li><a href="">{noti.customer_name} : {noti.activity_details}<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li>
-                                                        </ul> : <></>
+                                                            {/* <li><a href="">{noti.customer_name} : {noti.activity_details}<span className='notification_detail_icon'><img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" /></span></a></li> */}
+                                                            <li>
+                                                                {noti.activity_type_id === 1 ? (
+                                                                    <a href={pageURL_userTeamAttendanceList}>
+                                                                        {noti.customer_name} : {noti.activity_details}
+                                                                        <span className='notification_detail_icon'>
+                                                                            <img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" />
+                                                                        </span>
+                                                                    </a>
+                                                                ) : noti.activity_type_id === 2 ? (
+                                                                    <a href={pageURL_userTaskListingPage}>
+                                                                        {noti.customer_name} : {noti.activity_details}
+                                                                        <span className='notification_detail_icon'>
+                                                                            <img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" />
+                                                                        </span>
+                                                                    </a>
+                                                                ): noti.activity_type_id === 3 ? (
+                                                                    <a href={pageURL_userTeamLeave}>
+                                                                        {noti.customer_name} : {noti.activity_details}
+                                                                        <span className='notification_detail_icon'>
+                                                                            <img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" />
+                                                                        </span>
+                                                                    </a>
+                                                                ): (
+                                                                    <a href="">
+                                                                        {noti.customer_name} : {noti.activity_details}
+                                                                        <span className='notification_detail_icon'>
+                                                                            <img src={staticIconsBaseURL + "/images/user/notification-detail-icon.svg"} alt="Notification detail" className="img-fluid" />
+                                                                        </span>
+                                                                    </a>
+                                                                )}
+                                                            </li>
+                                                        </ul> 
+                                                        : <></>
                                                 )) : (
                                                     <div className="user_notification_list">No Notifications!</div>
                                                 )}
+                                                
                                         </div>
                                     </div>
                                     {/* } */}
