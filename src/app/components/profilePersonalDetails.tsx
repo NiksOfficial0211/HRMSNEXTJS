@@ -406,7 +406,7 @@ import { error } from 'console';
 import { CustomerProfile, ProfileModel } from '../models/employeeDetailsModel';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 import LoadingDialog from './PageLoader';
-import { staticIconsBaseURL } from '../pro_utils/stringConstants';
+import { getImageApiURL, staticIconsBaseURL } from '../pro_utils/stringConstants';
 
 export const UserPersonalDetails = () => {
     const[isLoading,setLoading]=useState(false)
@@ -608,7 +608,7 @@ return (
                                         <div className="row" style={{borderBottom: "1px solid #ced9e2",}}>
                                             <div className='col-lg-2'>
                                                 <div className="option">
-                                                    <a href="#"><img src={staticIconsBaseURL+"/images/userpic.png"} className="img-fluid" style={{ maxHeight: "80px" ,margin: "-35px 0px 0px -50px", minHeight:"80px", maxWidth:"inherit"}} /><div className="option_label"></div></a>
+                                                    <a href="#"><img src={userData?.profile_pic && userData.profile_pic.length>0? getImageApiURL+"/uploads/"+userData.profile_pic:staticIconsBaseURL+"/images/user/user.png"} className="img-fluid" style={{ maxHeight: "80px" ,margin: "-35px 0px 0px -50px", minHeight:"80px", maxWidth:"inherit"}} /><div className="option_label"></div></a>
                                                 </div>
                                             </div>
                                             <div className='col-lg-9 mb-3'>

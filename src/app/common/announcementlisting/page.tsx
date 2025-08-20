@@ -125,25 +125,39 @@ const AnnouncementListing = () => {
                     </div>
                     <div className="">
                         <div className="row">
-                            {announcementList.map((announcement) => (
+                            {announcementList && announcementList.length>0?announcementList.map((announcement) => (
                                 <div className="col-md-3 text-center col-sm-6 mb-3" key={announcement.announcement_id} >
                                     <div className='announcement_list'>
                                         <div className="row">
                                             <div className="col-lg-12 mb-3">
                                                 <div className='announcement_img'>
-                                                    <img src={announcement.announcement_image && announcement.announcement_image.length > 0 ? getImageApiURL+"/uploads/" + announcement.announcement_image : staticIconsBaseURL + "/images/"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/announcement_default_img.png"; }} alt='text' className="img-fluid" style={{ objectFit: 'cover', }} />
+                                                    <img src={announcement.announcement_image && announcement.announcement_image.length > 0 ? getImageApiURL + "/uploads/" + announcement.announcement_image : staticIconsBaseURL + "/images/"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/announcement_default_img.png"; }} alt='text' className="img-fluid" style={{ objectFit: 'cover', }} />
                                                 </div>
                                             </div>
-                                            
-                                            <div className="col-lg-12 mb-2 announcement_heading">{announcement.announcement_title}</div>
-                                            <div className="col-lg-12 mb-3 announcement_content">{announcement.announcement_details}</div>
+
+                                            <div className="col-lg-12 mb-2 announcement_heading" style={{
+                                                wordWrap: "break-word",
+                                                textOverflow: "ellipsis",
+                                                overflow: "hidden",
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 3, // max lines
+                                                WebkitBoxOrient: "vertical"
+                                            }}>{announcement.announcement_title}</div>
+                                            <div className="col-lg-12 mb-3 announcement_content" style={{
+                                                wordWrap: "break-word",
+                                                textOverflow: "ellipsis",
+                                                overflow: "hidden",
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 3, // max lines
+                                                WebkitBoxOrient: "vertical"
+                                            }}>{announcement.announcement_details}</div>
                                             <div className="col-lg-12 mb-3">
                                                 <div className='announcement_edit' onClick={(e) => goToUpdate(e, announcement.announcement_id)}>Edit</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            )):isLoading?<></>:<div className="text-center">No Announcement Available</div>}
                         </div>
                     </div> </div>} />
             <Footer />

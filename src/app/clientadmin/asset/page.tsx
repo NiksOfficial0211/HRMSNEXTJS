@@ -737,7 +737,7 @@ const Asset = () => {
                                                     </div>
                                                 ))
                                             ) : (
-                                                <div className="text-center">None Available</div>
+                                                <div className="text-center">No Assets Available</div>
                                             )}
                                             <div className={showDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
                                                 {showDialog && <AssetUpdate id={editAssetTypeId} onClose={() => { setShowDialog(false), fetchData(0) }} />}

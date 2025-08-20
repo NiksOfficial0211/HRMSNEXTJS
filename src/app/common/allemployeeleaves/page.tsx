@@ -202,14 +202,14 @@ if (filterID == 3) {
                 setLoading(false);
                 setLeave([]);
                 setHasMoreData(false);
-            } else if (response.status == 0) {
+            } else if (response.status == 0 ) {
                 setLoading(false);
                 setSelectedPage(response.page);
                 setHasMoreData(false)
                 
                 setShowAlert(true);
                 setAlertTitle("Error")
-                setAlertStartContent("Failed to next page data");
+                setAlertStartContent("No Data Available");
                 setAlertForSuccess(2)
                 
             }

@@ -19,6 +19,7 @@ import { format } from 'date-fns';
 import moment from 'moment';
 import LoadingDialog from '@/app/components/PageLoader';
 import DeleteConfirmation from '@/app/components/dialog_deleteConfirmation';
+import ShowAlertMessage from '@/app/components/alert';
 
 
 interface UpdateAnnouncementFormValues {
@@ -62,8 +63,17 @@ const UpdateAnnouncement = () => {
     const [showCalendar, setShowCalendar] = useState(false);
     const [isLoading, setLoading] = useState(false);
     const [AnnouncementDeleteID, setAnnouncementDeleteID] = useState(0);
-        const [ShowDeleteAnnouncementDialog, setShowDeleteAnnouncementDialog] = useState(false);
-        const [AnnouncementDeleteTitle, setAnnouncementDeleteTitle] = useState('');
+    const [ShowDeleteAnnouncementDialog, setShowDeleteAnnouncementDialog] = useState(false);
+    const [AnnouncementDeleteTitle, setAnnouncementDeleteTitle] = useState('');
+
+    const [showAlert,setShowAlert]=useState(false);
+    const [alertForSuccess,setAlertForSuccess]=useState(0);
+    const [alertTitle,setAlertTitle]=useState('');
+    const [alertStartContent,setAlertStartContent]=useState('');
+    const [alertMidContent,setAlertMidContent]=useState('');
+    const [alertEndContent,setAlertEndContent]=useState('');
+    const [alertValue1,setAlertValue1]=useState('');
+    const [alertvalue2,setAlertValue2]=useState('');
 
     const [announcementFormValues, setFormValues] = useState<UpdateAnnouncementFormValues>({
         announcement_id: 0,
@@ -98,7 +108,7 @@ const UpdateAnnouncement = () => {
     const [allBranchSelected, setAllBranchSelected] = useState(false);
 
     useEffect(() => {
-        
+
         fetchData();
 
         const handleScroll = () => {
@@ -250,7 +260,7 @@ const UpdateAnnouncement = () => {
         // formData.append("announcement_date", announcementFormValues.startDate);
         formData.append("startDate", announcementFormValues.startDate);
         formData.append("endDate", announcementFormValues.endDate);
-        formData.append("is_enabled", announcementFormValues.enabled + '');
+        formData.append("is_enabled", announcementFormValues.enabled);
 
         try {
             const apiCall = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/clientAdmin/updateAnnouncement", {
@@ -389,7 +399,13 @@ const UpdateAnnouncement = () => {
             <LeftPannel menuIndex={leftMenuAnnouncementPageNumbers} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
                 <form onSubmit={handleSubmit}>
                     <div className='container'>
-                        <LoadingDialog isLoading={isLoading}/>
+                        <LoadingDialog isLoading={isLoading} />
+                        {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                            fetchData();
+                            setShowAlert(false)
+                        }} onCloseClicked={function (): void {
+                            setShowAlert(false)
+                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
                         <div className="row heading25">
                             <div className="col-lg-8">
                                 Update <span>Announcement/ News</span>
@@ -402,7 +418,7 @@ const UpdateAnnouncement = () => {
                                         <div className="col-md-12">
                                             <div className="form_box mb-3">
                                                 <label htmlFor="formFile" className="form-label">Branch<span className='req_text'>*</span>:</label>
-                                                
+
                                                 <div className="horizontal_scrolling pb-2" >
                                                     <div onClick={() => handleAllSelected(true, allBranchSelected)} className={allBranchSelected ? "announcement_branch_box announcement_branch_box_selected" : "announcement_branch_box"}>
                                                         All
@@ -489,18 +505,21 @@ const UpdateAnnouncement = () => {
 
                                     </div>
 
-                                    <div className="row mb-2">                                        
-                                        <div className="col-lg-8 announcement_switch_row">
-                                            <label htmlFor="formFile" className="form-label" style={{float:"left", margin:"5px 10px 0 0"}}>Disable:</label>
+                                    <div className="row mb-2">
+                                        <div className="col-lg-12 announcement_switch_row">
+                                            <label htmlFor="formFile" className="form-label" style={{ float: "left", margin: "5px 10px 0 0" }}>Disable:</label>
                                             <label className="switch">
-                                                <input type="checkbox" name="enabled" onChange={handleInputChange} />
+                                                <input type="checkbox" name="enabled" checked={announcementFormValues.enabled ? false : true} onChange={(e) => {
+
+                                                    setFormValues((prev) => ({ ...prev, enabled: !e.target.checked }))
+                                                }} />
                                                 <span className="slider round"></span>
                                             </label>
                                         </div>
-                                        
-                                        <div className="col-lg-4" style={{ textAlign: "right" }}>
-                                            <BackButton isCancelText={false} />
-                                            <input type="submit" value="Submit" className="red_button" />
+
+                                        <div className="col-lg-12" style={{ textAlign: "right" }}>
+                                            <div className="div" style={{ float: "right" }}><BackButton isCancelText={false} /></div>
+                                            <input type="submit" value="Submit" className="red_button" />&nbsp;
                                         </div>
                                     </div>
 
@@ -513,10 +532,10 @@ const UpdateAnnouncement = () => {
                                     </div> */}
                                     <div className="row">
                                         <div className="col-lg-12">
-                                            <div style={{ margin: "0 auto", maxWidth:"240px", position:"relative"}}>
-                                                <div onClick={() => {setAnnouncementDeleteID(announcementFormValues.announcement_id);setShowDeleteAnnouncementDialog(true); setAnnouncementDeleteTitle(announcementFormValues.title) }} className='delete_announcement_btn'>
+                                            <div style={{ margin: "0 auto", maxWidth: "240px", position: "relative" }}>
+                                                <div onClick={() => { setAnnouncementDeleteID(announcementFormValues.announcement_id); setShowDeleteAnnouncementDialog(true); setAnnouncementDeleteTitle(announcementFormValues.title) }} className='delete_announcement_btn'>
                                                     Delete Announcement
-                                                    <img src={`${staticIconsBaseURL}/images/delete.png`} className="img-fluid" style={{ margin:"0 0 0 8px", maxHeight:"18px"}} />
+                                                    <img src={`${staticIconsBaseURL}/images/delete.png`} className="img-fluid" style={{ margin: "0 0 0 8px", maxHeight: "18px" }} />
                                                 </div>
                                             </div>
                                             {/* <img
@@ -539,13 +558,12 @@ const UpdateAnnouncement = () => {
                                     <div className="profile-picture-container" style={{ marginBottom: "20px", alignContent: "center", height: "200px" }}>
 
                                         <img
-                                            src={announceImage.length > 0 ? announceImage : announcementFormValues.image ? getImageApiURL+"/uploads/" + announcementFormValues.image : staticIconsBaseURL + "/images/user.png"} className="img-fluid"
+                                            src={announceImage.length > 0 ? announceImage : announcementFormValues.image ? getImageApiURL + "/uploads/" + announcementFormValues.image : staticIconsBaseURL + "/images/user.png"} className="img-fluid"
                                             style={{
                                                 // backgroundImage: "url(/images/user.png)",
                                                 width: "180px",
                                                 height: "180px",
                                                 borderRadius: "10%",
-
                                             }} />
 
 
@@ -683,7 +701,7 @@ async function getAnnouncement(announcement_id: any) {
 
     if (error) {
         console.log(error);
-       
+
         return [];
     } else {
         console.log(data);

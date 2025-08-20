@@ -93,9 +93,9 @@ export async function POST(request: NextRequest) {
 
     if (selectedBranches!=null && selectedBranches.length>0 && roleIDS != null && roleIDS.length > 0 ) {
             for(let j=0;j<selectedBranches.length;j++){
-
+            if(selectedBranches[j].isSelected){
             for (let i = 0; i < roleIDS.length; i++) {
-
+                if(roleIDS[i].isSelected){
                 let queryDesignationAnnouncement = supabase.from('leap_show_announcement_users')
                     .insert({
                         branch_id:selectedBranches[j].id,
@@ -114,6 +114,8 @@ export async function POST(request: NextRequest) {
                     isError = true;
                 }
             }
+            }
+        }
         }
 
         }

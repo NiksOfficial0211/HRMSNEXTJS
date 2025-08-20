@@ -4,6 +4,8 @@ import supabase from '@/app/api/supabaseConfig/supabase';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 import { Holiday, LeapHolidayTypes } from '../models/HolidayModel';
 import { staticIconsBaseURL } from '../pro_utils/stringConstants';
+import LoadingDialog from './PageLoader';
+import ShowAlertMessage from './alert';
 
 
 
@@ -39,12 +41,23 @@ const UpdateHolidayForm = ({ onClose, id, }: { onClose: () => void, id: any, }) 
         }
 
     });
+
     const [branchArray, setBranchArray] = useState<ClientBranchTableModel[]>([]);
     const { contextClientID } = useGlobalContext();
     const [holidays, setHolidays] = useState<any[]>([]);
     const [showResponseMessage, setResponseMessage] = useState(false);
     const [errors, setErrors] = useState<Partial<Holiday>>({});
     const [holidayTypeArray, setholidayTypeArray] = useState<LeapHolidayTypes[]>([]);
+    const [isLoading, setLoading] = useState(false);
+
+    const [showAlert, setShowAlert] = useState(false);
+        const [alertForSuccess, setAlertForSuccess] = useState(0);
+        const [alertTitle, setAlertTitle] = useState('');
+        const [alertStartContent, setAlertStartContent] = useState('');
+        const [alertMidContent, setAlertMidContent] = useState('');
+        const [alertEndContent, setAlertEndContent] = useState('');
+        const [alertValue1, setAlertValue1] = useState('');
+        const [alertvalue2, setAlertValue2] = useState('');
 
 
     useEffect(() => {
@@ -63,7 +76,11 @@ const UpdateHolidayForm = ({ onClose, id, }: { onClose: () => void, id: any, }) 
 
                 const res = await fetch("/api/commonapi/getHolidayList", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "id": id,
+                        
+                    }),
                 });
                 const response = await res.json();
                 const holidayData = response.data.holidays[0];
@@ -108,19 +125,42 @@ const UpdateHolidayForm = ({ onClose, id, }: { onClose: () => void, id: any, }) 
             console.log(response);
 
             if (response.ok) {
-                onClose();
+                setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent("Holiday updated successfully");
+                setAlertForSuccess(1)
+                
             } else {
-                alert("Failed to submit form.");
+                setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Failed")
+                setAlertStartContent("Failed to update holiday");
+                setAlertForSuccess(2)
             }
         } catch (e) {
             console.log(e);
-            alert("Somthing went wrong! Please try again.")
+            setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Exception")
+                setAlertStartContent("Failed to update holiday");
+                setAlertForSuccess(3)
         }
 
     }
 
     return (
         <div>
+            <LoadingDialog isLoading={isLoading} />
+            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent.length > 0 ? alertEndContent : ""} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                setShowAlert(false)
+                if(alertForSuccess==1){
+                    onClose();
+                }
+
+            }} onCloseClicked={function (): void {
+                setShowAlert(false)
+            }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
             <div>
                 <div className='rightpoup_close' onClick={onClose}>
                     <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close' />
@@ -150,8 +190,10 @@ const UpdateHolidayForm = ({ onClose, id, }: { onClose: () => void, id: any, }) 
                         <div className="col-md-4">
                             <div className="form_box mb-3">
                                 <label htmlFor="formFile" className="form-label">Holiday Type:</label>
-                                <select id="holiday_type_id" name="holiday_type_id" onChange={(e) => setHolidayValues((prev) => ({ ...prev, ['holiday_type_id']: e.target.value }))}>
-                                    <option value={formHolidayValues.holiday_type_id}>{formHolidayValues.leap_holiday_types.holiday_type}</option>
+                                <select id="holiday_type_id" name="holiday_type_id" 
+                                value={formHolidayValues.holiday_type_id || ""}
+                                onChange={(e) => setHolidayValues((prev) => ({ ...prev, ['holiday_type_id']: e.target.value }))}>
+                                    {!formHolidayValues.holiday_type_id  && <option value="">Select Holiday Type</option>}
                                     {holidayTypeArray.map((type) => (
                                         <option value={type.id} key={type.id}>{type.holiday_type}</option>
                                     ))}

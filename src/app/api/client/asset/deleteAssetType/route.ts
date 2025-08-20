@@ -16,9 +16,11 @@ export async function DELETE(request: NextRequest) {
         );
       }
     const {data:hasAsset,error:errAssetAsigned}=await supabase
-      .from('leap_asset').select('*')
-      .eq('asset_type', fdata.id)
-    if(hasAsset && hasAsset?.length>0){  
+      .from('leap_asset').select("*", { count: "exact", head: true })
+      .eq('asset_type', fdata.id);
+    console.log("hasAsset", hasAsset, "errAssetAsigned", errAssetAsigned);
+      
+    if(!hasAsset){  
     const { error } = await supabase
       .from('leap_asset_type')
       .update({ 

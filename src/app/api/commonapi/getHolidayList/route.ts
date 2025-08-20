@@ -16,10 +16,21 @@ export async function POST(request: NextRequest) {
                 return funloggedInAnotherDevice()
             }
         }
-        let query = supabase.from("leap_holiday_list")
-            .select(`*,holiday_type_id(id, holiday_type),leap_client_branch_details(branch_number),leap_holiday_year(id, list_name, is_deleted, show_employee)`)
-            .eq('client_id', client_id)
-            .eq('leap_holiday_year.is_deleted', false);
+        // let query = supabase.from("leap_holiday_list")
+        //     .select(`*,holiday_type_id(id, holiday_type),leap_client_branch_details(branch_number),leap_holiday_year(id, list_name, is_deleted, show_employee)`)
+        //     .eq('client_id', client_id)
+        //     .eq('leap_holiday_year.is_deleted', false);
+
+            let query = supabase
+  .from("leap_holiday_list")
+  .select(`
+    *,
+    holiday_type_id ( id, holiday_type ),
+    leap_client_branch_details ( branch_number ),
+    leap_holiday_year ( id, list_name, is_deleted, show_employee )
+  `)
+  .eq("client_id", client_id)
+  .eq("leap_holiday_year.is_deleted", false);
 
         if (branch_id ) {
             query = query.eq('branch_id', branch_id);
@@ -52,10 +63,11 @@ export async function POST(request: NextRequest) {
        
 
 
-        const { data: holidayList, error: holidayError } = await query;
-        if (holidayError) {
-            return funSendApiErrorMessage("failed to get Upcoming holiday",holidayError);
-        }
+        // const { data: holidayList, error: holidayError } = await query;
+        // if (holidayError) {
+        //     return funSendApiErrorMessage("failed to get Upcoming holiday",holidayError);
+        // }
+        
         const holidaysByMonth = holidayData.reduce((acc, holiday) => {
             const monthName = new Date(holiday.date).toLocaleString("en-US", { month: "long" }); // Get month name
             if (!acc[monthName]) {

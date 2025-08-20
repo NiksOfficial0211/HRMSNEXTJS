@@ -20,6 +20,7 @@ import { Range } from 'react-date-range';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import LoadingDialog from '@/app/components/PageLoader';
+import ShowAlertMessage from '@/app/components/alert';
 
 
 const AnnouncementListing = () => {
@@ -56,6 +57,14 @@ const AnnouncementListing = () => {
         enabled: false,
         hasValidity: false,
     })
+    const [showAlert,setShowAlert]=useState(false);
+        const [alertForSuccess,setAlertForSuccess]=useState(0);
+        const [alertTitle,setAlertTitle]=useState('');
+        const [alertStartContent,setAlertStartContent]=useState('');
+        const [alertMidContent,setAlertMidContent]=useState('');
+        const [alertEndContent,setAlertEndContent]=useState('');
+        const [alertValue1,setAlertValue1]=useState('');
+        const [alertvalue2,setAlertValue2]=useState('');
 
 
     useEffect(() => {
@@ -152,9 +161,8 @@ const AnnouncementListing = () => {
         if (!announcementFormValues.title) newErrors.title = "required";
         if (!announcementFormValues.description) newErrors.description = "required";
         if (!announcementFormValues.image) newErrors.image = "required";
-        
-            if (!announcementFormValues.startDate) newErrors.startDate = "required";
-            if (!announcementFormValues.endDate) newErrors.endDate = "required";
+        if (!announcementFormValues.startDate) newErrors.startDate = "required";
+        if (!announcementFormValues.endDate) newErrors.endDate = "required";
        
 
         setErrors(newErrors);
@@ -322,19 +330,29 @@ const AnnouncementListing = () => {
             const response = await apiCall.json();
             console.log(response);
 
-            if (apiCall.ok) {
+            if (apiCall.ok && response.status === 1) {
                 setLoading(false);
-                alert(response.message)
-                router.push(pageURL_announcementListingPage)
+            setShowAlert(true);
+            setAlertTitle("Success")
+            setAlertStartContent("Announcement Created Successfully");
+            setAlertForSuccess(1)
+                
 
             } else {
-                setLoading(false);
-                alert("Failed to submit form.");
+               setLoading(false);
+            setShowAlert(true);
+            setAlertTitle("Error")
+            setAlertStartContent("Failed to create announcement");
+            setAlertForSuccess(2)
             }
         } catch (error) {
             setLoading(false);
             console.error("Error submitting form:", error);
-            alert("An error occurred while submitting the form." + error);
+            setLoading(false);
+            setShowAlert(true);
+            setAlertTitle("Exception")
+            setAlertStartContent("Failed to get asset types");
+            setAlertForSuccess(2)
         }
 
     }
@@ -349,6 +367,14 @@ const AnnouncementListing = () => {
                 <form onSubmit={handleSubmit}>
                     <div className='container'>
                         <LoadingDialog isLoading={isLoading}/>
+                        {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length>0?alertMidContent: ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                                                if(alertForSuccess==1){
+                                                router.push(pageURL_announcementListingPage);
+                                                }
+                                                setShowAlert(false)
+                                            } } onCloseClicked={function (): void {
+                                                setShowAlert(false)
+                                            } } showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
                         <div className="row">
                             <div className="col-lg-12 heading25">
                                 Create <span>Announcement/ News</span>
@@ -448,7 +474,7 @@ const AnnouncementListing = () => {
                                     </div>
 
                                     <div className="row mb-2">
-                                        <div className="col-md-8">
+                                        <div className="col-md-12">
                                             <div className="form_box mb-3">
                                                 <label htmlFor="formFile" className="form-label">Image<span className='req_text'>*</span>:</label>
                                                 <div className="col-lg-12 mb-2">
@@ -457,11 +483,12 @@ const AnnouncementListing = () => {
                                                 {errors.image && <span className='error' style={{ color: "red" }}>{errors.image}</span>}
                                             </div>
                                         </div>
-                                        <div className="col-lg-4 pt-4" style={{ textAlign: "right" }}>
+                                        <div className="col-lg-12 " style={{ textAlign: "right" }}>
                                             
-                                            <input type="submit" value="Submit" className="red_button" />
-                                            
+                                            <input type="submit" value="Submit" className="red_button" />&nbsp;
+                                            <div className="div" style={{float:"right"}} >
                                             <BackButton isCancelText={true} />
+                                            </div>
                                         </div>
                                     </div>
                                     

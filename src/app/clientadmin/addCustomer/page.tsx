@@ -196,14 +196,14 @@ const CustomerOnboarding = () => {
                                                     </div>
                                                     <div className="col-md-4">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Email address<span className='req_text'>*</span> :</label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Email Address<span className='req_text'>*</span> :</label>
                                                             <input type="text" className="form-control" id="companyEmail" placeholder="Enter email address" value={formValues.companyEmail} name="companyEmail" onChange={handleInputChange} />
                                                             {errors.companyEmail && <span className="error" style={{ color: "red" }}>{errors.companyEmail}</span>}
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Contact details<span className='req_text'>*</span> :</label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Contact Details<span className='req_text'>*</span> :</label>
                                                             <input type="text" className="form-control" id="contactDetails" placeholder="Enter contact details" value={formValues.contactDetails} name="contactDetails" onChange={handleInputChange} />
                                                             {errors.contactDetails && <span className="error" style={{ color: "red" }}>{errors.contactDetails}</span>}
                                                         </div>
@@ -219,7 +219,7 @@ const CustomerOnboarding = () => {
                                                     </div>
                                                     <div className="col-md-4">
                                                         <div className="form_box mb-3">
-                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Company website<span className='req_text'>*</span> :</label>
+                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >Company Website<span className='req_text'>*</span> :</label>
                                                             <input type="text" className="form-control" id="companyWebsite" placeholder="Enter website url" value={formValues.companyWebsite} name="companyWebsite" onChange={handleInputChange} />
                                                             {errors.companyWebsite && <span className="error" style={{ color: "red" }}>{errors.companyWebsite}</span>}
                                                         </div>

@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
         //   );
         // }
         const { fields, files } = await parseForm(request);
+        console.log("api announcement fields",fields);
         // return NextResponse.json({ status: 1, message: "Announcement Added Successfully",data: fields.show_to_department[0][0] }, { status: apiStatusSuccessCode })
 
         // if (!files || !files.file) {
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
 
         }
         let query ;
-        console.log("api announcement fields",fields);
+        
         
         if(fields.endDate){
             query = supabase.from('leap_client_announcements')
@@ -55,9 +56,10 @@ export async function POST(request: NextRequest) {
                 announcement_image:fileUploadResponse?fileUploadResponse:fields.image[0],
                 send_on_date:fields.startDate[0] || new Date().toISOString(),
                 validity_date:formatDateYYYYMMDD(fields.endDate[0]),
-                isEnabled:fields.is_enabled[0],
+                isEnabled:fields.is_enabled ?fields.is_enabled[0].toLowerCase() === 'true' ?true: false:false,
             }).eq("announcement_id", fields.announcement_id[0]);;
         }else{
+                console.log("startdate===============",fields.is_enabled[0].toLowerCase());
             query = supabase.from('leap_client_announcements')
 
         .update({
@@ -96,9 +98,9 @@ export async function POST(request: NextRequest) {
         }
         if (selectedBranches!=null && selectedBranches.length>0 && roleIDS != null && roleIDS.length > 0 ) {
             for(let j=0;j<selectedBranches.length;j++){
-
+            if(selectedBranches[j].isSelected){
             for (let i = 0; i < roleIDS.length; i++) {
-
+                if(roleIDS[i].isSelected){
                 let queryDesignationAnnouncement = supabase.from('leap_show_announcement_users')
                     .insert({
                         branch_id:selectedBranches[j].id,
@@ -117,6 +119,8 @@ export async function POST(request: NextRequest) {
                     isError = true;
                 }
             }
+            }
+        }
         }
 
         }

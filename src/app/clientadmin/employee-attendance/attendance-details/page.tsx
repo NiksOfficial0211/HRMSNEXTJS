@@ -12,7 +12,7 @@ import moment from 'moment'
 import { Employee, LeapCustomerAttendanceAPI } from '@/app/models/AttendanceDataModel'
 import dynamic from 'next/dynamic'
 import { leftMenuAttendancePageNumbers } from '@/app/pro_utils/stringRoutes'
-import { staticIconsBaseURL } from '@/app/pro_utils/stringConstants';
+import { getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants';
 import { DateRange, RangeKeyDict } from 'react-date-range';
 import { Range } from 'react-date-range';
 import { format } from 'date-fns'
@@ -538,8 +538,8 @@ const EmpAttendancePage = () => {
                                                         <div className="col-lg-12 mb-3"><img src={
                                                             dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance != null &&
                                                                 dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment && dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment.length>0 ?
-                                                                `${process.env.NEXT_PUBLIC_BASE_URL}/api/uploads?imagePath=${dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment}` :
-                                                                `${process.env.NEXT_PUBLIC_BASE_URL}/images/attendance_profile_img.png`} className="img-fluid" alt="User Pic" onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/attendance_profile_img.png"; }} style={{ width: "200px", margin: "-40px 0 0 0", borderRadius:"15px" }} /></div>
+                                                                `${getImageApiURL}/uploads/${dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment}` :
+                                                                `${process.env.NEXT_PUBLIC_BASE_URL}/images/attendance_profile_img.png`} className="img-fluid" alt="User Pic"  style={{ width: "200px", margin: "-40px 0 0 0", borderRadius:"15px" }} /></div>
 
                                                     </div>
                                                 </div>

@@ -137,12 +137,14 @@ const OrganizationTree = ({
   
   
 
-
+const truncateText = (str: string, maxLen: number) =>
+  str?.length > maxLen ? str.slice(0, maxLen) + "…" : str;
   // Custom node rendering
   const renderCustomNode = ({ nodeDatum }: any) => {
     const imageURL = nodeDatum?.profile_pic
       ? getImageApiURL +"/uploads/"+ nodeDatum.profile_pic
-      : staticIconsBaseURL + "/images/userpic.png";
+      : staticIconsBaseURL + "/images/user/user.png";
+   
 
     return (
       <g
@@ -171,6 +173,7 @@ const OrganizationTree = ({
 
         <image
           href={imageURL}
+          onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/user/user.png"; }}
           x={-180}
           y={-40}
           width="70"
@@ -183,10 +186,12 @@ const OrganizationTree = ({
           x={0}
           y={-20}
           textAnchor="middle"
+          fill="#000"          
           className="orgchart-name"
           style={{ pointerEvents: "none" }}
         >
-          {nodeDatum.name}
+          {truncateText(nodeDatum.name, 20)}
+          
         </text>
 
         <text
@@ -225,7 +230,8 @@ const OrganizationTree = ({
         >
           Designation:{" "}
           <tspan className="designation_text">
-            {nodeDatum?.leap_client_designations?.designation_name ?? "--"}
+            
+            {nodeDatum?.leap_client_designations && nodeDatum?.leap_client_designations?.designation_name ? truncateText(nodeDatum?.leap_client_designations?.designation_name, 20): "--"}
           </tspan>
         </text>
           

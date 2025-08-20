@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
         let query= supabase.from("leap_customer")
             .select(`*,leap_client_designations(*),leap_client_departments(*)`)
             .eq('client_id', fdata.clientID)
-            .not("department_id", "is", null)      // department_id must NOT be NULL
-            .not("designation_id", "is", null) 
-            .or("user_role.is.null");//,user_role.neq.2
+            // .not("department_id", "is", null)      // department_id must NOT be NULL
+            // .not("designation_id", "is", null) 
+            .or("user_role.is.null,user_role.neq.2");//,user_role.neq.2
             //.not("manager_id", "is", null)
         
         // filter
@@ -147,20 +147,7 @@ function buildHierarchy(flatData: any[]) {
     map.set(Number(customer.customer_id), { ...customer, children: [] });
   });
 
-  let directorNode: any = null;
-  const managers: any[] = [];
-
-  // Step 2: find Director + Managers
-  flatData.forEach(c => {
-    if (c.designation_name?.toLowerCase() === "director") {
-      directorNode = map.get(Number(c.customer_id));
-    }
-    if (c.user_role === 2) {
-      managers.push(map.get(Number(c.customer_id)));
-    }
-  });
-
-  // Step 3: First assign all normal manager relations
+  // Step 2: Assign children under managers
   flatData.forEach(customer => {
     const custId = Number(customer.customer_id);
     const mgrId = customer.manager_id != null ? Number(customer.manager_id) : null;
@@ -174,36 +161,22 @@ function buildHierarchy(flatData: any[]) {
     }
   });
 
-  // Step 4: Handle special cases (no manager_id)
+  // Step 3: Only include directors as roots
   flatData.forEach(customer => {
-    const custId = Number(customer.customer_id);
-    const node = map.get(custId);
-
     if (customer.manager_id == null) {
-      if (customer.designation_name?.toLowerCase() === "director") {
-        roots.push(node); // Director always root
-      } else if (customer.user_role === 2) {
-        // Managers go under Director
-        if (directorNode) {
-          directorNode.children.push(node);
-        } else {
-          roots.push(node);
-        }
-      } else {
-        // Other users with no manager_id → under first manager
-        if (managers.length > 0) {
-          managers[0].children.push(node);
-        } else if (directorNode) {
-          directorNode.children.push(node);
-        } else {
-          roots.push(node);
-        }
+      // check if Director
+      if (
+        customer.designation_id === 2  // example: Director role
+        
+      ) {
+        roots.push(map.get(Number(customer.customer_id)));
       }
     }
   });
 
   return roots;
 }
+
 
 
 

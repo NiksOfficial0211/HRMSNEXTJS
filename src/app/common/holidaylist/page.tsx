@@ -18,6 +18,7 @@ import ShowAlertMessage from '@/app/components/alert'
 
 interface filterApply {
     yearID: any,
+    branchID?: any,
 }
 
 const HolidayList = () => {
@@ -214,7 +215,7 @@ const HolidayList = () => {
                                     {branchArray.map((branch) => (
                                         <div className={brancheIDFilter === branch.id ? "list_view_box_selected" : "list_view_box"}
                                             key={branch.id} style={{ width: "15%", margin: "0 10px 10px 0", opacity: filters.yearID ? 1 : 0.5 }}>
-                                            <a onClick={() => { if (filters.yearID) fetchData(filters.yearID, branch.id); }}
+                                            <a onClick={() => { setFilters((prev) => ({ ...prev, branchID: branch.id }));if (filters.yearID){ fetchData(filters.yearID, branch.id);} }}
                                                 style={{ pointerEvents: filters.yearID ? "auto" : "none", cursor: filters.yearID ? "pointer" : "not-allowed" }}>
                                                 <div className={brancheIDFilter === branch.id ? "selected text-center" : "list_view_heading text-center"}>
                                                     {branch.branch_number}
@@ -240,7 +241,7 @@ const HolidayList = () => {
                                             holidays.map((holiday) => (
                                                 <div className="row list_listbox" key={holiday.id}>
                                                     <div className="col-lg-3 text-center"><b>{holiday.holiday_name}</b></div>
-                                                    <div className="col-lg-3 text-center">{holiday.leap_holiday_types?.holiday_type || "N/A"}</div>
+                                                    <div className="col-lg-3 text-center">{holiday.holiday_type_id?.holiday_type || "--"}</div>
                                                     <div className="col-lg-2 text-center">{moment(holiday.date).format("dddd")}</div>
                                                     <div className="col-lg-2 text-center">{moment(holiday.date).format("YYYY-MM-DD")}</div>
                                                     <div className="col-lg-2 text-center">
@@ -258,7 +259,7 @@ const HolidayList = () => {
                                         )}
 
                                     <div className={showUpdateDialog ? "rightpoup rightpoupopen" : "rightpoup"}>                                  
-                                        {showUpdateDialog && <UpdateHolidayForm id={holidayId} onClose={() => { setShowUpdateDialog(false) }} />}
+                                        {showUpdateDialog && <UpdateHolidayForm id={holidayId} onClose={() => { setShowUpdateDialog(false),fetchData(filters.yearID,filters.branchID) }} />}
                                     </div>
                                         
                                     </div>

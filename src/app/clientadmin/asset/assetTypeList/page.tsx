@@ -303,12 +303,16 @@ const AssetTypeList = () => {
         console.log(response);
 
         const assetListData = response.assetList;
-
-        if(assetListData! && assetListData.length > 0 ) {
+        if(response && response.status==1) {
             setLoading(false);
-            setAsset(assetListData)
-            
-        } else {
+            if(assetListData! && assetListData.length > 0 ) {
+                
+                setAsset(assetListData)
+            }else{
+                setAsset([]);
+            } 
+        }
+        else {
             setLoading(false);
             setShowAlert(true);
             setAlertTitle("Error")
@@ -345,6 +349,7 @@ const AssetTypeList = () => {
                 setLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Success");
+                setAlertStartContent("Asset type added successfully-");
                 setAlertValue1(formValues.assetType)
                 setAlertForSuccess(1);
             } else {
@@ -395,7 +400,7 @@ const AssetTypeList = () => {
                                             <div className="col-lg-9 text-center"><div className="label">Type</div></div>                                            
                                             <div className="col-lg-3 text-center"><div className="label">Action</div></div>                                            
                                         </div>
-                                        {asset.map((assetList) => (
+                                        {asset&& asset.length>0? asset.map((assetList) => (
                                             <div className="row list_listbox" key={assetList.id} style={{alignItems: "center"}}>
                                             
                                             <div className="col-lg-9 text-center">{assetList?.asset_type}</div>
@@ -410,7 +415,7 @@ const AssetTypeList = () => {
                                                     />
                                                 </div>
                                             </div>
-                                        ))}
+                                        )):<div className="text-center">No Asset Type Available</div>}
                                         {showDialog &&  <DeleteConfirmation id={editAssetTypeId} deletionType={deleteDataTypeAsset} onClose={() => { setShowDialog(false), fetchData() } } deleteDetail={''}/>}
                                     </div>
                             </div>

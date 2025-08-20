@@ -412,7 +412,7 @@ import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
 import { FaFilePdf, FaFileAlt, FaDownload } from "react-icons/fa";
 import LeftPannel from '@/app/components/leftPannel'
 import DialogUploadDocument from '@/app/components/dialog_addDocument'
-import { ALERTMSG_addAssetSuccess, ALERTMSG_exceptionString, employeeDocUpload, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_addAssetSuccess, ALERTMSG_exceptionString, employeeDocUpload, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import PageErrorCenterContent from '@/app/components/pageError'
 import ShowAlertMessage from '@/app/components/alert'
 import DialogUserUploadDocument from '@/app/components/dialog_userAddDoc'
@@ -678,7 +678,7 @@ const EmployeeDocuments = () => {
                                                                                 <img src={staticIconsBaseURL + "/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
                                                                             </div>
                                                                             <div className="user_document_right_card_download">
-                                                                                <a href={doc.leap_client_documents[0].document_url}>
+                                                                                <a href={getImageApiURL + "/uploads/" + doc.leap_client_documents[0].document_url} download>
                                                                                     <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
                                                                                         <g>
                                                                                             <g fill="#000">
@@ -727,7 +727,7 @@ const EmployeeDocuments = () => {
                                                                                     <img src={staticIconsBaseURL + "/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
                                                                                 </div>
                                                                                 <div className="user_document_right_card_download">
-                                                                                    <a href={doc.leap_customer_documents[0].bucket_url} download>
+                                                                                    <a href={getImageApiURL + "/uploads/" + doc.leap_customer_documents[0].bucket_url} download>
                                                                                         <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
                                                                                             <g>
                                                                                                 <g fill="#000">
@@ -780,7 +780,7 @@ const EmployeeDocuments = () => {
                                                                                         <img src={staticIconsBaseURL + "/images/user/adobe-pdf-icon.png"} alt="PDF icon" className="img-fluid" />
                                                                                     </div>
                                                                                     <div className="user_document_right_card_download">
-                                                                                        <a href={doc.leap_customer_documents[0].bucket_url} download> 
+                                                                                        <a href={getImageApiURL + "/uploads/" + doc.leap_customer_documents[0].bucket_url} download> 
                                                                                             <svg width="20" height="20" x="0" y="0" viewBox="0 0 24 24">
                                                                                                 <g>
                                                                                                     <g fill="#000">

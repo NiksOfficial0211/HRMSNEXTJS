@@ -679,12 +679,12 @@ export const UserEmployement = () => {
         formData.append("branch_id", userData.branch_id + '');
         formData.append("customer_id", userData.customer_id + '');
         formData.append("role_id", contextRoleID);
-        formData.append("designation_id", userData?.designation_id.designation_id + "");
-        formData.append("department_id", userData?.department_id.department_id + "");
-        formData.append("manager_id", userData?.manager_id.customer_id+ "");
-        formData.append("employment_type", userData?.employment_type.employment_type_id + "");
-        formData.append("branch_id", userData?.branch_id + "");
-        formData.append("work_mode", userData?.work_mode.id + "");
+        formData.append("designation_id", userData?.designation_id && userData?.designation_id.designation_id>0?userData?.designation_id.designation_id + "":"");
+        formData.append("department_id", userData?.department_id && userData?.department_id.department_id>0 ?userData?.department_id.department_id + "":"");
+        formData.append("manager_id",userData?.manager_id && userData?.manager_id.customer_id>0? userData?.manager_id.customer_id+ "":"");
+        formData.append("employment_type", userData?.employment_type && userData?.employment_type.employment_type_id>0 ?userData?.employment_type.employment_type_id + "":"");
+        formData.append("branch_id", userData?.branch_id && userData?.branch_id>0?userData?.branch_id + "":"");
+        formData.append("work_mode", userData?.work_mode && userData?.work_mode.id>0?userData?.work_mode.id+"" : "");
         formData.append("work_location", userData?.work_location + "");
         formData.append("date_of_joining", userData?.date_of_joining + "");
         formData.append("email_id", userData?.email_id + "");
@@ -759,7 +759,7 @@ export const UserEmployement = () => {
                                                         designation_id: parseInt(e.target.value)
                                                     }
                                                 }))}>
-                                                    {/* <option value="" key={userData?.designation_id?.designation_name!}>Select Designation</option> */}
+                                                    {!userData?.designation_id && <option value="" >Select Designation</option>}
                                                     {designationArray.map((designationType, index) => (
                                                         <option value={designationType.designation_id} key={designationType.designation_id} disabled={isReadonly()}>{designationType.designation_name}</option>
                                                     ))}
@@ -783,7 +783,7 @@ export const UserEmployement = () => {
                                                         department_id: parseInt(e.target.value)
                                                     }
                                                 }))}>
-                                                    {/* <option value={userData?.department_id?.department_id || ""} >{userData?.department_id?.department_name || ""}</option> */}
+                                                    {!userData?.department_id && <option value="" >Select Department</option>}
                                                     {departmentArray.map((departmentType, index) => (
                                                         <option value={departmentType.department_id} key={departmentType.department_id} disabled={isReadonly()}>{departmentType.department_name}</option>
                                                     ))}
@@ -810,7 +810,7 @@ export const UserEmployement = () => {
                                                         }))
                                                     }
                                                 >
-                                                    {/* <option >{userData?.manager_id?.name || ""}</option> */}
+                                                    {!userData?.manager_id  && <option value="" >Select Manager</option>}
                                                     {managerArray.map((managerName, index) => (
                                                         <option value={managerName.customer_id} key={managerName.customer_id} disabled={isReadonly()}>{managerName.name}</option>
                                                     ))}
@@ -839,7 +839,7 @@ export const UserEmployement = () => {
                                                         }
                                                     }))
                                                 }>
-                                                    {/* <option >{userData?.employment_type?.employeement_type || ""}</option> */}
+                                                    {!userData?.employment_type  && <option value="" >Select Employement Type</option>}
                                                     {EmploymentTypeArray.map((employmentsType, index) => (
                                                         <option value={employmentsType.employment_type_id} key={employmentsType.employment_type_id} disabled={isReadonly()}>{employmentsType.employeement_type}</option>
                                                     ))}
@@ -856,7 +856,7 @@ export const UserEmployement = () => {
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="" value={userData?.leap_client_branch_details.branch_number} name="work_location" onChange={(e)=>setUserData((prev) => ({ ...prev, ['designation_id']: parseInt(e.target.value) }))} /> */}
                                                 <select className='form-select' id="branch_id" name="branch_id" onChange={(e) => setUserData((prev) => ({ ...prev, ['branch_id']: parseInt(e.target.value) }))}>
-                                                    {/* <option value={userData?.leap_client_branch_details?.branch_number || ""}>{userData?.leap_client_branch_details?.branch_number || ""}</option> */}
+                                                    {!userData?.branch_id  && <option value="" >Select Branch</option>}
                                                     {branchesArray.map((branch) => (
                                                         <option value={branch.id} key={branch.id} disabled={isReadonly()}>{branch.branch_number}</option>
                                                     ))}
@@ -868,14 +868,16 @@ export const UserEmployement = () => {
                                     <div className="row" style={{ alignItems: "center" }}>
                                         <div className="col-md-2">
                                             <div className="form_box mb-3">
-                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Work Mode:  </label>
+                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Work Mode: </label>
 
                                             </div>
                                         </div>
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="exampleFormControlInput1" value={userData[0]?.leap_employement_type.employeement_type} name="middleName" onChange={handleInputChange} /> */}
-                                                <select className='form-select' id="employment_type" name="work_mode" onChange={(e) =>
+                                                <select className='form-select' id="employment_type" name="work_mode" 
+                                                value={userData?.work_mode?.type || ""}
+                                                onChange={(e) =>
                                                     setUserData((prev) => ({
                                                         ...prev,
                                                         work_mode: {
@@ -884,7 +886,7 @@ export const UserEmployement = () => {
                                                         }
                                                     }))
                                                 }>
-                                                    {/* <option value={userData?.work_mode?.type || ""}>{userData?.work_mode?.type || ""}</option> */}
+                                                    {!userData?.work_mode  && <option value="" >Select Working Mode</option>}
                                                     {workingTypeArray.map((workingType, index) => (
                                                         <option value={workingType.id} key={workingType.id} disabled={isReadonly()}>{workingType.type}</option>
                                                     ))}
