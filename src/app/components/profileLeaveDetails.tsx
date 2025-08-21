@@ -68,7 +68,7 @@ export const UserProfileLeaveDetails = () => {
                             <div className="col-lg-4" key={index}>
                                 <div className='profileleave_bal_box'>
                                     <div className='profileleave_bal_head'>{counts.leaveType}</div>
-                                    <div className='profileleave_bal_count'>{counts.leaveBalance+"/ "+counts.leaveAllotedCount}</div>
+                                    <div className={(counts.leaveBalance && counts.leaveBalance.toString().length<=2) || (counts.leaveAllotedCount && counts.leaveAllotedCount.toString().length<=2) ? 'profileleave_bal_count':'profileleave_bal_count_small'}>{counts.leaveBalance+"/ "+counts.leaveAllotedCount}</div>
                                 </div>
                                 {/* <div className="summery_box" style={{ backgroundColor: counts.color_code }}>
                                     {counts.leaveType}<br /><span>{counts.leaveBalance+"/ "+counts.leaveAllotedCount}</span>

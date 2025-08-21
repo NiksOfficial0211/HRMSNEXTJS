@@ -967,9 +967,9 @@ console.log("this is the customer joining date", custJoiningDate);
           customerLeavePendingCount.push({
             leaveTypeId: custleaveData[i].leave_id,
             leaveType: custleaveData[i].leave_name,
-            leaveAllotedCount: calcTotalWorkingSpan * custleaveData[i].leave_count,
+            leaveAllotedCount: calcTotalWorkingSpan!=0?calcTotalWorkingSpan * custleaveData[i].leave_count:custleaveData[i].leave_count,
             totalAppliedLeaveDays: 0,
-            leaveBalance: calcTotalWorkingSpan * custleaveData[i].leave_count,
+            leaveBalance: calcTotalWorkingSpan!=0?calcTotalWorkingSpan * custleaveData[i].leave_count:custleaveData[i].leave_count,
             isPaid: custleaveData[i].is_paid,
             color_code: custleaveData[i].color_code
           })
