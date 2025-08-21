@@ -937,14 +937,19 @@ export async function funGetMyLeaveBalance(clientId: any, branchId: any, custome
     let customerLeavePendingCount: LeaveTypeCount[] = [];
     const custJoiningDate = customerData[0].date_of_joining;
     const calcTotalWorkingSpan = calculateNumMonths(new Date(custJoiningDate), new Date());
-
+    
+    
     const calcCurrentYearSpan = calculateNumMonths(new Date(getFirstDateOfYearbyDate(new Date())), new Date());
+console.log("this is the customer joining date", custJoiningDate);
+    console.log("this is the calcTotalWorkingSpan", calcTotalWorkingSpan);
+    console.log("this is the calcCurrentYearSpan", calcCurrentYearSpan);
+    console.log("this is the custleaveData", custleaveData);
 
     for (let i = 0; i < custleaveData.length; i++) {
       // console.log(customerData[0].gender);
       // console.log("leave Data =======",custleaveData[0]);
 
-      if ((customerData[0].gender == custleaveData[i].gender || custleaveData[i].gender == "All")) {
+      if ((customerData[0].gender.toLowerCase() == custleaveData[i].gender.toLowerCase() || custleaveData[i].gender == "All")) {
     
         // (custleaveData[i].if_unused == "Carry Forward") {
 
@@ -962,9 +967,9 @@ export async function funGetMyLeaveBalance(clientId: any, branchId: any, custome
           customerLeavePendingCount.push({
             leaveTypeId: custleaveData[i].leave_id,
             leaveType: custleaveData[i].leave_name,
-            leaveAllotedCount: calcCurrentYearSpan * custleaveData[i].leave_count,
+            leaveAllotedCount: calcTotalWorkingSpan * custleaveData[i].leave_count,
             totalAppliedLeaveDays: 0,
-            leaveBalance: calcCurrentYearSpan * custleaveData[i].leave_count,
+            leaveBalance: calcTotalWorkingSpan * custleaveData[i].leave_count,
             isPaid: custleaveData[i].is_paid,
             color_code: custleaveData[i].color_code
           })

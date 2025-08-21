@@ -275,7 +275,7 @@ const HolidayList = () => {
                                         <div className="nw_user_inner_content_box" id='id_compony_org'>
                                             <div className="org_compony_mainbox">
                                                 <div className="org_compony_content_box">
-                                                    <LoadingDialog isLoading={isLoading} />
+                                                    {/* <LoadingDialog isLoading={isLoading} /> */}
                                                     <div className="compony_profile_mainbox">
                                                         <div className="compony_profile_contentbox">
                                                             <div className="compony_name_heading">
@@ -335,7 +335,7 @@ const HolidayList = () => {
                                                     <div className="col-lg-12">
                                                         <div className="new_org_subheading_box">
                                                             <div className="heading25">
-                                                                My <span>Leave List</span>
+                                                                My Leave List
                                                             </div>
                                                         </div>
                                                         <div className="nw_leave_table_mainbox">
@@ -394,7 +394,7 @@ const HolidayList = () => {
                                                     <div className="col-lg-12">
                                                         <div className="new_org_subheading_box">
                                                             <div className="heading25">
-                                                                My <span>Holiday List</span>
+                                                                My Holiday List
                                                             </div>
                                                         </div>
                                                         <div className="nw_holiday_table_mainbox">
@@ -414,7 +414,7 @@ const HolidayList = () => {
                                                                                 <div className="new_org_holiday_date_type_box">
                                                                                     <div className="new_org_holiday_type_box">
                                                                                         <div className="nw_leave_table_lable">Holiday Type</div>
-                                                                                        <div className="nw_leave_table_content">{holiday.holiday_type_id.holiday_type || "N/A"}</div>
+                                                                                        <div className="nw_leave_table_content">{holiday.holiday_type_id.holiday_type ? holiday.holiday_type_id.holiday_type : "--"}</div>
                                                                                     </div>
                                                                                     <div className="new_org_holiday_day_box">
                                                                                         <div className="nw_leave_table_lable">Holiday Day</div>
@@ -431,26 +431,7 @@ const HolidayList = () => {
 
 
 
-                                                                        {/* <div className="nw_holiday_table_calender_box">
-                                                                            <div className="nw_calender_monthBox">{moment(holiday.date).format("MMM")}</div>
-                                                                            <div className="nw_calender_dateBox">{moment(holiday.date).format("DD")}</div>
-                                                                        </div>
-                                                                        <div className="nw_leave_table_box">
-                                                                            <div className="nw_leave_table_lable">Holiday Name</div>
-                                                                            <div className="nw_leave_table_content">{holiday.holiday_name}</div>
-                                                                        </div>
-                                                                        <div className="nw_leave_table_box">
-                                                                            <div className="nw_leave_table_lable">Holiday Type</div>
-                                                                            <div className="nw_leave_table_content">{holiday.leap_holiday_types?.holiday_type || "N/A"}</div>
-                                                                        </div>
-                                                                        <div className="nw_leave_table_box">
-                                                                            <div className="nw_leave_table_lable">Day</div>
-                                                                            <div className="nw_leave_table_content">{moment(holiday.date).format("dddd")}</div>
-                                                                        </div>
-                                                                        <div className="nw_leave_table_box">
-                                                                            <div className="nw_leave_table_lable">Date</div>
-                                                                            <div className="nw_leave_table_content">{moment(holiday.date).format("LL")}</div>
-                                                                        </div> */}
+                                                                       
                                                                     </div>
                                                                 ))
                                                             ) : (

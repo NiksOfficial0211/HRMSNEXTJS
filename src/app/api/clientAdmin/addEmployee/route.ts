@@ -77,7 +77,8 @@ export async function POST(request: NextRequest) {
         } else {
             signedUserData = signUpData;
         }
-
+        console.log("lastCustomerEmpID[0].emp_id", lastCustomerEmpID[0].emp_id);
+        
         let query = supabase.from('leap_customer').insert([
             {
                 client_id: fields.client_id[0],

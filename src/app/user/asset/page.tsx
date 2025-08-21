@@ -131,7 +131,7 @@ const Asset = () => {
                                         </div>
                                     </div>
                                     <div className="nw_user_inner_content_box" style={{ minHeight: '60vh' }}>
-                                         {asset.length > 0 ? <div className="user_assets_listingBox mt-4">{
+                                        {asset.length > 0 ? <div className="user_assets_listingBox mt-4">{
                                             (asset.map((assetList, index) => (
                                                 <div className="user_asset_list" key={index}>
                                                     <div className="user_asset_imageBox">
@@ -156,36 +156,34 @@ const Asset = () => {
                                                                 }}
                                                                 className="custom-swiper"
                                                             >
-                                                                {/* <SwiperSlide>
-                                                    <div className="image_wrap">
-                                                        <img
-                                                            src="/images/user/laptop-wooden-table.webp"
-                                                            alt="{assetList.leap_asset.asset_name}"
-                                                            className="img-fluid"
-                                                        />
-                                                    </div> */}
-                                                                {/* </SwiperSlide> */}
-
-                                                                {/* below the image is uploaded on the server and won't be accessed locally */}
-                                                                {/* { assetList.asset_pic && assetList.asset_pic.length> 0 ?( assetList.asset_pic.map((img) => ( */}
-                                                                <SwiperSlide >
+                                                                {assetList.asset_pic && assetList.asset_pic.length > 0 ? (
+                                                                    Array.isArray(assetList.asset_pic) ? (
+                                                                        assetList.asset_pic.map((img, index) => (
+                                                                            <SwiperSlide key={index}>
+                                                                                <div className="new_asset_thumb_img">
+                                                                                    <img src={getImageApiURL + "/uploads/" + img} alt="asset" className="img-fluid" />
+                                                                                </div>
+                                                                            </SwiperSlide>
+                                                                        ))
+                                                                    ) : (
+                                                                        <SwiperSlide>
+                                                                            <div className="new_asset_thumb_img">
+                                                                                <img src={getImageApiURL + "/uploads/" + assetList.asset_pic} alt="asset" className="img-fluid" />
+                                                                            </div>
+                                                                        </SwiperSlide>
+                                                                    )
+                                                                ) : (
+                                                                    <SwiperSlide>
+                                                                        <div className="new_asset_thumb_img">
+                                                                            <img src={staticIconsBaseURL + "/images/user/laptop-wooden-table.webp"} alt="default" className="img-fluid" />
+                                                                        </div>
+                                                                    </SwiperSlide>
+                                                                )}
+                                                                {/* <SwiperSlide >
                                                                     <div className='new_asset_thumb_img'>
-                                                                        {/* <img src={getImageApiURL+assetList.asset_pic} className="img-fluid" alt="Image not uploaded" /> */}
-                                                                        <img src={assetList.asset_pic  ? getImageApiURL + "/uploads/" + assetList.asset_pic : staticIconsBaseURL + "/images/user/laptop-wooden-table.webp"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/user/laptop-wooden-table.webp"; }} alt='text' className="img-fluid" />
-
-                                                                        {/* <img src={getImageApiURL + announcement.leap_client_announcements.announcement_image : staticIconsBaseURL + "/images/"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/user/laptop-wooden-table.webp"; }} alt='text' className="img-fluid" style={{ objectFit: 'cover', }} /> */}
-                                                                    </div>
-                                                                </SwiperSlide>
-                                                                {/* ))): */}
-                                                                {/* <SwiperSlide>
-                                                        <div className="image_wrap">
-                                                            <img
-                                                                src="/images/user/laptop-wooden-table.webp"
-                                                                alt="{assetList.leap_asset.asset_name}"
-                                                                className="img-fluid"
-                                                            />
-                                                        </div>
-                                                    </SwiperSlide>} */}
+                                                                        <img src={assetList.asset_pic && assetList.asset_pic.length> 0  ? getImageApiURL + "/uploads/" + assetList.asset_pic : staticIconsBaseURL + "/images/user/laptop-wooden-table.webp"} alt='text' className="img-fluid" />
+                                                                        </div>
+                                                                </SwiperSlide> */}
                                                             </Swiper>
                                                         </div>
                                                     </div>
@@ -209,8 +207,8 @@ const Asset = () => {
                                                     </div>
                                                 </div>
                                             ))
-                                            ) }</div>: 
-                                        <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+                                            )}</div> :
+                                            <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
                                                 <PageErrorCenterContent content={"None Allotted"} />
                                             </div>}
                                     </div>
@@ -231,5 +229,4 @@ const Asset = () => {
 }
 
 export default Asset;
-
 

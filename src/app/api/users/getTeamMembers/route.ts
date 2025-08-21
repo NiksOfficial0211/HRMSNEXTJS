@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
     const { data: teamMembers, error: teamError } = await supabase
       .from("leap_customer")
       .select("customer_id, name, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
-      .eq("manager_id", manager_id)
-      .neq("customer_id", customer_id);
+      .eq("manager_id", customer_id)
+      // .neq("customer_id", customer_id);
 
     if (teamError) {
       return NextResponse.json({ status: 0, message: "Error fetching team members", error: teamError }, { status: apiStatusFailureCode });

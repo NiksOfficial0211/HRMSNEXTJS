@@ -1286,8 +1286,10 @@ const AddEmployeeBasicDetails = () => {
                 setAlertTitle("Error");
                 setAlertStartContent("Failed to add Basic Details of the employee");
                 setAlertForSuccess(2);
+                e.preventDefault();
             }
         } catch (error) {
+            e.preventDefault();
             setIsMoreLoading(false);
             console.error("Error submitting form:", error);
             setShowAlert(true);
@@ -1310,7 +1312,10 @@ const AddEmployeeBasicDetails = () => {
 
                     <LoadingDialog isLoading={isMoreLoading}/>
         {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length>0?alertMidContent: ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
-                       router.push(pageURL_addUserEmploymentForm);
+                        if(alertForSuccess === 1){
+                            router.push(pageURL_addUserEmploymentForm);
+                        }
+                       
                         setShowAlert(false)
                     } } onCloseClicked={function (): void {
                         setShowAlert(false)

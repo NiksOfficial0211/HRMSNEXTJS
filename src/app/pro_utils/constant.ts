@@ -289,13 +289,14 @@ export function addMonthsToDate(date:any, months:any) {
 }
 
 
-export function incrementNumbersInString(inputString:any) {
-  // Use a regular expression to match all numbers in the string
-  return inputString.replace(/\d+/g, (match:any) => {
-    // Convert the matched number to an integer, increment it, and return the new value
-    return parseInt(match, 10) + 1;
+export function incrementNumbersInString(inputString: string): string {
+  return inputString.replace(/\d+/g, (match) => {
+    const num = parseInt(match, 10) + 1;       // increment number
+    const padded = num.toString().padStart(match.length, "0"); // keep same length
+    return padded;
   });
-};
+}
+
 export function incrementNumbersInStringByValue(inputString:any, incrementBy:any) {
   // Use a regular expression to match all numbers in the string
   return inputString.replace(/\d+/g, (match:any) => {
