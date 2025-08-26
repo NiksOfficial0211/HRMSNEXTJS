@@ -17,28 +17,18 @@ export async function POST(request: NextRequest) {
     //   );
     // }
     const { client_id, branch_id, customer_id, platform, version, auth_token, id } = await request.json();
-    // const fdata = {
-    //   clientId: formData.get('client_id'),
-    //   branch_id: formData.get('branch_id'),
-    //   customer_id: formData.get('customer_id'),
-    //   platform: formData.get('platform'),
-    //   version: formData.get('version'),
-    //   authToken: formData.get('auth_token'),
-    //   id: formData.get('id')
-    // }
+
 
     if (!await isAuthTokenValid(platform, customer_id, auth_token)) {
       return funloggedInAnotherDevice()
     }
     let query = supabase
       .from('leap_document_type')
-      .select('*,leap_customer_documents(*)')
+      .select('document_name, document_type_id, is_deleted,leap_customer_documents(isEnabled, bucket_url, customer_id, doc_type_id )')
       .or(`document_type_id.eq.2,document_type_id.eq.5`)
       .eq('is_deleted', false)
       .eq('leap_customer_documents.customer_id', customer_id)
       .eq('leap_customer_documents.isEnabled', true)
-      // .order('leap_customer_documents.updated_at', { ascending: true });
-    // .filter('id', 'eq', fdata.docId); 
 
     if (funISDataKeyPresent(id)) {
       query = query.eq('id', id)
@@ -56,10 +46,26 @@ export async function POST(request: NextRequest) {
       const type5Docs: any = [];
 
       filteredData.forEach(item => {
+        const docsWithType = item.leap_customer_documents.map((doc: { bucket_url: string; }) => {
+          const fileUrl = doc.bucket_url || "";
+          const extension = fileUrl.includes(".")
+            ? fileUrl.split(".").pop()?.toLowerCase()
+            : null;
+
+          return {
+            ...doc,
+            doc_type: extension, 
+          };
+        });
+
+        const updatedItem = {
+          ...item,
+          leap_customer_documents: docsWithType,
+        };
         if (item.document_type_id === 2) {
-          type2Docs.push(item);
+          type2Docs.push(updatedItem);
         } else if (item.document_type_id === 5) {
-          type5Docs.push(item);
+          type5Docs.push(updatedItem);
         }
       });
 

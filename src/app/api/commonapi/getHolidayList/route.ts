@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
             query = query.eq('holiday_year', holiday_year);
         }
         if (show_employee ) {
-            query = query.eq('holiday_year.show_employee', show_employee);
+            query = query.eq('holiday_year.show_employee', true);
         }
         query = query.gte('date', formatDateYYYYMMDD(getFirstDateOfYear())) // `to_date` must be >= `fromDate`
             .lte('date', formatDateYYYYMMDD(getLastDateOfYear())).order('date', { ascending: true });

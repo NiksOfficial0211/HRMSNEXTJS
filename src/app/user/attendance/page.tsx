@@ -62,7 +62,7 @@ const EmpAttendancePage = () => {
     const { contaxtBranchID, contextClientID, contextCustomerID, dashboard_notify_cust_id, contextRoleID, setGlobalState } = useGlobalContext();
     const [loadingCursor, setLoadingCursor] = useState(false);
     const [isLoading, setLoading] = useState(true);
-    const [showMap, setShowMap] = useState(false);
+    // const [showMap, setShowMap] = useState(false);
     const [empAttendanceData, setEmpAttendanceData] = useState<Employee[]>([]);
     const [holidayList, setHolidayList] = useState<HolidayListYear[]>([]);
     const [empleaveList, setEmpLeaveList] = useState<EmployeeLeave_Approval_LeaveType[]>([]);
@@ -157,16 +157,6 @@ const EmpAttendancePage = () => {
         const parsedDate = moment(date);
         return parsedDate.format('YYYY-MM-DD');
     };
-
-    const claculateTimeDuration = (startDate: any, endDate: any) => {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-
-        const diffMs = end.getTime() - start.getTime(); // in milliseconds
-
-        const diffMinutes = Math.floor(diffMs / (1000 * 60))
-        return diffMinutes;
-    }
 
     const fetchData = async () => {
         // console.log("start date selecte in fetch data", filterValues.start_date);
@@ -289,7 +279,7 @@ const EmpAttendancePage = () => {
 
                 if (dashboard_notify_cust_id.length > 0) {
                     // const values: any = { value: apiResponse.data[0].customer_id, label: apiResponse.data[0].emp_id + "  " + apiResponse.data[0].name }
-                    setShowMap(true);
+                    // setShowMap(true);
                     setShowAttendance(
                         apiResponse.data[0].leap_customer_attendance[0].attendance_id,
                         formatDateYYYYMMDD(new Date()),
@@ -347,7 +337,7 @@ const EmpAttendancePage = () => {
             selected_empDepartment: empDepartment,
         })
     };
-
+//
     const handleDateChange = (ranges: RangeKeyDict) => {
         setState([ranges.selection]);
         setShowCalendar(false)
@@ -358,7 +348,7 @@ const EmpAttendancePage = () => {
             setFilterValues((prev) => ({ ...prev, ['end_date']: formatDateYYYYMMDD(ranges.selection.endDate) }));
         }
     };
-    const formattedRange = formatDateYYYYMMDD(state[0].startDate) == formatDateYYYYMMDD(state[0].endDate) ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
+    const formattedRange = formatDateYYYYMMDD(state[0].startDate) == formatDateYYYYMMDD(state[0].endDate) ? format(state[0].startDate!, 'dd-MM-yyyy') : `${format(state[0].startDate!, 'dd-MM-yyyy')} to ${format(state[0].endDate!, 'dd-MM-yyyy')}`;
 
     function filter_whitebox() {
         const x = document.getElementById("filter_whitebox");
@@ -382,43 +372,91 @@ const EmpAttendancePage = () => {
         outTime: string | null,
         pauseDurationMinutes: number
     ): { totalMinutes: number; netMinutes: number } {
-        const now = new Date();
-        const start = new Date(inTime);
-        const end = outTime ? new Date(outTime) : now;
+        if (!inTime) return { totalMinutes: 0, netMinutes: 0 };
 
-        const totalMinutes = (end.getTime() - start.getTime()) / 1000 / 60;
-        const netMinutes = totalMinutes - pauseDurationMinutes;
-        return {
-            totalMinutes: Math.max(0, Math.floor(totalMinutes)),
-            netMinutes: Math.max(0, Math.floor(netMinutes)),
-        };
+        try {
+            const now = new Date();
+
+            const start = new Date(inTime.replace(' ', 'T'));
+            const end = outTime ? new Date(outTime.replace(' ', 'T')) : now;
+
+            const totalMinutes = (end.getTime() - start.getTime()) / 1000 / 60;
+            const netMinutes = totalMinutes - pauseDurationMinutes;
+            return {
+                totalMinutes: Math.max(0, Math.floor(totalMinutes)),
+                netMinutes: Math.max(0, Math.floor(netMinutes)),
+            };
+        } catch (e) {
+            console.error("Invalid date or parsing error:", e);
+            return { totalMinutes: 0, netMinutes: 0 };
+        }
     }
+
     const formatMinutesToHours = (minutes: number) => {
         const hrs = Math.floor(minutes / 60);
         const mins = minutes % 60;
         return `${hrs}h ${mins}m`;
     };
-    const { netMinutes } = getTotalWorkedMinutes(
-        dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time || '0',
-        dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time || '0',
 
-        // attendanceData.in_time,
-        // attendanceData.out_time,
-        // parseInt(attendanceData.paused_duration || '0') || 0
-        parseInt(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_duration || '0') || 0
-    );
+    const { netMinutes } = dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time
+        ? getTotalWorkedMinutes(
+            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time,
+            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time || null,
+
+            Number(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_duration) || 0
+        ) : { netMinutes: 0 };
+
     const calculateProgressPercentage = () => {
-        // const worked = calculateWorkedMinutes();
-        // const percent = Math.min(55, 100); // Cap at 100%
         const percent = Math.min((netMinutes / WORKING_MINUTES) * 100, 100); // Cap at 100%
         return Math.round(percent);
     };
-    // console.log('in_time:', dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.in_time, 'out_time:', dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.out_time, 'netMinutes:', netMinutes, 'progress:', calculateProgressPercentage());
+
     const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleText = () => {
         setIsExpanded(prev => !prev);
     };
+
+    const handleSubmit = async (attDate: string) => {
+        // e.preventDefault();
+        // if (!validate()) return;
+        setLoadingCursor(true);
+        try {
+            const response = await fetch("/api/users/support/raiseSupport", {
+                method: "POST",
+                body: JSON.stringify({
+                    "client_id": contextClientID,
+                    "customer_id": contextCustomerID,
+                    "branch_id": contaxtBranchID,
+                    "type_id": 8,
+                    "description": attDate,
+                    "priority_level": 1
+                }),
+            });
+            if (response.ok) {
+                setLoadingCursor(false);
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent("Help raised successfully");
+                setAlertForSuccess(1)
+            } else {
+                setLoadingCursor(false);
+                // e.preventDefault()
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent("Failed to raise help.");
+                setAlertForSuccess(2)
+            }
+        } catch (error) {
+            setLoadingCursor(false);
+            //   e.preventDefault()
+            console.log("Error submitting form:", error);
+            setShowAlert(true);
+            setAlertTitle("Exception")
+            //   setAlertStartContent(ALERTMSG_FormExceptionString);
+            setAlertForSuccess(2)
+        }
+    }
 
     return (
         <div className="mainbox user_mainbox_new_design">
@@ -450,7 +488,7 @@ const EmpAttendancePage = () => {
                                                                         <input
                                                                             type="text"
                                                                             className="form-control"
-                                                                            // value={formattedRange}
+                                                                            value={formattedRange}
                                                                             placeholder='Select Date'
                                                                             readOnly
                                                                             onClick={() => setShowCalendar(!showCalendar)}
@@ -550,7 +588,7 @@ const EmpAttendancePage = () => {
                                                                     key={index}
                                                                     onClick={() => {
                                                                         if (dates.employeeAttendance != null) {
-                                                                            setShowMap(true);
+                                                                            // setShowMap(true);
                                                                             setSelectedAttendenceIndex(index);
                                                                             setShowAttendance(
                                                                                 dates.employeeAttendance.attendance_id,
@@ -661,7 +699,7 @@ const EmpAttendancePage = () => {
                                                                                             <div className="new_small_timing_absent">
                                                                                                 <div className="new_small_holidy_heading">Absent</div>
                                                                                                 <div className="new_small_holidy_name">
-                                                                                                    {/* {format(new Date(dates.actualDate), 'EEEE')} */}
+                                                                                                    <button onClick={() => handleSubmit(dates.actualDate)} >Request for attendance</button>
                                                                                                 </div>
                                                                                             </div>
                                                                                     }
@@ -684,8 +722,8 @@ const EmpAttendancePage = () => {
                                                                         <div className="my_attendance_right_mainbox">
                                                                             <div className="my_attendance_right_imgbox">
                                                                                 <img src={dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.img_attachment ?
-                                                                                        getImageApiURL + "/uploads/" + dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.img_attachment :
-                                                                                        staticIconsBaseURL + "/images/user/profile-image.jpg"} className="img-fluid" alt="Profile"
+                                                                                    getImageApiURL + "/uploads/" + dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.img_attachment :
+                                                                                    staticIconsBaseURL + "/images/user/profile-image.jpg"} className="img-fluid" alt="Profile"
                                                                                 />
                                                                             </div>
                                                                             <div className="my_attendance_right_name_id_box">
@@ -837,19 +875,6 @@ const EmpAttendancePage = () => {
                                                                                     textSize: "10px",
                                                                                 })}
                                                                             />
-                                                                            {/* <CircularProgressbar
-                                                                                value={calculateProgressPercentage()}
-                                                                                text={formatMinutesToHours(netMinutes)}
-                                                                                background
-                                                                                // backgroundPadding={6}
-                                                                                styles={buildStyles({
-                                                                                    backgroundColor: "transparent",
-                                                                                    textColor: "#000",
-                                                                                    pathColor: "#ed2024",
-                                                                                    trailColor: "transparent",
-                                                                                    textSize: "14px"
-                                                                                })}
-                                                                            /> */}
                                                                         </div>
                                                                     </div>
                                                                 </div>

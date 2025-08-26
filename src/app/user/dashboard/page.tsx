@@ -105,14 +105,15 @@ const Dashboard = () => {
             const response = await res.json();
             if (response.status === 1) {
 
-                setWorkingTime(response.workingHour.workData[0]);
-                console.log("time: ", workingTime)
+                setWorkingTime(response.workingHour.workData[0].full_day);
+                // console.log("time: ", workingTime)
                 setHolidays(response.upcommingHolidays.holidays);
                 setBalanceLeave(response.myLeaveBalances.customerLeavePendingCount);
                 // setSalarySlip(response.my_documents[0]);
                 setAttendanceData(response.myattendance[0]);
                 setTask(response.my_tasks);
-                setName(response.my_name.firstName)
+                setName(response.my_name.firstName);
+                // console.log("name: ", balancearray)
                 setNotifyData(response.notification);
                 // setAnnouncementData(response.announcements[0]);
             } else {

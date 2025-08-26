@@ -49,12 +49,8 @@ const UserAttendanceTimer = ({ data, name, workingHour }: { data: AttendanceTime
         //     // fetchActivities();
         //     fetchData();
         // }, 5000); // Call fetchActivities every 5 seconds
+        // console.log("workingHour:", workingHour);
 
-        const fetchData = async () => {
-            const clientHour = await getTotalWorkingHours(contextClientID);
-            setTotalHours(clientHour);
-        };
-        // fetchData();
         setAttendanceData(data);
         // fetchAttendanceTimerData();
         const handleScroll = () => {
@@ -80,50 +76,40 @@ const UserAttendanceTimer = ({ data, name, workingHour }: { data: AttendanceTime
         const diffMinutes = Math.floor(diffMs / (1000 * 60))
         return diffMinutes;
     }
-    const WORKING_MINUTES = 480
+    const WORKING_MINUTES = workingHour;
     // || workingHour;
     function parseDateString(dateStr: string | null): Date | null {
         if (!dateStr) return null;
         // Replace space with T for ISO format
-        return new Date(dateStr.replace(' ', 'T')); 
+        return new Date(dateStr.replace(' ', 'T'));
     }
 
     function getTotalWorkedMinutes(
-  inTime: string,
-  outTime: string | null,
-  pauseDurationMinutes: number
-): { totalMinutes: number; netMinutes: number } {
-  if (!inTime) return { totalMinutes: 0, netMinutes: 0 };
+        inTime: string,
+        outTime: string | null,
+        pauseDurationMinutes: number
+    ): { totalMinutes: number; netMinutes: number } {
+        if (!inTime) return { totalMinutes: 0, netMinutes: 0 };
 
-  try {
-    const now = new Date();
+        try {
+            const now = new Date();
 
-    // Fix format from "YYYY-MM-DD HH:MM:SS+00" → "YYYY-MM-DDTHH:MM:SS+00"
-    const start = new Date(inTime.replace(' ', 'T'));
-    const end = outTime ? new Date(outTime.replace(' ', 'T')) : now;
+            // Fix format from "YYYY-MM-DD HH:MM:SS+00" → "YYYY-MM-DDTHH:MM:SS+00"
+            const start = new Date(inTime.replace(' ', 'T'));
+            const end = outTime ? new Date(outTime.replace(' ', 'T')) : now;
 
-    const totalMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
-    const netMinutes = totalMinutes - pauseDurationMinutes;
+            const totalMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+            const netMinutes = totalMinutes - pauseDurationMinutes;
 
-    console.log({
-      inTime,
-      outTime,
-      start,
-      end,
-      pauseDurationMinutes,
-      totalMinutes,
-      netMinutes
-    });
-
-    return {
-      totalMinutes: Math.max(0, Math.floor(totalMinutes)),
-      netMinutes: Math.max(0, Math.floor(netMinutes)),
-    };
-  } catch (e) {
-    console.error("Invalid date or parsing error:", e);
-    return { totalMinutes: 0, netMinutes: 0 };
-  }
-}
+            return {
+                totalMinutes: Math.max(0, Math.floor(totalMinutes)),
+                netMinutes: Math.max(0, Math.floor(netMinutes)),
+            };
+        } catch (e) {
+            console.error("Invalid date or parsing error:", e);
+            return { totalMinutes: 0, netMinutes: 0 };
+        }
+    }
 
     const formatMinutesToHours = (minutes: number) => {
         const hrs = Math.floor(minutes / 60);
@@ -131,12 +117,12 @@ const UserAttendanceTimer = ({ data, name, workingHour }: { data: AttendanceTime
         return `${hrs}h ${mins}m`;
     };
     const { netMinutes } = attendanceData.in_time
-  ? getTotalWorkedMinutes(
-      attendanceData.in_time,
-      attendanceData.out_time || null,
-      Number(attendanceData.paused_duration) || 0
-    )
-  : { netMinutes: 0 };
+        ? getTotalWorkedMinutes(
+            attendanceData.in_time,
+            attendanceData.out_time || null,
+            Number(attendanceData.paused_duration) || 0
+        )
+        : { netMinutes: 0 };
 
     // const calculateWorkedMinutes = () => {
     //     if (!attendanceData.in_time || !attendanceData.out_time) return 0;
@@ -148,7 +134,7 @@ const UserAttendanceTimer = ({ data, name, workingHour }: { data: AttendanceTime
         const percent = Math.min((netMinutes / WORKING_MINUTES) * 100, 100); // Cap at 100%
         return Math.round(percent);
     };
-    console.log('in_time:', attendanceData.in_time, 'out_time:', attendanceData.out_time, 'netMinutes:', netMinutes, 'progress:', calculateProgressPercentage());
+    // console.log('in_time:', attendanceData.in_time, 'out_time:', attendanceData.out_time, 'netMinutes:', netMinutes, 'progress:', calculateProgressPercentage());
     return (
         <div className="new_dashboard_greeting_attendancebox">
             <div className="my_new_greeting_attendancebox">
@@ -159,7 +145,7 @@ const UserAttendanceTimer = ({ data, name, workingHour }: { data: AttendanceTime
                     setShowAlert(false)
                 }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
                 <div className="new_attendancebox_firstbox">
-                    <img src= {attendanceData.img_attachment ? getImageApiURL + "/uploads/" + attendanceData.img_attachment : staticIconsBaseURL + "/images/user/user.png"}  alt="User Image" className="img-fluid" />
+                    <img src={attendanceData.img_attachment ? getImageApiURL + "/uploads/" + attendanceData.img_attachment : staticIconsBaseURL + "/images/user/user.png"} alt="User Image" className="img-fluid" />
                 </div>
                 <div className="new_attendancebox_middlebox">
                     <div className="new_attendance_middlebox_new_name">
@@ -228,25 +214,6 @@ const UserAttendanceTimer = ({ data, name, workingHour }: { data: AttendanceTime
                                 textSize: "14px"
                             })}
                         />
-
-                        {/* <ChangingProgressProvider values={[0, 100]}>
-                            {(percentage: number) => (
-                                <CircularProgressbar
-                                    value={calculateProgressPercentage()}
-                                    text={formatMinutesToHours(netMinutes)}
-                                    background
-                                    styles={buildStyles({
-                                        backgroundColor: "transparent",
-                                        textColor: "#000",
-                                        pathColor: "#ed2024",
-                                        trailColor: "transparent",
-                                        textSize: "14px",
-                                        pathTransition:
-                                            percentage === 0 ? "none" : "stroke-dashoffset 0.5s ease 0s"
-                                    })}
-                                />
-                            )}
-                        </ChangingProgressProvider> */}
                     </div>
                 </div>
             </div>

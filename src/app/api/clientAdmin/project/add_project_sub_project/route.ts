@@ -69,7 +69,8 @@ export async function POST(request: NextRequest) {
         }else if(fdata.techStacks && !fdata.techStacks.toString().includes(',')){
             techStackArray.push(parseInt(fdata.techStacks));
         }
-
+        console.log("projectData[0].project_id",projectData[0].project_id);
+        
       const  {data:subProject,error:subError} =  await supabase.from("leap_client_sub_projects")
         .insert({
             client_id:fdata.client_id,
@@ -155,6 +156,8 @@ export async function POST(request: NextRequest) {
     // }
     
     if(subError){
+        console.log("subError",subError);
+        
         return funSendApiErrorMessage(subError,"Failed to add sub project")
     }
 
