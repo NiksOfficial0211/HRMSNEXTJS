@@ -33,7 +33,8 @@ const OrganizationalDocuments = () => {
     // const [documentURL,setDocumentUrls]=useState<any[]>([]);
     // const [empDocumentsArray, setEmpDocumentArray] = useState<LeapCustomerDocuments[]>([]);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
+    const [isLoading, setLoading] = useState(false);
+    
     useEffect(() => {
         fetchData();
 
@@ -65,9 +66,10 @@ const OrganizationalDocuments = () => {
 
 
     const fetchData = async () => {
-
+        setLoading(true);
         const docs = await getDocuments(contextClientID);
         setDocumentsArray(docs);
+         setLoading(false);
     }
     
     const getFileIcon = (type: string, url: string) => {
@@ -91,8 +93,9 @@ const OrganizationalDocuments = () => {
             <header>
                 <LeapHeader title="Welcome!" />
             </header>
+            <LoadingDialog isLoading={isLoading} />
             <LeftPannel menuIndex={leftMenuDocumentsPageNumbers} subMenuIndex={leftMenuDocumentsSub1PageNumbers} showLeftPanel={true} rightBoxUI={
-                documentsArray.length > 0 ?
+                
 
                     <div>
                         <div className='container'>
@@ -110,6 +113,7 @@ const OrganizationalDocuments = () => {
                                     </div> : <></>
                                 }
                             </div>
+                            {documentsArray.length > 0 ?<div>
                             <div className={showUploadDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
                             {showUploadDialog && <DialogUploadDocument onClose={() => {setShowUploadDialog(false);fetchData()}} docType={companyDocUpload} />}
                             </div>
@@ -150,12 +154,16 @@ const OrganizationalDocuments = () => {
                                     </div>
                                 </div>
                             </div>
+                            </div>:(
+                                    <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+                                        <h4 className="text-muted">No documents uploaded</h4>
+                                            
+                                    </div>
+                                ) }
 
                         </div>
                     </div>
-
-
-                    : <LoadingDialog isLoading={true} />} />
+                    } />
 
 
             <div>

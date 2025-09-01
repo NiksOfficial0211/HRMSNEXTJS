@@ -577,7 +577,7 @@ export const UserEmployement = () => {
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Work Mode</div>
-                                <div className="d_user_profile_details_content">{userData?.work_mode.type || "--"}</div>
+                                <div className="d_user_profile_details_content">{userData?.work_mode ? userData?.work_mode.type : "--"}</div>
                             </div>
                             <div className="d_user_profile_details_listing">
                                 <div className="d_user_profile_details_subheading">Work Location</div>

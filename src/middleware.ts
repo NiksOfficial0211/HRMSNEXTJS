@@ -12,7 +12,9 @@ export async function middleware(request: NextRequest) {
     || pathname.toLowerCase().includes("/forgot-password")
     || pathname.toLowerCase().includes("/reset-password")
     || pathname.toLowerCase().includes("/reset-pass/verify-token")
-    || pathname.toLowerCase().includes("/clientadmin/addEmployeeForm") 
+    || pathname.toLowerCase().includes("/clientadmin/addEmployeeForm")
+    || pathname.toLowerCase().includes("/terms-and-conditions")
+    || pathname.toLowerCase().includes("/privacy-policy") 
     || pathname.toLowerCase().includes("/clientadmin/addEmployeeForm/addEmployeeBankDetailsForm")) {
       console.log("Middel waare is getting called ---------123------------------------- ----- -- ",pathname);
 

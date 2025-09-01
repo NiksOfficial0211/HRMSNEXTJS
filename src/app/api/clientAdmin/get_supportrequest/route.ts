@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         
         const { data: supportData, error: supportError } = await query;
         if (supportError) {
-            return funSendApiErrorMessage(supportError, "Failed to add task");
+            return funSendApiErrorMessage(supportError, "Failed to get request details");
         }
         return NextResponse.json({ status: 1, message: "Support Request", data: supportData }, { status: apiStatusSuccessCode })
     } catch (error) {

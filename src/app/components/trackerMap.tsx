@@ -145,7 +145,7 @@ const AttendanceMap = ({ attendanceID, date, empName, empID, empDesignation, emp
 
     return (
         <div style={{ height: "500px", width: "100%" }}>
-            {isDataLoaded ? (
+            {isDataLoaded ? atendanceData?.leap_customer_attendance_geolocation && atendanceData.leap_customer_attendance_geolocation.length>0?(
                 <div className="col-lg-12">
                     {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                             setShowAlert(false)
@@ -200,6 +200,8 @@ const AttendanceMap = ({ attendanceID, date, empName, empID, empDesignation, emp
                         )}
                     </MapContainer>
                 </div>):<div className="d-flex justify-content-center align-items-center" style={{ height: "40px" }}>
+                        {<h3 className="text-muted">Attendance was marked manually</h3>}
+                    </div>:<div className="d-flex justify-content-center align-items-center" style={{ height: "40px" }}>
                         {<h3 className="text-muted">Loading...</h3>}
                     </div>
             }

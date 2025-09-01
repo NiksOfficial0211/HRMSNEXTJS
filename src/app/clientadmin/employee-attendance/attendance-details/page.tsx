@@ -19,9 +19,10 @@ import { format } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz';
 
 import { start } from 'repl'
-import {  EmployeeLeave_Approval_LeaveType } from '@/app/models/leaveModel'
+import { EmployeeLeave_Approval_LeaveType } from '@/app/models/leaveModel'
 import { ALERTMSG_exceptionString } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
+import AssignEmployeeAttendance from '@/app/components/dialog_assignEmpAttendance'
 // import AttendanceMap from '@/app/components/trackerMap'
 const AttendanceMap = dynamic(() => import('@/app/components/trackerMap'), { ssr: false });
 
@@ -58,6 +59,7 @@ const EmpAttendancePage = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
     const { contaxtBranchID, contextClientID, dashboard_notify_cust_id, setGlobalState } = useGlobalContext();
     const [loadingCursor, setLoadingCursor] = useState(false);
+    const [showAssignDialog, setShowAttendanceAssignDialog] = useState(false);
     const [isLoading, setLoading] = useState(true);
     const [showMap, setShowMap] = useState(false);
     const [empAttendanceData, setEmpAttendanceData] = useState<Employee[]>([]);
@@ -129,13 +131,13 @@ const EmpAttendancePage = () => {
 
 
     const [showAlert, setShowAlert] = useState(false);
-        const [alertForSuccess, setAlertForSuccess] = useState(0);
-        const [alertTitle, setAlertTitle] = useState('');
-        const [alertStartContent, setAlertStartContent] = useState('');
-        const [alertMidContent, setAlertMidContent] = useState('');
-        const [alertEndContent, setAlertEndContent] = useState('');
-        const [alertValue1, setAlertValue1] = useState('');
-        const [alertvalue2, setAlertValue2] = useState('');
+    const [alertForSuccess, setAlertForSuccess] = useState(0);
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertStartContent, setAlertStartContent] = useState('');
+    const [alertMidContent, setAlertMidContent] = useState('');
+    const [alertEndContent, setAlertEndContent] = useState('');
+    const [alertValue1, setAlertValue1] = useState('');
+    const [alertvalue2, setAlertValue2] = useState('');
     useEffect(() => {
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
@@ -224,22 +226,26 @@ const EmpAttendancePage = () => {
                     let isPresent = -1;
                     let isHoliday = -1;
                     let wasonLeave = -1;
-                    console.log();
-                    if(apiResponse.data[0].leap_customer_attendance){
-                    for (let j = 0; j < apiResponse.data[0].leap_customer_attendance.length; j++) {
-                        if (dateRanges[i].actual_date == apiResponse.data[0].leap_customer_attendance[j].date) {
-                            isPresent = j;
-                        }
+                    console.log("niks-------=-==--=-==-=-==-=-=-=-=-=-=-=--=----=-=-=-1111");
+                    if (apiResponse.data[0].leap_customer_attendance) {
+                        for (let j = 0; j < apiResponse.data[0].leap_customer_attendance.length; j++) {
+                            if (dateRanges[i].actual_date == apiResponse.data[0].leap_customer_attendance[j].date) {
+                                isPresent = j;
+                            }
 
+                        }
                     }
-                    }
-                    if (apiResponse.holidaylist && apiResponse.holidaylist.length>0) {
+                    console.log("niks-------=-==--=-==-=-==-=-=-=-=-=-=-=--=----=-=-=-2222");
+
+                    if (apiResponse.holidaylist && apiResponse.holidaylist.length > 0) {
                         for (let k = 0; k < apiResponse.holidaylist.length; k++) {
                             if (dateRanges[i].actual_date == apiResponse.holidaylist[k].date) {
                                 isHoliday = k;
                             }
                         }
                     }
+                    console.log("niks-------=-==--=-==-=-==-=-=-=-=-=-=-=--=----=-=-=-3333");
+
                     if (apiResponse.leaveList) {
                         for (let x = 0; x < apiResponse.leaveList.length; x++) {
                             if (dateRanges[i].actual_date == apiResponse.leaveList[x].from_date || dateRanges[i].actual_date == apiResponse.leaveList[x].to_date) {
@@ -247,6 +253,7 @@ const EmpAttendancePage = () => {
                             }
                         }
                     }
+                    console.log("niks-------=-==--=-==-=-==-=-=-=-=-=-=-=--=----=-=-=-4444",isPresent);
                     if (isPresent >= 0) {
                         empAttendanceData.push({
                             date: dateRanges[i].date,
@@ -323,14 +330,14 @@ const EmpAttendancePage = () => {
                 }
                 setLoadingCursor(false);
                 setLoading(false);
-                
+
             } else {
                 setLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Error")
                 setAlertStartContent("Failed to get employee attendance");
                 setAlertForSuccess(2)
-                
+
             }
 
         } catch (e) {
@@ -372,6 +379,8 @@ const EmpAttendancePage = () => {
         setShowCalendar(false)
         if (ranges.selection.startDate == ranges.selection.endDate) {
             setFilterValues((prev) => ({ ...prev, ['start_date']: formatDateYYYYMMDD(ranges.selection.startDate) }));
+            setFilterValues((prev) => ({ ...prev, ['end_date']: formatDateYYYYMMDD(ranges.selection.endDate) }));
+
         } else {
             setFilterValues((prev) => ({ ...prev, ['start_date']: formatDateYYYYMMDD(ranges.selection.startDate) }));
             setFilterValues((prev) => ({ ...prev, ['end_date']: formatDateYYYYMMDD(ranges.selection.endDate) }));
@@ -391,14 +400,18 @@ const EmpAttendancePage = () => {
                 <div className="container">
                     <LoadingDialog isLoading={isLoading} />
                     {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
-                            setShowAlert(false)
-                        }} onCloseClicked={function (): void {
-                            setShowAlert(false)
-                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
+                        setShowAlert(false)
+                    }} onCloseClicked={function (): void {
+                        setShowAlert(false)
+                    }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
                     <div className="row pt-2 mb-5">
-                        <div className="col-lg-12 heading25">
+                        <div className="col-lg-9 heading25">
                             Attendance <span>Details</span>
+                            
                         </div>
+                        <div className="col-lg-3" style={{ textAlign: "right" }}>
+                                <a className="red_button red_button2" onClick={() => setShowAttendanceAssignDialog(true)}>Assign Attendence</a>&nbsp;
+                            </div>
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="filter_whitebox filter_whitebox_open" id="filter_whitebox_open">
@@ -438,6 +451,14 @@ const EmpAttendancePage = () => {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="nw_user_offcanvas">
+                        <div className={showAssignDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
+                            {showAssignDialog && <AssignEmployeeAttendance  customer_id={dashboard_notify_cust_id} date={""}  onClose={() => { setShowAttendanceAssignDialog(false) } }   />}
+                        </div>
+                        <div className="overlay_offcanvas"></div>
+
+                    </div>
                     </div>
                     <div className="row">
                         <div className="col-lg-4">
@@ -461,7 +482,7 @@ const EmpAttendancePage = () => {
 
 
                                     }>
-                                        <div className={selectedAttendenceIndex==index?"att_detail_whitelist att_selected":"att_detail_whitelist"} style={{backgroundColor:dates.isHoliday?"#c4e7c4":dates.wasOnLeave?"#ffd9d9":"#FFFFFF"}}>
+                                        <div className={selectedAttendenceIndex == index ? "att_detail_whitelist att_selected" : "att_detail_whitelist"} style={{ backgroundColor: dates.isHoliday ? "#c4e7c4" : dates.wasOnLeave ? "#ffd9d9" : "#FFFFFF" }}>
                                             <div className="row">
                                                 <div className="col-lg-3">
                                                     <div className="att_detail_datebox">
@@ -476,13 +497,13 @@ const EmpAttendancePage = () => {
                                                                 Holiday
 
                                                             </div>
-                                                            
+
                                                         </div>
                                                         <div className="row">
-                                                                <div className="col-lg-12">
-                                                                    {dates.holidayName}
-                                                                </div>
+                                                            <div className="col-lg-12">
+                                                                {dates.holidayName}
                                                             </div>
+                                                        </div>
                                                     </div>
                                                     // here is the on leve display section
                                                     : dates.wasOnLeave ? <div className="col-lg-9">
@@ -492,13 +513,13 @@ const EmpAttendancePage = () => {
 
                                                             </div>
 
-                                                            
+
                                                         </div>
                                                         <div className="row">
-                                                                <div className="col-lg-12">
-                                                                    Approval Status:{dates.leaveApprovalStatus}
-                                                                </div>
+                                                            <div className="col-lg-12">
+                                                                Approval Status:{dates.leaveApprovalStatus}
                                                             </div>
+                                                        </div>
 
                                                     </div> :
 
@@ -528,7 +549,7 @@ const EmpAttendancePage = () => {
                             </div>
                         </div>
                         <div className="col-lg-8">
-                            <div style={{position:"sticky", top:"90px"}}>
+                            <div style={{ position: "sticky", top: "90px" }}>
                                 <div className="row">
                                     <div className="col-lg-12 mb-4">
                                         <div className="att_detail_profilebox">
@@ -537,9 +558,9 @@ const EmpAttendancePage = () => {
                                                     <div className="row text-center" style={{ fontSize: "19px" }}>
                                                         <div className="col-lg-12 mb-3"><img src={
                                                             dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance != null &&
-                                                                dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment && dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment.length>0 ?
+                                                                dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment && dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment.length > 0 ?
                                                                 `${getImageApiURL}/uploads/${dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.img_attachment}` :
-                                                                `${process.env.NEXT_PUBLIC_BASE_URL}/images/attendance_profile_img.png`} className="img-fluid" alt="User Pic"  style={{ width: "200px", margin: "-40px 0 0 0", borderRadius:"15px" }} /></div>
+                                                                `${process.env.NEXT_PUBLIC_BASE_URL}/images/attendance_profile_img.png`} className="img-fluid" alt="User Pic" style={{ width: "200px", margin: "-40px 0 0 0", borderRadius: "15px" }} /></div>
 
                                                     </div>
                                                 </div>
@@ -547,7 +568,7 @@ const EmpAttendancePage = () => {
                                                     <div className="row pb-3 mb-4 text-center" style={{ borderBottom: "1px solid #ececec" }}>
                                                         <div className="col-lg-4" style={{ borderRight: "1px solid #ccc" }}>
                                                             Start Time: <br></br>
-                                                            <div style={{fontFamily:"Outfit-SemiBold"}}>
+                                                            <div style={{ fontFamily: "Outfit-SemiBold" }}>
                                                                 {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance != null &&
                                                                     dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time ?
                                                                     formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance.in_time), 'UTC', 'hh:mm a') : "--"}
@@ -592,7 +613,7 @@ const EmpAttendancePage = () => {
                                                                             </div>
                                                                         </div>
                                                                     </div>)}
-                                                            
+
                                                         </div>
                                                     </div>
                                                     <div className="row">
@@ -664,8 +685,8 @@ const generateDateRange = (start: string, end: string) => {
 
         currentDate.setDate(currentDate.getDate() + 1); // safely increment
     }
-    
-    
+
+
     return tempDates;
 
 };
