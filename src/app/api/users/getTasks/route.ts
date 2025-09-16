@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { formatDateYYYYMMDD, funISDataKeyPresent, funSendApiErrorMessage, funSendApiException } from "@/app/pro_utils/constant";
 import supabase from "../../supabaseConfig/supabase";
 import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
+import { funGetCompanyWorkingHour } from "@/app/pro_utils/constantFunGetData";
 
 export async function POST(request: NextRequest) {
 
@@ -45,12 +46,22 @@ export async function POST(request: NextRequest) {
         const assignedTasks = (assignedTask || []).map(task => ({ ...task, type: "assigned" }));
 
         const allTasks = [...myTasks, ...assignedTasks];
-       
 
+        let totalMinutes = 0;
+
+        allTasks.forEach(task => {
+            if (task.total_hours || task.total_minutes) {
+                totalMinutes += (task.total_hours || 0) * 60 + (task.total_minutes || 0);
+            }
+        });
+
+      const totalwork = await funGetCompanyWorkingHour(client_id, 3);
         if (taskError) {
             return funSendApiErrorMessage(taskError, "Failed to add task");
         }
-        return NextResponse.json({ status: 1, message: "All Tasks", data: allTasks }, { status: apiStatusSuccessCode })
+        return NextResponse.json({
+            status: 1, message: "All Tasks",workingHour: totalwork, total_minutes: totalMinutes, data: allTasks,
+        }, { status: apiStatusSuccessCode })
 
     } catch (error) {
         return funSendApiException(error);

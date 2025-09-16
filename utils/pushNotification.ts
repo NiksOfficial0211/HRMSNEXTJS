@@ -24,6 +24,7 @@ import { messaging, getToken } from "./firebaseClientConfig";
 
 export const requestPushNotification = async (): Promise<string | null> => {
   if (!messaging) return null; // Ensure messaging is initialized
+  console.log("Messaging is initialized:", messaging);
   
   try {
     const permission = await Notification.requestPermission();

@@ -10,11 +10,18 @@ import { getImageApiURL, staticIconsBaseURL } from '../pro_utils/stringConstants
 import { ALERTMSG_exceptionString, bulkUploadTypeEmployee, bulkUploadTypeHolidays } from '../pro_utils/stringConstants';
 import ShowAlertMessage from './alert';
 
+interface formHoliday{
+    branchId:any,
+    holidayYear:any
+}
 
-
-const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: () => void }) => {
+const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: (updatePage:any) => void }) => {
     const [uploadFile, setUploadFile] = useState<File | null>(null);
     const [branchArray, setBranchArray] = useState<ClientBranchTableModel[]>([]);
+    const [holidayYearArray, setholidayYear] = useState<HolidayListYear[]>([]);
+    
+    const [selectedBranches, setSelectedBranch] = useState<string[]>([]);
+    const [selectedYearID, setSelectedYearID] = useState("");
     const [isLoading, setLoading] = useState(false);
     const [responseMessage, setResMessage] = useState("")
     const { contextClientID } = useGlobalContext();
@@ -31,16 +38,36 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
     const [alertEndContent, setAlertEndContent] = useState('');
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
+    const [errors, setErrors] = useState<Partial<formHoliday>>({});
 
     useEffect(() => {
+        const fetchData = async () => {
+            if (uploadType === bulkUploadTypeHolidays) {
+                const branch = await getBranches(contextClientID);
+                setBranchArray(branch);
+                const holidayYear = await getHolidayYear(contextClientID);
+                setholidayYear(holidayYear);
+            }
+        }
         if (uploadType === bulkUploadTypeEmployee) {
             setCsvFileURL(getImageApiURL + "/sampleFiles/emp_sample.csv");
             setXlsxFileURL(getImageApiURL + "/sampleFiles/employees.xlsx");
         } else if (uploadType === bulkUploadTypeHolidays) {
+
             setCsvFileURL(getImageApiURL + "/sampleFiles/holidaysBulk.csv");
             setXlsxFileURL(getImageApiURL + "/sampleFiles/holidaysBulk.xlsx");
         }
+        fetchData();
     }, [])
+
+    const validate = () => {
+        const newErrors: Partial<formHoliday> = {};
+        if (!selectedBranches || selectedBranches.length==0) newErrors.branchId = "required";
+        if (!selectedYearID) newErrors.holidayYear = "required";
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    }
 
     const uploadData = async (e: React.FormEvent) => {
 
@@ -55,7 +82,7 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
 
             return;
         }
-
+        
 
         if (uploadType === bulkUploadTypeEmployee) {
             const { data: lastCustomerEmpID, error: custError } = await supabase.from('leap_customer')
@@ -112,31 +139,32 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
                 console.error("Error:", e);
             }
         } else if (uploadType === bulkUploadTypeHolidays) {
-        const { data: yearIds, error: custError } = await supabase.from('leap_holiday_year')
+            if(!validate()) {setLoading(false);return};
+            const { data: yearIds, error: custError } = await supabase.from('leap_holiday_year')
                 .select('id')
                 .eq('client_id', contextClientID).eq("is_deleted", false);
             try {
                 if (uploadFile.type === "text/csv") {
-    
-                    console.log("yearIds-=-=-=-=-=-=-=-=-=-==-====-=-=-=-=-=", yearIds);
-                    
-                    if (yearIds && yearIds.length > 0) {        
-                    const res = await uploadHolidaysCSVFile(uploadFile, contextClientID,yearIds!)
-                    if (res) {
-                        setLoading(false);
 
+                    console.log("yearIds-=-=-=-=-=-=-=-=-=-==-====-=-=-=-=-=", yearIds);
+
+                    if (yearIds && yearIds.length > 0) {
+                        const res = await uploadHolidaysCSVFile(uploadFile, contextClientID, selectedYearID!,selectedBranches)
+                        if (res) {
+                            setLoading(false);
+
+                            setShowAlert(true);
+                            setAlertTitle("Result");
+                            setAlertStartContent(res);
+                            setAlertForSuccess(3);
+                        }
+                    } else {
+                        setLoading(false);
                         setShowAlert(true);
-                        setAlertTitle("Result");
-                        setAlertStartContent(res);
-                        setAlertForSuccess(3);
+                        setAlertTitle("Error");
+                        setAlertStartContent("No holiday year found. Please create a holiday year first.");
+                        setAlertForSuccess(2);
                     }
-                }else{
-                    setLoading(false);
-                    setShowAlert(true);
-                    setAlertTitle("Error");
-                    setAlertStartContent("No holiday year found. Please create a holiday year first.");
-                    setAlertForSuccess(2);
-                }
                 }
                 else if (
                     uploadFile.type ===
@@ -146,7 +174,7 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
                     // console.log("Upload thorugh xlsx coniditon is invoked");
 
                     console.log("Upload data is called", uploadType);
-                    const uploadResult = await uploadHolidaysThroghXLSX(uploadFile, contextClientID)
+                    const uploadResult = await uploadHolidaysThroghXLSX(uploadFile, contextClientID,selectedBranches,selectedYearID)
                     setLoading(false);
 
                     setShowAlert(true);
@@ -210,38 +238,78 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
 
     return (
 
-
-
-
-
         <div className='text-center'>
             {/* <form ></form> */}
             <LoadingDialog isLoading={isLoading} />
             {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent.length > 0 ? alertEndContent : " "} value1={""} value2={""} onOkClicked={function (): void {
                 setShowAlert(false)
+                if (alertForSuccess == 1) { onClose(1); }
 
             }} onCloseClicked={function (): void {
                 setShowAlert(false)
             }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
-            <div className='rightpoup_close' onClick={onClose}>
+            <div className='rightpoup_close' onClick={()=>onClose(0)}>
                 <img src={staticIconsBaseURL + "/images/close_white.png"} alt="Search Icon" title='Close' />
             </div>
 
             <div className="row">
-                <div className="col-lg-12 mb-3 inner_heading25">Select a CSV File.</div>
+                <div className="col-lg-12 mb-3 inner_heading25">Select a CSV nnjn File.</div>
             </div>
             <div className="row mb-4">
                 <div className="col-lg-12">
                     <div className="grey_box text-center">
                         <div className="row">
-                            <div className="col-lg-6 ">
+                            <div className="col-lg-6 mb-3">
                                 <a className='red_button filter_submit_btn ' style={{ cursor: "pointer", padding: "10px 12px", fontSize: "16px" }} href={csvFileURL} download>
                                     Sample csv
                                 </a>
                             </div>
-                            <div className="col-lg-6">
+                            <div className="col-lg-6 mb-3">
                                 <a className='red_button filter_submit_btn ' style={{ cursor: "pointer", padding: "10px 12px", fontSize: "16px" }} href={xlsxFileURL} download>Sample xlsx</a>
                             </div>
+                            {uploadType === bulkUploadTypeHolidays && <div className="col-lg-12">
+                                <div className="form_box mb-3">
+                                    <label htmlFor="formFile" className="form-label" style={{textAlign:"left",marginBottom: "10px",marginTop: "10px"}}>Branch<span className='req_text'>*</span>:<label style={{fontSize:"10px" }}>(multiple)</label></label>
+                                    <select id="branchID" name="branchID" multiple size={5} onChange={(e) => {
+                                        let selectedOptions = Array.from(
+                                            (e.target as HTMLSelectElement).selectedOptions
+                                        ).map((option) => option.value);
+
+                                        if (selectedOptions.includes("0")) {
+                                            // Select all branches
+                                            selectedOptions = branchArray.map((b) => String(b.id));
+                                        }
+
+                                        setSelectedBranch(selectedOptions);
+                                        console.log("selected branch", selectedBranches);
+                                        
+                                    }}>
+                                        {/* <option value="">Select</option> */}
+                                        <option value="0">All</option>
+                                        {branchArray.map((branch, index) => (
+                                            <option value={branch.id} key={branch.id}>{branch.branch_number}</option>
+                                        ))}
+                                    </select>
+                                    {errors.branchId && <span className='error' style={{ color: "red" }}>required</span>}
+                                </div>
+                            </div>}
+                            {uploadType === bulkUploadTypeHolidays && <div className="col-lg-12">
+                                    <div className="form_box mb-3">
+                                        <label htmlFor="formFile" className="form-label" style={{textAlign:"left",marginBottom: "10px",marginTop: "10px"}}>Holdiay Year<span className='req_text'>*</span>:</label>
+
+                                        <select id="yearID" name="yearID" onChange={(e) => {
+                                            setSelectedYearID(e.target.value);
+                                        }}>
+                                            <option value="">Select Holiday Year:</option>
+                                            {holidayYearArray.map((id, index) => (
+                                                <option value={id.id} key={id.id} >{id.list_name}</option >
+
+                                            ))}
+                                        </select>
+                                    {errors.holidayYear && <span className='error' style={{ color: "red" }}>required</span>}
+
+                                    </div>
+                                </div>}
                             <div className="col-lg-12">
                                 <div className="form_box mt-3">
 
@@ -287,9 +355,6 @@ const BulkUploadForm = ({ uploadType, onClose }: { uploadType: string, onClose: 
             </div>
             {showResponseMessage && <div className="row md-5"><label>Data Added Successfully</label></div>}
         </div>
-
-
-
 
     )
 }
@@ -491,10 +556,8 @@ async function uploadThroghXLSX(uploadFile: File, contextClientID: any, emp_id: 
         });
 
         // await Promise.all(promises); 
-
         // alert("Data Added Successfully");
         return "Data Added Successfully";
-
 
     }
     return "";
@@ -509,8 +572,8 @@ const isValidEmail = (email: any) => {
     return emailRegex.test(email);
 };
 
-async function uploadHolidaysCSVFile(uploadFile: File, contextClientID: any,yearIds:any[]) {
-    
+async function uploadHolidaysCSVFile(uploadFile: File, contextClientID: any, yearIds: any , selectedBranches: string[]) {
+
 
     console.log("yearIds-=-=-=-=-=-=-=-=-=-==-====-=-=-=-=-=");
 
@@ -553,15 +616,17 @@ async function uploadHolidaysCSVFile(uploadFile: File, contextClientID: any,year
         let formattedDate = "";
         if (row["Date"]!) {
             formattedDate = row["Date"].split("/").reverse().join("-");
-            for (let i = 0; i < yearIds!.length; i++) {
+            
+                for (let j = 0; j < selectedBranches.length; j++) {
                 uploadData.push({
                     client_id: contextClientID,
-                    branch_id: row["Branch_ID"],
+                    branch_id: selectedBranches[j],
                     holiday_name: row["Name"],
-                    holiday_year: yearIds![i].id,
+                    holiday_year: yearIds,
                     date: formattedDate,
                 });
-            }
+                }
+            
         }
 
 
@@ -579,13 +644,9 @@ async function uploadHolidaysCSVFile(uploadFile: File, contextClientID: any,year
         return "Data added successfully";
     }
 
-
-
-
-
 }
 
-async function uploadHolidaysThroghXLSX(uploadFile: File, contextClientID: any) {
+async function uploadHolidaysThroghXLSX(uploadFile: File, contextClientID: any,branchArray:any[],yearid:any) {
     console.log("uploadHolidaysThroghXLSX is called");
     const { data: yearIds, error: custError } = await supabase.from('leap_holiday_year')
         .select('id')
@@ -639,12 +700,12 @@ async function uploadHolidaysThroghXLSX(uploadFile: File, contextClientID: any) 
                 `${String(holiday.getDate()).padStart(2, '0')}/${String(holiday.getMonth() + 1).padStart(2, '0')}/${holiday.getFullYear()}` :
                 holiday;
 
-            for (let i = 0; i < yearIds!.length; i++) {
+            for (let i = 0; i < branchArray!.length; i++) {
                 uploadData.push({
                     client_id: contextClientID,
-                    branch_id: row.getCell(1).value,
+                    branch_id: branchArray[i],
                     holiday_name: row.getCell(2).value,
-                    holiday_year: yearIds![i].id,
+                    holiday_year: yearid,
                     date: formattedDob,
                 });
             }
@@ -676,3 +737,38 @@ async function uploadHolidaysThroghXLSX(uploadFile: File, contextClientID: any) 
 
 }
 
+
+async function getBranches(client_id: any) {
+
+    let query = supabase
+        .from('leap_client_branch_details')
+        .select('*')
+        .eq("client_id", client_id);
+
+    const { data, error } = await query;
+    if (error) {
+        console.log(error);
+
+        return [];
+    } else {
+        return data;
+    }
+
+}
+
+async function getHolidayYear(clientID: any) {
+
+    let query = supabase
+        .from('leap_holiday_year')
+        .select()
+        .eq("client_id", clientID);
+    const { data, error } = await query;
+    if (error) {
+        console.log(error);
+
+        return [];
+    } else {
+        return data;
+    }
+
+}

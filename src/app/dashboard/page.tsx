@@ -68,7 +68,7 @@ const Dashboard = () => {
     const swiperRef = useRef<any>(null);
 
     const { contextClientID, contaxtBranchID, contextCompanyName, contextCustomerID, contextEmployeeID,
-        contextLogoURL, contextRoleID, contextProfileImage, contextUserName,
+        contextLogoURL, contextRoleID,isAdmin, contextProfileImage, contextUserName,
         setGlobalState } = useGlobalContext();
 
     useEffect(() => {
@@ -268,7 +268,7 @@ const Dashboard = () => {
             dashboard_notify_cust_id: customerID,
             dashboard_notify_activity_related_id: attendanceID,
             selectedClientCustomerID: '',
-            contextPARAM7: '',
+            isAdmin: isAdmin,
             contextPARAM8: '',
 
         });
@@ -294,7 +294,7 @@ const Dashboard = () => {
             dashboard_notify_cust_id: '',
             dashboard_notify_activity_related_id: '',
             selectedClientCustomerID: '',
-            contextPARAM7: '',
+            isAdmin: isAdmin,
             contextPARAM8: '',
 
         });
@@ -584,16 +584,20 @@ const Dashboard = () => {
                                                                         <div className="attendance_list">
 
                                                                             <div className="row" style={{ alignItems: "center" }}>
-                                                                                <div className="col-lg-2 text-center"><img src={empAttendance.img_attachment?getImageApiURL+"/uploads/"+ empAttendance.img_attachment:staticIconsBaseURL+"/images/attendance_profile_img.png"} className="img-fluid" style={{ maxHeight: "60px", borderRadius: "40px" }} /></div>
+                                                                                <div className="col-lg-2 text-center"><img src={empAttendance.img_attachment?getImageApiURL+"/uploads/"+ empAttendance.img_attachment:staticIconsBaseURL+"/images/attendance_profile_img.png"} className="img-fluid" 
+                                                                                style={{ maxHeight: "40px", borderRadius: "40px" ,
+                                                                                        
+                                                                                        maxWidth: "40px",
+                                                                                        minWidth: "40px"}} /></div>
                                                                                 <div className="col-lg-7 row">
                                                                                     <div className="col-lg-12">{empAttendance.leap_customer.name}</div>
                                                                                     <div className="col-lg-12 font12">Time: {dasheddate(empAttendance.updated_at, true)}</div>
                                                                                 </div>
                                                                                 {empAttendance.attendanceStatus == 1 ?
                                                                                     <div className="col-lg-3 attendance_status"><span style={{ backgroundColor: "#b8dca0" }}>Started</span></div>
-                                                                                    : empAttendance.attendanceStatus == 2 ?
+                                                                                    : empAttendance.attendanceStatus == 3 ?
                                                                                         <div className="col-lg-3 attendance_status"><span style={{ backgroundColor: "#e3e3e3", color: "#FFF" }}>Paused</span></div>
-                                                                                        : empAttendance.attendanceStatus == 3 ?
+                                                                                        : empAttendance.attendanceStatus == 4 ?
                                                                                             <div className="col-lg-3 attendance_status"><span style={{ backgroundColor: "#ff813e", color: "#FFF" }}>Resumed</span></div>
                                                                                             : <div className="col-lg-3 attendance_status"><span style={{ backgroundColor: "#ffbebf", color: "#FFF" }}>Stopped</span></div>
 

@@ -3,28 +3,16 @@
 
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
-
 import ShowAlertMessage from '@/app/components/alert'
-import { ALERTMSG_addAssetSuccess, ALERTMSG_exceptionString } from '@/app/pro_utils/stringConstants'
 
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import LoadingDialog from './PageLoader';
-import { DashboardGreeting } from '../models/userDashboardModel';
 
-const GreetingBlock = () => {
+const GreetingBlock = ({greetData}:{greetData:any}) => {
     const [scrollPosition, setScrollPosition] = useState(0);
-    const { contextClientID, contextCustomerID, setGlobalState } = useGlobalContext();
-    const [greetArray, setGreetData] = useState<DashboardGreeting>({
-        id: '',
-        created_at: '',
-        greeting_topic: '',
-        greeting_msg: '',
-        img_url: '',
-    });
+    const [greetArray, setGreetData] = useState<any>();
     const [isLoading, setLoading] = useState(false);
     const [fact, setFact] = useState('');
 
@@ -37,7 +25,8 @@ const GreetingBlock = () => {
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
     useEffect(() => {
-        fetchData();
+        // console.log("greetData: ", greetData)
+         setGreetData(greetData)
         fetchRandomFact();
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
@@ -67,37 +56,6 @@ const GreetingBlock = () => {
             setLoading(false);
         }
     };
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            
-            const res = await fetch(`/api/users/dashboardGreeting`, {
-                method: "POST",
-                body: JSON.stringify({
-                    "customer_id": contextCustomerID
-                }),
-            });
-            const response = await res.json();
-
-            if (response.status == 1) {
-                const greetData = response.data[0];
-                setGreetData(greetData)
-                setLoading(false);
-            } else {
-                setLoading(false);
-                setAlertTitle("Error")
-                setAlertStartContent("Failed to load assets");
-                setAlertForSuccess(2)
-            }
-        } catch (error) {
-            setLoading(false);
-            console.error("Error fetching user data:", error);
-            setShowAlert(true);
-            setAlertTitle("Exception")
-            setAlertStartContent(ALERTMSG_exceptionString);
-            setAlertForSuccess(2)
-        }
-    };
 
     return (
         <div className="new_personalize_greeting_mainbox">
@@ -108,7 +66,7 @@ const GreetingBlock = () => {
                 setShowAlert(false)
             }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
             <div className="new_personalised_leftbox">
-                <h3>{greetArray.greeting_topic}</h3>
+                <h3>{greetArray}</h3>
                 <div className='user_greating_box_para'>
                     <p className='m-0'>{fact}</p>
                 </div>

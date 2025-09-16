@@ -26,10 +26,11 @@ export async function POST(request: NextRequest) {
         }
         let fileUploadResponse;
             if(files && files.file && files.file.length>0){
-                  fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"client_sub_project_doc")
-              
+                  fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"employee_documents")
+                  console.log("fileUploadResponse",fileUploadResponse);
+                  
             }
-            if(fileUploadResponse){
+            if(!fileUploadResponse){
               return funSendApiErrorMessage("File uploading failed", "Failed to replace documents");
 
             }
@@ -39,20 +40,33 @@ export async function POST(request: NextRequest) {
           query = supabase.from("leap_client_documents")
             .insert({
               client_id: fields.client_id[0],
-              branch_id: fields.customer_id[0],
               document_type_id: fields.doc_type_id[0],
               document_url: fileUploadResponse?fileUploadResponse:"",
               show_to_employees: fields.show_to_users[0],
             });
         } else {
           query = supabase.from("leap_customer_documents")
-            .insert({
-              client_id: fields.client_id[0],
-              customer_id: fields.customer_id[0],
-              doc_type_id: fields.doc_type_id[0],
-              bucket_url: fileUploadResponse?fileUploadResponse:"",
-              isEnabled: true,
-            });
+            .insert(
+              {
+                client_id: fields.client_id[0],
+                customer_id: fields.customer_id[0],
+                doc_type_id: fields.doc_type_id[0],
+                bucket_url: fileUploadResponse ? fileUploadResponse : "",
+                isEnabled: true,
+              }
+            );
+            if(fields.doc_type_id[0]==27){//27 is for profile image
+            
+              const { data, error } = await supabase.from("leap_customer")
+              .update({ profile_pic: fileUploadResponse?fileUploadResponse:"" })
+              .eq('customer_id', fields.customer_id[0]);
+              if (error) {
+                console.log("Error updating profile image:", error);
+                
+                return funSendApiErrorMessage(error, "Failed to update profile image");   
+
+              }
+          }
         }
     const { data: documents, error } = await query;
 
@@ -60,7 +74,7 @@ export async function POST(request: NextRequest) {
       return funSendApiErrorMessage(error, "Failed to replace documents");
     }
     else {
-      return NextResponse.json({ status: 1, message: "Documents Validity", data: documents },
+      return NextResponse.json({ status: 1, message: "Document Updated", data: documents },
         { status: apiStatusSuccessCode });
     }
 

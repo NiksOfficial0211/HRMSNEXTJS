@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
 
     let query = supabase
       .from("leap_client_employee_requests")
-      .select(
-        "*, leap_request_master(*), leap_request_priority(priority_name), leap_customer(name), leap_request_status(status), leap_client_employee_requests_updates(*, leap_customer(name), leap_request_status(status))",
+      .select( "id, ticket_id, raised_on, active_status, priority_level, description, leap_request_master(type_name, category), leap_request_priority(priority_name), leap_customer(name), leap_request_status(status), leap_client_employee_requests_updates(*)"
+        // "*, leap_request_master(*), leap_request_priority(priority_name), leap_customer(name), leap_request_status(status), leap_client_employee_requests_updates(*, leap_customer(name), leap_request_status(status))",
         
       )
       .order("updated_at", { ascending: false });

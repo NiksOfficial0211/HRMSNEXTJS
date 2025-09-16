@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
         
           let query = supabase
           .from("leap_client_leave")
-          .select(`*,leap_leave_type_icon_and_color(*)`)
+          .select(`leave_id, leave_name, leave_discription, leave_category, leave_count, leave_accrual, gender, user_role_applicable, if_unused, leap_leave_type_icon_and_color(bg_color, icon_url)`)
           .eq('client_id', client_id)
           .eq('branch_id', branch_id);
 

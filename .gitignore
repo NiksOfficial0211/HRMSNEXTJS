@@ -8,6 +8,8 @@ node_modules/
 dist/
 uploads/
 .next/
+.env
+.env.local
 
 # Compiled Java class files
 *.class

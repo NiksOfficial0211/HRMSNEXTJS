@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { calculateNumDays, formatDateYYYYMMDD, funDataAddedSuccessMessage, funDataMissingError, funISDataKeyPresent, funSendApiErrorMessage, funSendApiException, parseForm } from "@/app/pro_utils/constant";
 import { getAllActivitiesOfUsers } from "@/app/pro_utils/constantFunGetData";
 import supabase from "../../supabaseConfig/supabase";
-import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
+import { apiStatusSuccessCode, getImageApiURL } from "@/app/pro_utils/stringConstants";
 import fs from "fs/promises";
 import { apiUploadDocs } from "@/app/pro_utils/constantFunAddData";
 
@@ -124,7 +124,51 @@ export async function POST(request: NextRequest) {
         }
 
         }
-        
+         (async () => {
+            try {
+                if (selectedBranches != null && selectedBranches.length > 0) {
+                    for (let j = 0; j < selectedBranches.length; j++) {
+                        if (selectedBranches[j].isSelected) {
+                            for (let k = 0; k < roleIDS.length; k++) {
+                                if (roleIDS[k].isSelected) {
+                                    if (isToday(fields.startDate[0]) && fields.is_enabled[0] == "true") {
+                                        console.log("inside push notification",roleIDS[k].id,selectedBranches[j].id);
+                                        
+                                        const formData = new FormData();
+                                        const { data: users, error: usersError } = await supabase.from('leap_customer').select('customer_id').eq("user_role", roleIDS[k].id).eq('branch_id', selectedBranches[j].id);
+                                        if (usersError) {
+                                            console.log("error in fetching users for push notification", usersError);
+
+                                        } else {
+                                            if (users && users.length > 0) {
+                                                for (const user of users) {
+                                                    formData.append("customer_id", String(user.customer_id));
+                                                    formData.append("title", "Update Announcement");
+                                                    formData.append("notify_type", "2");// its 2 for announcement in leap_push_notification_types table
+                                                    formData.append("message", fields.announcement_title[0]);
+                                                    formData.append("attachment_url", fileUploadResponse ? getImageApiURL+ fileUploadResponse : "");
+                                                    formData.append("send_once", "0");// 0 means false
+                                                    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sendPushNotification`, {
+                                                        method: "POST",
+                                                        body: formData
+                                                    });
+                                                    console.log("this is the response after sending push notification", res);
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.log("Error in sending push notification", err);
+            }
+        }
+        )();
         return NextResponse.json({ status: 1, message: isError ? "Some Announcement data Updated" : "Announcement Updated Successfully" }, { status: apiStatusSuccessCode });
     } catch (error) {
 
@@ -137,74 +181,13 @@ export async function POST(request: NextRequest) {
 
 
 
+function isToday(dateString: string): boolean {
+    const today = new Date();
+    const givenDate = new Date(dateString);
 
-// if (selectedBranches != null && selectedBranches.length > 0 && roleIDS != null && roleIDS.length > 0) {
-//     let queryDesignationAnnouncement ;
-//     for (let j = 0; j < selectedBranches.length; j++) {
-//         for (let i = 0; i < roleIDS.length; i++) {
-//             for(let k=0;k<currentAnouncementData.length;k++){
-//                 if(currentAnouncementData[k].role_id==roleIDS[i] && currentAnouncementData[k].branch_id==selectedBranches[j]){
-//                     queryDesignationAnnouncement = supabase.from('leap_show_announcement_users')
-//                     .update({
-//                         branch_id: selectedBranches[j],
-//                         client_id: fields.client_id[0],
-//                         role_id: roleIDS[i],
-//                         is_active:true,
-//                         created_at: new Date().toISOString()
-//                     }).eq("announcement_id", fields.announcement_id[0]);;
-//                 }else{
-//                     queryDesignationAnnouncement = supabase.from('leap_show_announcement_users')
-//                     .update({
-//                         branch_id: selectedBranches[j],
-//                         client_id: fields.client_id[0],
-//                         role_id: roleIDS[i],
-//                         is_active:false,
-//                         created_at: new Date().toISOString()
-//                     }).eq("announcement_id", fields.announcement_id[0]);;
-//                 }
-//             }
-           
-//             console.log("outside of file call -------------------------------4");
+    // Format both to YYYY-MM-DD
+    const todayStr = today.toISOString().split("T")[0];
+    const givenDateStr = givenDate.toISOString().split("T")[0];
 
-//             const { error: queryDesignationAnnouncementError } = await queryDesignationAnnouncement!;
-//             if (queryDesignationAnnouncementError) {
-
-//                 console.log("queryDesignationAnnouncementError=======",queryDesignationAnnouncementError);
-
-//                 isError = true;
-//             }
-//         }
-//     }
-
-
-// }
-// }else{
-// console.log("outside of file call -------------------------------2");
-
-// let query;
-// if (selectedBranches!=null && selectedBranches.length>0 && roleIDS != null && roleIDS.length > 0 ) {
-//     for(let j=0;j<selectedBranches.length;j++){
-
-//     for (let i = 0; i < roleIDS.length; i++) {
-
-//         let queryDesignationAnnouncement = supabase.from('leap_show_announcement_users')
-//             .insert({
-//                 branch_id:selectedBranches[j].id,
-//                 client_id:fields.client_id[0],
-//                 announcement_id:fields.announcement_id[0],
-//                 role_id:roleIDS[i].id,
-//                 is_active:true,
-//                 created_at: new Date().toISOString()
-//             });
-//             console.log("leap_show_announcement_users query is this====",queryDesignationAnnouncement);
-            
-//         const { error: queryDesignationAnnouncementError } = await queryDesignationAnnouncement;
-//         if (queryDesignationAnnouncementError) {
-//             console.log("leap_show_announcement_users",queryDesignationAnnouncementError);
-                            
-//             isError = true;
-//         }
-//     }
-// }
-// }
-
+    return todayStr === givenDateStr;
+}

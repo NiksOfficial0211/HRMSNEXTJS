@@ -451,7 +451,7 @@ const EmployeeLeaveList = () => {
                                                     </div>
                                                 </div>
                                                 : <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
-                                                    <PageErrorCenterContent content={"No leaves for selected filter"} />
+                                                    <PageErrorCenterContent content={"No leaves present"} />
                                                 </div>
                                             }
                                         </div>

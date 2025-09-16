@@ -17,7 +17,7 @@ const AnnouncementListing = () => {
     const [AnnouncementDeleteTitle, setAnnouncementDeleteTitle] = useState('');
     const [announcementList, setAnnouncementList] = useState<AnnouncementList[]>([]);
     const { contextClientID, contaxtBranchID, contextCompanyName, contextCustomerID, contextEmployeeID,
-        contextLogoURL, contextRoleID, contextProfileImage, contextUserName, setGlobalState } = useGlobalContext();
+        contextLogoURL, contextRoleID, contextProfileImage,isAdmin, contextUserName, setGlobalState } = useGlobalContext();
     const router = useRouter();
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
@@ -44,7 +44,7 @@ const AnnouncementListing = () => {
             formData.append("client_id", contextClientID);
             formData.append("customer_id", contextCustomerID);
             formData.append("branch_id", contaxtBranchID);
-            formData.append("role_id", contaxtBranchID);
+            formData.append("role_id", contextRoleID);
 
 
             const res = await fetch(`/api/clientAdmin/getAnnouncementList`, {
@@ -80,6 +80,9 @@ const AnnouncementListing = () => {
     };
 
     const goToUpdate = (e: any, contextAnnouncementID: any) => {
+        console.log("edit", contextAnnouncementID);
+        
+        
         setGlobalState({
             contextUserName: contextUserName,
             contextClientID: contextClientID,
@@ -97,9 +100,10 @@ const AnnouncementListing = () => {
             dashboard_notify_cust_id: '',
             dashboard_notify_activity_related_id: '',
             selectedClientCustomerID: '',
-            contextPARAM7: '',
+            isAdmin: isAdmin,
             contextPARAM8: '',
-        })
+        });
+        
         router.push(pageURL_updateAnnouncement);
     }
 
@@ -130,7 +134,7 @@ const AnnouncementListing = () => {
                                     <div className='announcement_list'>
                                         <div className="row">
                                             <div className="col-lg-12 mb-3">
-                                                <div className='announcement_img'>
+                                                <div className='announcement_img' style={{height:'100px'}}>
                                                     <img src={announcement.announcement_image && announcement.announcement_image.length > 0 ? getImageApiURL + "/uploads/" + announcement.announcement_image : staticIconsBaseURL + "/images/"} onError={(e) => { const target = e.target as HTMLImageElement; target.onerror = null; target.src = staticIconsBaseURL + "/images/announcement_default_img.png"; }} alt='text' className="img-fluid" style={{ objectFit: 'cover', }} />
                                                 </div>
                                             </div>

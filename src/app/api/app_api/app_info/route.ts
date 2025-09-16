@@ -90,7 +90,8 @@ export async function POST(request: NextRequest) {
                 compnay_websit: companyDetails[0]?.leap_client?.leap_client_basic_info[0]?.compnay_websit,
                 primary_color: companyDetails[0]?.leap_client?.leap_client_basic_info[0]?.primary_color,
                 secondary_color: companyDetails[0]?.leap_client?.leap_client_basic_info[0]?.secondary_color,
-                show_dashboard: permission && permission.length > 0 ? permission[0].is_allowed : true
+                show_dashboard: permission && permission.length > 0 ? permission[0].is_allowed : true,
+                appBgImg:  "https://v2.leaphrms.com/images/user/app_bg_img.png"
             };
         } else {
             appInfoResult = {
@@ -98,13 +99,15 @@ export async function POST(request: NextRequest) {
                 version: appVersions[0]?.app_version,
                 force_update: appVersions[0]?.force_update,
                 live_app_url: appVersions[0]?.app_url,
+                appBgImg:  "https://v2.leaphrms.com/images/user/app_bg_img.png"
             } ;
         }
 
         return NextResponse.json({
                 status: 1, message: "App Info",
                 data: //appVersions,companyDetails,
-                 appInfoResult
+                                  appInfoResult
+
             },
             { status: apiStatusSuccessCode });
 
@@ -112,4 +115,3 @@ export async function POST(request: NextRequest) {
         return funSendApiException(error);
     }
 }
-

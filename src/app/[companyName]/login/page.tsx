@@ -34,7 +34,7 @@ const Login = () => {
             dashboard_notify_cust_id: '',
             dashboard_notify_activity_related_id: '',
             selectedClientCustomerID: '',
-            contextPARAM7: '',
+            isAdmin: '',
             contextPARAM8: '',
       })
       setclientBasicInfo(clientInfo);

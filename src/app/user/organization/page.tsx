@@ -414,7 +414,7 @@ const HolidayList = () => {
                                                                                 <div className="new_org_holiday_date_type_box">
                                                                                     <div className="new_org_holiday_type_box">
                                                                                         <div className="nw_leave_table_lable">Holiday Type</div>
-                                                                                        <div className="nw_leave_table_content">{holiday.holiday_type_id.holiday_type ? holiday.holiday_type_id.holiday_type : "--"}</div>
+                                                                                        <div className="nw_leave_table_content">{holiday.holiday_type_id && holiday.holiday_type_id.length >0 ? holiday.holiday_type_id.holiday_type : "--"}</div>
                                                                                     </div>
                                                                                     <div className="new_org_holiday_day_box">
                                                                                         <div className="nw_leave_table_lable">Holiday Day</div>

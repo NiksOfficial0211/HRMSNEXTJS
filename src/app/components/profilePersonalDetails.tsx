@@ -407,9 +407,20 @@ import { CustomerProfile, ProfileModel } from '../models/employeeDetailsModel';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
 import LoadingDialog from './PageLoader';
 import { getImageApiURL, staticIconsBaseURL } from '../pro_utils/stringConstants';
+import ShowAlertMessage from './alert';
 
 export const UserPersonalDetails = () => {
     const[isLoading,setLoading]=useState(false)
+    
+            const [showAlert, setShowAlert] = useState(false);
+                const [alertForSuccess, setAlertForSuccess] = useState(0);
+                const [alertTitle, setAlertTitle] = useState('');
+                const [alertStartContent, setAlertStartContent] = useState('');
+                const [alertMidContent, setAlertMidContent] = useState('');
+                const [alertEndContent, setAlertEndContent] = useState('');
+                const [alertValue1, setAlertValue1] = useState('');
+                const [alertvalue2, setAlertValue2] = useState('');
+                const [showAlertCancel, setShowAlertCancel] = useState(false);
     const [userData, setUserData] = useState<CustomerProfile>({
         id: '',
           customer_id: 0,
@@ -550,6 +561,37 @@ export const UserPersonalDetails = () => {
         setUserData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const callResetDeviceID = async () => {
+        setLoading(true);
+        try {
+            const { error } = await supabase
+                .from('leap_customer')
+                .update({ device_id: null,auth_token:null }) // Set device_id to null or the desired reset value
+                .eq('customer_id', userData.customer_id);
+
+            if (error) {
+                setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent(`Error resetting device ID: ${error.message}`);
+                setAlertForSuccess(2)
+            } else {
+                setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent("Device id reset successfully");
+                setAlertForSuccess(1)
+            }
+        } catch (err) {
+            console.error('Unexpected error:', err);
+            setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Exception")
+                setAlertStartContent(`An unexpected error occurred while resetting the device ID.`);
+                setAlertForSuccess(3)
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -576,14 +618,23 @@ export const UserPersonalDetails = () => {
         const response=await res.json();
         if(res.ok){
             setLoading(false);
-            alert(response.message);
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent(response.message);
+                setAlertForSuccess(1)
         }else{
-            setLoading(false);
-            alert(response.message);
+           setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent(response.message);
+                setAlertForSuccess(2)
         }
         }catch(e){
             setLoading(false);
-            alert(e);
+                setShowAlert(true);
+                setAlertTitle("Exception")
+                setAlertStartContent("Something went wrong while updating profile:-"+e);
+                setAlertForSuccess(1)
         }
 
     }
@@ -596,6 +647,20 @@ export const UserPersonalDetails = () => {
     }
 return (
     <>  
+    <LoadingDialog isLoading={isLoading} />
+    {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                
+                if(showAlertCancel){
+                    callResetDeviceID();
+                    setShowAlertCancel(false);
+                    setShowAlert(false)
+                }else{
+                    setShowAlert(false);
+                }
+
+            }} onCloseClicked={function (): void {
+                setShowAlert(false)
+            }} showCloseButton={showAlertCancel} imageURL={''} successFailure={alertForSuccess} />}
         <form onSubmit={handleSubmit}>
                 <div className="col-lg-12 mb-5 ">
                 <div className="grey_box mb-3">
@@ -608,10 +673,11 @@ return (
                                         <div className="row" style={{borderBottom: "1px solid #ced9e2",}}>
                                             <div className='col-lg-2'>
                                                 <div className="option">
-                                                    <a href="#"><img src={userData?.profile_pic && userData.profile_pic.length>0? getImageApiURL+"/uploads/"+userData.profile_pic:staticIconsBaseURL+"/images/user/user.png"} className="img-fluid" style={{ maxHeight: "80px" ,margin: "-35px 0px 0px -50px", minHeight:"80px", maxWidth:"inherit"}} /><div className="option_label"></div></a>
+                                                    <a href="#"><img src={userData?.profile_pic && userData.profile_pic.length>0? getImageApiURL+"/uploads/"+userData.profile_pic:staticIconsBaseURL+"/images/user/user.png"} className="img-fluid" 
+                                                    style={{ maxHeight: "80px" ,margin: "-35px 0px 0px -50px", minHeight:"80px", maxWidth:"80px",minWidth:"80px",borderRadius:"100px"}} /><div className="option_label"></div></a>
                                                 </div>
                                             </div>
-                                            <div className='col-lg-9 mb-3'>
+                                            <div className='col-lg-10 mb-3'>
                                                     <div className="row" style={{fontSize: "25px"}}>
                                                         <label >{userData?.name}</label>
                                                     </div>
@@ -619,12 +685,12 @@ return (
                                                         <label >{userData?.emp_id}</label><label >{userData?.leap_client_designations?.designation_name || ""}</label>
                                                     </div>
                                             </div>
-                                            <div className='col-lg-1 p-0'>
+                                            {/* <div className='col-lg-1 p-0'>
                                                     <div className="row" style={{fontSize: "5px"}}>
                                                     <a href="#"><img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid" style={{ maxHeight: '20px' }} /><div className="option_label">Edit Profile</div></a>
                                                     </div>
                                                     
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
                                 </div>
@@ -729,6 +795,43 @@ return (
                                             </div>
                                         </div>
                                     </div>
+                                    {(contextRoleID=="3" || contextRoleID=="2") &&
+                                        <div className='row' style={{alignItems: "center"}}>
+                                        <div className="col-md-6">
+                                            <div className="form_box">
+                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Employment: </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="col-md-6">
+                                            <div className="form_box mb-2">
+                                                <select className="form-control" id="employment_status" value={userData?.employment_status ? "true" : "false"} name="employment_status" onChange={(e)=>setUserData((prev) => ({ ...prev, ['employment_status']: e.target.value == "true" ? true : false }))} >
+                                                    <option value="true">Active</option>
+                                                    <option value="false">Inactive</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    }
+                                    {(contextRoleID=="3" || contextRoleID=="2") &&<div className='row' style={{alignItems: "center"}}>
+                                        <div className="col-md-6">
+                                            <div className="form_box">
+                                                <label htmlFor="exampleFormControlInput1" className="form-label" >Reset Device ID: </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="col-md-6">
+                                            <div className="form_box mb-2">
+                                                <input type="button" className="form-control " id="reset_device_id" value="Reset" readOnly={isReadonly()} name="reset_device_id" onClick={()=>{
+                                                    setShowAlert(true);
+                                                    setShowAlertCancel(true);
+                                                    setAlertTitle("Warning")
+                                                    setAlertStartContent(`Press ok to reset device ID`);
+                                                    setAlertForSuccess(3)
+                                                }} />
+                                            </div>
+                                        </div>
+                                    </div>}
                                     
                                 </div>
                                 <div className="row">

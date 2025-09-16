@@ -40,12 +40,17 @@ export async function POST(request: NextRequest) {
         }
         if (holiday_year) {
             query = query.eq('holiday_year', holiday_year);
+        }else{
+            query = query.gte('date', formatDateYYYYMMDD(getFirstDateOfYear())) // `to_date` must be >= `fromDate`
+            .lte('date', formatDateYYYYMMDD(getLastDateOfYear()));
         }
         if (show_employee ) {
             query = query.eq('holiday_year.show_employee', true);
         }
-        query = query.gte('date', formatDateYYYYMMDD(getFirstDateOfYear())) // `to_date` must be >= `fromDate`
-            .lte('date', formatDateYYYYMMDD(getLastDateOfYear())).order('date', { ascending: true });
+        // query = query.gte('date', formatDateYYYYMMDD(getFirstDateOfYear())) // `to_date` must be >= `fromDate`
+        //     .lte('date', formatDateYYYYMMDD(getLastDateOfYear())).order('date', { ascending: true });
+
+        query=query.order('date', { ascending: true });
 
         console.log(query);
         

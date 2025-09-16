@@ -10,7 +10,8 @@ export async function POST(request: NextRequest) {
         
           let query = supabase
           .from("leap_customer_asset")
-          .select(`*,leap_asset(*, leap_asset_type(*))`)
+          .select(`id, date_given, asset_id, date_of_return, is_active, remark, asset_pic ,leap_asset( asset_name, asset_type, device_code, asset_status, configuration,
+            leap_asset_type( asset_type))`)
           .eq('client_id', client_id)
           .order('date_given', {ascending: false})
           

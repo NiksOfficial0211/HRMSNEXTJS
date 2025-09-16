@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (manager_id) {
       const { data: managerData, error: managerError } = await supabase
         .from("leap_customer")
-        .select("customer_id, name, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
+        .select("customer_id, emp_id, name, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
         .eq("customer_id", manager_id)
         .single();
 
@@ -41,18 +41,18 @@ export async function POST(request: NextRequest) {
     //team members employees under the same manager, excluding current user
     const { data: teamMembers, error: teamError } = await supabase
       .from("leap_customer")
-      .select("customer_id, name, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
-      .eq("manager_id", customer_id)
-      // .neq("customer_id", customer_id);
+      .select("customer_id, emp_id,  name, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
+      .eq("manager_id", manager_id)
+      .neq("customer_id", customer_id);
 
     if (teamError) {
-      return NextResponse.json({ status: 0, message: "Error fetching team members", error: teamError }, { status: apiStatusFailureCode });
+      return NextResponse.json({ status: 0, message: "No manager assigned" }, { status: apiStatusFailureCode });
     }
 
     //if this user is also a manager to anyone
     const { data: subordinates, error: subError } = await supabase
       .from("leap_customer")
-      .select("name, customer_id, emp_id, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
+      .select("customer_id, emp_id, name, contact_number, email_id, profile_pic, designation_id, leap_client_designations(designation_name), branch_id")
       .eq("manager_id", customer_id);
     if (subError) {
       return NextResponse.json({ status: 0, message: "Error fetching subordinates", error: subError }, { status: apiStatusFailureCode });

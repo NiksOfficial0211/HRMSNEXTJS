@@ -6,6 +6,9 @@ import { SingleSupportRequest } from '../models/supportModel';
 import moment from 'moment';
 import AssignEmployeeAttendance from './dialog_assignEmpAttendance';
 import ShowAlertMessage from './alert';
+import { useRouter } from 'next/navigation';
+import { pageURL_CustomerProfile, pageURL_editUserPorifle } from '../pro_utils/stringRoutes';
+import LoadingDialog from './PageLoader';
 
 interface NewUpdates {
     statusUpdate: any,
@@ -14,8 +17,10 @@ interface NewUpdates {
 
 const DialogUpdateSupportRequest = ({ onClose, supportRequestID }: { onClose: () => void, supportRequestID: any }) => {
 
-    const { contextClientID, contextCustomerID } = useGlobalContext();
-    const [statusArray, setStatus] = useState<SupportRequestStatus[]>([]);
+ const {contextClientID,contaxtBranchID,contextCompanyName,contextCustomerID,contextEmployeeID,
+        contextLogoURL,contextRoleID,isAdmin,contextProfileImage,contextUserName,
+         setGlobalState}=useGlobalContext();
+             const [statusArray, setStatus] = useState<SupportRequestStatus[]>([]);
     const [ssupportRequestData, setSupportRequestData] = useState<SingleSupportRequest>();
     const [formValues, setformValues] = useState<NewUpdates>({
         statusUpdate: 0,
@@ -32,6 +37,8 @@ const DialogUpdateSupportRequest = ({ onClose, supportRequestID }: { onClose: ()
     const [alertEndContent, setAlertEndContent] = useState('');
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
+
+    const router =useRouter();
 
     useEffect(() => {
 
@@ -64,7 +71,11 @@ const DialogUpdateSupportRequest = ({ onClose, supportRequestID }: { onClose: ()
                 setSupportRequestData(response.data[0]);
             } else {
                 setLoading(false);
-                alert("Failed to fetch request")
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent(response.message);
+                setAlertForSuccess(2)
+                
             }
 
         } catch (error) {
@@ -79,12 +90,13 @@ const DialogUpdateSupportRequest = ({ onClose, supportRequestID }: { onClose: ()
         console.log("handle submit is called");
         e.preventDefault();
         try {
-            const formData = new FormData();
+            // const formData = new FormData();
 
-            formData.append("request_id", supportRequestID);
-            formData.append("customer_id", contextCustomerID);
-            formData.append("status", formValues.statusUpdate);
-            formData.append("comments", formValues.comment);
+            // formData.append("request_id", supportRequestID);
+            // formData.append("customer_id", contextCustomerID);
+            // formData.append("notify_customer_id", ssupportRequestData?.customer_id+'');
+            // formData.append("status", formValues.statusUpdate);
+            // formData.append("comments", formValues.comment);
 
             const res = await fetch("/api/clientAdmin/update_supportrequest", {
                 method: "POST",
@@ -93,6 +105,7 @@ const DialogUpdateSupportRequest = ({ onClose, supportRequestID }: { onClose: ()
                     customer_id: contextCustomerID,
                     status: formValues.statusUpdate,
                     comments: formValues.comment,
+                    notify_customer_id: ssupportRequestData?.customer_id+''
                 }),
             });
             console.log(res);
@@ -105,7 +118,7 @@ const DialogUpdateSupportRequest = ({ onClose, supportRequestID }: { onClose: ()
                 setLoading(false);
 
                 setShowAlert(true);
-                setAlertTitle("Failed")
+                setAlertTitle("Error")
                 setAlertStartContent(response.message);
                 setAlertForSuccess(2)
             }
@@ -128,8 +141,36 @@ const DialogUpdateSupportRequest = ({ onClose, supportRequestID }: { onClose: ()
         return parsedDate.format('YYYY-MM-DD');
     };
 
+    const navigateToProfile = () => {
+            
+            setGlobalState({
+                contextUserName: contextUserName,
+                contextClientID: contextClientID,
+                contaxtBranchID: contaxtBranchID,
+                contextCustomerID: contextCustomerID,
+                contextRoleID: contextRoleID,
+                contextProfileImage: contextProfileImage,
+                contextEmployeeID: contextEmployeeID,
+                contextCompanyName: contextCompanyName,
+                contextLogoURL: contextLogoURL,
+                contextSelectedCustId: ssupportRequestData?.customer_id+'',
+                contextAddFormEmpID: '',
+                contextAnnouncementID:'',
+                contextAddFormCustID: '',
+                dashboard_notify_cust_id: '',
+                dashboard_notify_activity_related_id: '',
+                selectedClientCustomerID: '',
+                isAdmin: isAdmin,
+                contextPARAM8: '',
+    
+            });
+            router.push(pageURL_editUserPorifle);
+        
+        }
+
     return (
         <div className="container">
+            <LoadingDialog isLoading={isLoading} />
             {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent.length > 0 ? alertEndContent : ""} value1={""} value2={""} onOkClicked={function (): void {
                 setShowAlert(false)
                 if (alertForSuccess == 1) {
@@ -217,7 +258,7 @@ const DialogUpdateSupportRequest = ({ onClose, supportRequestID }: { onClose: ()
                             </select>
                         </div>
                     </div>
-                    <div className="col-lg-3 mb-3">Comments<span className='req_text'>*</span>:</div>
+                    <div className="col-lg-3 mb-3">Comments{ssupportRequestData?.type_id}<span className='req_text'>*</span>:</div>
                     <div className="col-lg-9 mb-3">
                         <div className="form_box">
                             <textarea id="comment" name="comment" className='form-control' onChange={(e) => { setformValues((prev) => ({ ...prev, ['comment']: e.target.value })) }} />
@@ -228,6 +269,7 @@ const DialogUpdateSupportRequest = ({ onClose, supportRequestID }: { onClose: ()
                     <div className="row mb-5">
                         <div className="col-lg-12">
                             {ssupportRequestData?.type_id && ssupportRequestData.type_id == 8 && <input type='submit' value="Assign Attendance" className="red_button" onClick={() => setShowAttendanceAssignDialog(true)} style={{ marginRight: "10px" }} />}
+                            {ssupportRequestData?.type_id && ssupportRequestData.type_id == 9 && <input type='submit' value="Reset Device" className="red_button" onClick={() => navigateToProfile() } style={{ marginRight: "10px" }} />}
 
                             <input type='submit' value="Update" className="red_button" onClick={handleSubmit} />
                         </div>

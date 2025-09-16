@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import supabase from "../../supabaseConfig/supabase";
 import { allClientsData, allEmployeeListData, apiStatusFailureCode, apiStatusSuccessCode, apiwentWrong } from "@/app/pro_utils/stringConstants";
 import { funloggedInAnotherDevice, funSendApiException } from "@/app/pro_utils/constant";
-import { funGetAnnouncements, funGetClientCustomerList, funGetClientEmployeeAttendance, funGetClientEmployeeAttendanceforManager, funGetClientEmployeeLeaveRequest, funGetClientEmployeeList, funGetClientEmployeeListForManager, funGetClientEmployeeSummary, funGetClientHolidayList, funGetClientList, funGetClientUpCommingHolidayList, funGetCompanyWorkingHour, funGetCustomer, funGetEmpBirthdayList, funGetEmployeeLeaveRequest, funGetEmployeeLeaveRequestforManager, funGetMidShortCutsList, funGetMyLeaveBalance, funGetShortCutsOneList, funGetThisMonthHoliday, funGetUserAssignedTask, funGetUserDailyTask, funGetUserFirstName, getAllActivitiesOfUsers, getDashboardAllActivitiesOfUsers, getMyAttendance, getMyDocumentsList, getMyPresentTeam, getUserDashboardAllActivitiesOfUsers, getUserRoles, isAuthTokenValid } from "@/app/pro_utils/constantFunGetData";
+import { funGetAnnouncements, funGetClientCustomerList, funGetClientEmployeeAttendance, funGetClientEmployeeAttendanceforManager, funGetClientEmployeeLeaveRequest, funGetClientEmployeeList, funGetClientEmployeeListForManager, funGetClientEmployeeSummary, funGetClientHolidayList, funGetClientList, funGetClientUpCommingHolidayList, funGetCompanyWorkingHour, funGetCustomer, funGetEmpBirthdayList, funGetEmployeeLeaveRequest, funGetEmployeeLeaveRequestforManager, funGetMidShortCutsList, funGetMyLeaveBalance, funGetShortCutsOneList, funGetThisMonthHoliday, funGetUserAssignedTask, funGetUserDailyTask, funGetUserFirstName, getAllActivitiesOfUsers, getDashboardAllActivitiesOfUsers, getMyAttendance, getMyDocumentsList, getMyPresentTeam, getUserDashboardAllActivitiesOfUsers, getUserRoles, isAuthTokenValid, userDashboardGreeting } from "@/app/pro_utils/constantFunGetData";
 import { platform } from "os";
 
 export async function POST(request: NextRequest) {
@@ -99,6 +99,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         message: allEmployeeListData,
         status: 1,
+        appBgImg: platform && platform != "web" ? "https://v2.leaphrms.com/images/user/app_bg_img.png": "",
+        greeting:  await userDashboardGreeting(customer_id) ,
         workingHour: await funGetCompanyWorkingHour(client_id, branch_id),
         employees: funGetClientEmployeeListForManager(client_id, customer_id),
         leaveRequest:
@@ -126,6 +128,8 @@ export async function POST(request: NextRequest) {
         status: 1,
         leaveRequest: null,
         employeeAttendance: null,
+        appBgImg: platform && platform != "web" ? "https://v2.leaphrms.com/images/user/app_bg_img.png": "",
+        greeting:  await userDashboardGreeting(customer_id) ,
         workingHour: await funGetCompanyWorkingHour(client_id, branch_id),
         upcommingHolidays: await funGetThisMonthHoliday(client_id, branch_id),
         myattendance: await getMyAttendance(customer_id, client_id, new Date()),
@@ -289,5 +293,4 @@ export async function POST(request: NextRequest) {
 //     return funSendApiException(error);
 //   }
 // }
-
 

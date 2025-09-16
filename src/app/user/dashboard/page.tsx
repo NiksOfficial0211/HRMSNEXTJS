@@ -9,7 +9,7 @@ import LeftPannel from '../../components/leftPannel';
 import { useRouter } from 'next/navigation';
 import Footer from '../../components/footer';
 import { useGlobalContext } from '../../contextProviders/loggedInGlobalContext';
-import { ALERTMSG_addAssetSuccess, clientAdminDashboard, getImageApiURL, staticIconsBaseURL } from '../../pro_utils/stringConstants';
+import { clientAdminDashboard, getImageApiURL, staticIconsBaseURL } from '../../pro_utils/stringConstants';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 
@@ -27,15 +27,13 @@ import GreetingBlock from '@/app/components/userGreetingBlock';
 import UserAttendanceTimer from '@/app/components/userAttendanceTimer';
 import { CustomerLeavePendingCount } from '@/app/models/leaveModel';
 import moment from 'moment';
-import { pageURL_leaveListingPage, pageURL_userAnnouncement, pageURL_userApplyLeaveForm, pageURL_userAsset, pageURL_userAttendance, pageURL_userDoc, pageURL_userFillTask, pageURL_userLeave, pageURL_userSupport, pageURL_userSupportForm, pageURL_userTaskListingPage, pageURL_userTeamAttendanceList, pageURL_userTeamLeave } from '@/app/pro_utils/stringRoutes';
-import { AttendanceTimer, ManagerData, MyTask, Subordinate, TeamMember, UserNotification } from '@/app/models/userDashboardModel';
+import {  pageURL_userAnnouncement, pageURL_userApplyLeaveForm, pageURL_userAsset, pageURL_userAttendance, pageURL_userDoc, pageURL_userFillTask, pageURL_userLeave, pageURL_userSupport, pageURL_userSupportForm, pageURL_userTaskListingPage, pageURL_userTeamAttendanceList, pageURL_userTeamLeave } from '@/app/pro_utils/stringRoutes';
+import { AttendanceTimer, ManagerData, MyTask, Subordinate, TeamMember, UserNotification} from '@/app/models/userDashboardModel';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
-import { AssignedTask, Task } from '@/app/models/TaskModel';
+import UserNotificationCorner from '@/app/components/userNotification';
 
 const Dashboard = () => {
-    const router = useRouter();
     const [scrollPosition, setScrollPosition] = useState(0);
-    const [isEnd, setIsEnd] = useState(false);
     const swiperRef = useRef<any>(null);
     const [isLoading, setLoading] = useState(false);
     const [balancearray, setBalanceLeave] = useState<CustomerLeavePendingCount[]>([]);
@@ -43,7 +41,6 @@ const Dashboard = () => {
     const [permissionData, setPermissionData] = useState<userPermissionModel[]>();
     const { contaxtBranchID, contextClientID, contextRoleID, contextCustomerID, setGlobalState } = useGlobalContext();
     const [taskarray, setTask] = useState<MyTask[]>([]);
-    // const [assignedTaskarray, setAssignedTask] = useState<AssignedTask[]>([]);
     const [firstName, setName] = useState<any[]>([]);
     const [workingTime, setWorkingTime] = useState<any[]>([]);
     const [managerData, setManagerData] = useState<ManagerData>();
@@ -52,7 +49,9 @@ const Dashboard = () => {
     const [loadingCursor, setLoadingCursor] = useState(false);
     const [tabSelectedIndex, setTabSelectedIndex] = useState(0);
     const [attendanceData, setAttendanceData] = useState<AttendanceTimer>();
+    const [greetArray, setGreetData] = useState<any>();
     const [notificationData, setNotifyData] = useState<UserNotification[]>([]);
+    const [showNoti, setShowNoti] = useState(false);
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertForSuccess, setAlertForSuccess] = useState(0);
@@ -68,11 +67,6 @@ const Dashboard = () => {
 
         fetchDashboard();
         fetchTeamMembers();
-        // const intervalId = setInterval(() => {
-        //     // fetchActivities();
-        //     fetchData();
-        // }, 5000); // Call fetchActivities every 5 seconds
-
         const handleScroll = () => {
             setScrollPosition(window.scrollY); // Update scroll position
             const element = document.querySelector('.mainbox');
@@ -105,17 +99,14 @@ const Dashboard = () => {
             const response = await res.json();
             if (response.status === 1) {
 
-                setWorkingTime(response.workingHour.workData[0].full_day);
-                // console.log("time: ", workingTime)
+                setWorkingTime(response.workingHour);
+                setGreetData(response.greeting);
                 setHolidays(response.upcommingHolidays.holidays);
                 setBalanceLeave(response.myLeaveBalances.customerLeavePendingCount);
-                // setSalarySlip(response.my_documents[0]);
                 setAttendanceData(response.myattendance[0]);
                 setTask(response.my_tasks);
                 setName(response.my_name.firstName);
-                // console.log("name: ", balancearray)
                 setNotifyData(response.notification);
-                // setAnnouncementData(response.announcements[0]);
             } else {
                 setLoading(false);
                 setShowAlert(true);
@@ -142,7 +133,6 @@ const Dashboard = () => {
                 }),
             });
             const response = await res.json();
-            // console.log(response);
             const managerData = response.data.manager;
             const teamData = response.data.teamMembers;
             const subData = response.data.subordinates;
@@ -164,7 +154,7 @@ const Dashboard = () => {
             console.error("Error fetching user data:", error);
             setShowAlert(true);
             setAlertTitle("Exception")
-            setAlertStartContent("Error loading data");
+            setAlertStartContent("Error loading team data");
             setAlertForSuccess(2)
         }
     };
@@ -199,12 +189,13 @@ const Dashboard = () => {
                     }} onCloseClicked={function (): void {
                         setShowAlert(false)
                     }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
+                    
                     <div className="container">
                         <div className="row">
                             <div className="col-lg-9">
                                 <div className="new_user_dashbord_leftbox">
                                     <div className="new_user_left_firstmainbox">
-                                        < GreetingBlock />
+                                         {greetArray && <GreetingBlock greetData = {greetArray}/>}
                                         {attendanceData && < UserAttendanceTimer data={attendanceData} name={firstName} workingHour={workingTime} />}
                                     </div>
                                     {/* {checkPermission(permission_m_leave_7) && */}
@@ -275,9 +266,6 @@ const Dashboard = () => {
                                                                         </div>
                                                                     )
                                                                 }
-                                                                {/* <div className="new_home_leave_balance_remaining new_home_leave_balance_remaining_three">
-                                                                    {balance.leaveBalance + "/" + balance.leaveAllotedCount}
-                                                                </div> */}
                                                             </div>
                                                             <div className='user_balance_tooltip'>
                                                                 <div className="ser_tool_tip_content">
@@ -651,10 +639,13 @@ const Dashboard = () => {
                                     {/* {permissionData(permission_m_notification_9) && */}
                                     <div className="new_user_notification_mainbox">
                                         <div className="new_user_notification_headingbox">
-                                            <div className="new_user_notification_icon">
-                                                <img src={staticIconsBaseURL + "/images/user/notification-icon.svg"} alt="Notification Icon" className="img-fluid" />
+                                            <div className="new_user_notification_icon" onClick={()=>{setShowNoti(true)}}>
+                                                <img src={staticIconsBaseURL + "/images/user/notification-icon.svg"}  alt="Notification Icon" className="img-fluid" />
                                             </div>
-                                            <div className="new_user_notification_heading">Notification Corner</div>
+                                            {/* <a href={pageURL_userNotification}> */}
+                                                
+                                            <div className="new_user_notification_heading" >Notification Corner</div>
+                                            {/* </a> */}
                                         </div>
                                         <div className="new_user_notification_listing">
                                             {/*activity_type_id:- 1 - attendance, 
@@ -792,6 +783,13 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
+                    <div className="nw_user_offcanvas">
+                        <div className={showNoti ? "rightpoup rightpoupopen" : "rightpoup"}>
+                            {showNoti && <UserNotificationCorner onClose={() => { setShowNoti(false) }} />}
+                        </div>
+                        <div className="overlay_offcanvas"></div>
+                    </div>
+                    
                 </div>
             }
             />

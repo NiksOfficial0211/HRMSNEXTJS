@@ -4,8 +4,25 @@ import { NextRequest, NextResponse } from "next/server";
 import supabase from "../../supabaseConfig/supabase";
 import { apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
 import { ifError } from "node:assert";
+import { format } from 'date-fns'
 
 export async function POST(request: NextRequest) {
+  async function getAttendanceRequestData(custID: string, date: any) {
+  let query = supabase
+    .from("leap_client_employee_requests")
+    .select("*")
+    .eq("customer_id", custID)
+    .eq("type_id", 8) 
+    .eq("description", format(date, "yyyy-MM-dd")); // request linked to the specific date
+
+  const { data, error } = await query;
+
+  if (error) {
+    return [];
+  } else {
+    return data;
+  }
+}
   try {
     const { customer_id, client_id, platform, auth_token, branch_id, date } = await request.json();
 
@@ -56,6 +73,7 @@ export async function POST(request: NextRequest) {
 
 
     let userStatus = "Absent"; 
+    let attendanceRequestStatus: string | null = null;
 
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       userStatus = "Weekend"; 
@@ -65,6 +83,18 @@ export async function POST(request: NextRequest) {
       userStatus = "Holiday";
     }  else if (leave) {
       userStatus = "On Leave";
+    } else {
+      
+      const requests = await getAttendanceRequestData(customer_id, formattedDate);
+
+      if (requests.length > 0) {
+        const latestRequest = requests[0];
+        if (latestRequest.active_status === 1 || latestRequest.active_status === 2 || latestRequest.active_status === 4) {
+          attendanceRequestStatus = "Request Raised Already";
+        } else if (latestRequest.active_status === 3) {
+          attendanceRequestStatus = "Request Denied";
+        }
+      }
     }
    
 
@@ -106,6 +136,7 @@ export async function POST(request: NextRequest) {
       message: "Attendance Summary",
       data: {
         userStatus,
+        attendanceRequestStatus,
         attendance,
         breakDetails,
       },
@@ -210,5 +241,4 @@ export async function POST(request: NextRequest) {
 //     }
 
 // }
-
 

@@ -73,24 +73,24 @@ const EmployeeProfile = () => {
     const [emergencyContactRelation, setEmergencyRelation] = useState<LeapRelations[]>([]);
     const [isChecked, setIsChecked] = useState(true);
     const [selectedMaritialStatus, setMaritialStatus] = useState("Single");
-    const {contextClientID,contaxtBranchID,contextCustomerID,contextRoleID,contextSelectedCustId,
-         setGlobalState}=useGlobalContext();
-    const [viewIndex,setViewIndex]=useState(0);
+    const { contextClientID, contaxtBranchID, contextCustomerID, contextRoleID, contextSelectedCustId,
+        setGlobalState } = useGlobalContext();
+    const [viewIndex, setViewIndex] = useState(0);
 
     const [isLoading, setLoading] = useState(true);
-        const [showAlert, setShowAlert] = useState(false);
-            const [alertForSuccess, setAlertForSuccess] = useState(0);
-            const [alertTitle, setAlertTitle] = useState('');
-            const [alertStartContent, setAlertStartContent] = useState('');
-            const [alertMidContent, setAlertMidContent] = useState('');
-            const [alertEndContent, setAlertEndContent] = useState('');
-            const [alertValue1, setAlertValue1] = useState('');
-            const [alertvalue2, setAlertValue2] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertForSuccess, setAlertForSuccess] = useState(0);
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertStartContent, setAlertStartContent] = useState('');
+    const [alertMidContent, setAlertMidContent] = useState('');
+    const [alertEndContent, setAlertEndContent] = useState('');
+    const [alertValue1, setAlertValue1] = useState('');
+    const [alertvalue2, setAlertValue2] = useState('');
 
     useEffect(() => {
-        
-       
-        
+
+
+
         const fetchData = async () => {
             setLoading(true);
             const designationType = await getDesignations();
@@ -112,35 +112,35 @@ const EmployeeProfile = () => {
                 const res = await fetch("/api/users/getProfile", {
                     method: "POST",
                     body: JSON.stringify({
-                        "client_id":contextClientID,
-                        "customer_id":contextSelectedCustId
+                        "client_id": contextClientID,
+                        "customer_id": contextSelectedCustId
                     }),
                 });
-                console.log("this is the res var-----------",res);
+                console.log("this is the res var-----------", res);
 
                 const response = await res.json();
                 console.log(response);
-                if(response.status==1){
+                if (response.status == 1) {
                     setLoading(false);
                     const user = response.customer_profile[0];
                     setUserData(user);
-                }else{
+                } else {
 
                     setLoading(false);
-                setShowAlert(true);
-                setAlertTitle("Error")
-                setAlertStartContent("Failed to delete data");
-                setAlertForSuccess(2)
+                    setShowAlert(true);
+                    setAlertTitle("Error")
+                    setAlertStartContent("Failed to delete data");
+                    setAlertForSuccess(2)
                 }
 
-                
+
             } catch (error) {
                 setLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Exception")
                 setAlertStartContent(ALERTMSG_exceptionString);
                 setAlertForSuccess(2)
-                
+
                 console.error("Error fetching user data:", error);
             }
         }
@@ -161,7 +161,7 @@ const EmployeeProfile = () => {
         };
     }, []);
 
-    
+
 
 
     return (
@@ -173,22 +173,22 @@ const EmployeeProfile = () => {
             <LeftPannel menuIndex={0} subMenuIndex={0} showLeftPanel={true} rightBoxUI={
                 <div>
                     <LoadingDialog isLoading={isLoading} />
-            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                    {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                         setShowAlert(false)
                     }} onCloseClicked={function (): void {
                         setShowAlert(false)
                     }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
-                
+
                     <div className='container'>
                         <div className="row mb-4">
-                                <div className="col-lg-12 profile_btn_list">
+                            <div className="col-lg-12 profile_btn_list">
 
-                                    <div onClick={(e)=>setViewIndex(0)} className={viewIndex==0?"selected":""}>Employement Details</div>
-                                    <div onClick={(e)=>setViewIndex(1)} className={viewIndex==1?"selected":""}>Address Details</div>
-                                    <div onClick={(e)=>setViewIndex(2)} className={viewIndex==2?"selected":""}>Bank Details</div>
-                                    <div onClick={(e)=>setViewIndex(3)} className={viewIndex==3?"selected":""}>Leave Details</div>
+                                <div onClick={(e) => setViewIndex(0)} className={viewIndex == 0 ? "selected" : ""}>Employement Details</div>
+                                <div onClick={(e) => setViewIndex(1)} className={viewIndex == 1 ? "selected" : ""}>Address Details</div>
+                                <div onClick={(e) => setViewIndex(2)} className={viewIndex == 2 ? "selected" : ""}>Bank Details</div>
+                                <div onClick={(e) => setViewIndex(3)} className={viewIndex == 3 ? "selected" : ""}>Leave Details</div>
 
-                                    {/* <div className="employee_details_tabbing">
+                                {/* <div className="employee_details_tabbing">
                                         <div className="list_view_box" onClick={(e)=>setViewIndex(0)}>
                                             <a >
                                                 <div className="list_view_heading">
@@ -223,34 +223,34 @@ const EmployeeProfile = () => {
                                             </a>
                                         </div>
                                     </div> */}
-                                    
-                                    
-                                </div>
+
+
+                            </div>
                         </div>
                         {userData! ?
-                        <div className="row">
-                            <div className="col-lg-8">
-                                        { viewIndex==0?
-                                        < UserEmployement />:viewIndex==1?
-                                   
-                                
-                                        < UserAddress />:viewIndex==2?
-                                   
-                                
-                                        < UserBankDetails />:viewIndex==3?< UserProfileLeaveDetails />:<div />
-                                        }
-                                   
-                            </div>
-                            <div className="col-lg-4">
-                                <div className="container" style={{position:"sticky", top:"90px"}}>
-                                    <div className="row">
-                                        < UserPersonalDetails />
+                            <div className="row">
+                                <div className="col-lg-8">
+                                    {viewIndex == 0 ?
+                                        < UserEmployement /> : viewIndex == 1 ?
+
+
+                                            < UserAddress /> : viewIndex == 2 ?
+
+
+                                                < UserBankDetails /> : viewIndex == 3 ? < UserProfileLeaveDetails /> : <div />
+                                    }
+
+                                </div>
+                                <div className="col-lg-4">
+                                    <div className="container" style={{ position: "sticky", top: "90px" }}>
+                                        <div className="row">
+                                            < UserPersonalDetails />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>: <PageErrorCenterContent content={isLoading?"":"Failed to load data"} />} 
+                            </div> : <PageErrorCenterContent content={isLoading ? "" : "Failed to load data"} />}
                     </div>
-                    </div>
+                </div>
             } />
             < Footer />
         </div>

@@ -172,6 +172,28 @@ export async function POST(request: NextRequest) {
     if (insertTotalSalaryError) {
       return funSendApiErrorMessage(updateGrossSalaryFailure, "Insert Total Salary Details Issue")
     }
+
+    (async () => {
+
+      try {
+        const { data: shouldNotify, error } = await supabase.from("leap_client_notification_selected_types").select("*").eq("selected_notify_type_id", 8);
+        if (shouldNotify && shouldNotify.length === 0) {
+          const formData = new FormData();
+          formData.append("customer_id", String(fdata.customerId));
+          formData.append("title", "Bank Details Updated");
+          formData.append("notify_type", "8");// its 8 for profile related updates in leap_push_notification_types table
+          formData.append("message", "Your bank details has been updated.");
+          const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sendPushNotification`, {
+            method: "POST",
+            body: formData
+          });
+        }
+      } catch (err) {
+        console.log(err);
+      }
+
+    })();
+
     return NextResponse.json({ message: updateBankSuccess, status: 1 });
 
 

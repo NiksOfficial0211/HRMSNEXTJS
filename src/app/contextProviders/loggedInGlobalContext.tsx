@@ -13,7 +13,7 @@ const LoggedInGlobalContext = createContext({
         dashboard_notify_cust_id: '',
         dashboard_notify_activity_related_id: '',
         selectedClientCustomerID: '',
-        contextPARAM7: '',
+        isAdmin: '',
         contextPARAM8: '',
   setGlobalState: (state: {
     contextUserName: string;
@@ -32,7 +32,7 @@ const LoggedInGlobalContext = createContext({
     dashboard_notify_cust_id: string,
     dashboard_notify_activity_related_id: string,
     selectedClientCustomerID: string,
-    contextPARAM7: string,
+    isAdmin: string,
     contextPARAM8: string,
   }) => { },
 });
@@ -56,7 +56,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         dashboard_notify_cust_id: '',
         dashboard_notify_activity_related_id: '',
         selectedClientCustomerID: '',
-        contextPARAM7: '',
+        isAdmin: '',
         contextPARAM8: '',
       }
     } 
@@ -70,7 +70,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         dashboard_notify_cust_id: '',
         dashboard_notify_activity_related_id: '',
         selectedClientCustomerID: '',
-        contextPARAM7: '',
+        isAdmin: '',
         contextPARAM8: '',
     }
   }

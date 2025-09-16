@@ -5,24 +5,20 @@ import React from 'react'
 import LeapHeader from '@/app/components/header'
 import LeftPannel from '@/app/components/leftPannel'
 import Footer from '@/app/components/footer'
-import LoadingDialog from '@/app/components/PageLoader'
 import { useEffect, useState } from 'react'
 import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
 import moment from 'moment'
 import { Employee, LeapCustomerAttendanceAPI } from '@/app/models/AttendanceDataModel'
-import dynamic from 'next/dynamic'
-import { leftMenuAttendancePageNumbers, pageURL_userTeamAttendanceList } from '@/app/pro_utils/stringRoutes'
+import { pageURL_userTeamAttendanceList } from '@/app/pro_utils/stringRoutes'
 import { DateRange, RangeKeyDict } from 'react-date-range';
 import { Range } from 'react-date-range';
 import { format } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz';
-
 import { ALERTMSG_exceptionString, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
 import { EmployeeLeave_Approval_LeaveType } from '@/app/models/leaveModel'
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
-import { stringify } from 'querystring'
-import BackButton from '@/app/components/BackButton'
+import supabase from '@/app/api/supabaseConfig/supabase'
 // import AttendanceMap from '@/app/components/trackerMap'
 // const AttendanceMap = dynamic(() => import('@/app/components/trackerMap'), { ssr: false });
 
@@ -52,12 +48,17 @@ interface selectedAttendance {
 }
 
 const EmpAttendancePage = () => {
-
     const [showAlert, setShowAlert] = useState(false);
     const [alertForSuccess, setAlertForSuccess] = useState(0);
     const [alertTitle, setAlertTitle] = useState('');
     const [alertStartContent, setAlertStartContent] = useState('');
+    const [alertMidContent, setAlertMidContent] = useState('');
+    const [alertEndContent, setAlertEndContent] = useState('');
+    const [alertValue1, setAlertValue1] = useState('');
+    const [alertvalue2, setAlertValue2] = useState('');
 
+    const [requestBtn, setReqBtn] = useState(false);
+    const [reqDate, setReqDate] = useState<string>('');
     const [scrollPosition, setScrollPosition] = useState(0);
     const { contaxtBranchID, contextClientID, contextCustomerID, dashboard_notify_cust_id, contextRoleID, setGlobalState } = useGlobalContext();
     const [loadingCursor, setLoadingCursor] = useState(false);
@@ -159,9 +160,6 @@ const EmpAttendancePage = () => {
     };
 
     const fetchData = async () => {
-        // console.log("start date selecte in fetch data", filterValues.start_date);
-        // console.log("end date selecte in fetch data", filterValues.end_date);
-        console.log("role: ", contextRoleID)
         setLoading(true);
         try {
             const startDate = filterValues.start_date || formatDateYYYYMMDD(new Date());
@@ -183,7 +181,6 @@ const EmpAttendancePage = () => {
                 ),
             });
             const apiResponse = await response.json();
-            console.log(apiResponse);
 
             setLoading(false);
             if (apiResponse.status == 1) {
@@ -198,7 +195,6 @@ const EmpAttendancePage = () => {
                     let isPresent = -1;
                     let isHoliday = -1;
                     let wasonLeave = -1;
-                    console.log();
                     if (apiResponse.data[0].leap_customer_attendance) {
                         for (let j = 0; j < apiResponse.data[0].leap_customer_attendance.length; j++) {
                             if (dateRanges[i].actual_date == apiResponse.data[0].leap_customer_attendance[j].date) {
@@ -278,8 +274,6 @@ const EmpAttendancePage = () => {
                 setDateRangeAttendanceData(empAttendanceData);
 
                 if (dashboard_notify_cust_id.length > 0) {
-                    // const values: any = { value: apiResponse.data[0].customer_id, label: apiResponse.data[0].emp_id + "  " + apiResponse.data[0].name }
-                    // setShowMap(true);
                     setShowAttendance(
                         apiResponse.data[0].leap_customer_attendance[0].attendance_id,
                         formatDateYYYYMMDD(new Date()),
@@ -337,7 +331,7 @@ const EmpAttendancePage = () => {
             selected_empDepartment: empDepartment,
         })
     };
-//
+    //
     const handleDateChange = (ranges: RangeKeyDict) => {
         setState([ranges.selection]);
         setShowCalendar(false)
@@ -417,43 +411,55 @@ const EmpAttendancePage = () => {
         setIsExpanded(prev => !prev);
     };
 
-    const handleSubmit = async (attDate: string) => {
-        // e.preventDefault();
-        // if (!validate()) return;
+    const requestAttendance = async (attDate: string) => {
         setLoadingCursor(true);
-        try {
-            const response = await fetch("/api/users/support/raiseSupport", {
-                method: "POST",
-                body: JSON.stringify({
-                    "client_id": contextClientID,
-                    "customer_id": contextCustomerID,
-                    "branch_id": contaxtBranchID,
-                    "type_id": 8,
-                    "description": attDate,
-                    "priority_level": 1
-                }),
-            });
-            if (response.ok) {
+        const requestData = await getAttendanceRequestData(contextCustomerID, attDate);
+        // console.log("data", requestData )
+        if (requestData.length <= 0) {
+            // e.preventDefault();
+            // if (!validate()) return;
+
+            try {
+                const response = await fetch("/api/users/support/raiseSupport", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "customer_id": contextCustomerID,
+                        "branch_id": contaxtBranchID,
+                        "type_id": 8,
+                        "description": attDate,
+                        "priority_level": 1
+                    }),
+                });
+                if (response.ok) {
+                    setLoadingCursor(false);
+                    setShowAlert(true);
+                    setAlertTitle("Success")
+                    setAlertStartContent("Attendance request raised successfully.");
+                    setAlertForSuccess(1)
+                } else {
+                    setLoadingCursor(false);
+                    // e.preventDefault()
+                    setShowAlert(true);
+                    setAlertTitle("Error")
+                    setAlertStartContent("Failed to raise request.");
+                    setAlertForSuccess(2)
+                }
+            } catch (error) {
                 setLoadingCursor(false);
+                //   e.preventDefault()
+                console.log("Error submitting form:", error);
                 setShowAlert(true);
-                setAlertTitle("Success")
-                setAlertStartContent("Help raised successfully");
-                setAlertForSuccess(1)
-            } else {
-                setLoadingCursor(false);
-                // e.preventDefault()
-                setShowAlert(true);
-                setAlertTitle("Error")
-                setAlertStartContent("Failed to raise help.");
+                setAlertTitle("Exception")
+                //   setAlertStartContent(ALERTMSG_FormExceptionString);
                 setAlertForSuccess(2)
             }
-        } catch (error) {
+        }
+        else {
             setLoadingCursor(false);
-            //   e.preventDefault()
-            console.log("Error submitting form:", error);
             setShowAlert(true);
-            setAlertTitle("Exception")
-            //   setAlertStartContent(ALERTMSG_FormExceptionString);
+            setAlertTitle("Already Requested")
+            setAlertStartContent("Attendance request already raised for this date.");
             setAlertForSuccess(2)
         }
     }
@@ -493,20 +499,7 @@ const EmpAttendancePage = () => {
                                                                             readOnly
                                                                             onClick={() => setShowCalendar(!showCalendar)}
                                                                         />
-                                                                        {/* <input
-                                                                                                                                                type="text"
-                                                                                                                                                className="form-control"
-                                                                                                                                                value={
-                                                                                                                                                    filters.start_date && filters.end_date
-                                                                                                                                                        ? `${format(new Date(filters.start_date), 'MMM d, yyyy')} - ${format(new Date(filters.end_date), 'MMM d, yyyy')}`
-                                                                                                                                                        : filters.start_date
-                                                                                                                                                            ? `${format(new Date(filters.start_date), 'MMM d, yyyy')}`
-                                                                                                                                                            : 'Select Date'
-                                                                                                                                                }
-                                                                                                                                                placeholder='Select Date'
-                                                                                                                                                readOnly
-                                                                                                                                                onClick={() => setShowCalendar(!showCalendar)}
-                                                                                                                                            /> */}
+                                                                       
                                                                         {showCalendar && (
                                                                             <div style={{ position: 'absolute', zIndex: 1000 }}>
                                                                                 <DateRange
@@ -575,6 +568,14 @@ const EmpAttendancePage = () => {
                                                 </ul>
                                             </div>
                                         </div>
+                                        {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                                            setShowAlert(false)
+                                            //   if (alertForSuccess == 1) {
+                                            //       router.push(pageURL_userLeave);
+                                            //   }
+                                        }} onCloseClicked={function (): void {
+                                            setShowAlert(false)
+                                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
                                         {/* Main Content Box */}
                                         <div className="nw_user_inner_content_box new_user_attendance_contentbox" style={{ minHeight: '60vh' }}>
                                             <div className="row mt-4">
@@ -604,6 +605,7 @@ const EmpAttendancePage = () => {
                                                                     <div className="att_detail_whitelist new_user_att_detail_whitelist">
                                                                         <div className="row align-items-center">
                                                                             <div className="col-lg-3">
+                                                                                
                                                                                 <div className="att_detail_datebox new_user_small_leftbox">
                                                                                     {dates.date} <span>{dates.month_year}</span>
                                                                                 </div>
@@ -697,9 +699,9 @@ const EmpAttendancePage = () => {
                                                                                                 </>
                                                                                             ) :
                                                                                             <div className="new_small_timing_absent">
-                                                                                                <div className="new_small_holidy_heading">Absent</div>
-                                                                                                <div className="new_small_holidy_name">
-                                                                                                    <button onClick={() => handleSubmit(dates.actualDate)} >Request for attendance</button>
+                                                                                                <div className="new_small_holidy_heading">Absent </div>
+                                                                                                <div className="new_small_holidy_name" style={{ textAlign: "right" }} >
+                                                                                                    <input type='submit' value="Request" className="red_button" style={{ backgroundColor: "white", color: "red", border: "1px solid #7492a9" }} onClick={() => requestAttendance(dates.actualDate)} />
                                                                                                 </div>
                                                                                             </div>
                                                                                     }
@@ -796,18 +798,22 @@ const EmpAttendancePage = () => {
                                                                                                     <div className="my_user_attendance_breakbox_left">
                                                                                                         <div className="my_user_attendance_breakbox_left_heading">Duration</div>
                                                                                                         <div className="my_user_attendance_breakbox_left_content">
-                                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index] ?
+                                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time && dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time.length > 0 && dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index] ?
                                                                                                                 calculateTimeDuration(data, dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index]) : "--"} mins
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div className="my_user_attendance_breakbox_right">
                                                                                                         <div className="my_user_attendance_breakbox_break">
-                                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons[index] ?
+                                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons && 
+                                                                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons.length > 0 && 
+                                                                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons[index] ?
                                                                                                                 (dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.paused_reasons[index]) : "--"}
                                                                                                         </div>
                                                                                                         <div className="my_user_attendance_breakbox_timing">
                                                                                                             {formatInTimeZone(new Date(data), 'UTC', 'hh:mm a')} <span className='from_color_code'>to</span>
-                                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index] ?
+                                                                                                            {dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time && 
+                                                                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time.length > 0 && 
+                                                                                                            dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index] ?
                                                                                                                 formatInTimeZone(new Date(dateRangeAttendanceData[selectedAttendenceIndex].employeeAttendance?.pause_end_time[index]), 'UTC', 'hh:mm a') : "--"}
                                                                                                         </div>
                                                                                                     </div>
@@ -934,5 +940,20 @@ function getOrdinalSuffix(day: number) {
     }
 }
 
+async function getAttendanceRequestData(custID: string, date: any) {
 
-
+    let query = supabase
+        .from('leap_client_employee_requests')
+        .select()
+        .eq("customer_id", custID)
+        .eq("type_id", 8) // 8 for attendance request type
+        .eq("description", format(date, 'yyyy-MM-dd')); // today's date
+    const { data, error } = await query;
+    if (error) {
+        // console.log(error);
+        return [];
+    } else {
+        // console.log(data);
+        return data;;
+    }
+}

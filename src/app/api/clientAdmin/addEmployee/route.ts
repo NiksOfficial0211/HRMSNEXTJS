@@ -50,11 +50,15 @@ export async function POST(request: NextRequest) {
         }
         
 
-
+        console.log("lastCustomerEmpID", fields.email_id[0]);
+        console.log("lastCustomerEmpID", fields.password[0]);
+        
         const emailPassword = {
             email: fields.email_id[0],
             password: fields.password[0],
         }
+        console.log(emailPassword);
+        
         let signedUserData;
         const { data: signUpData, error } = await supabase.auth.signUp(emailPassword);
         console.log("signup error", error);
@@ -156,8 +160,6 @@ export async function POST(request: NextRequest) {
                 is_primary: true,
                 address_type:"current",
                 created_at: new Date()
-
-
             }
         ])
 
@@ -181,8 +183,6 @@ export async function POST(request: NextRequest) {
                 is_primary: false,
                 address_type:"permanent",
                 created_at: new Date()
-
-
             }
         ])
         const { error: insertPermanentError } = await permanentAddress;

@@ -8,7 +8,7 @@ import { funSendApiErrorMessage, funSendApiException } from "@/app/pro_utils/con
 
 export async function POST(request: NextRequest) {
   try {
-    const {id, task_details, task_status } = await request.json();
+    const {id, task_details, task_status, total_hours, total_minutes} = await request.json();
     // const taskId = formData.get('id');
     // const taskDetails = formData.get('task_details');
     const newTaskStatus = Number(task_status); // Ensure it's a number
@@ -31,12 +31,18 @@ export async function POST(request: NextRequest) {
     let updateFields: any = {
       task_details: task_details || null,
       task_status: task_status || null,
+      total_hours: total_hours || null,
+      total_minutes: total_minutes || null,
       updated_at: new Date(),
     };
 
     const previousTaskStatus = Number(taskData.task_status); // Convert to number
-
-    if (previousTaskStatus !== 2 && newTaskStatus === 2) {
+    // here i want to add if the employee is directly changing the status completed then they can themselves input their hours and minutes spent on the task
+if (previousTaskStatus !== 2 && newTaskStatus !== 2) {
+      updateFields.total_hours = total_hours;
+        updateFields.total_minutes = total_minutes;
+    }
+    else if (previousTaskStatus !== 2 && newTaskStatus === 2) {
       // Task just entered "Working" status
       updateFields.task_start_time = new Date();
     } else if (previousTaskStatus === 2 && newTaskStatus !== 2) {

@@ -51,6 +51,25 @@ export async function POST(request: NextRequest) {
       return funSendApiErrorMessage(updateError, "Asset Status Update Issue");
   }
 
+  (async () => {
+            try{
+            const {data: shouldNotify, error} = await supabase.from("leap_client_notification_selected_types").select("*").eq("selected_notify_type_id",7);
+            if(shouldNotify && shouldNotify.length === 0){
+            const formData = new FormData();
+            formData.append("customer_id", String(fdata.customerID));
+            formData.append("title", "Asset Assigned");
+            formData.append("notify_type", "7");// its 7 for assets in leap_push_notification_types table
+            formData.append("message", "An asset has been assigned to you.");
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sendPushNotification`, {
+                method: "POST",
+                body: formData
+            });
+            }
+        }catch(err){
+            console.log(err);   
+        }
+        })();
+
         return NextResponse.json({ message: clientAssetSuccess ,data:data}, { status: apiStatusSuccessCode });
       
   }catch(error){

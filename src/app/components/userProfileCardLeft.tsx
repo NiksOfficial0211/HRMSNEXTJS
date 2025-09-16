@@ -48,7 +48,7 @@
 //             dashboard_notify_cust_id: '',
 //             dashboard_notify_activity_related_id: '',
 //             selectedClientCustomerID: '',
-//             contextPARAM7: '',
+//             isAdmin: '',
 //             contextPARAM8: '',
 
 //         });
@@ -80,31 +80,56 @@ import supabase from '../api/supabaseConfig/supabase';
 import { useRouter } from 'next/navigation';
 import { pageURL_editUserPorifle } from '../pro_utils/stringRoutes';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
-import { staticIconsBaseURL } from '../pro_utils/stringConstants';
+import { ALERTMSG_exceptionString, staticIconsBaseURL } from '../pro_utils/stringConstants';
 import DialogUpdateEmployeeHierarchy from './dialog_UpdateEmployeeHierarchy';
+import LoadingDialog from './PageLoader';
+import ShowAlertMessage from './alert';
 
 const UserProfileLeft = ({ card,isHerarchy,callFetchData }: { card: any,isHerarchy:boolean,callFetchData:() => void }) => {
     const {contextClientID,contaxtBranchID,contextCompanyName,contextCustomerID,contextEmployeeID,
-        contextLogoURL,contextRoleID,contextProfileImage,contextUserName,
+        contextLogoURL,contextRoleID,contextProfileImage,contextUserName,isAdmin,
          setGlobalState}=useGlobalContext();
          const[showEditDialog,setShowEditDialog]=useState(false);
-    const router = useRouter()
+    const router = useRouter();
+     const [isLoading, setLoading] = useState(false);
+      const [showAlert, setShowAlert] = useState(false);
+      const [alertForSuccess, setAlertForSuccess] = useState(0);
+      const [alertTitle, setAlertTitle] = useState('');
+      const [alertStartContent, setAlertStartContent] = useState('');
+      const [alertMidContent, setAlertMidContent] = useState('');
+      const [alertEndContent, setAlertEndContent] = useState('');
+      const [alertValue1, setAlertValue1] = useState('');
+      const [alertvalue2, setAlertValue2] = useState('');
     const callResetDeviceID = async () => {
+        setLoading(true);
         try {
             const { error } = await supabase
                 .from('leap_customer')
-                .update({ device_id: null }) // Set device_id to null or the desired reset value
+                .update({ device_id: null ,auth_token:null}) // Set device_id to null or the desired reset value
                 .eq('customer_id', card.customer_id);
 
             if (error) {
-                alert(`Error resetting device ID: ${error.message}`);
+                setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent("Failed to Reset Device ID");
+                setAlertForSuccess(2)
+                // alert(`Error resetting device ID: ${error.message}`);
             } else {
-                alert('Device ID reset successfully');
+                setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent("Device ID reset successfully");
+                setAlertForSuccess(1)
             }
         } catch (err) {
             console.error('Unexpected error:', err);
-            alert('An unexpected error occurred while resetting the device ID.');
-        }
+            setLoading(false);
+            setShowAlert(true);
+            setAlertTitle("Exception")
+            setAlertStartContent(ALERTMSG_exceptionString);
+            setAlertForSuccess(3)       
+     }
     };
 
     const navigateToProfile = () => {
@@ -126,7 +151,7 @@ const UserProfileLeft = ({ card,isHerarchy,callFetchData }: { card: any,isHerarc
             dashboard_notify_cust_id: '',
             dashboard_notify_activity_related_id: '',
             selectedClientCustomerID: '',
-            contextPARAM7: '',
+            isAdmin: isAdmin,
             contextPARAM8: '',
 
         });
@@ -138,6 +163,12 @@ const UserProfileLeft = ({ card,isHerarchy,callFetchData }: { card: any,isHerarc
 
     return (
         <div>
+            <LoadingDialog isLoading={isLoading} />
+          {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+            setShowAlert(false)
+          }} onCloseClicked={function (): void {
+            setShowAlert(false)
+          }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
             <div className="userlist_actionbox">
                 <a onClick={navigateToProfile} style={{ cursor: 'pointer' }}><img src={staticIconsBaseURL+"/images/userlist/edit.png"} className="img-fluid" /><div>Edit</div></a>
                 {!isHerarchy && <a onClick={callResetDeviceID} style={{ cursor: 'pointer' }}><img src={staticIconsBaseURL+"/images/userlist/reset.png"} className="img-fluid" /><div>Reset Device ID</div></a>}
