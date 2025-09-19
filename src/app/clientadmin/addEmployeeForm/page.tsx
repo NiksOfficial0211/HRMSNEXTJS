@@ -1121,7 +1121,7 @@ const AddEmployeeBasicDetails = () => {
         if (!emergencyContactData[0].emergencyContactName) emergencydetailsErrors.emergencyContactName = "Emergency contact name is required";
         if (!emergencyContactData[0].emergencyContactNumber) emergencydetailsErrors.emergencyContactNumber = "Emergency contact number is required";
         if (!emergencyContactData[0].emergencyContactNumber || !phoneRegex.test(emergencyContactData[0].emergencyContactNumber)) {
-            newErrors.contactPrimary = "Valid emergency contact number is required";
+            emergencydetailsErrors.emergencyContactNumber = "Valid emergency contact number is required";
         }
         
         if (!emergencyContactData[0].emergencyContactRelationID) emergencydetailsErrors.emergencyContactRelationID = "Emergency contact relation is required";
@@ -1129,23 +1129,25 @@ const AddEmployeeBasicDetails = () => {
         if (!validator.isMobilePhone(emergencyContactData[0].emergencyContactNumber)) {
             emergencydetailsErrors.emergencyContactNumber = "Enter a valid phone number";
         }
-
-        for(let i=0;i<bankFormValues.length;i++){
-            for(let j=0;j<bankFormValues[i].form_values.length;j++){
-                if(!bankFormValues[i].form_values[j].value){
-                    bankErrors.component_name="required"
-                }
-            }
-        }
+        console.log("this is the bank form values length",bankFormValues.length);
+        // if(bankFormValues.length>1){
+        //     for(let i=0;i<bankFormValues.length;i++){
+        //         for(let j=0;j<bankFormValues[i].form_values.length;j++){
+        //             if(!bankFormValues[i].form_values[j].value){
+        //                 bankErrors.component_name="required"
+        //             }
+        //         }
+        //     }
+        // }
         setErrors(newErrors);
-        // setBankErrors(bankdetailsErrors);
+        // setBankErrors(bankErrors);
         setEmergencyContactError(emergencydetailsErrors);
         setAddressErrors(addressDetailsErrors);
 
         console.log("Object.keys(newErrors).length===============",Object.keys(newErrors).length);
         
 
-        return Object.keys(newErrors).length === 0 || Object.keys(emergencydetailsErrors).length === 0 || Object.keys(addressDetailsErrors).length === 0;
+        return Object.keys(newErrors).length === 0 || Object.keys(emergencydetailsErrors).length === 0 || Object.keys(addressDetailsErrors).length === 0;//||Object.keys(bankErrors).length === 0;
     };
 
     const handleInputChange = (e: any) => {
@@ -1171,44 +1173,44 @@ const AddEmployeeBasicDetails = () => {
         // readImageText();
         e.preventDefault();
         
-        console.log("handle submit is called===============before validate log");
+        console.log("handle submit is called===============before validate log",validate());
 
 
         if (!validate()) return;
-        setIsMoreLoading(true);
+        // setIsMoreLoading(true);
         console.log("handle submit is called===============after validate log",ocrDocumentsDetails);
         const sendDocumentsArray=ocrDocumentsDetails;
-        if(sendDocumentsArray.length>0){
-        for(let i=0;i<sendDocumentsArray.length;i++){
+    //     if(sendDocumentsArray.length>0){
+    //     for(let i=0;i<sendDocumentsArray.length;i++){
 
-        try {
+    //     try {
 
-            const formData = new FormData();
-            formData.append("client_id", contextClientID);
-            formData.append("customer_id", '');
-            formData.append("docType", "OCR_Docs");
-            formData.append("docName",sendDocumentsArray[i].document_name);
-            formData.append("file", sendDocumentsArray[i].file!);
+    //         const formData = new FormData();
+    //         formData.append("client_id", contextClientID);
+    //         formData.append("customer_id", '');
+    //         formData.append("docType", "OCR_Docs");
+    //         formData.append("docName",sendDocumentsArray[i].document_name);
+    //         formData.append("file", sendDocumentsArray[i].file!);
         
-            const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles/uploadDocuments", {
-              method: "POST",
-              // headers:{"Content-Type":"multipart/form-data"},
-              body: formData,
-            });
+    //         const fileUploadURL = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/UploadFiles/uploadDocuments", {
+    //           method: "POST",
+    //           // headers:{"Content-Type":"multipart/form-data"},
+    //           body: formData,
+    //         });
         
-            const fileUploadResponse = await fileUploadURL.json();
-            console.log(`file upload response======${i}====`,fileUploadResponse);
-            sendDocumentsArray[i].document_url=fileUploadResponse.data;
-            sendDocumentsArray[i].file=null;
+    //         const fileUploadResponse = await fileUploadURL.json();
+    //         console.log(`file upload response======${i}====`,fileUploadResponse);
+    //         sendDocumentsArray[i].document_url=fileUploadResponse.data;
+    //         sendDocumentsArray[i].file=null;
 
-            console.log(`file upload response===sendDocumentsArray===${i}====`,sendDocumentsArray);
+    //         console.log(`file upload response===sendDocumentsArray===${i}====`,sendDocumentsArray);
 
-          } catch (error) {
-            console.log(error);
-            // return ""
-          }
-        }
-    }
+    //       } catch (error) {
+    //         console.log(error);
+    //         // return ""
+    //       }
+    //     }
+    // }
         
         console.log("handle submit called after documents upload");
 
@@ -1240,63 +1242,63 @@ const AddEmployeeBasicDetails = () => {
         }
         console.log(formData);
 
-        try {
-            const response = await fetch("/api/clientAdmin/addEmployee", {
-                method: "POST",
-                body: formData,
+        // try {
+        //     const response = await fetch("/api/clientAdmin/addEmployee", {
+        //         method: "POST",
+        //         body: formData,
 
-            });
+        //     });
 
-            const res = await response.json();
-            console.log(res);
-            if (response.ok && res.status === 1) {
+        //     const res = await response.json();
+        //     console.log(res);
+        //     if (response.ok && res.status === 1) {
 
-                // window.history.pushState({ addEmpCustidEmpId: { customer_id: 'John', emp_id: 1 } }, '', addUserAddressBankForm);
-                setGlobalState({
-                    contextUserName: contextUserName,
-                    contextClientID: contextClientID,
-                    contaxtBranchID: contaxtBranchID,
-                    contextCustomerID: contextCustomerID,
-                    contextRoleID: contextRoleID,
-                    contextProfileImage: contextProfileImage,
-                    contextEmployeeID: contextEmployeeID,
-                    contextCompanyName: contextCompanyName,
-                    contextLogoURL: contextLogoURL,
-                    contextSelectedCustId: '',
-                    contextAddFormEmpID: res.data[0].emp_id,
-                    contextAnnouncementID: '',
-                    contextAddFormCustID: res.data[0].customer_id,
-                    dashboard_notify_cust_id: '',
-                    dashboard_notify_activity_related_id: '',
-                    selectedClientCustomerID: '',
-                    isAdmin: isAdmin,
-                    contextPARAM8: '',
+        //         // window.history.pushState({ addEmpCustidEmpId: { customer_id: 'John', emp_id: 1 } }, '', addUserAddressBankForm);
+        //         setGlobalState({
+        //             contextUserName: contextUserName,
+        //             contextClientID: contextClientID,
+        //             contaxtBranchID: contaxtBranchID,
+        //             contextCustomerID: contextCustomerID,
+        //             contextRoleID: contextRoleID,
+        //             contextProfileImage: contextProfileImage,
+        //             contextEmployeeID: contextEmployeeID,
+        //             contextCompanyName: contextCompanyName,
+        //             contextLogoURL: contextLogoURL,
+        //             contextSelectedCustId: '',
+        //             contextAddFormEmpID: res.data[0].emp_id,
+        //             contextAnnouncementID: '',
+        //             contextAddFormCustID: res.data[0].customer_id,
+        //             dashboard_notify_cust_id: '',
+        //             dashboard_notify_activity_related_id: '',
+        //             selectedClientCustomerID: '',
+        //             isAdmin: isAdmin,
+        //             contextPARAM8: '',
 
-                });
+        //         });
 
-                setIsMoreLoading(false);
-                setShowAlert(true);
-                setAlertTitle("Success");
-                setAlertStartContent(formValues.firstName+" basic details added successfully.");
-                setAlertForSuccess(1);
-            } else {
+        //         setIsMoreLoading(false);
+        //         setShowAlert(true);
+        //         setAlertTitle("Success");
+        //         setAlertStartContent(formValues.firstName+" basic details added successfully.");
+        //         setAlertForSuccess(1);
+        //     } else {
                 
-                setIsMoreLoading(false);
-                setShowAlert(true);
-                setAlertTitle("Error");
-                setAlertStartContent("Failed to add Basic Details of the employee");
-                setAlertForSuccess(2);
-                e.preventDefault();
-            }
-        } catch (error) {
-            e.preventDefault();
-            setIsMoreLoading(false);
-            console.error("Error submitting form:", error);
-            setShowAlert(true);
-            setAlertTitle("Exception");
-            setAlertStartContent(ALERTMSG_exceptionString);
-            setAlertForSuccess(2);
-        }
+        //         setIsMoreLoading(false);
+        //         setShowAlert(true);
+        //         setAlertTitle("Error");
+        //         setAlertStartContent("Failed to add Basic Details of the employee");
+        //         setAlertForSuccess(2);
+        //         e.preventDefault();
+        //     }
+        // } catch (error) {
+        //     e.preventDefault();
+        //     setIsMoreLoading(false);
+        //     console.error("Error submitting form:", error);
+        //     setShowAlert(true);
+        //     setAlertTitle("Exception");
+        //     setAlertStartContent(ALERTMSG_exceptionString);
+        //     setAlertForSuccess(2);
+        // }
     }
     // upload document
 
@@ -1949,9 +1951,6 @@ setAlertStartContent("Please choose a file!");
                                                             </div>
                                                         </div>
 
-
-
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -2168,7 +2167,7 @@ setAlertStartContent("Please choose a file!");
                                                                     <div className="col-md-4" key={form.id}>
                                                                         <div className="form_box mb-3">
                                                                         {/* <label htmlFor="exampleFormControlInput1" className="form-label" >{form.component_name}{index==0 && <span className='req_text'>*</span>}: </label> */}
-                                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >{form.component_name}<span className='req_text'>*</span>: </label>
+                                                                            <label htmlFor="exampleFormControlInput1" className="form-label" >{form.component_name}{bankFormValues.length>1 && <span className='req_text'>*</span>}: </label>
                                                                             <input type="text" className="form-control" onKeyPress={(e) => {
                                                                                 if (form.data_type === 2 && !/[0-9]/.test(e.key)) {
                                                                                     e.preventDefault(); // block non-numeric input 
