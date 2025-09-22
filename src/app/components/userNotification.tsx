@@ -1,15 +1,12 @@
 
 'use client'
 import React, { useRef } from 'react'
-import LeapHeader from '@/app/components/header'
-import Footer from '@/app/components/footer'
 import LoadingDialog from '@/app/components/PageLoader'
 import { useEffect, useState } from 'react'
 import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
 import { UserNotification } from '../models/userDashboardModel'
 import { ALERTMSG_exceptionString, staticIconsBaseURL } from '../pro_utils/stringConstants'
 import { pageURL_userAttendance, pageURL_userLeave, pageURL_userSupport, pageURL_userTaskListingPage, pageURL_userTeamAttendanceList, pageURL_userTeamLeave } from '../pro_utils/stringRoutes'
-import { point } from 'leaflet'
 
 const UserNotificationCorner = ({ onClose }: { onClose: any }) => {
     const { contextClientID, contextCustomerID, contextRoleID } = useGlobalContext();
