@@ -516,6 +516,9 @@ import { useRouter } from 'next/navigation';
 
 import { CustomerProfile, CustomerProfileNew, LeapWorkingType } from '../models/employeeDetailsModel';
 import { useGlobalContext } from '../contextProviders/loggedInGlobalContext';
+import LoadingDialog from './PageLoader';
+import ShowAlertMessage from './alert';
+import { fetchData } from 'pdfjs-dist/types/src/display/node_utils';
 
 export const UserEmployement = () => {
     const [userData, setUserData] = useState<CustomerProfileNew>({
@@ -622,10 +625,21 @@ export const UserEmployement = () => {
     const [EmploymentTypeArray, setEmployementTypeArray] = useState<ClientEmployementType[]>([]);
     const [managerArray, setManagerArray] = useState<RoleManagerNameModel[]>([]);
     const [workingTypeArray, setWorkingType] = useState<LeapWorkingType[]>([]);
-    const [isLoading, setLoading] = useState(false)
+    const [isLoading, setLoading] = useState(false);
+        const [showAlert, setShowAlert] = useState(false);
+        const [alertForSuccess, setAlertForSuccess] = useState(0);
+        const [alertTitle, setAlertTitle] = useState('');
+        const [alertStartContent, setAlertStartContent] = useState('');
+        const [alertMidContent, setAlertMidContent] = useState('');
+        const [alertEndContent, setAlertEndContent] = useState('');
+        const [alertValue1, setAlertValue1] = useState('');
+        const [alertvalue2, setAlertValue2] = useState('');
 
     useEffect(() => {
-        const fetchData = async () => {
+        
+        fetchData();
+    }, []);
+    const fetchData = async () => {
             const branches = await getBranches(contextClientID);
             setBranches(branches);
             const designationType = await getDesignations(contextClientID);
@@ -663,8 +677,6 @@ export const UserEmployement = () => {
                 console.error("Error fetching user data:", error);
             }
         }
-        fetchData();
-    }, []);
 
 
 
@@ -698,14 +710,24 @@ export const UserEmployement = () => {
             const response = await res.json();
             if (res.ok) {
                 setLoading(false)
-                alert(response.message);
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent("Data updated successfully");
+                setAlertForSuccess(1)
+                
             } else {
                 setLoading(false)
-                alert(response.message);
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent(response.message);
+                setAlertForSuccess(2)
             }
         } catch (e) {
             setLoading(false)
-            alert(e);
+            setShowAlert(true);
+            setAlertTitle("Exception")
+            setAlertStartContent("Failed to update data with exception");
+            setAlertForSuccess(2)
         }
 
     }
@@ -720,6 +742,15 @@ export const UserEmployement = () => {
 
     return (
         <div>
+             <LoadingDialog isLoading={isLoading} />
+                    {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                        setShowAlert(false)
+                        if(alertForSuccess==1){
+                            fetchData();
+                        }
+                    }} onCloseClicked={function (): void {
+                        setShowAlert(false)
+                    }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
             <div className="row">
                 <div className="col-lg-12 mb-5">
                     <div className="grey_box mb-3">
