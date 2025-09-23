@@ -1478,13 +1478,13 @@ console.log("All Errors", allErrors);
                     setAlertStartContent(formValues.firstName+" basic details added successfully.");
                     setAlertForSuccess(1);
                 } else {
-
+                    e.preventDefault();
                     setIsMoreLoading(false);
                     setShowAlert(true);
                     setAlertTitle("Error");
                     setAlertStartContent("Failed to add Basic Details of the employee");
                     setAlertForSuccess(2);
-                    e.preventDefault();
+                    
                 }
             } catch (error) {
                 e.preventDefault();
@@ -1768,15 +1768,15 @@ console.log("All Errors", allErrors);
                                                             <label htmlFor="formFile" className="form-label">Blood Group<span className='req_text'>*</span>: </label>
                                                             <select ref={basicinputRefs.bloodGroup} id="blood-group" name="bloodGroup" value={formValues.bloodGroup} onChange={handleInputChange}>
                                                                 <option value="">Select Blood Group</option>
-                                                                <option value="a-positive">A+</option>
-                                                                <option value="a-negative">A-</option>
-                                                                <option value="b-positive">B+</option>
-                                                                <option value="b-negative">B-</option>
-                                                                <option value="ab-positive">AB+</option>
-                                                                <option value="ab-negative">AB-</option>
-                                                                <option value="o-positive">O+</option>
-                                                                <option value="o-negative">O-</option>
-                                                                <option value="rare">Rare Blood Types</option>
+                                                                <option value="A+">A+</option>
+                                                                <option value="A-">A-</option>
+                                                                <option value="B+">B+</option>
+                                                                <option value="B-">B-</option>
+                                                                <option value="AB+">AB+</option>
+                                                                <option value="AB-">AB-</option>
+                                                                <option value="O+">O+</option>
+                                                                <option value="O-">O-</option>
+                                                                <option value="Rare">Rare Blood Types</option>
                                                             </select>
                                                             {combinedErrors.bloodGroup && <span className='error' style={{ color: "red" }}>{combinedErrors.bloodGroup}</span>}
                                                         </div>

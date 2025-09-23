@@ -425,6 +425,7 @@ interface FormValues {
 export const UserPersonalDetails = () => {
     const [isLoading, setLoading] = useState(false)
 
+    const [showUpdateName, setShowUpdateName] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [alertForSuccess, setAlertForSuccess] = useState(0);
     const [alertTitle, setAlertTitle] = useState('');
@@ -534,9 +535,7 @@ export const UserPersonalDetails = () => {
     const { contextClientID, contextSelectedCustId, contextRoleID } = useGlobalContext();
     const router = useRouter();
 
-    const [isChecked, setIsChecked] = useState(true);
-    const [selectedMaritialStatus, setMaritialStatus] = useState("Single");
-    const [errors, setErrors] = useState<Partial<FormValues>>({});
+    const [errors, setErrors] = useState<Partial<CustomerProfile>>({});
     const [dob18YearsPrior, setdob18YearsPrior] = useState('');
 
 
@@ -618,14 +617,14 @@ export const UserPersonalDetails = () => {
         validateField(name);
     };
     const validateField = (fieldName: string) => {
-        const fieldErrors: Partial<FormValues> = {};
+        const fieldErrors: Partial<CustomerProfile> = {};
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (fieldName === "emailPersonal") {
+        if (fieldName === "personalEmail") {
 
-            if (!formValues.personalEmail) {
-                fieldErrors.personalEmail = "Personal email is required";
-            } else if (!emailRegex.test(formValues.personalEmail)) {
-                fieldErrors.personalEmail = "Enter a valid personal email";
+            if (!userData.personalEmail) {
+                fieldErrors.personalEmail = "required";
+            } else if (!emailRegex.test(userData.personalEmail)) {
+                fieldErrors.personalEmail = "Invalid email";
             } else {
                 delete errors.personalEmail;
             }
@@ -636,12 +635,34 @@ export const UserPersonalDetails = () => {
 
         setErrors(prev => ({ ...prev, ...fieldErrors }));
     };
+        const validate = () => {
+            const newErrors: Partial<CustomerProfile> = {};
+            if (!userData.name) newErrors.name = "required";
+            if (!userData.dob) newErrors.dob = "required";
+            if (!userData.gender) newErrors.gender = "required";
+            if (!userData.marital_status) newErrors.marital_status = "required";
+            if (!userData.nationality) newErrors.nationality = "required";
+            if (!userData.blood_group) newErrors.blood_group = "required";
+            if (!userData.contact_number) newErrors.contact_number = "required";
+            if (userData.contact_number && userData.contact_number.length<7) newErrors.contact_number = "Invalid contact";
+            if (!userData.personalEmail) newErrors.personalEmail = "required";
+            if (!userData.employment_status) newErrors.employment_status = true;
+
+            setErrors(newErrors);
+
+            const validationSuccess =
+            Object.keys(newErrors).length === 0
+            return validationSuccess;
+
+        }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if(!validate()) return;
         setLoading(true);
         formData.append("client_id", userData?.client_id + "");
         formData.append("branch_id", userData.branch_id + '');
+        formData.append("name", userData.name + '');
         formData.append("role_id", contextRoleID);
         formData.append("authUuid", userData.authUuid);
         formData.append("customer_id", userData.customer_id + "");
@@ -701,6 +722,7 @@ export const UserPersonalDetails = () => {
                     setShowAlert(false)
                 } else {
                     setShowAlert(false);
+                    setShowUpdateName(false)
                 }
 
             }} onCloseClicked={function (): void {
@@ -722,7 +744,7 @@ export const UserPersonalDetails = () => {
                                                             style={{ maxHeight: "80px", margin: "-35px 0px 0px -50px", minHeight: "80px", maxWidth: "80px", minWidth: "80px", borderRadius: "100px" }} /><div className="option_label"></div></a>
                                                     </div>
                                                 </div>
-                                                <div className='col-lg-10 mb-3'>
+                                                <div className='col-lg-9 mb-3'>
                                                     <div className="row" style={{ fontSize: "25px" }}>
                                                         <label >{userData?.name}</label>
                                                     </div>
@@ -730,20 +752,37 @@ export const UserPersonalDetails = () => {
                                                         <label >{userData?.emp_id}</label><label >{userData?.leap_client_designations?.designation_name || ""}</label>
                                                     </div>
                                                 </div>
-                                                {/* <div className='col-lg-1 p-0'>
+                                                <div className='col-lg-1 p-0'>
                                                     <div className="row" style={{fontSize: "5px"}}>
-                                                    <a href="#"><img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid" style={{ maxHeight: '20px' }} /><div className="option_label">Edit Profile</div></a>
+                                                    <a onClick={()=>setShowUpdateName(!showUpdateName)}><img src={staticIconsBaseURL+"/images/edit.png"} className="img-fluid" style={{ maxHeight: '20px' }} /><div className="option_label">Edit Profile</div></a>
                                                     </div>
                                                     
-                                            </div> */}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
+                                        {showUpdateName && 
                                         <div className='row' style={{ alignItems: "center" }}>
                                             <div className="col-md-6">
                                                 <div className="form_box">
-                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Date of Birth:  </label>
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Name<span className='req_text'>*</span> :  </label>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <div className="form_box mb-2">
+                                                    <input type="text" className="form-control" id="name" value={userData?.name || ""} readOnly={isReadonly()} name="name" onChange={(e) => setUserData((prev) => ({ ...prev, ['name']: e.target.value }))} />
+                                                    {errors.name && <span className='error' style={{ color: "red", fontSize: "12px" }}>required*</span>}
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        }
+                                        <div className='row' style={{ alignItems: "center" }}>
+                                            <div className="col-md-6">
+                                                <div className="form_box">
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Date of Birth<span className='req_text'>*</span> :  </label>
                                                 </div>
                                             </div>
                                             <div className="col-md-6">
@@ -757,7 +796,7 @@ export const UserPersonalDetails = () => {
                                         <div className='row' style={{ alignItems: "center" }}>
                                             <div className="col-md-6">
                                                 <div className="form_box">
-                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Gender:  </label>
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Gender<span className='req_text'>*</span> :  </label>
                                                 </div>
                                             </div>
                                             <div className="col-md-6">
@@ -773,12 +812,16 @@ export const UserPersonalDetails = () => {
                                         <div className='row' style={{ alignItems: "center" }}>
                                             <div className="col-md-6">
                                                 <div className="form_box">
-                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Marital Status: </label>
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Marital Status<span className='req_text'>*</span> : </label>
                                                 </div>
                                             </div>
                                             <div className="col-md-6">
                                                 <div className="form_box mb-2">
-                                                    <input type="text" className="form-control" id="marital_status" value={userData?.marital_status || ""} readOnly={isReadonly()} name="marital_status" onChange={(e) => setUserData((prev) => ({ ...prev, ['marital_status']: e.target.value }))} />
+                                                    <select  id="marital_status" name="marital_status" value={userData.marital_status} onChange={handleInputChange}>
+                                                        <option value="">--</option>
+                                                        <option value="Single">Single</option>
+                                                        <option value="Married">Married</option>
+                                                    </select> 
                                                     {errors.marital_status && <span className='error' style={{ color: "red", fontSize: "12px" }}>required*</span>}
 
                                                 </div>
@@ -787,7 +830,7 @@ export const UserPersonalDetails = () => {
                                         <div className='row' style={{ alignItems: "center" }}>
                                             <div className="col-md-6">
                                                 <div className="form_box">
-                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Nationality:  </label>
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Nationality<span className='req_text'>*</span> :  </label>
                                                 </div>
                                             </div>
                                             <div className="col-md-6">
@@ -801,7 +844,7 @@ export const UserPersonalDetails = () => {
                                         <div className='row' style={{ alignItems: "center" }}>
                                             <div className="col-md-6">
                                                 <div className="form_box">
-                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Blood Group: </label>
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Blood Group<span className='req_text'>*</span> : </label>
                                                 </div>
                                             </div>
 
@@ -816,14 +859,20 @@ export const UserPersonalDetails = () => {
                                         <div className='row' style={{ alignItems: "center" }}>
                                             <div className="col-md-6">
                                                 <div className="form_box">
-                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Contact Number: </label>
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Contact Number<span className='req_text'>*</span> : </label>
                                                 </div>
                                             </div>
 
                                             <div className="col-md-6">
                                                 <div className="form_box mb-2">
-                                                    <input type="text" className="form-control" id="contact_number" value={userData?.contact_number || ""} readOnly={isReadonly()} name="contact_number" onChange={(e) => setUserData((prev) => ({ ...prev, ['contact_number']: e.target.value }))} />
-                                                    {errors.contact_number && <span className='error' style={{ color: "red", fontSize: "12px" }}>required*</span>}
+                                                    <input type="text" className="form-control" id="contact_number" value={userData?.contact_number || ""} 
+                                                    readOnly={isReadonly()} name="contact_number" 
+                                                    inputMode="numeric"
+                                                    maxLength={12}
+                                                    onChange={(e) => {
+                                                        const onlyNums = e.target.value.replace(/\D/g, "");
+                                                    setUserData((prev) => ({ ...prev, ['contact_number']: onlyNums }))}} />
+                                                    {errors.contact_number && <span className='error' style={{ color: "red", fontSize: "12px" }}>{errors.contact_number}</span>}
 
                                                 </div>
                                             </div>
@@ -831,14 +880,14 @@ export const UserPersonalDetails = () => {
                                         <div className='row' style={{ alignItems: "center" }}>
                                             <div className="col-md-6">
                                                 <div className="form_box">
-                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Personal Email: </label>
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Personal Email<span className='req_text'>*</span> : </label>
                                                 </div>
                                             </div>
 
                                             <div className="col-md-6">
                                                 <div className="form_box mb-2">
                                                     <input type="text" className="form-control" id="personalEmail" onBlur={handleBlur} value={userData?.personalEmail || ""} readOnly={isReadonly()} name="personalEmail" onChange={(e) => setUserData((prev) => ({ ...prev, ['personalEmail']: e.target.value }))} />
-                                                    {errors.personalEmail && <span className='error' style={{ color: "red", fontSize: "12px" }}>required*</span>}
+                                                    {errors.personalEmail && <span className='error' style={{ color: "red", fontSize: "12px" }}>{errors.personalEmail}</span>}
 
                                                 </div>
                                             </div>
@@ -846,7 +895,7 @@ export const UserPersonalDetails = () => {
                                         <div className='row' style={{ alignItems: "center" }}>
                                             <div className="col-md-6">
                                                 <div className="form_box">
-                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Office Email: </label>
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Office Email : </label>
                                                 </div>
                                             </div>
 
@@ -860,7 +909,7 @@ export const UserPersonalDetails = () => {
                                             <div className='row' style={{ alignItems: "center" }}>
                                                 <div className="col-md-6">
                                                     <div className="form_box">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Employment: </label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label" >Employment<span className='req_text'>*</span> : </label>
                                                     </div>
                                                 </div>
 
@@ -870,6 +919,8 @@ export const UserPersonalDetails = () => {
                                                             <option value="true">Active</option>
                                                             <option value="false">Inactive</option>
                                                         </select>
+                                                        {errors.employment_status && <span className='error' style={{ color: "red", fontSize: "12px" }}>required*</span>}
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -877,7 +928,7 @@ export const UserPersonalDetails = () => {
                                         {(contextRoleID == "3" || contextRoleID == "2") && <div className='row' style={{ alignItems: "center" }}>
                                             <div className="col-md-6">
                                                 <div className="form_box">
-                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Reset Device ID: </label>
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >Reset Device ID : </label>
                                                 </div>
                                             </div>
 
