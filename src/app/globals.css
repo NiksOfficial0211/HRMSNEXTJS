@@ -2717,15 +2717,6 @@ background-color: #fff;
   margin-left: -36px;
   cursor: pointer;
 }
-.Control-label-Update-showPassword {
-  width: 32px;
-  position: absolute;
-
-  left: 98%;
-  text-align: right;
-  margin-left: -36px;
-  cursor: pointer;
-}
 
 .Form-submit {
   border: 1px solid #e7542b;
@@ -5504,6 +5495,30 @@ input.new_upload_btn_input {
 }
 
 /* Leave ends  */
+.nw_notification_date_listing{
+    font-size: 11px;
+    color: red;
+    background-color: white;
+    height: fit-content;
+    width: fit-content;
+    margin: 0 0 8px 5px;
+    padding: 5px 8px;
+    border-radius: 10px;
+    display: grid;
+    gap: 4px;
+    border: 1px solid #dedede;
+
+}
+
+.nw_notification_table_listing {
+    /* grid-template-columns: 160px 1fr 1fr 1fr 1fr 40px; */
+    grid-gap: 20px;
+    gap: 20px;
+    padding: 8px;
+    border: 1px solid #dedede;
+    border-radius: 12px;
+    position: relative;
+}
 /* Holiday start */
 .nw_holiday_table_listing {
   display: grid;

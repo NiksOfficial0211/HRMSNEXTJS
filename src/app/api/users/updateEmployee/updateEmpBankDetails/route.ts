@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     console.log("bankdet------=-=-=------", bankdet);
     let eContactUpQuery ;
     for (let i = 0; i < bankdet.length; i++) {
-    if(bankdet.bank_account_count_id && bankdet.bank_account_count_id != null){
+    if(bankdet[i].bank_account_count_id && bankdet[i].bank_account_count_id != null){
 
 
       console.log("2======================");
@@ -91,7 +91,6 @@ export async function POST(request: NextRequest) {
             created_at:new Date()
           })
           const { error } = await eContactUpQuery;
-          console.log("1======================",eContactUpQuery);
           if (error) {
             console.log(error);
 
@@ -142,7 +141,7 @@ export async function POST(request: NextRequest) {
       }
     }
     let totalSalaryqwery
-    if(fdata.total_salary_table_id!="0"){
+    if(fdata.total_salary_table_id && fdata.total_salary_table_id! && fdata.total_salary_table_id!="0"){
       console.log("6======================");
     totalSalaryqwery = supabase.from('leap_employee_total_salary').update([
       {

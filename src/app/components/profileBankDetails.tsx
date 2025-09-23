@@ -536,6 +536,7 @@ import { pageURL_addUserDocumentsForm } from '../pro_utils/stringRoutes';
 import ShowAlertMessage from './alert';
 import { set } from 'date-fns';
 import LoadingDialog from './PageLoader';
+import { fetchData } from 'pdfjs-dist/types/src/display/node_utils';
 
 interface SalaryComponentsModel {
     data_id: number;
@@ -598,7 +599,10 @@ export const UserBankDetails = () => {
     const router = useRouter();
 
     useEffect(() => {
-        const fetchData = async () => {
+        
+        fetchData();
+    }, []);
+    const fetchData = async () => {
 
             try {
                 const formData = new FormData();
@@ -685,12 +689,11 @@ export const UserBankDetails = () => {
                 console.error("Error fetching user data:", error);
             }
         }
-        fetchData();
-    }, []);
 
     const formData = new FormData();
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        try {
         setIsLoading(true);
         formData.append("customer_id", contextSelectedCustId);
         formData.append("client_id", contextClientID);
@@ -698,14 +701,15 @@ export const UserBankDetails = () => {
 
         formData.append("bankdetails", JSON.stringify(bankDetails));
         formData.append("salaryAmountsArray", JSON.stringify(salaryDetails))
+        if(totalSalaryDetails && totalSalaryDetails.id){
+        formData.append("total_salary_table_id", totalSalaryDetails?.id + '');
+        formData.append("total_gross_salary", totalSalaryDetails?.gross_salary + '');
+        formData.append("total_deduction", totalSalaryDetails?.total_deduction + '');
+        formData.append("net_payable_salary", totalSalaryDetails?.net_pay + '');
+        }
 
-        formData.append("total_salary_table_id", totalSalaryDetails.id + '');
-        formData.append("total_gross_salary", totalSalaryDetails.gross_salary + '');
-        formData.append("total_deduction", totalSalaryDetails.total_deduction + '');
-        formData.append("net_payable_salary", totalSalaryDetails.net_pay + '');
 
-
-        try {
+        
 
             const res = await fetch("/api/users/updateEmployee/updateEmpBankDetails", {
                 method: "POST",
@@ -714,6 +718,7 @@ export const UserBankDetails = () => {
             const response = await res.json();
 
             if (res.ok && response.status == 1) {
+                fetchData()
                 setIsLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Success");
@@ -797,18 +802,18 @@ export const UserBankDetails = () => {
                                                         <div className="col-lg-6" key={detailIndex}>
                                                             <div className="col-md-12">
                                                                 <div className="form_box mb-3">
-                                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >{componentData.component_name}</label>
+                                                                    <label htmlFor="exampleFormControlInput1" className="form-label" >{componentData.component_name} :</label>
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-12">
                                                                 <div className="form_box mb-3">
-                                                                    <input type="text" className="form-control" id="account_number"
+                                                                    <input type="text" className="form-control" id={componentData.component_name}
                                                                     onKeyPress={(e) => {
                                                                                 if (componentData.data_type === 2 && !/[0-9]/.test(e.key)) {
                                                                                     e.preventDefault(); // block non-numeric input 
                                                                                 }
                                                                             }}
-                                                                     readOnly={isReadonly()} value={componentData.row_value || ""} name="account_number"
+                                                                     readOnly={isReadonly()} value={componentData.row_value || ""} name={componentData.component_name}
                                                                         onChange={(e) => {
                                                                             const newValue = e.target.value;
                                                                             setbankDetails((prev) =>
@@ -1000,7 +1005,7 @@ export const UserBankDetails = () => {
                                                 if (e.key !== "Backspace" && e.key !== "Delete" && isNaN(Number(e.key))) {
                                                     e.preventDefault();
                                                 }
-                                            }} id="gross_salary" name="gross_salary" value={totalSalaryDetails.gross_salary} onChange={(e) => setTotalSalaryDetails((prev) => ({ ...prev, ["gross_salary"]: e.target.value }))} placeholder="Enter gross salary" />
+                                            }} id="gross_salary" name="gross_salary" value={totalSalaryDetails?.gross_salary || ""} onChange={(e) => setTotalSalaryDetails((prev) => ({ ...prev, ["gross_salary"]: e.target.value }))} placeholder="Enter gross salary" />
                                             {/* {errors.gross_salary && <span className='error' style={{color: "red"}}>{errors.gross_salary}</span>} */}
 
                                         </div>
@@ -1014,7 +1019,7 @@ export const UserBankDetails = () => {
                                                 if (e.key !== "Backspace" && e.key !== "Delete" && isNaN(Number(e.key))) {
                                                     e.preventDefault();
                                                 }
-                                            }} id="total_deduction" placeholder="Enter total deduction" name="total_deduction" value={totalSalaryDetails.total_deduction} onChange={(e) => setTotalSalaryDetails((prev) => ({ ...prev, ["total_deduction"]: e.target.value }))} />
+                                            }} id="total_deduction" placeholder="Enter total deduction" name="total_deduction" value={totalSalaryDetails?.total_deduction || ""} onChange={(e) => setTotalSalaryDetails((prev) => ({ ...prev, ["total_deduction"]: e.target.value }))} />
                                             {/* {errors.total_deduction && <span className='error' style={{color: "red"}}>{errors.total_deduction}</span>} */}
 
                                         </div>
@@ -1027,7 +1032,7 @@ export const UserBankDetails = () => {
                                                 if (e.key !== "Backspace" && e.key !== "Delete" && isNaN(Number(e.key))) {
                                                     e.preventDefault();
                                                 }
-                                            }} id="net_pay" placeholder="Enter net payable salary" name="net_pay" value={totalSalaryDetails.net_pay} onChange={(e) => setTotalSalaryDetails((prev) => ({ ...prev, ["net_pay"]: e.target.value }))} />
+                                            }} id="net_pay" placeholder="Enter net payable salary" name="net_pay" value={totalSalaryDetails?.net_pay || ""} onChange={(e) => setTotalSalaryDetails((prev) => ({ ...prev, ["net_pay"]: e.target.value }))} />
                                             {/* {errors.net_pay && <span className='error' style={{color: "red"}}>{errors.net_pay}</span>} */}
 
                                         </div>
@@ -1036,7 +1041,7 @@ export const UserBankDetails = () => {
                             </div>
                             <div className="row">
                                 <div className="col-lg-12 " style={{ textAlign: "right" }}>
-                                    <a className="red_button" onClick={() => calculateGrossAndNet()}>Calculate</a>&nbsp;&nbsp;
+                                    {salaryDetails && salaryDetails.length>0 && salaryDetails[0].leap_client_salary_components.leap_salary_components && <a className="red_button" onClick={() => calculateGrossAndNet()}>Calculate</a>}&nbsp;&nbsp;
                                     <input type='submit' value="Update" disabled={isReadonly()} className="red_button" onClick={handleSubmit} />
                                 </div>
                             </div>
