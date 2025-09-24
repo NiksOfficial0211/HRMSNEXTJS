@@ -576,6 +576,7 @@ export const UserBankDetails = () => {
             }
         }
     }]);
+    const [changeSalaryDetails, setChangeSalaryDetails] = useState<Partial<SalaryDetail>[]>([])
     const [totalSalaryDetails, setTotalSalaryDetails] = useState<TotalSalary>({
         id: 0,
         gross_salary: 0,
@@ -668,10 +669,12 @@ export const UserBankDetails = () => {
                         console.log("=-===-=-=-=-=-==-=-=--=-=-=-=-=-=-=-=-=-=", arraySalaryDetails);
 
                         setSalaryDetails(arraySalaryDetails);
+                        setChangeSalaryDetails(arraySalaryDetails);
 
 
                     } else {
                         setSalaryDetails(salaryData);
+                        setChangeSalaryDetails(salaryData);
                     }
                     if (totalSalaryData && totalSalaryData.length == 0) {
                         setTotalSalaryDetails({
@@ -689,28 +692,24 @@ export const UserBankDetails = () => {
                 console.error("Error fetching user data:", error);
             }
         }
-
+    
+        
     const formData = new FormData();
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
         try {
         setIsLoading(true);
         formData.append("customer_id", contextSelectedCustId);
         formData.append("client_id", contextClientID);
-
-
         formData.append("bankdetails", JSON.stringify(bankDetails));
         formData.append("salaryAmountsArray", JSON.stringify(salaryDetails))
         if(totalSalaryDetails && totalSalaryDetails.id){
-        formData.append("total_salary_table_id", totalSalaryDetails?.id + '');
-        formData.append("total_gross_salary", totalSalaryDetails?.gross_salary + '');
-        formData.append("total_deduction", totalSalaryDetails?.total_deduction + '');
-        formData.append("net_payable_salary", totalSalaryDetails?.net_pay + '');
-        }
-
-
-        
-
+            formData.append("total_salary_table_id", totalSalaryDetails?.id + '');
+            formData.append("total_gross_salary", totalSalaryDetails?.gross_salary + '');
+            formData.append("total_deduction", totalSalaryDetails?.total_deduction + '');
+            formData.append("net_payable_salary", totalSalaryDetails?.net_pay + '');
+        }        
             const res = await fetch("/api/users/updateEmployee/updateEmpBankDetails", {
                 method: "POST",
                 body: formData,
@@ -718,7 +717,7 @@ export const UserBankDetails = () => {
             const response = await res.json();
 
             if (res.ok && response.status == 1) {
-                fetchData()
+                
                 setIsLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Success");
@@ -747,8 +746,10 @@ export const UserBankDetails = () => {
     function calculateGrossAndNet() {
         let totalGross = 0, totalDeduction = 0;
         for (let i = 0; i < salaryDetails.length; i++) {
+            
+            
             if (salaryDetails[i].leap_client_salary_components.leap_salary_components.salary_add) {
-                totalGross = totalGross + parseFloat(salaryDetails[i].amount.length > 0 ? salaryDetails[i].amount : "0")
+                totalGross = totalGross + parseFloat(salaryDetails[i].amount || salaryDetails[i].amount.length>0? salaryDetails[i].amount : "0")
             } else {
                 totalDeduction = totalDeduction + parseFloat(salaryDetails[i].amount.length > 0 ? salaryDetails[i].amount : "0")
             }
@@ -774,6 +775,9 @@ export const UserBankDetails = () => {
             <LoadingDialog isLoading={isLoading} />
             {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                 setShowAlert(false)
+                if(alertForSuccess==1){
+                    fetchData()
+                }
             }} onCloseClicked={function (): void {
                 setShowAlert(false)
             }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
@@ -980,9 +984,9 @@ export const UserBankDetails = () => {
                                                                                         }
                                                                                     }];
                                                                                 }
-
+                                                                                    
                                                                             });
-
+                                                                            
                                                                         }
                                                                         } />
                                                                 </div>

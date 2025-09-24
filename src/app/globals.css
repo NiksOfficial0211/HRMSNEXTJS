@@ -2717,6 +2717,14 @@ background-color: #fff;
   margin-left: -36px;
   cursor: pointer;
 }
+.Control-label-Update-showPassword {
+  width: 32px;
+  position: absolute;
+  left: 98%;
+  text-align: right;
+  margin-left: -36px;
+  cursor: pointer;
+}
 
 .Form-submit {
   border: 1px solid #e7542b;
