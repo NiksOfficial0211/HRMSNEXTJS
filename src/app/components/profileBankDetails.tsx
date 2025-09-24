@@ -602,134 +602,134 @@ export const UserBankDetails = () => {
     const router = useRouter();
 
     useEffect(() => {
-        
+
         fetchData();
     }, []);
-     useEffect(() => {
+    useEffect(() => {
         if (salaryDetails.length > 0 && changeSalaryDetails.length > 0) {
-            console.log("salarydetails----------- - - - - - -",salaryDetails);
-            console.log("changesalary detaisl------- - - - - - -",changeSalaryDetails);
-            
+            console.log("salarydetails----------- - - - - - -", salaryDetails);
+            console.log("changesalary detaisl------- - - - - - -", changeSalaryDetails);
+
             const changed = salaryDetails.some(item => {
-            const original = changeSalaryDetails.find(
-                o => o.salary_component_id === item.salary_component_id
-            );
-            return Number(original?.amount) !== Number(item.amount);
+                const original = changeSalaryDetails.find(
+                    o => o.salary_component_id === item.salary_component_id
+                );
+                return Number(original?.amount) !== Number(item.amount);
             });
-            console.log("this is ndc nsjn sdvnbjnjs dv ndjsn sdnvond ========",changed);
-            
-            setHasChanged(changed?"1":"0");
+            console.log("this is ndc nsjn sdvnbjnjs dv ndjsn sdnvond ========", changed);
+
+            setHasChanged(changed ? "1" : "0");
         }
 
     }, [salaryDetails]);
-    
+
     const fetchData = async () => {
 
-            try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("customer_id", contextSelectedCustId);
-                formData.append("role_id", contextRoleID);
+        try {
+            const formData = new FormData();
+            formData.append("client_id", contextClientID);
+            formData.append("customer_id", contextSelectedCustId);
+            formData.append("role_id", contextRoleID);
 
 
-                const res = await fetch("/api/users/getProfile/getEmpSalaryDetails", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        "client_id": contextClientID,
-                        "customer_id": contextSelectedCustId,
-                        "role_id": contextRoleID
-                    }),
-                });
+            const res = await fetch("/api/users/getProfile/getEmpSalaryDetails", {
+                method: "POST",
+                body: JSON.stringify({
+                    "client_id": contextClientID,
+                    "customer_id": contextSelectedCustId,
+                    "role_id": contextRoleID
+                }),
+            });
 
-                const response = await res.json();
-                console.log(response);
-                if (res.ok && response.status == 1) {
-                    const bankDeta = response.data.bankDetails;
-                    const salaryData = response.data.salaryDetails;
-                    const totalSalaryData = response.data.totalSalary[0];
+            const response = await res.json();
+            console.log(response);
+            if (res.ok && response.status == 1) {
+                const bankDeta = response.data.bankDetails;
+                const salaryData = response.data.salaryDetails;
+                const totalSalaryData = response.data.totalSalary[0];
 
-                    setbankDetails(bankDeta);
-                    console.log("this is the bank salaryData", salaryData);
+                setbankDetails(bankDeta);
+                console.log("this is the bank salaryData", salaryData);
 
 
-                    if (salaryData.length == 0) {
+                if (salaryData.length == 0) {
 
-                        const arraySalaryDetails: SalaryDetail[] = [];
-                        const employeebranchID = await getEmployeeBranch(contextClientID, contextSelectedCustId)
-                        const salaryComponents = await getSalaryComponents(contextClientID, employeebranchID);
-                        console.log("this are the salary components retrived", salaryComponents);
+                    const arraySalaryDetails: SalaryDetail[] = [];
+                    const employeebranchID = await getEmployeeBranch(contextClientID, contextSelectedCustId)
+                    const salaryComponents = await getSalaryComponents(contextClientID, employeebranchID);
+                    console.log("this are the salary components retrived", salaryComponents);
 
-                        setSalaryComponents(salaryComponents);
-                        console.log("this is the salaryComponents", salaryComponents);
+                    setSalaryComponents(salaryComponents);
+                    console.log("this is the salaryComponents", salaryComponents);
 
-                        for (let i = 0; i < salaryComponents.length; i++) {
+                    for (let i = 0; i < salaryComponents.length; i++) {
 
-                            const data: SalaryDetail = {
-                                id: 0,
-                                client_id: salaryComponents[i].client_id ? salaryComponents[i].client_id : parseInt(contextClientID),
-                                branch_id: parseInt(employeebranchID),
-                                customer_id: salaryComponents[i].customer_id,
+                        const data: SalaryDetail = {
+                            id: 0,
+                            client_id: salaryComponents[i].client_id ? salaryComponents[i].client_id : parseInt(contextClientID),
+                            branch_id: parseInt(employeebranchID),
+                            customer_id: salaryComponents[i].customer_id,
+                            salary_component_id: salaryComponents[i].salary_component_id,
+                            amount: '',
+
+                            leap_client_salary_components: {
+                                client_Salary_compionent_id: salaryComponents[i].id,
                                 salary_component_id: salaryComponents[i].salary_component_id,
-                                amount: '',
+                                leap_salary_components: {
+                                    id: salaryComponents[i].leap_salary_components.id,
+                                    salary_add: salaryComponents[i].leap_salary_components.salary_add,
 
-                                leap_client_salary_components: {
-                                    client_Salary_compionent_id: salaryComponents[i].id,
-                                    salary_component_id: salaryComponents[i].salary_component_id,
-                                    leap_salary_components: {
-                                        id: salaryComponents[i].leap_salary_components.id,
-                                        salary_add: salaryComponents[i].leap_salary_components.salary_add,
-
-                                        salary_component_name: salaryComponents[i].leap_salary_components.salary_component_name || 0
-                                    }
+                                    salary_component_name: salaryComponents[i].leap_salary_components.salary_component_name || 0
                                 }
                             }
-                            arraySalaryDetails.push(data);
-
                         }
-                        console.log("=-===-=-=-=-=-==-=-=--=-=-=-=-=-=-=-=-=-=", arraySalaryDetails);
+                        arraySalaryDetails.push(data);
 
-                        setSalaryDetails(arraySalaryDetails);
-                        setChangeSalaryDetails(JSON.parse(JSON.stringify(arraySalaryDetails)));
-
-
-                    } else {
-                        setSalaryDetails(salaryData);
-                        setChangeSalaryDetails(salaryData);
                     }
-                    if (totalSalaryData && totalSalaryData.length == 0) {
-                        setTotalSalaryDetails({
-                            id: 0,
-                            gross_salary: 0,
-                            total_deduction: 0,
-                            net_pay: 0,
-                            customer_id: parseInt(contextSelectedCustId),
-                        });
-                    } else {
-                        setTotalSalaryDetails(totalSalaryData);
-                    }
+                    console.log("=-===-=-=-=-=-==-=-=--=-=-=-=-=-=-=-=-=-=", arraySalaryDetails);
+
+                    setSalaryDetails(JSON.parse(JSON.stringify(arraySalaryDetails)));
+                    setChangeSalaryDetails(JSON.parse(JSON.stringify(arraySalaryDetails)));
+
+
+                } else {
+                    setSalaryDetails(salaryData);
+                    setChangeSalaryDetails(salaryData);
                 }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
+                if (totalSalaryData && totalSalaryData.length == 0) {
+                    setTotalSalaryDetails({
+                        id: 0,
+                        gross_salary: 0,
+                        total_deduction: 0,
+                        net_pay: 0,
+                        customer_id: parseInt(contextSelectedCustId),
+                    });
+                } else {
+                    setTotalSalaryDetails(totalSalaryData);
+                }
             }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
         }
-    
-        
+    }
+
+
     const formData = new FormData();
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         try {
-        setIsLoading(true);
-        formData.append("customer_id", contextSelectedCustId);
-        formData.append("client_id", contextClientID);
-        formData.append("bankdetails", JSON.stringify(bankDetails));
-        formData.append("salaryAmountsArray", JSON.stringify(salaryDetails))
-        if(totalSalaryDetails && totalSalaryDetails.id){
-            formData.append("total_salary_table_id", totalSalaryDetails?.id + '');
-            formData.append("total_gross_salary", totalSalaryDetails?.gross_salary + '');
-            formData.append("total_deduction", totalSalaryDetails?.total_deduction + '');
-            formData.append("net_payable_salary", totalSalaryDetails?.net_pay + '');
-        }        
+            setIsLoading(true);
+            formData.append("customer_id", contextSelectedCustId);
+            formData.append("client_id", contextClientID);
+            formData.append("bankdetails", JSON.stringify(bankDetails));
+            formData.append("salaryAmountsArray", JSON.stringify(salaryDetails))
+            if (totalSalaryDetails && totalSalaryDetails.id) {
+                formData.append("total_salary_table_id", totalSalaryDetails?.id + '');
+                formData.append("total_gross_salary", totalSalaryDetails?.gross_salary + '');
+                formData.append("total_deduction", totalSalaryDetails?.total_deduction + '');
+                formData.append("net_payable_salary", totalSalaryDetails?.net_pay + '');
+            }
             const res = await fetch("/api/users/updateEmployee/updateEmpBankDetails", {
                 method: "POST",
                 body: formData,
@@ -737,7 +737,7 @@ export const UserBankDetails = () => {
             const response = await res.json();
 
             if (res.ok && response.status == 1) {
-                
+
                 setIsLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Success");
@@ -767,10 +767,10 @@ export const UserBankDetails = () => {
         setHasChanged("0");
         let totalGross = 0, totalDeduction = 0;
         for (let i = 0; i < salaryDetails.length; i++) {
-            
-            
+
+
             if (salaryDetails[i].leap_client_salary_components.leap_salary_components.salary_add) {
-                totalGross = totalGross + parseFloat(salaryDetails[i].amount || String(salaryDetails[i].amount).length>0? salaryDetails[i].amount : "0")
+                totalGross = totalGross + parseFloat(salaryDetails[i].amount || String(salaryDetails[i].amount).length > 0 ? salaryDetails[i].amount : "0")
             } else {
                 totalDeduction = totalDeduction + parseFloat(String(salaryDetails[i].amount).length > 0 ? salaryDetails[i].amount : "0")
             }
@@ -782,7 +782,7 @@ export const UserBankDetails = () => {
             net_pay: totalGross - totalDeduction,
             customer_id: totalSalaryDetails.customer_id,
         })
-        
+
 
     }
     function isReadonly() {
@@ -797,7 +797,7 @@ export const UserBankDetails = () => {
             <LoadingDialog isLoading={isLoading} />
             {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                 setShowAlert(false)
-                if(alertForSuccess==1){
+                if (alertForSuccess == 1) {
                     fetchData()
                 }
             }} onCloseClicked={function (): void {
@@ -834,12 +834,12 @@ export const UserBankDetails = () => {
                                                             <div className="col-md-12">
                                                                 <div className="form_box mb-3">
                                                                     <input type="text" className="form-control" id={componentData.component_name}
-                                                                    onKeyPress={(e) => {
-                                                                                if (componentData.data_type === 2 && !/[0-9]/.test(e.key)) {
-                                                                                    e.preventDefault(); // block non-numeric input 
-                                                                                }
-                                                                            }}
-                                                                     readOnly={isReadonly()} value={componentData.row_value || ""} name={componentData.component_name}
+                                                                        onKeyPress={(e) => {
+                                                                            if (componentData.data_type === 2 && !/[0-9]/.test(e.key)) {
+                                                                                e.preventDefault(); // block non-numeric input 
+                                                                            }
+                                                                        }}
+                                                                        readOnly={isReadonly()} value={componentData.row_value || ""} name={componentData.component_name}
                                                                         onChange={(e) => {
                                                                             const newValue = e.target.value;
                                                                             setbankDetails((prev) =>
@@ -976,39 +976,50 @@ export const UserBankDetails = () => {
                                                             <div className="col-md-7">
                                                                 <div className="form_box mb-3">
                                                                     <input type="text" className="form-control" id="amount" value={salary.amount} readOnly={isReadonly()}
+                                                                        
                                                                         onChange={(e) => {
                                                                             setSalaryDetails((prev) => {
-                                                                                const existingComponentIndex = prev.findIndex((item) => item.salary_component_id === salary.salary_component_id);
+                                                                                const existingComponentIndex = prev.findIndex(
+                                                                                    (item) => item.salary_component_id === salary.salary_component_id
+                                                                                );
+
                                                                                 if (existingComponentIndex > -1) {
-                                                                                    // Update the value for the existing component
                                                                                     const updatedArray = [...prev];
-                                                                                    updatedArray[existingComponentIndex].amount = e.target.value;
+                                                                                    // Create a new object instead of mutating
+                                                                                    updatedArray[existingComponentIndex] = {
+                                                                                        ...updatedArray[existingComponentIndex],
+                                                                                        amount: e.target.value,
+                                                                                    };
                                                                                     return updatedArray;
                                                                                 } else {
-                                                                                    // Add a new component with its value
-                                                                                    // return [...prev, { amount : e.target.value }];
-                                                                                    return [...prev, {
-                                                                                        id: 0,
-                                                                                        client_id: salary.client_id,
-                                                                                        branch_id: salary.branch_id,
-                                                                                        customer_id: salary.customer_id,
-                                                                                        salary_component_id: salary.salary_component_id,
-                                                                                        amount: e.target.value,
-
-                                                                                        leap_client_salary_components: {
-                                                                                            client_Salary_compionent_id: salary.leap_client_salary_components.client_Salary_compionent_id,
-                                                                                            salary_component_id: salary.leap_client_salary_components.salary_component_id,
-                                                                                            leap_salary_components: {
-                                                                                                id: salary.leap_client_salary_components.leap_salary_components.id,
-                                                                                                salary_add: salary.leap_client_salary_components.leap_salary_components.salary_add,
-                                                                                                salary_component_name: salary.leap_client_salary_components.leap_salary_components.salary_component_name
-                                                                                            }
-                                                                                        }
-                                                                                    }];
+                                                                                    return [
+                                                                                        ...prev,
+                                                                                        {
+                                                                                            id: 0,
+                                                                                            client_id: salary.client_id,
+                                                                                            branch_id: salary.branch_id,
+                                                                                            customer_id: salary.customer_id,
+                                                                                            salary_component_id: salary.salary_component_id,
+                                                                                            amount: e.target.value,
+                                                                                            leap_client_salary_components: {
+                                                                                                client_Salary_compionent_id:
+                                                                                                    salary.leap_client_salary_components.client_Salary_compionent_id,
+                                                                                                salary_component_id:
+                                                                                                    salary.leap_client_salary_components.salary_component_id,
+                                                                                                leap_salary_components: {
+                                                                                                    id: salary.leap_client_salary_components.leap_salary_components.id,
+                                                                                                    salary_add:
+                                                                                                        salary.leap_client_salary_components.leap_salary_components
+                                                                                                            .salary_add,
+                                                                                                    salary_component_name:
+                                                                                                        salary.leap_client_salary_components.leap_salary_components
+                                                                                                            .salary_component_name,
+                                                                                                },
+                                                                                            },
+                                                                                        },
+                                                                                    ];
                                                                                 }
-                                                                                    
                                                                             });
-                                                                            
                                                                         }
                                                                         } />
                                                                 </div>
@@ -1053,7 +1064,7 @@ export const UserBankDetails = () => {
 
                                     <div className="col-md-4">
                                         <div className="form_box mb-3">
-                                            <label htmlFor="formFile" className="form-label">Net Pay:{hasChanged}</label>
+                                            <label htmlFor="formFile" className="form-label">Net Pay:</label>
                                             <input type="text" className="form-control" readOnly onKeyDown={(e) => {
                                                 if (e.key !== "Backspace" && e.key !== "Delete" && isNaN(Number(e.key))) {
                                                     e.preventDefault();
@@ -1067,8 +1078,8 @@ export const UserBankDetails = () => {
                             </div>
                             <div className="row">
                                 <div className="col-lg-12 " style={{ textAlign: "right" }}>
-                                    {salaryDetails && salaryDetails.length>0 && salaryDetails[0].leap_client_salary_components.leap_salary_components && <a className="red_button" onClick={() => calculateGrossAndNet()}>Calculate</a>}&nbsp;&nbsp;
-                                    {hasChanged=="0" && <input type='submit' value="Update" disabled={isReadonly()} className="red_button" onClick={handleSubmit} />}
+                                    {salaryDetails && salaryDetails.length > 0 && salaryDetails[0].leap_client_salary_components.leap_salary_components && <a className="red_button" onClick={() => calculateGrossAndNet()}>Calculate</a>}&nbsp;&nbsp;
+                                    {hasChanged == "0" && <input type='submit' value="Update" disabled={isReadonly()} className="red_button" onClick={handleSubmit} />}
                                 </div>
                             </div>
                         </div>
