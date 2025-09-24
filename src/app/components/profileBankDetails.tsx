@@ -584,6 +584,8 @@ export const UserBankDetails = () => {
         net_pay: 0,
         customer_id: 0,
     });
+    const [hasChanged, setHasChanged] = useState('0');
+
     const [isLoading, setIsLoading] = useState(false);
 
     const [showAlert, setShowAlert] = useState(false);
@@ -603,6 +605,24 @@ export const UserBankDetails = () => {
         
         fetchData();
     }, []);
+     useEffect(() => {
+        if (salaryDetails.length > 0 && changeSalaryDetails.length > 0) {
+            console.log("salarydetails----------- - - - - - -",salaryDetails);
+            console.log("changesalary detaisl------- - - - - - -",changeSalaryDetails);
+            
+            const changed = salaryDetails.some(item => {
+            const original = changeSalaryDetails.find(
+                o => o.salary_component_id === item.salary_component_id
+            );
+            return Number(original?.amount) !== Number(item.amount);
+            });
+            console.log("this is ndc nsjn sdvnbjnjs dv ndjsn sdnvond ========",changed);
+            
+            setHasChanged(changed?"1":"0");
+        }
+
+    }, [salaryDetails]);
+    
     const fetchData = async () => {
 
             try {
@@ -669,7 +689,7 @@ export const UserBankDetails = () => {
                         console.log("=-===-=-=-=-=-==-=-=--=-=-=-=-=-=-=-=-=-=", arraySalaryDetails);
 
                         setSalaryDetails(arraySalaryDetails);
-                        setChangeSalaryDetails(arraySalaryDetails);
+                        setChangeSalaryDetails(JSON.parse(JSON.stringify(arraySalaryDetails)));
 
 
                     } else {
@@ -744,14 +764,15 @@ export const UserBankDetails = () => {
     }
 
     function calculateGrossAndNet() {
+        setHasChanged("0");
         let totalGross = 0, totalDeduction = 0;
         for (let i = 0; i < salaryDetails.length; i++) {
             
             
             if (salaryDetails[i].leap_client_salary_components.leap_salary_components.salary_add) {
-                totalGross = totalGross + parseFloat(salaryDetails[i].amount || salaryDetails[i].amount.length>0? salaryDetails[i].amount : "0")
+                totalGross = totalGross + parseFloat(salaryDetails[i].amount || String(salaryDetails[i].amount).length>0? salaryDetails[i].amount : "0")
             } else {
-                totalDeduction = totalDeduction + parseFloat(salaryDetails[i].amount.length > 0 ? salaryDetails[i].amount : "0")
+                totalDeduction = totalDeduction + parseFloat(String(salaryDetails[i].amount).length > 0 ? salaryDetails[i].amount : "0")
             }
         }
         setTotalSalaryDetails({
@@ -761,6 +782,7 @@ export const UserBankDetails = () => {
             net_pay: totalGross - totalDeduction,
             customer_id: totalSalaryDetails.customer_id,
         })
+        
 
     }
     function isReadonly() {
@@ -1031,7 +1053,7 @@ export const UserBankDetails = () => {
 
                                     <div className="col-md-4">
                                         <div className="form_box mb-3">
-                                            <label htmlFor="formFile" className="form-label">Net Pay:</label>
+                                            <label htmlFor="formFile" className="form-label">Net Pay:{hasChanged}</label>
                                             <input type="text" className="form-control" readOnly onKeyDown={(e) => {
                                                 if (e.key !== "Backspace" && e.key !== "Delete" && isNaN(Number(e.key))) {
                                                     e.preventDefault();
@@ -1046,7 +1068,7 @@ export const UserBankDetails = () => {
                             <div className="row">
                                 <div className="col-lg-12 " style={{ textAlign: "right" }}>
                                     {salaryDetails && salaryDetails.length>0 && salaryDetails[0].leap_client_salary_components.leap_salary_components && <a className="red_button" onClick={() => calculateGrossAndNet()}>Calculate</a>}&nbsp;&nbsp;
-                                    <input type='submit' value="Update" disabled={isReadonly()} className="red_button" onClick={handleSubmit} />
+                                    {hasChanged=="0" && <input type='submit' value="Update" disabled={isReadonly()} className="red_button" onClick={handleSubmit} />}
                                 </div>
                             </div>
                         </div>
