@@ -512,6 +512,7 @@ export const UserAddress = () => {
         address_type: '',
     });
     const [emergencyContact, setEmergencyContact] = useState<EmergencyContactNew[]>([{
+        id:0,
         emergency_contact: '',
         contact_name: '',
         
@@ -568,7 +569,22 @@ export const UserAddress = () => {
                     }
                 }
                 // setUserData(user);
-                setEmergencyContact(user.emergencyContact[0])
+                if(user.emergencyContact.length>0){
+                    
+                setEmergencyContact(user.emergencyContact)
+                }else{
+                    const emer:EmergencyContactNew[]=[{
+                            id:0,
+                            emergency_contact: '',
+                            contact_name: '',
+                            
+                            relation: {
+                                id: 0,
+                                relation_type: '',
+                            }
+                        }]
+                   setEmergencyContact(emer)     
+                }
 
 
             } catch (error) {
@@ -616,7 +632,7 @@ export const UserAddress = () => {
 
         if (!emergencyContact[0].contact_name) emerFieldErrors.contact_name = "required";
         if (!emergencyContact[0].emergency_contact) emerFieldErrors.emergency_contact = "required";
-        if (!emergencyContact[0].relation) emerFieldErrors.relation = { id: 0, relation_type: "required" };
+        if (!emergencyContact[0].relation || emergencyContact[0].relation.id==0) emerFieldErrors.relation = { id: 0, relation_type: "required" };
 
         setAddressFormErrors(currAddErrors);
         setPerAddressFormErrors(perAddErrors);
@@ -1022,7 +1038,8 @@ export const UserAddress = () => {
                                                     Emergency Contact details:
                                                 </div>
                                             </div>
-                                            {emergencyContact && emergencyContact.length>0 && emergencyContact.map((emergencyContactItem,index) => <>                 
+                                            {emergencyContact  && emergencyContact.map((emergencyContactItem,index) => 
+                                            <div className='mt-3'>                 
                                             <div className="row" style={{ alignItems: "center" }}>
                                                 <div className="col-md-3">
                                                     <div className="form_box mb-3">
@@ -1101,7 +1118,7 @@ export const UserAddress = () => {
                                                                 return updated;
                                                             })
                                                         }>
-                                                            {(!emergencyContactItem || !emergencyContactItem.relation) && <option value="">Select Relation</option>}
+                                                            {(!emergencyContactItem || !emergencyContactItem.relation || emergencyContactItem.relation.id==0) && <option value="">Select Relation</option>}
                                                             {emergencyContactRelation.map((relationsType, index) => (
                                                                 <option value={relationsType.id} key={relationsType.id} disabled={isReadonly()}>{relationsType.relation_type}</option>
                                                             ))}
@@ -1112,7 +1129,7 @@ export const UserAddress = () => {
                                                 </div>
 
                                             </div>
-                                           </>) }
+                                           </div>) }
 
                                         </div>
                                     </div>
