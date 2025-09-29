@@ -53,25 +53,16 @@ const LeftPannel = ({ menuIndex, subMenuIndex, showLeftPanel, rightBoxUI }: Left
                 setShowPayrollSubMenus(true);
             }
         };
-        fetchData();
-        setsubIndex();
-    }, [])
-    const middle_box = () => {
-        setToggleClass((prevClass) =>
-            prevClass === "middle_box" ? "middle_box middle_box_extra" : "middle_box"
-        );
-    }
-    const handleMenuClick = (index: any,pageURL:any) => {
-        router.push(pageURL)
-        if (index == leftMenuDocumentsPageNumbers) {
+        
+        if (menuIndex == leftMenuDocumentsPageNumbers) {
             setShowDocSubMenu(!showDocSubMenu);
             setShowProjectSuMenus(false)
             setShowPayrollSubMenus(false)
-        } else if (index == leftMenuCompanyPayrollPageNumbers) {
+        } else if (menuIndex == leftMenuCompanyPayrollPageNumbers) {
             setShowDocSubMenu(false);
             setShowProjectSuMenus(false)
             setShowPayrollSubMenus(!showPayrollSubMenus)
-        } else if (index == leftMenuProjectMGMTPageNumbers) {
+        } else if (menuIndex == leftMenuProjectMGMTPageNumbers) {
             setShowDocSubMenu(false);
             setShowProjectSuMenus(!showProjectSuMenus)
             setShowPayrollSubMenus(false)
@@ -80,7 +71,7 @@ const LeftPannel = ({ menuIndex, subMenuIndex, showLeftPanel, rightBoxUI }: Left
             setShowProjectSuMenus(false)
             setShowPayrollSubMenus(false)
         }
-        if (index == leftMenuProfilePageNumbers) {
+        if (menuIndex == leftMenuProfilePageNumbers) {
             setGlobalState({
                 contextUserName: contextUserName,
                 contextClientID: contextClientID,
@@ -102,6 +93,17 @@ const LeftPannel = ({ menuIndex, subMenuIndex, showLeftPanel, rightBoxUI }: Left
                 contextPARAM8: '',
             });
         }
+        fetchData();
+        setsubIndex();
+    }, [])
+    const middle_box = () => {
+        setToggleClass((prevClass) =>
+            prevClass === "middle_box" ? "middle_box middle_box_extra" : "middle_box"
+        );
+    }
+    const handleMenuClick = (index: any,pageURL:any) => {
+        router.push(pageURL)
+        
         setSelectedLeftMenuItemIndex(index); // Update the state correctly
         // setLoadingCursor(true);
     };
