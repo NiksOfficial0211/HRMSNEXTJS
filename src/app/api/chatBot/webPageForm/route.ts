@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addDays, dashedDateYYYYMMDD, formatDateYYYYMMDD, funSendApiErrorMessage, funSendApiException } from "@/app/pro_utils/constant";
-import supabase from "../../supabaseConfig/supabase";
+import { funSendApiException } from "@/app/pro_utils/constant";
 import { apiStatusFailureCode, apiStatusInvalidDataCode, apiStatusSuccessCode } from "@/app/pro_utils/stringConstants";
 import { baseUrl } from "@/app/pro_utils/stringRoutes";
 
@@ -9,7 +8,7 @@ export async function POST(request: NextRequest) {
 
         const { id, phone_number } = await request.json();
         if (!phone_number || !id) {
-            return NextResponse.json({ error: "paramaters needed" }, { status: apiStatusInvalidDataCode }
+        return NextResponse.json({data:{status: 0, message: "Paramaters not passed correctly!" }}, { status: apiStatusFailureCode }
             );
         }
         let url = "";
@@ -24,7 +23,7 @@ export async function POST(request: NextRequest) {
         } else if (id === "4") { // apply leave
             url = baseUrl + "whats-app/apply-leave?contact_number=" + phone_number;
         } else {
-            return NextResponse.json({ error: "Invalid id" }, { status: apiStatusInvalidDataCode }
+            return NextResponse.json({data:{status: 0, message: "Invalid Type Id. Please choose between 1 to 4." }}, { status: apiStatusFailureCode }
             );
         }
 
