@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import ApplyTaskApp from "./task-form";
+import DocUploadApp from "./doc-form";
 
-export default function ApplyTaskPage() {
+export default function DocumentPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <ApplyTaskApp />
+      <DocUploadApp />
     </Suspense>
   );
 }

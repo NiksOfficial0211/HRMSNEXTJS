@@ -1039,7 +1039,7 @@ export const UserAddress = () => {
                                                 </div>
                                             </div>
                                             {emergencyContact  && emergencyContact.map((emergencyContactItem,index) => 
-                                            <div className='mt-3'>                 
+                                            <div className='mt-3' key={index}>                 
                                             <div className="row" style={{ alignItems: "center" }}>
                                                 <div className="col-md-3">
                                                     <div className="form_box mb-3">

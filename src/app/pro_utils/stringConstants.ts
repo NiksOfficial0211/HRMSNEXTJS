@@ -20,6 +20,7 @@ export const clientAssetSuccess="Asset Added Successfully";
 export const assetUpdatedSuccess="Asset Updated";
 export const assetUpdateFailed="Updated failed";
 export const assetDeletedSuccess="Asset Deleted";
+export const bankComponentDeletedSuccess="Bank Component Deleted";
 export const assetDeleteFailed="Asset Deletion failed";
 export const shrotcutsUpdated="Shortcuts updated successfully";
 export const DepartmentDeletedSuccess="Department Deleted";

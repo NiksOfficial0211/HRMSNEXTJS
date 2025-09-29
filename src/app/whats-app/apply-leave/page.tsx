@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import ApplyTaskApp from "./task-form";
+import AssignLeave from "./assign-leave";
 
-export default function ApplyTaskPage() {
+export default function ApplyLeavePage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <ApplyTaskApp />
+      <AssignLeave />
     </Suspense>
   );
 }
