@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
             );
         }
         let url = "";
-        
+        // const base_url = "https://v2.leaphrms.com/"
 
         if (id === "1") {
             url = baseUrl + "whats-app/add-task?contact_number=" + phone_number;
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        return NextResponse.json({ status: 1, message: "URLs fetched", data: url }, { status: apiStatusFailureCode });
+        return NextResponse.json({data:{ status: 1, message: "URLs fetched", URL: url }}, { status: apiStatusSuccessCode });
     } catch (error) {
         return funSendApiException(error);
     }
