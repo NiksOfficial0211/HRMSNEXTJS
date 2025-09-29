@@ -75,6 +75,7 @@ export const pageURL_superAdmin_onBoardClient=baseUrl+"/superadmin/onboard-clien
 export const pageURL_superAdmin_branchDetails=baseUrl+"/superadmin/onboard-client/branch-details";
 export const pageURL_superAdmin_permission=baseUrl+"/superadmin/permission";
 export const pageURL_superAdmin_tableSettings=baseUrl+"/superadmin/table-settings";
+export const pageURL_whatsappSuccessPage=baseUrl+"/whats-app";
 
 
 export const leftMenuDashboardPageNumbers=1;

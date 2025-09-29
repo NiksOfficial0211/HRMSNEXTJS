@@ -53,16 +53,30 @@ const LeftPannel = ({ menuIndex, subMenuIndex, showLeftPanel, rightBoxUI }: Left
                 setShowPayrollSubMenus(true);
             }
         };
-        
-        if (menuIndex == leftMenuDocumentsPageNumbers) {
+        fetchData();
+        setsubIndex();
+    }, [])
+    const middle_box = () => {
+        setToggleClass((prevClass) =>
+            prevClass === "middle_box" ? "middle_box middle_box_extra" : "middle_box"
+        );
+    }
+    const handleMenuClick = (index: any,pageURL:any) => {
+         setLoadingCursor(true);
+         console.log("this is the page url --=-=-=-=-=-=-=-=-=--=-=-=-=",pageURL);
+         
+         if(pageURL && pageURL.length>0){
+            router.push(pageURL)
+         }
+        if (index == leftMenuDocumentsPageNumbers) {
             setShowDocSubMenu(!showDocSubMenu);
             setShowProjectSuMenus(false)
             setShowPayrollSubMenus(false)
-        } else if (menuIndex == leftMenuCompanyPayrollPageNumbers) {
+        } else if (index == leftMenuCompanyPayrollPageNumbers) {
             setShowDocSubMenu(false);
             setShowProjectSuMenus(false)
             setShowPayrollSubMenus(!showPayrollSubMenus)
-        } else if (menuIndex == leftMenuProjectMGMTPageNumbers) {
+        } else if (index == leftMenuProjectMGMTPageNumbers) {
             setShowDocSubMenu(false);
             setShowProjectSuMenus(!showProjectSuMenus)
             setShowPayrollSubMenus(false)
@@ -71,7 +85,7 @@ const LeftPannel = ({ menuIndex, subMenuIndex, showLeftPanel, rightBoxUI }: Left
             setShowProjectSuMenus(false)
             setShowPayrollSubMenus(false)
         }
-        if (menuIndex == leftMenuProfilePageNumbers) {
+        if (index == leftMenuProfilePageNumbers) {
             setGlobalState({
                 contextUserName: contextUserName,
                 contextClientID: contextClientID,
@@ -93,21 +107,12 @@ const LeftPannel = ({ menuIndex, subMenuIndex, showLeftPanel, rightBoxUI }: Left
                 contextPARAM8: '',
             });
         }
-        fetchData();
-        setsubIndex();
-    }, [])
-    const middle_box = () => {
-        setToggleClass((prevClass) =>
-            prevClass === "middle_box" ? "middle_box middle_box_extra" : "middle_box"
-        );
-    }
-    const handleMenuClick = (index: any,pageURL:any) => {
-        router.push(pageURL)
-        
         setSelectedLeftMenuItemIndex(index); // Update the state correctly
-        // setLoadingCursor(true);
+        setLoadingCursor(false);
     };
     const handleSubMenuClick = (index: any, pageURL: string) => {
+        
+        router.push(pageURL)
         setLoadingCursor(true);
         if (index == leftMenuDocumentsSub1PageNumbers || index == leftMenuDocumentsSub2PageNumbers) {
             setShowDocSubMenu(true);
@@ -124,7 +129,7 @@ const LeftPannel = ({ menuIndex, subMenuIndex, showLeftPanel, rightBoxUI }: Left
             setShowPayrollSubMenus(false)
         }
         setSelectedSubMenuItemIndex(index); // Update the state correctly
-        router.push(pageURL)
+        
         setLoadingCursor(false);
     };
 

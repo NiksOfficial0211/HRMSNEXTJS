@@ -2,18 +2,13 @@
 
 'use client'
 import React, { useEffect, useState } from 'react'
-import LeapHeader from '@/app/components/header'
-import Footer from '@/app/components/footer'
 import supabase from '@/app/api/supabaseConfig/supabase'
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { pageURL_userSupport } from '@/app/pro_utils/stringRoutes'
-import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
+import { useRouter, useSearchParams } from 'next/navigation';
 import { LeapRequestMaster, SupportForm } from '@/app/models/supportModel'
 import { ALERTMSG_FormExceptionString, raiseSupportTitle } from '@/app/pro_utils/stringConstants'
-import LeftPannel from '@/app/components/leftPannel'
-import BackButton from '@/app/components/BackButton'
 import { ALERTMSG_addAssetSuccess, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
+import { pageURL_userLeave, pageURL_whatsappSuccessPage } from '@/app/pro_utils/stringRoutes';
 
 const SupportRequestForm: React.FC = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -26,7 +21,10 @@ const SupportRequestForm: React.FC = () => {
   const [alertForSuccess, setAlertForSuccess] = useState(0);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertStartContent, setAlertStartContent] = useState('');
-
+  const [alertMidContent, setAlertMidContent] = useState('');
+  const [alertEndContent, setAlertEndContent] = useState('');
+  const [alertValue1, setAlertValue1] = useState('');
+  const [alertvalue2, setAlertValue2] = useState('');
   const searchParams = useSearchParams();
   const contactNumber = searchParams.get("contact_number");
   const [userData, setuserData] = useState<whatsappCustomerInfoModel[]>([]);
@@ -36,6 +34,7 @@ const SupportRequestForm: React.FC = () => {
     const fetchData = async () => {
       const custData = await getCustomerClientIds(contactNumber!);
       setuserData(custData);
+      // console.log("custData", userData);
       const priority = await getPriority();
       setPriority(priority);
       const master = await getMaster();
@@ -105,10 +104,11 @@ const SupportRequestForm: React.FC = () => {
       });
       if (response.ok) {
         setLoadingCursor(false);
-        setShowAlert(true);
-        setAlertTitle("Success")
-        setAlertStartContent("Help raised successfully");
-        setAlertForSuccess(1)
+        // setShowAlert(true);
+        // setAlertTitle("Success")
+        // setAlertStartContent("Help raised successfully");
+        // setAlertForSuccess(1)
+        router.push(pageURL_whatsappSuccessPage)
       } else {
         setLoadingCursor(false);
         e.preventDefault()
@@ -130,10 +130,16 @@ const SupportRequestForm: React.FC = () => {
 
   return (
     <div className='apply-task-container'>
+      <div className={`${loadingCursor ? "cursorLoading" : ""}`}>
       <h2>Raise Support</h2>
-
-
-
+      {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+        setShowAlert(false)
+        if (alertForSuccess == 1) {
+          router.push(pageURL_whatsappSuccessPage);
+        }
+      }} onCloseClicked={function (): void {
+        setShowAlert(false)
+      }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Request Type  <span className='req_text'>*</span></label>
@@ -167,6 +173,7 @@ const SupportRequestForm: React.FC = () => {
           <button type="submit" className="submit-btn">Submit</button>
         </div>
       </form>
+      </div>
     </div>
   )
 }
@@ -202,23 +209,6 @@ async function getPriority() {
 
 }
 
-async function getStatus() {
-
-  let query = supabase
-    .from('leap_request_status')
-    .select();
-
-  const { data, error } = await query;
-  if (error) {
-    // console.log(error);
-
-    return [];
-  } else {
-    // console.log(data);
-    return data;
-  }
-
-}
 async function getMaster() {
 
   let query = supabase
