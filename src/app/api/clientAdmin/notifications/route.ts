@@ -31,7 +31,6 @@ export async function POST(request: NextRequest) {
           `created_at, activity_details, activity_type_id(id, activity_type), activity_related_id`
         )
         .eq("client_id", client_id)
-        .eq("customer_id", customer_id)
         .gte("created_at", startOfRange)
         .lt("created_at", endOfRange)
         .order("id", { ascending: false });

@@ -130,7 +130,7 @@ const LeftPannel = ({ menuIndex, subMenuIndex, showLeftPanel, rightBoxUI }: Left
         }
         setSelectedSubMenuItemIndex(index); // Update the state correctly
         
-        setLoadingCursor(false);
+        // setLoadingCursor(false);
     };
 
     const checkPermission = (permissionId: any) => {
