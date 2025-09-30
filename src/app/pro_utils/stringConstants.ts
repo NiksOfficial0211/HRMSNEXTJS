@@ -62,7 +62,7 @@ export const updateGrossSalaryFailure="Failed to update gross salary details";
 export const updateBankSuccess="Bank details updated";
 export const leaveUpdateSuccess="Leave type updated successfully";
 export const companyData="Company Profile fetched";
-export const companyUpdatedData="Company Profile Updated";
+export const companyUpdatedData="Basic Company Details Updated";
 export const companyUpdateFailed="Company Profile Failed";
 export const allEmployeeListData="All Clients Data";
 

@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
 import { SubProject } from '@/app/models/TaskModel'
 import { ALERTMSG_exceptionString } from '@/app/pro_utils/stringConstants'
+import { pageURL_whatsappSuccessPage } from '@/app/pro_utils/stringRoutes';
 
 interface AddTaskForm {
     sub_project_id: string,
@@ -46,7 +47,8 @@ const ApplyTaskApp: React.FC = () => {
         const fetchData = async () => {
             const custData = await getCustomerClientIds(contactNumber!);
             setuserData(custData);
-            const project = await getSubProject(userData[0].client_id);
+            console.log("custData", userData);
+            const project = await getSubProject(userData[0]?.client_id);
             setSubProject(project);
             const task = await getTaskTypes();
             setTask(task);
@@ -56,7 +58,15 @@ const ApplyTaskApp: React.FC = () => {
         };
         fetchData();
     }, [])
+    useEffect(() => {
 
+        const expiryTimer = setTimeout(() => {
+            alert("This session has expired. Please request a new link.");
+            router.push("/expired-link");
+        }, 5 * 60 * 1000); // 5 min
+
+        return () => clearTimeout(expiryTimer);
+    }, []);
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -89,8 +99,6 @@ const ApplyTaskApp: React.FC = () => {
                     task_details: formValues.task_details,
                     task_date: formValues.task_date,
                     task_status: formValues.task_status
-
-
                     // total_hours: total_hours || 0,
                     // total_minutes: total_minutes || 0,
 
@@ -98,10 +106,13 @@ const ApplyTaskApp: React.FC = () => {
             });
             setLoadingCursor(false);
             if (response.ok) {
-                setShowAlert(true);
-                setAlertTitle("Success")
-                setAlertStartContent("Task added Successfully");
-                setAlertForSuccess(1)
+                setLoadingCursor(false);
+
+                router.push(pageURL_whatsappSuccessPage)
+                // setShowAlert(true);
+                // setAlertTitle("Success")
+                // setAlertStartContent("Task added Successfully");
+                // setAlertForSuccess(1)
             } else {
                 setShowAlert(true);
                 setAlertTitle("Error")
@@ -120,64 +131,65 @@ const ApplyTaskApp: React.FC = () => {
 
     return (
         <div className='apply-task-container'>
-            <h2>Add Task</h2>
+            <div className={`${loadingCursor ? "cursorLoading" : ""}`}>
+                <h2>Add Task</h2>
 
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Project Name <span className='req_text'>*</span></label>
-                    <select name="sub_project_id" value={formValues.sub_project_id} onChange={handleInputChange}>
-                        <option value="">Select</option>
-                        {subProjectarray.length > 0 ? (
-                            subProjectarray.map((type, index) => (
-                                <option key={index} value={type.subproject_id}>{type.sub_project_name}</option>
-                            ))
-                        ) : (
-                            <option value="" disabled>No Project under this client</option>
-                        )}
-                    </select>
-                    {errors.sub_project_id && <span className="error">{errors.sub_project_id}</span>}
-                </div>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>Project Name <span className='req_text'>*</span></label>
+                        <select name="sub_project_id" value={formValues.sub_project_id} onChange={handleInputChange}>
+                            <option value="">Select</option>
+                            {subProjectarray.length > 0 ? (
+                                subProjectarray.map((type, index) => (
+                                    <option key={index} value={type.subproject_id}>{type.sub_project_name}</option>
+                                ))
+                            ) : (
+                                <option value="" disabled>No Project under this client</option>
+                            )}
+                        </select>
+                        {errors.sub_project_id && <span className="error">{errors.sub_project_id}</span>}
+                    </div>
 
-                <div className="form-group">
-                    <label>Task Type <span className='req_text'>*</span></label>
-                    <select name="task_type_id" value={formValues.task_type_id} onChange={handleInputChange}>
-                        <option value="">Select</option>
-                        {taskArray.map((type, index) => (
-                            <option key={index} value={type.task_type_id}>{type.task_type_name}</option>
-                        ))}
-                    </select>
-                    {errors.task_type_id && <span className="error">{errors.task_type_id}</span>}
-                </div>
+                    <div className="form-group">
+                        <label>Task Type <span className='req_text'>*</span></label>
+                        <select name="task_type_id" value={formValues.task_type_id} onChange={handleInputChange}>
+                            <option value="">Select</option>
+                            {taskArray.map((type, index) => (
+                                <option key={index} value={type.task_type_id}>{type.task_type_name}</option>
+                            ))}
+                        </select>
+                        {errors.task_type_id && <span className="error">{errors.task_type_id}</span>}
+                    </div>
 
-                <div className="form-group">
-                    <label>Date <span className='req_text'>*</span></label>
-                    <input type="date" name="task_date" value={formValues.task_date} onChange={handleInputChange} />
-                    {errors.task_date && <span className="error">{errors.task_date}</span>}
-                </div>
+                    <div className="form-group">
+                        <label>Date <span className='req_text'>*</span></label>
+                        <input type="date" name="task_date" value={formValues.task_date} onChange={handleInputChange} />
+                        {errors.task_date && <span className="error">{errors.task_date}</span>}
+                    </div>
 
-                <div className="form-group">
-                    <label>Status <span className='req_text'>*</span></label>
-                    <select name="task_status" value={formValues.task_status} onChange={handleInputChange}>
-                        <option value="">Select</option>
-                        {statusArray.map((type, index) => (
-                            <option key={index} value={type.id}>{type.status}</option>
-                        ))}
-                    </select>
-                    {errors.task_status && <span className="error">{errors.task_status}</span>}
-                </div>
+                    <div className="form-group">
+                        <label>Status <span className='req_text'>*</span></label>
+                        <select name="task_status" value={formValues.task_status} onChange={handleInputChange}>
+                            <option value="">Select</option>
+                            {statusArray.map((type, index) => (
+                                <option key={index} value={type.id}>{type.status}</option>
+                            ))}
+                        </select>
+                        {errors.task_status && <span className="error">{errors.task_status}</span>}
+                    </div>
 
-                <div className="form-group">
-                    <label>Details <span className='req_text'>*</span></label>
-                    <textarea name="task_details" rows={3} value={formValues.task_details} onChange={handleInputChange} />
-                    {errors.task_details && <span className="error">{errors.task_details}</span>}
-                </div>
+                    <div className="form-group">
+                        <label>Details <span className='req_text'>*</span></label>
+                        <textarea name="task_details" rows={3} value={formValues.task_details} onChange={handleInputChange} />
+                        {errors.task_details && <span className="error">{errors.task_details}</span>}
+                    </div>
 
-                <div className="form-group">
-                    <button type="submit" className="submit-btn">Submit</button>
-                </div>
-            </form>
+                    <div className="form-group">
+                        <button type="submit" className="submit-btn">Submit</button>
+                    </div>
+                </form>
+            </div>
         </div>
-
     )
 }
 

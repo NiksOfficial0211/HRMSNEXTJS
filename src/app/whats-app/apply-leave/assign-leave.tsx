@@ -1,21 +1,15 @@
 'use client'
-import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
-import LeapHeader from '@/app/components/header'
-import Footer from '@/app/components/footer'
-import { createLeaveTitle, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
+import React, { useEffect, useRef, useState } from 'react'
 import supabase from '@/app/api/supabaseConfig/supabase'
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { LeaveType } from '@/app/models/leaveModel'
-import { pageURL_userLeave } from '@/app/pro_utils/stringRoutes'
-import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
-import LeftPannel from '@/app/components/leftPannel'
-import BackButton from '@/app/components/BackButton'
 import moment from 'moment'
 import { DateRange, RangeKeyDict } from 'react-date-range';
 import { format } from 'date-fns'
 import { Range } from 'react-date-range';
 import { ALERTMSG_FormExceptionString } from '@/app/pro_utils/stringConstants'
 import { useSearchParams } from "next/navigation";
+import { pageURL_whatsappSuccessPage } from '@/app/pro_utils/stringRoutes';
 
 interface AssignEmpLeave {
     client_id: string,
@@ -42,15 +36,18 @@ const AssignLeave: React.FC = () => {
     const contactNumber = searchParams.get("contact_number");
     const [userData, setuserData] = useState<whatsappCustomerInfoModel[]>([]);
 
-
     const router = useRouter()
     useEffect(() => {
         setLoadingCursor(true);
         const fetchData = async () => {
             const custData = await getCustomerClientIds(contactNumber!);
-            setuserData(custData);
+            setuserData(custData!);
+            // console.log("custData", userData);
+            // console.log("custData", userData[0].customer_id + userData[0].client_id + userData[0].branch_id);
             const leavetype = await getLeave(userData[0].customer_id, userData[0].client_id, userData[0].branch_id);
+            console.log("leavetype", leavetype);
             setLeave(leavetype);
+            // console.log("leavetype", leavetype);
             setLoadingCursor(false);
 
         };
@@ -69,7 +66,15 @@ const AssignLeave: React.FC = () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [])
+    useEffect(() => {
 
+        const expiryTimer = setTimeout(() => {
+            alert("This session has expired. Please request a new link.");
+            router.push("/expired-link");
+        }, 5 * 60 * 1000); // 5 min
+
+        return () => clearTimeout(expiryTimer);
+    }, []);
     const [formValues, setFormValues] = useState<AssignEmpLeave>({
         client_id: "",
         branch_id: "",
@@ -82,7 +87,7 @@ const AssignLeave: React.FC = () => {
     });
 
     const handleInputChange = async (e: any) => {
-        const { name, value, type, files } = e.target;
+        const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
     }
     const formData = new FormData();
@@ -122,10 +127,7 @@ const AssignLeave: React.FC = () => {
             });
             if (response.ok) {
                 setLoadingCursor(false);
-                setShowAlert(true);
-                setAlertTitle("Success")
-                setAlertStartContent("Leave applied Successfully");
-                setAlertForSuccess(1)
+                router.push(pageURL_whatsappSuccessPage)
             } else {
                 setLoadingCursor(false);
                 e.preventDefault()
@@ -153,7 +155,6 @@ const AssignLeave: React.FC = () => {
         return parsedDate.format('YYYY-MM-DD');
     };
     const [showCalendar, setShowCalendar] = useState(false);
-    const ref = useRef(null);
     const [state, setState] = useState<Range[]>([
         {
             startDate: new Date() || null,
@@ -179,68 +180,68 @@ const AssignLeave: React.FC = () => {
 
     return (
         <div className='apply-task-container'>
-            <h2>Apply for Leave</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Leave Type <span className='req_text'>*</span></label>
-                    <select name="leave_type" value={formValues.leave_type} onChange={handleInputChange}>
-                        <option value="">Select</option>
-                        {leaveArray.map((type, index) => (
-                            <option value={index} key={type.leave_id}>{type.leave_name}</option>
-                        ))}
-                    </select>
-                    {errors.leave_type && <span className="error">{errors.leave_type}</span>}
-                </div>
-
-                <div className="form-group">
-                    <label>Date <span className='req_text'>*</span></label>
-                    <input
-                        placeholder='Date'
-                        type="text"
-                        className="form-control"
-                        value={formattedRange}
-                        readOnly
-                        onClick={() => setShowCalendar(!showCalendar)}
-                    />
-                    {showCalendar && (
-                        <div style={{ position: 'absolute', zIndex: 1000 }}>
-                            <DateRange
-                                editableDateInputs={true}
-                                onChange={handleChange}
-                                moveRangeOnFirstSelection={false}
-                                ranges={state}
-                            />
-                        </div>
-                    )}
-                    {errors.from_date && <span className="error">{errors.from_date}</span>}
-                </div>
-
-                <div className="form-group">
-                    <label>Leave reason <span className='req_text'>*</span></label>
-                    <textarea name="leave_reason" rows={2} value={formValues.leave_reason} onChange={handleInputChange} />
-                    {errors.leave_reason && <span className="error">{errors.leave_reason}</span>}
-                </div>
-
-                <div className="form-group">
-                    <div className="new_leave_btn_radio">
-                        <label htmlFor="fullday">Full day</label>
-                        <input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="Full day" onChange={handleInputChange} />
-                        {/* </div>
-                    <div className="new_leave_btn_radio"> */}
-                        <label htmlFor="fhalf">1st half</label>
-                        <input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="1st half day" onChange={handleInputChange} />
-                        {/* </div>
-                    <div className="new_leave_btn_radio"> */}
-                        <label htmlFor="shalf">2nd half</label>
-                        <input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="2nd half day" onChange={handleInputChange} />
+            <div className={`${loadingCursor ? "cursorLoading" : ""}`}>
+                <h2>Apply for Leave</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>Leave Type <span className='req_text'>*</span></label>
+                        <select name="leave_type" value={formValues.leave_type} onChange={handleInputChange}>
+                            <option value="">Select</option>
+                            {leaveArray.map((type, index) => (
+                                <option value={index} key={type.leave_id}>{type.leave_name}</option>
+                            ))}
+                        </select>
+                        {errors.leave_type && <span className="error">{errors.leave_type}</span>}
                     </div>
-                    {errors.duration && <span className="error" style={{ color: "red" }}>{errors.duration}</span>}
-                </div>
 
-                <div className="form-group">
-                    <button type="submit" className="submit-btn">Submit</button>
-                </div>
-            </form>
+                    <div className="form-group">
+                        <label>Date <span className='req_text'>*</span></label>
+                        <input
+                            placeholder='Date'
+                            type="text"
+                            className="form-control"
+                            value={formattedRange}
+                            readOnly
+                            onClick={() => setShowCalendar(!showCalendar)}
+                        />
+                        {showCalendar && (
+                            <div style={{ position: 'absolute', zIndex: 1000 }}>
+                                <DateRange
+                                    editableDateInputs={true}
+                                    onChange={handleChange}
+                                    moveRangeOnFirstSelection={false}
+                                    ranges={state}
+                                />
+                            </div>
+                        )}
+                        {errors.from_date && <span className="error">{errors.from_date}</span>}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Leave reason <span className='req_text'>*</span></label>
+                        <textarea name="leave_reason" rows={2} value={formValues.leave_reason} onChange={handleInputChange} />
+                        {errors.leave_reason && <span className="error">{errors.leave_reason}</span>}
+                    </div>
+
+                    <div className="form-group">
+                        <div className="new_leave_btn_radio">
+                            <label htmlFor="fullday">Full day</label>
+                            <input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="Full day" onChange={handleInputChange} />
+                            
+                            <label htmlFor="fhalf">1st half</label>
+                            <input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="1st half day" onChange={handleInputChange} />
+                            
+                            <label htmlFor="shalf">2nd half</label>
+                            <input type="radio" id="duration" disabled={isHalfDayDisabled} name="duration" value="2nd half day" onChange={handleInputChange} />
+                        </div>
+                        {errors.duration && <span className="error" style={{ color: "red" }}>{errors.duration}</span>}
+                    </div>
+
+                    <div className="form-group">
+                        <button type="submit" className="submit-btn">Submit</button>
+                    </div>
+                </form>
+            </div>
         </div>
     )
 }

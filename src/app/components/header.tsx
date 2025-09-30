@@ -8,6 +8,7 @@ import useSession from '../pro_utils/sessionmgmt';
 import { useRouter } from 'next/navigation';
 import { pageURL_clientProfilePage, pageURL_dashboard, pageURL_defaultLogin, pageURL_userEmpDashboard, pageURL_userProfile } from '../pro_utils/stringRoutes';
 import { getImageApiURL, staticIconsBaseURL } from '../pro_utils/stringConstants';
+import UserNotificationCorner from './userNotification';
 // import supabase from '../api/supabaseConfig/supabase';
 
 const LeapHeader = ({ title }: any) => {
@@ -17,6 +18,7 @@ const LeapHeader = ({ title }: any) => {
         contextCompanyName, setGlobalState } = useGlobalContext();
     const router = useRouter();
     const [isSearchVisible, setSearchVisible] = useState(false);
+    const [showNotifyDrawer, setShowNotifyDrawer] = useState(false);
     const [searchText, setSearchText] = useState('');
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -217,8 +219,13 @@ const LeapHeader = ({ title }: any) => {
                                         )}
                                     </div> */}
                                     <div className="option">
-                                        <a href="#"><img src={staticIconsBaseURL + "/images/notification_icon.png"} className="img-fluid" /><div className="option_label">Notification</div></a>
+                                        <a onClick={()=>setShowNotifyDrawer(true)}><img src={staticIconsBaseURL + "/images/notification_icon.png"} className="img-fluid" /><div className="option_label">Notification</div></a>
                                     </div>
+                                    <div className={showNotifyDrawer ? "rightpoup rightpoupopen" : "rightpoup"}>
+
+                                        {showNotifyDrawer && <UserNotificationCorner onClose={() => { setShowNotifyDrawer(false) }} />}
+                                    </div>
+
                                     <div className="headeroptions-container"
                                         style={{ position: "relative", display: "inline-block" }}
                                         onMouseEnter={() => setDropdownVisible(true)} // Show dropdown on hover

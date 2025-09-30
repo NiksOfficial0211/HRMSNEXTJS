@@ -372,7 +372,7 @@ const BranchDetails = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
     const [branchIndex, setBranchIndex] = useState(0);
     const [selectedLeftMenuItemIndex, setSelectedLeftMenuItemIndex] = useState(0);
-    const { contextClientID, selectedClientCustomerID } = useGlobalContext();
+    const { contextClientID, selectedClientCustomerID,contextRoleID } = useGlobalContext();
 
     const [timeZone, setTimeZone] = useState<TimeZoneModel[]>([]);
     const [currentTimeZone, setCurrentTimeZone] = useState("");
@@ -403,41 +403,42 @@ const BranchDetails = () => {
             setBranches(branches);
             const timezone = await getTimeZone();
             setTimeZone(timezone);
-            for(let i=0;i<timeZone.length;i++){
+            for (let i = 0; i < timeZone.length; i++) {
 
-                if(branches[branchIndex].time_zone_id==timeZone[i].id){
+                if (branches[branchIndex].time_zone_id == timeZone[i].id) {
                     setCurrentTimeZone(timeZone[i].time_zone);
                 }
             }
+            setLoading(false);
+            // try {
+            //     const formData = new FormData();
+            //     formData.append("client_id", selectedClientCustomerID.length > 0 ? selectedClientCustomerID : contextClientID);
 
-            try {
-                const formData = new FormData();
-                formData.append("client_id", selectedClientCustomerID.length > 0 ? selectedClientCustomerID : contextClientID);
+            //     const res = await fetch("/api/clientAdmin/getClientProfile", {
+            //         method: "POST",
+            //         body: JSON.stringify({ "client_id": selectedClientCustomerID.length > 0 ? selectedClientCustomerID : contextClientID }),
+            //     });
+            //     const response = await res.json();
+            //     if (res.ok) {
+            //         setLoading(false);
+            //         const user = response.clients[0];
+                    
+            //     } else {
+            //         setLoading(false);
+            //         setShowAlert(true);
+            //         setAlertTitle("Error")
+            //         setAlertStartContent(selectedClientCustomerID ? "Failed to get profile" : "Failed to get Customer Branch Details");
+            //         setAlertForSuccess(1)
+            //     }
 
-                const res = await fetch("/api/clientAdmin/getClientProfile", {
-                    method: "POST",
-                    body: JSON.stringify({ "client_id": selectedClientCustomerID.length > 0 ? selectedClientCustomerID : contextClientID }),
-                });
-                const response = await res.json();
-                if (res.ok) {
-                    setLoading(false);
-                    const user = response.clients[0];
-                } else {
-                    setLoading(false);
-                    setShowAlert(true);
-                    setAlertTitle("Error")
-                    setAlertStartContent(selectedClientCustomerID ? "Failed to get profile" : "Failed to get Customer Branch Details");
-                    setAlertForSuccess(1)
-                }
-
-            } catch (error) {
-                setLoading(false);
-                setShowAlert(true);
-                setAlertTitle("Exception")
-                setAlertStartContent(ALERTMSG_exceptionString);
-                setAlertForSuccess(1)
-                console.error("Error fetching user data:", error);
-            }
+            // } catch (error) {
+            //     setLoading(false);
+            //     setShowAlert(true);
+            //     setAlertTitle("Exception")
+            //     setAlertStartContent(ALERTMSG_exceptionString);
+            //     setAlertForSuccess(1)
+            //     console.error("Error fetching user data:", error);
+            // }
         }
         fetchData();
 
@@ -448,7 +449,7 @@ const BranchDetails = () => {
         };
     }, []);
     const [errors, setErrors] = useState<Partial<spesificBranchData>>({});
-    const validate = () => {
+    const   validate = () => {
         const newErrors: Partial<spesificBranchData> = {};
         if (!branchesArray[branchIndex].branch_number) newErrors.branch_number = "required";
 
@@ -464,11 +465,21 @@ const BranchDetails = () => {
         }
         //   if (!formValues.branch_email) newErrors.branch_email = "required";
         //   if (!formValues.time_zone_id) newErrors.time_zone_id = "required";
-        if (!branchesArray[branchIndex].is_main_branch) newErrors.is_main_branch = "required";
-        if (!branchesArray[branchIndex].is_active) newErrors.is_active = "required";
+        console.log("This is the log for ismainbranch", branchesArray[branchIndex].is_main_branch);
 
-        console.log("this is the error of form",newErrors);
-        
+        if (String(branchesArray[branchIndex].is_main_branch)=="true"||String(branchesArray[branchIndex].is_main_branch)=="false") 
+            {
+
+            }
+        else{newErrors.is_main_branch = "required";}
+        if (String(branchesArray[branchIndex].is_active)=="true"||String(branchesArray[branchIndex].is_active)=="false") 
+            {
+
+            }
+        else{newErrors.is_active = "required";}
+
+        console.log("this is the error of form", newErrors);
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
 
@@ -480,7 +491,7 @@ const BranchDetails = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
-
+        setLoading(true);
         formData.append("client_id", selectedClientCustomerID.length > 0 ? selectedClientCustomerID : contextClientID);
         formData.append("id", branchesArray[branchIndex].id);
 
@@ -489,7 +500,10 @@ const BranchDetails = () => {
         formData.append("branch_city", branchesArray[branchIndex].branch_city);
         formData.append("contact_details", branchesArray[branchIndex].contact_details);
         formData.append("branch_email", branchesArray[branchIndex].branch_email);
-        formData.append("time_zone_id", branchesArray[branchIndex].time_zone_id);
+        if(branchesArray[branchIndex].time_zone_id){
+            formData.append("time_zone_id", branchesArray[branchIndex].time_zone_id);
+        }
+        
         formData.append("is_main_branch", branchesArray[branchIndex].is_main_branch);
         formData.append("is_active", branchesArray[branchIndex].is_active);
 
@@ -499,27 +513,55 @@ const BranchDetails = () => {
                 body: formData,
             });
             const response = await res.json();
-            if (res.ok && response.status==1) {
+            if (res.ok && response.status == 1) {
+                setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent(response.message);
+                setAlertForSuccess(1)
+            } else {
                 setLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Error")
-                setAlertStartContent(selectedClientCustomerID?"Failed to get profile":"Failed to get Customer Branch Details");
-                setAlertForSuccess(1)
-            } else {
-                setShowAlert(true);
-                                            setAlertTitle("Error")
-                                            setAlertStartContent(response.message);
-                                            setAlertForSuccess(2)
+                setAlertStartContent(response.message);
+                setAlertForSuccess(2)
             }
         } catch (e) {
+            setLoading(false);
             setShowAlert(true);
-                                        setAlertTitle("Exception")
-                                        setAlertStartContent(ALERTMSG_exceptionString);
-                                        setAlertForSuccess(2)
+            setAlertTitle("Exception")
+            setAlertStartContent(ALERTMSG_exceptionString);
+            setAlertForSuccess(2)
         }
     }
+
+    const handleBlur = (e: any) => {
+            const { name } = e.target;
+            validateField(name);
+        };
+        const validateField = (fieldName: string) => {
+            const fieldErrors: Partial<spesificBranchData> = {};
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (fieldName === "email_id") {
+    
+                if (!branchesArray[branchIndex]?.branch_email) {
+                    fieldErrors.branch_email = "required";
+                } else if (!emailRegex.test(branchesArray[branchIndex]?.branch_email)) {
+                    fieldErrors.branch_email = "Invalid email";
+                } else {
+                    delete errors.branch_email;
+                }
+            }
+    
+    
+            // repeat for other fields if needed
+    
+            setErrors(prev => ({ ...prev, ...fieldErrors }));
+        };
     const handleValuesChange = (e: any, id: any) => {
         const { value, name } = e.target;
+        console.log("this is handle vaues change-----",e);
+        
         setBranches((prev) => {
             const existingComponentIndex = prev.findIndex((item) => item.id === id);
             if (existingComponentIndex > -1) {
@@ -529,7 +571,7 @@ const BranchDetails = () => {
                     name == "branch_city" ? updatedArray[existingComponentIndex].branch_city = value :
                         name == "branch_email" ? updatedArray[existingComponentIndex].branch_email = value :
                             name == "branch_number" ? updatedArray[existingComponentIndex].branch_number = value :
-                                name == "contact_details" ? updatedArray[existingComponentIndex].contact_details = value :
+                                name == "contact_details" ? updatedArray[existingComponentIndex].contact_details = value.replace(/\D/g, "") :
                                     name == "is_active" ? updatedArray[existingComponentIndex].is_active = value :
 
                                         updatedArray[existingComponentIndex].is_main_branch = value;
@@ -542,7 +584,7 @@ const BranchDetails = () => {
                     branch_city: name == "branch_city" ? value : branchesArray[existingComponentIndex].branch_city,
                     branch_email: name == "branch_email" ? value : branchesArray[existingComponentIndex].branch_email,
                     branch_number: name == "branch_number" ? value : branchesArray[existingComponentIndex].branch_number,
-                    contact_details: name == "contact_details" ? value : branchesArray[existingComponentIndex].contact_details,
+                    contact_details: name == "contact_details" ? value.replace(/\D/g, "") : branchesArray[existingComponentIndex].contact_details,
                     is_main_branch: name == "is_main_branch" ? value : branchesArray[existingComponentIndex].is_main_branch,
                     time_zone_id: name == "time_zone_id" ? value : branchesArray[existingComponentIndex].time_zone_id,
                     is_active: name == "is_active" ? value : branchesArray[existingComponentIndex].is_active,
@@ -569,22 +611,22 @@ const BranchDetails = () => {
                 <div className="col-lg-12">
                     <div className="row">
                         <div className="col-lg-12">
-                            <div style={{    overflowX: "scroll",overflowY: "hidden",display: "flex",flexWrap: "nowrap",gap:"1px",whiteSpace:"nowrap"}}>
-                            {branchesArray.map((branch, index) => (
-                                <div onClick={(e) => {
-                                    setBranchIndex(index);
-                                     for(let i=0;i<timeZone.length;i++){
-                                        if(branch.time_zone_id){
-                                        if(parseInt(branch.time_zone_id)==timeZone[i].id){
-                                            setCurrentTimeZone(timeZone[i].time_zone);
+                            <div className="client_admin_profile_branches" >
+                                {branchesArray.map((branch, index) => (
+                                    <div onClick={(e) => {
+                                        setBranchIndex(index);
+                                        for (let i = 0; i < timeZone.length; i++) {
+                                            if (branch.time_zone_id) {
+                                                if (parseInt(branch.time_zone_id) == timeZone[i].id) {
+                                                    setCurrentTimeZone(timeZone[i].time_zone);
+                                                }
+                                            }
                                         }
-                                    }
-                                    }
 
-                                }} className={branchIndex == index ? "announcement_branch_box announcement_branch_box_selected" : "announcement_branch_box"} key={branch.id} style={{width:"auto",display:"flex"}}>
-                                    {branch.branch_number}
-                                </div>
-                            ))}
+                                    }} className={branchIndex == index ? "announcement_branch_box announcement_branch_box_selected" : "announcement_branch_box"} key={branch.id} style={{ width: "auto", display: "flex" }}>
+                                        {branch.branch_number}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -608,27 +650,27 @@ const BranchDetails = () => {
                                             <div className="row">
                                                 <div className="col-md-6">
                                                     <div className="col-lg-12">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Branch Number:  </label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Branch Number<span className='req_text' style={{ color: "red" }}>*</span> :  </label>
                                                     </div>
                                                     <div className="col-lg-12 form_box">
-                                                        <input type="text" className="form-control" id="branch_number" value={branchesArray[branchIndex]?.branch_number || ""} name="branch_number" readOnly />
+                                                        <input type="text" className="form-control" id="branch_number" value={branchesArray[branchIndex]?.branch_number || ""} name="branch_number" readOnly={contextRoleID!="2"} />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6 mb-4">
                                                     <div className="col-lg-12">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Email Address: </label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Email Address<span className='req_text' style={{ color: "red" }}>*</span> : </label>
                                                     </div>
                                                     <div className="col-lg-12 form_box">
-                                                        <input type="text" className="form-control" id="branch_email" value={branchesArray[branchIndex]?.branch_email || ""} name="branch_email" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))} />
+                                                        <input type="text" className="form-control" onBlur={handleBlur} id="branch_email" value={branchesArray[branchIndex]?.branch_email || ""} name="branch_email" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))} />
                                                         {errors.branch_email && <span className="error" style={{ color: "red" }}>{errors.branch_email} </span>}
 
                                                     </div>
-                                                
+
 
                                                 </div>
                                                 <div className="col-md-6 mb-4">
                                                     <div className="col-lg-12">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Branch City<span className='req_text'>*</span>:  </label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Branch City<span className='req_text' style={{ color: "red" }}>*</span> :  </label>
                                                     </div>
                                                     <div className="col-lg-12 form_box">
                                                         <input type="text" className="form-control" id="branch_city" value={branchesArray[branchIndex]?.branch_city || ""} name="branch_city" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))} />
@@ -638,7 +680,7 @@ const BranchDetails = () => {
                                                 </div>
                                                 <div className="col-md-6 mb-4">
                                                     <div className="col-lg-12">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Address<span className='req_text'>*</span>:</label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Address<span className='req_text' style={{ color: "red" }}>*</span>:</label>
                                                     </div>
                                                     <div className="col-lg-12 form_box">
                                                         <input type="text" className="form-control" id="branch_address" value={branchesArray[branchIndex]?.branch_address || ""} name="branch_address" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))} />
@@ -648,23 +690,27 @@ const BranchDetails = () => {
                                                 </div>
                                                 <div className="col-md-6 mb-4">
                                                     <div className="col-lg-12">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Contact Details<span className='req_text'>*</span>:  </label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Contact Details<span className='req_text' style={{ color: "red" }}>*</span>:  </label>
                                                     </div>
                                                     <div className="col-lg-12 form_box">
-                                                        <input type="text" className="form-control" id="contact_details" value={branchesArray[branchIndex]?.contact_details || ""} name="contact_details" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))} />
-                                                        {errors.contact_details && <span className="error" style={{ color: "red"  }}>{errors.contact_details} </span>}
+                                                        <input type="text" className="form-control" 
+                                                        maxLength={12}
+                                                        id="contact_details" value={branchesArray[branchIndex]?.contact_details || ""}
+                                                         name="contact_details" onChange={(e) => 
+                                                         (handleValuesChange(e, branchesArray[branchIndex].id))} />
+                                                        {errors.contact_details && <span className="error" style={{ color: "red" }}>{errors.contact_details} </span>}
 
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6 mb-4">
                                                     <div className="col-lg-12">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Is Main Branch<span className='req_text'>*</span>:</label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Is Main Branch<span className='req_text' style={{ color: "red" }}>*</span>:</label>
                                                     </div>
                                                     <div className="col-lg-12 form_box">
-                                                        <select id="is_main_branch" name="is_main_branch" value={branchesArray[branchIndex]?.is_main_branch || branchesArray[branchIndex]?.is_main_branch == "TRUE" ? "TURE" : "FALSE"} onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
+                                                        <select id="is_main_branch" name="is_main_branch" value={branchesArray[branchIndex]?.is_main_branch! && String(branchesArray[branchIndex]?.is_main_branch)=='true' ? "true" : "false"} onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
                                                             {/* <option value={branchesArray[branchIndex]?.is_main_branch}>{branchesArray[branchIndex]?.is_main_branch}</option> */}
-                                                            <option value="TRUE">TRUE</option>
-                                                            <option value="FALSE">FALSE</option>
+                                                            <option value="true">TRUE</option>
+                                                            <option value="false">FALSE</option>
                                                         </select>
                                                         {errors.is_main_branch && <span className="error" style={{ color: "red" }}>{errors.is_main_branch} </span>}
 
@@ -676,7 +722,7 @@ const BranchDetails = () => {
                                                     </div>
                                                     <div className="col-lg-12 form_box">
                                                         <select id="time_zone_id" name="time_zone_id" onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
-                                                            <option value={branchesArray[branchIndex]?.time_zone_id}>{currentTimeZone || ""}</option>
+                                                            <option value={branchesArray[branchIndex]?.time_zone_id}>{currentTimeZone || "Select"}</option>
                                                             {timeZone.map((id) => (
                                                                 <option value={id.id} key={id.id}>{id.time_zone}</option>
                                                             ))}
@@ -685,13 +731,13 @@ const BranchDetails = () => {
                                                 </div>
                                                 <div className="col-md-6 mb-4">
                                                     <div className="col-lg-12">
-                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Is Active<span className='req_text'>*</span>:</label>
+                                                        <label htmlFor="exampleFormControlInput1" className="form-label">Is Active<span className='req_text' style={{ color: "red" }}>*</span>:</label>
                                                     </div>
                                                     <div className="col-lg-12 form_box">
-                                                        <select id="is_active" name="is_active" value={branchesArray[branchIndex]?.is_active || branchesArray[branchIndex]?.is_active == "TRUE" ? "TRUE" : "FALSE"} onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
+                                                        <select id="is_active" name="is_active" value={branchesArray[branchIndex]?.is_active! && String(branchesArray[branchIndex]?.is_active) =='true'  ? "true" : "false"} onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
                                                             {/* <option value={branchesArray[branchIndex]?.is_active}>{branchesArray[branchIndex]?.is_active}</option> */}
-                                                            <option value="TRUE">TRUE</option>
-                                                            <option value="FALSE">FALSE</option>
+                                                            <option value="true">TRUE</option>
+                                                            <option value="false">FALSE</option>
                                                         </select>
                                                         {errors.is_active && <span className="error" style={{ color: "red" }}>{errors.is_active} </span>}
 
@@ -707,7 +753,7 @@ const BranchDetails = () => {
                                 </div>
                             </div>&nbsp;
                             <div className="row">
-                                <div className="col-lg-12" style={{ textAlign: "right" }}><input type='submit' value="Update" className="red_button"  /></div>
+                                <div className="col-lg-12" style={{ textAlign: "right" }}><input type='submit' value="Update" className="red_button" /></div>
                             </div>
                         </div>
 

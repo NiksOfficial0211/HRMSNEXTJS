@@ -6,13 +6,11 @@ import supabase from '@/app/api/supabaseConfig/supabase'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LeapRequestMaster, SupportForm } from '@/app/models/supportModel'
 import { ALERTMSG_FormExceptionString, raiseSupportTitle } from '@/app/pro_utils/stringConstants'
-import { ALERTMSG_addAssetSuccess, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import ShowAlertMessage from '@/app/components/alert'
-import { pageURL_userLeave, pageURL_whatsappSuccessPage } from '@/app/pro_utils/stringRoutes';
+import { pageURL_whatsappSuccessPage } from '@/app/pro_utils/stringRoutes';
 
 const SupportRequestForm: React.FC = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
-  // const { contextClientID, contaxtBranchID, contextCustomerID } = useGlobalContext();
   const [priorityArray, setPriority] = useState<SupportPriority[]>([]);
   const [masterArray, setMaster] = useState<LeapRequestMaster[]>([]);
   const [loadingCursor, setLoadingCursor] = useState(false);
@@ -31,6 +29,7 @@ const SupportRequestForm: React.FC = () => {
   const router = useRouter()
   useEffect(() => {
     setLoadingCursor(true);
+
     const fetchData = async () => {
       const custData = await getCustomerClientIds(contactNumber!);
       setuserData(custData);
@@ -41,6 +40,9 @@ const SupportRequestForm: React.FC = () => {
       setMaster(master);
       setLoadingCursor(false);
     };
+
+
+
     fetchData();
     const handleScroll = () => {
       setScrollPosition(window.scrollY); // Update scroll position
@@ -56,6 +58,17 @@ const SupportRequestForm: React.FC = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [])
+  // Start 5 min timer when page loads
+  useEffect(() => {
+
+    const expiryTimer = setTimeout(() => {
+      alert("This session has expired. Please request a new link.");
+      router.push("/expired-link");
+    }, 5 * 60 * 1000); // 5 min
+
+    return () => clearTimeout(expiryTimer);
+  }, []);
+
 
   const [formValues, setFormValues] = useState<SupportForm>({
     id: 0,
@@ -131,48 +144,48 @@ const SupportRequestForm: React.FC = () => {
   return (
     <div className='apply-task-container'>
       <div className={`${loadingCursor ? "cursorLoading" : ""}`}>
-      <h2>Raise Support</h2>
-      {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
-        setShowAlert(false)
-        if (alertForSuccess == 1) {
-          router.push(pageURL_whatsappSuccessPage);
-        }
-      }} onCloseClicked={function (): void {
-        setShowAlert(false)
-      }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Request Type  <span className='req_text'>*</span></label>
-          <select name="type_id" value={formValues.type_id} onChange={handleInputChange}>
-            <option value="">Select</option>
-            {masterArray.map((type, index) => (
-              <option value={type.id} key={index}>{type.type_name}</option>
-            ))}
-          </select>
-          {errors.type_id && <span className="error">{errors.type_id}</span>}
-        </div>
+        <h2>Raise Support</h2>
+        {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+          setShowAlert(false)
+          if (alertForSuccess == 1) {
+            router.push(pageURL_whatsappSuccessPage);
+          }
+        }} onCloseClicked={function (): void {
+          setShowAlert(false)
+        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Request Type  <span className='req_text'>*</span></label>
+            <select name="type_id" value={formValues.type_id} onChange={handleInputChange}>
+              <option value="">Select</option>
+              {masterArray.map((type, index) => (
+                <option value={type.id} key={index}>{type.type_name}</option>
+              ))}
+            </select>
+            {errors.type_id && <span className="error">{errors.type_id}</span>}
+          </div>
 
-        <div className="form-group">
-          <label>Priority <span className='req_text'>*</span></label>
-          <select name="priority_level" value={formValues.priority_level} onChange={handleInputChange}>
-            <option value="">Select</option>
-            {priorityArray.map((type, index) => (
-              <option value={type.id} key={index}>{type.priority_name}</option>
-            ))}
-          </select>
-          {errors.priority_level && <span className="error">{errors.priority_level}</span>}
-        </div>
+          <div className="form-group">
+            <label>Priority <span className='req_text'>*</span></label>
+            <select name="priority_level" value={formValues.priority_level} onChange={handleInputChange}>
+              <option value="">Select</option>
+              {priorityArray.map((type, index) => (
+                <option value={type.id} key={index}>{type.priority_name}</option>
+              ))}
+            </select>
+            {errors.priority_level && <span className="error">{errors.priority_level}</span>}
+          </div>
 
-        <div className="form-group">
-          <label>Description <span className='req_text'>*</span></label>
-          <textarea name="description" rows={2} value={formValues.description} onChange={handleInputChange} />
-          {errors.description && <span className="error">{errors.description}</span>}
-        </div>
+          <div className="form-group">
+            <label>Description <span className='req_text'>*</span></label>
+            <textarea name="description" rows={2} value={formValues.description} onChange={handleInputChange} />
+            {errors.description && <span className="error">{errors.description}</span>}
+          </div>
 
-        <div className="form-group">
-          <button type="submit" className="submit-btn">Submit</button>
-        </div>
-      </form>
+          <div className="form-group">
+            <button type="submit" className="submit-btn">Submit</button>
+          </div>
+        </form>
       </div>
     </div>
   )
