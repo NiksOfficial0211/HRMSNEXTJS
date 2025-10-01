@@ -273,7 +273,7 @@ const LeapHeader = ({ title }: any) => {
                                                         <div className="user_dash_top_profile_icon">
                                                             <svg width="16" height="16" x="0" y="0" viewBox="0 0 24 24">
                                                                 <g transform="matrix(1.17,0,0,1.17,-2.0397450995445237,-2.0399100208282466)">
-                                                                    <path fill="#707070" fill-rule="evenodd" d="M12 2a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1zM8.866 5.57A1 1 0 0 1 8.5 6.936a7 7 0 1 0 6.999 0 1 1 0 0 1 1-1.731 9 9 0 1 1-9.001 0 1 1 0 0 1 1.367.365z" clip-rule="evenodd" opacity="1" data-original="#000000"></path>
+                                                                    <path fill="#707070" fillRule="evenodd" d="M12 2a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1zM8.866 5.57A1 1 0 0 1 8.5 6.936a7 7 0 1 0 6.999 0 1 1 0 0 1 1-1.731 9 9 0 1 1-9.001 0 1 1 0 0 1 1.367.365z" clipRule="evenodd" opacity="1" data-original="#000000"></path>
                                                                 </g>
                                                             </svg>
                                                         </div>
@@ -334,7 +334,7 @@ const LeapHeader = ({ title }: any) => {
                                                         <div className="user_dash_top_profile_icon">
                                                             <svg width="16" height="16" x="0" y="0" viewBox="0 0 24 24">
                                                                 <g transform="matrix(1.17,0,0,1.17,-2.0397450995445237,-2.0399100208282466)">
-                                                                    <path fill="#707070" fill-rule="evenodd" d="M12 2a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1zM8.866 5.57A1 1 0 0 1 8.5 6.936a7 7 0 1 0 6.999 0 1 1 0 0 1 1-1.731 9 9 0 1 1-9.001 0 1 1 0 0 1 1.367.365z" clip-rule="evenodd" opacity="1" data-original="#000000"></path>
+                                                                    <path fill="#707070" fillRule="evenodd" d="M12 2a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1zM8.866 5.57A1 1 0 0 1 8.5 6.936a7 7 0 1 0 6.999 0 1 1 0 0 1 1-1.731 9 9 0 1 1-9.001 0 1 1 0 0 1 1.367.365z" clipRule="evenodd" opacity="1" data-original="#000000"></path>
                                                                 </g>
                                                             </svg>
                                                         </div>
@@ -347,7 +347,7 @@ const LeapHeader = ({ title }: any) => {
                                                         <div className="user_dash_top_profile_icon">
                                                             <svg width="16" height="16" x="0" y="0" viewBox="0 0 24 24">
                                                                 <g transform="matrix(1.17,0,0,1.17,-2.0397450995445237,-2.0399100208282466)">
-                                                                    <path fill="#707070" fill-rule="evenodd" d="M12 2a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1zM8.866 5.57A1 1 0 0 1 8.5 6.936a7 7 0 1 0 6.999 0 1 1 0 0 1 1-1.731 9 9 0 1 1-9.001 0 1 1 0 0 1 1.367.365z" clip-rule="evenodd" opacity="1" data-original="#000000"></path>
+                                                                    <path fill="#707070" fillRule="evenodd" d="M12 2a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1zM8.866 5.57A1 1 0 0 1 8.5 6.936a7 7 0 1 0 6.999 0 1 1 0 0 1 1-1.731 9 9 0 1 1-9.001 0 1 1 0 0 1 1.367.365z" clipRule="evenodd" opacity="1" data-original="#000000"></path>
                                                                 </g>
                                                             </svg>
                                                         </div>
