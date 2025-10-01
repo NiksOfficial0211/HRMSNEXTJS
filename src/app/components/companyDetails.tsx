@@ -643,7 +643,7 @@ const CompanyProfileDetails = () => {
                                             </div>
                                             <div className='col-lg-2'>
                                                 <div className="row" style={{ fontSize: "5px" }}>
-                                                    <a onClick={() => setEditCompanyName(!editCompanyName ? true : false)}><img src={staticIconsBaseURL + "/images/edit.png"} className="img-fluid" style={{ maxHeight: '20px' }} /><div className="option_label"></div></a>
+                                                    <a onClick={() => setEditCompanyName(!editCompanyName)}><img src={editCompanyName?staticIconsBaseURL+"/images/dont_edit.png":staticIconsBaseURL + "/images/edit.png"} className="img-fluid" style={{ maxHeight: '20px' }} /><div className="option_label"></div></a>
                                                 </div>
                                             </div>
                                         </div>

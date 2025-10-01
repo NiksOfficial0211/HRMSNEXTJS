@@ -183,21 +183,21 @@ const UserNotificationCorner = ({ onClose }: { onClose: any }) => {
                                             <ul className="nw_notification_table_listing" key={i} style={{fontSize:"15px"}}>
                                                 {/* <li> */}
                                                 {notiList.activity_type_id.id === 1 ? ( //attendance
-                                                    <div style={{ cursor: "pointer" }} onClick={() => contextRoleID=='2' && isAdmin=='1'? handleViewNavigation:window.location.href = pageURL_userAttendance}>
+                                                    <div style={{ cursor: "pointer" }} onClick={() => contextRoleID=='2' && isAdmin=='1'? handleViewNavigation(notiList.activity_type_id.id,notiList.customer_id,notiList.activity_related_id):window.location.href = pageURL_userAttendance}>
                                                         {notiList.activity_type_id.activity_type} : {notiList.activity_details}
                                                         <span className='notification_detail_icon'>
                                                         </span>
                                                     </div>
                                                 ) : notiList.activity_type_id.id === 2 ? ( //task
-                                                    <div style={{ cursor: "pointer" }} onClick={() => contextRoleID=='2' && isAdmin=='1'? handleViewNavigation:window.location.href = pageURL_userTaskListingPage}>
+                                                    <div style={{ cursor: "pointer" }} onClick={() => contextRoleID=='2' && isAdmin=='1'? handleViewNavigation(notiList.activity_type_id.id,notiList.customer_id,notiList.activity_related_id):window.location.href = pageURL_userTaskListingPage}>
                                                         {notiList.activity_type_id.activity_type} : {notiList.activity_details}
                                                     </div>
                                                 ) : notiList.activity_type_id.id === 3 ? ( //leave
-                                                    <div style={{ cursor: "pointer" }} onClick={() => contextRoleID=='2' && isAdmin=='1'? handleViewNavigation:window.location.href = pageURL_userLeave}>
+                                                    <div style={{ cursor: "pointer" }} onClick={() => contextRoleID=='2' && isAdmin=='1'? handleViewNavigation(notiList.activity_type_id.id,notiList.customer_id,notiList.activity_related_id):window.location.href = pageURL_userLeave}>
                                                         {notiList.activity_type_id.activity_type} : {notiList.activity_details}
                                                     </div>
                                                 ) : notiList.activity_type_id.id === 5 ? ( //support
-                                                    <div style={{ cursor: "pointer" }} onClick={() => contextRoleID=='2' && isAdmin=='1'? handleViewNavigation:window.location.href = pageURL_userSupport}>
+                                                    <div style={{ cursor: "pointer" }} onClick={() => contextRoleID=='2' && isAdmin=='1'? handleViewNavigation(notiList.activity_type_id.id,notiList.customer_id,notiList.activity_related_id):window.location.href = pageURL_userSupport}>
                                                         {notiList.activity_type_id.activity_type} : {notiList.activity_details}
                                                     </div>
                                                 ) : (

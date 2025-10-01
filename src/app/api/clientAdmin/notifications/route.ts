@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       const { data: userActivities, error } = await supabase
         .from("leap_client_useractivites")
         .select(
-          `created_at, activity_details, activity_type_id(id, activity_type), activity_related_id`
+          `created_at,customer_id, activity_details, activity_type_id(id, activity_type), activity_related_id`
         )
         .eq("client_id", client_id)
         .gte("created_at", startOfRange)
