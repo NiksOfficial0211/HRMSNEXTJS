@@ -35,7 +35,8 @@ export async function middleware(request: NextRequest) {
       "/whats-app/raise-support",
       "/whats-app/upload-documents",
       "/whats-app/apply-leave",
-      "/whats-app"
+      "/whats-app",
+      "/firebase-messaging-sw.js"
     ];
 
   // ✅ Allow password reset & confirmation pages to be accessed
