@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         try {
           if (contact_number) {
             const payload = { 
-              apiKey: process.env.AISENSY_API_KEY,
+              apiKey: process.env.NEXT_PUBLIC_AISENSY_API_KEY,
               campaignName: "raise_ticket_id",
               destination: contact_number,
               userName: "Evonix Technologies Private Limited",
