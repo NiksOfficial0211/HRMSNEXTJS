@@ -269,7 +269,6 @@ export const UserEmployement = () => {
             
 
         }
-        if(newPassword.password || newPassword.confirmPassword) return;
 
         e.preventDefault();
         if (!validate()) return;

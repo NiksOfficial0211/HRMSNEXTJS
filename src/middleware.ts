@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
 
   const lowerPath = pathname.toLowerCase();
   const allowList = [ 
-      "login",
+      "/login",
       "/forgot-password",
       "/reset-password",
       "/reset-pass/verify-token",
@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
       "/whats-app/upload-documents",
       "/whats-app/apply-leave",
       "/whats-app",
-      "/firebase-messaging-sw.js"
+      // "/firebase-messaging-sw.js"
     ];
 
   // ✅ Allow password reset & confirmation pages to be accessed
