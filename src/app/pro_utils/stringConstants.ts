@@ -291,3 +291,5 @@ export const table_LeapUserRole="29"
 export const table_LeapWebSidePanelMenu="30"
 export const table_LeapWorkingType="31"
 
+export const whatsapp_number="917888000375"
+

@@ -6,7 +6,7 @@ import supabase from '@/app/api/supabaseConfig/supabase'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useGlobalContext } from '@/app/contextProviders/loggedInGlobalContext'
 import { SubProject } from '@/app/models/TaskModel'
-import { ALERTMSG_exceptionString, employeeDocUpload } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_exceptionString, employeeDocUpload, whatsapp_number } from '@/app/pro_utils/stringConstants'
 import router from 'next/router';
 import { pageURL_whatsappSuccessPage } from '@/app/pro_utils/stringRoutes';
 
@@ -94,6 +94,7 @@ const DocUploadApp: React.FC = () => {
         // if (formFilledData.docTypeID.length > 0) {
         //     return alert("Please select type of document");
         // }
+        formData.append("contact_number", contactNumber!);
         formData.append("client_id", userData[0].client_id);
         formData.append("customer_id", userData[0].customer_id);
         formData.append("file", formFilledData.selectedFile!);
@@ -110,7 +111,7 @@ const DocUploadApp: React.FC = () => {
 
             if (response.status == 1) {
                 setLoadingCursor(false);
-                router.push(pageURL_whatsappSuccessPage)
+                router.push(`https://wa.me/` + whatsapp_number);
                 // alert(response.message)
                 // onClose();
             } else {

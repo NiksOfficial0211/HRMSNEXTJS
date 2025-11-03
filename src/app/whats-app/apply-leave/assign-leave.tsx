@@ -7,7 +7,7 @@ import moment from 'moment'
 import { DateRange, RangeKeyDict } from 'react-date-range';
 import { format } from 'date-fns'
 import { Range } from 'react-date-range';
-import { ALERTMSG_FormExceptionString } from '@/app/pro_utils/stringConstants'
+import { ALERTMSG_FormExceptionString, whatsapp_number } from '@/app/pro_utils/stringConstants'
 import { useSearchParams } from "next/navigation";
 import { pageURL_whatsappSuccessPage } from '@/app/pro_utils/stringRoutes';
 
@@ -110,7 +110,7 @@ const AssignLeave: React.FC = () => {
         if (!validate()) return;
         setLoadingCursor(true);
         // console.log("handle submit called");
-
+        formData.append("contact_number", contactNumber!);
         formData.append("client_id", userData[0].client_id);
         formData.append("branch_id", userData[0].branch_id);
         formData.append("customer_id", userData[0].customer_id);
@@ -127,7 +127,7 @@ const AssignLeave: React.FC = () => {
             });
             if (response.ok) {
                 setLoadingCursor(false);
-                router.push(pageURL_whatsappSuccessPage)
+                router.push(`https://wa.me/` + whatsapp_number);
             } else {
                 setLoadingCursor(false);
                 e.preventDefault()
