@@ -264,8 +264,8 @@ const UpdateSalaryComponent = ({ title, componentData,onClose }: { title: any,co
                                 <label htmlFor="exampleFormControlInput1"  className="form-label" >Earning Component</label>
                                 <select id="earning" name="earning"  value={formValues.earning+""} onChange={handleFormValuesChange}>
                                     <option value="" >Select</option>
-                                    <option value="true" >True</option>
-                                    <option value="false" >False</option>
+                                    <option value="true" >Yes</option>
+                                    <option value="false" >No</option>
                                     
                                 </select>
                                 {errors.enabled && <span className="error" style={{color: "red"}}>{errors.enabled}</span>}                            
@@ -276,8 +276,8 @@ const UpdateSalaryComponent = ({ title, componentData,onClose }: { title: any,co
                                 <label htmlFor="exampleFormControlInput1"  className="form-label" >Enabled</label>
                                 <select id="enabled" name="enabled"  value={formValues.enabled+""} onChange={handleFormValuesChange}>
                                     <option value="" >Select</option>
-                                    <option value="true" >True</option>
-                                    <option value="false" >False</option>
+                                    <option value="true" >Yes</option>
+                                    <option value="false" >No</option>
                                     
                                 </select>
                                 {errors.enabled && <span className="error" style={{color: "red"}}>{errors.enabled}</span>}                            

@@ -251,8 +251,8 @@ const CreateLeave: React.FC = () => {
 
                           <div className="col-md-3">
                             <div className="form_box mb-3">
-                              <label htmlFor="exampleFormControlInput1" className="form-label" >Day Count<span className='req_text'>*</span> :  </label>
-                              <input type="text" className="form-control" value={formValues.dayCount} name="dayCount" onChange={handleInputChange} id="dayCount" placeholder="Monthly count" />
+                              <label htmlFor="exampleFormControlInput1" className="form-label" >Total Days<span className='req_text'>*</span> :  </label>
+                              <input type="text" className="form-control" value={formValues.dayCount} name="dayCount" onChange={handleInputChange} id="dayCount" placeholder="count" />
                               {errors.dayCount && <span className="error" style={{ color: "red" }}>{errors.dayCount}</span>}
                             </div>
                           </div>

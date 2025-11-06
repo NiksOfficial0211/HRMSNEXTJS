@@ -10,6 +10,7 @@ uploads/
 .next/
 .env
 .env.local
+.zip
 
 # Compiled Java class files
 *.class
@@ -51,4 +52,5 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+*.zip
 

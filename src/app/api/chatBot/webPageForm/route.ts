@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
             );
         }
         let url = "";
-        // const base_url = "https://v2.leaphrms.com/"
+        // const base_url = "https://v2.leaphrms.com"
 
         if (id === "1") {
             url = baseUrl + "whats-app/add-task?contact_number=" + phone_number + "&ts=1696000000";

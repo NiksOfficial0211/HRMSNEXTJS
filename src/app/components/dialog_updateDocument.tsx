@@ -30,7 +30,7 @@ interface formvalues{
     document:string,
 }
 
-const DialogUpdateDocument = ({ onClose,replaceType,edit_id }: { onClose: () => void,replaceType:string,edit_id:number }) => {
+const DialogUpdateDocument = ({ onClose,replaceType,edit_id,docTypeId,customerID }: { onClose: (update:any) => void,replaceType:string,edit_id:number, docTypeId:number,customerID:any }) => {
 
     const [docTypes, setDocTypes] = useState<LeapDocumentType[]>([]);
     const [employeeData, setEmployee] = useState<LeapEmployeeBasic[]>([]);
@@ -92,28 +92,23 @@ const DialogUpdateDocument = ({ onClose,replaceType,edit_id }: { onClose: () => 
     const uploadDocument = async () => {
         const formData = new FormData();
         
-        
+        formData.append("client_id", contextClientID);
          if(!validate()){return;}
-           
-        
+        console.log();
+        setLoading(true);   
+        formData.append("file", inputData.selectedFile!);
         if (replaceType == companyDocUpload) {
            
             formData.append("doc_pk_id", edit_id.toString());
-           
-            formData.append("file", inputData.selectedFile!);
+            formData.append("doc_type_id", edit_id.toString());
+            formData.append("uploadType", companyDocUpload);
+            
             
         } else {
-                       
+            formData.append("uploadType", employeeDocUpload);
             formData.append("doc_pk_id", edit_id.toString());
-            if (contextRoleID == "2" || contextRoleID == "3") {
-                formData.append("customer_id", formFilledData.customer_id);
-            } else {
-                formData.append("customer_id", contextCustomerID);
-            }
-
-            formData.append("file", formFilledData.selectedFile!);
-            
-
+            formData.append("doc_type_id", docTypeId+'');
+            formData.append("customer_id", customerID);
         }
         try {
             const res = await fetch("/api/clientAdmin/org_documents/updateDocuments", {
@@ -151,9 +146,11 @@ const DialogUpdateDocument = ({ onClose,replaceType,edit_id }: { onClose: () => 
     };
 
     const handleInputChange =  (e: any) => {
-        const { name, type, files } = e.target;
+        const {  type, files } = e.target;
+        console.log(files);
+        
         if (type === "file") {
-            setInputData((prev) => ({ ...prev, [name]: files[0] }));
+            setInputData((prev) => ({ ...prev, ['selectedFile']: files[0] }));
         }
     
     };
@@ -170,7 +167,7 @@ const DialogUpdateDocument = ({ onClose,replaceType,edit_id }: { onClose: () => 
                         {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                             setShowAlert(false)
                             if(alertForSuccess==1){
-                                onClose();
+                                onClose(1);
                             }
                         }} onCloseClicked={function (): void {
                             setShowAlert(false)
@@ -181,7 +178,7 @@ const DialogUpdateDocument = ({ onClose,replaceType,edit_id }: { onClose: () => 
                         </div>
                     </div>
                    
-                    <div className="row">
+                   
                         
                         <div className="col-lg-12">
                             <div className="row">
@@ -197,7 +194,6 @@ const DialogUpdateDocument = ({ onClose,replaceType,edit_id }: { onClose: () => 
                             </div>
                         </div>
                         
-                    </div>
 
 
                     <div className="row mb-5">
@@ -220,7 +216,10 @@ const DialogUpdateDocument = ({ onClose,replaceType,edit_id }: { onClose: () => 
                 <LoadingDialog isLoading={isLoading} />
                         {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                             setShowAlert(false)
-
+                            
+                            if(alertForSuccess==1){
+                                onClose(1);
+                            }
                         }} onCloseClicked={function (): void {
                             setShowAlert(false)
                         }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
@@ -234,7 +233,7 @@ const DialogUpdateDocument = ({ onClose,replaceType,edit_id }: { onClose: () => 
                     <div className="row mb-3">
 
                         
-                        <div className="col-md-6">
+                        <div className="col-md-12">
                             <div className="row">
                                 <div className="col-lg-12 mb-1">Document<span className='req_text'>*</span>: </div>
                             </div>

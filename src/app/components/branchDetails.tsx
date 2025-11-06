@@ -721,8 +721,8 @@ const BranchDetails = () => {
                                                          onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
                                                             {/* <option value={branchesArray[branchIndex]?.is_main_branch}>{branchesArray[branchIndex]?.is_main_branch}</option> */}
                                                             <option value="">Select</option>
-                                                            <option value="true">TRUE</option>
-                                                            <option value="false">FALSE</option>
+                                                            <option value="true">Yes</option>
+                                                            <option value="false">No</option>
                                                         </select>
                                                         {errors.is_main_branch && <span className="error" style={{ color: "red" }}>{errors.is_main_branch} </span>}
 
@@ -748,8 +748,8 @@ const BranchDetails = () => {
                                                     <div className="col-lg-12 form_box">
                                                         <select id="is_active" name="is_active" value={branchesArray[branchIndex]?.is_active! && String(branchesArray[branchIndex]?.is_active) =='true'  ? "true" : "false"} onChange={(e) => (handleValuesChange(e, branchesArray[branchIndex].id))}>
                                                             {/* <option value={branchesArray[branchIndex]?.is_active}>{branchesArray[branchIndex]?.is_active}</option> */}
-                                                            <option value="true">TRUE</option>
-                                                            <option value="false">FALSE</option>
+                                                            <option value="true">Yes</option>
+                                                            <option value="false">No</option>
                                                         </select>
                                                         {errors.is_active && <span className="error" style={{ color: "red" }}>{errors.is_active} </span>}
 

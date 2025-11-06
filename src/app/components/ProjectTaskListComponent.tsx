@@ -502,13 +502,10 @@ const ProjectTaskListComponent = () => {
         taskStatus: '',
     });
     const [showCalendar, setShowCalendar] = useState(false);
-    const [state, setState] = useState<Range[]>([
-        {
-            startDate: new Date() || null,
-            endDate: new Date() || null,
-            key: 'selection'
-        }
-    ]);
+    const [state, setState] = useState<Range[]>([]);
+    const formattedRange = state! && state.length>0?
+                 state[0].startDate!.getTime() == state[0].endDate!.getTime() ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`:"--";
+             
     useEffect(() => {
         fetchFilterTables()
         fetchData()
@@ -637,7 +634,6 @@ const ProjectTaskListComponent = () => {
         setLoadingCursor(false)
     }
 
-    const formattedRange = state[0].startDate! == state[0].endDate! ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
     const handleChange = (ranges: RangeKeyDict) => {
         setState([ranges.selection]);
         setShowCalendar(false)

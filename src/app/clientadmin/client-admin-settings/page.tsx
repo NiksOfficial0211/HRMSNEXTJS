@@ -77,6 +77,7 @@ const ClientAdminSettings = () => {
 
     const [dataEditID, setDataEditID] = useState(-1);
     const [dataEditDetail, setDataEditDetail] = useState('');
+    const [dataEditDetailBranch, setDataEditDetailBranch] = useState('');
 
     const [showEditDesignation, setShowEditDesignation] = useState(false);
     const [showEditDepartment, setShowEditDepartment] = useState(false);
@@ -542,6 +543,9 @@ const ClientAdminSettings = () => {
                                                                     setDataEditID(department.department_id);
                                                                     setShowEditDepartment(true);
                                                                     setDataEditDetail(department.department_name)
+                                                                    console.log(department.branch_id);
+                                                                    
+                                                                    setDataEditDetailBranch(department.branch_id+'');
                                                                 }}
                                                             />
 
@@ -595,6 +599,7 @@ const ClientAdminSettings = () => {
                                                                     setDataEditID(designation.designation_id);
                                                                     setShowEditDesignation(true);
                                                                     setDataEditDetail(designation.designation_name)
+                                                                    setDataEditDetailBranch(designation.branch_id+'');
                                                                 }}
                                                             />
 
@@ -831,28 +836,28 @@ const ClientAdminSettings = () => {
                                             <div className="col-md-3">
                                                 <div className="form_box mb-3">
                                                     <label htmlFor="exampleFormControlInput1" className="form-label" >Full Day Working Time:(minutes)<span className='req_text'>*</span>:</label>
-                                                    <input type="numeric" className="form-control" id="full_day" value={workingDayformValues.full_day} name="full_day" onChange={handleInputChange} placeholder="Enter Nationality" />
+                                                    <input type="numeric" className="form-control" id="full_day" value={workingDayformValues.full_day} name="full_day" onChange={handleInputChange} placeholder="Full day Time" />
                                                     {errors.full_day && <span className='error' style={{ color: "red" }}>{errors.full_day}</span>}
                                                 </div>
                                             </div>
                                             <div className="col-md-3">
                                                 <div className="form_box mb-3">
                                                     <label htmlFor="exampleFormControlInput1" className="form-label" >Half Day Working Time:(minutes)<span className='req_text'>*</span>:</label>
-                                                    <input type="numeric" className="form-control" id="half_day" value={workingDayformValues.half_day} name="half_day" onChange={handleInputChange} placeholder="Enter Nationality" />
+                                                    <input type="numeric" className="form-control" id="half_day" value={workingDayformValues.half_day} name="half_day" onChange={handleInputChange} placeholder="Half day time" />
                                                     {errors.half_day && <span className='error' style={{ color: "red" }}>{errors.half_day}</span>}
                                                 </div>
                                             </div>
                                             <div className="col-md-3">
                                                 <div className="form_box mb-3">
                                                     <label htmlFor="exampleFormControlInput1" className="form-label" >Total Break Time:(hours)<span className='req_text'>*</span>:</label>
-                                                    <input type="numeric" className="form-control" id="lunch_time" value={workingDayformValues.lunch_time} name="lunch_time" onChange={handleInputChange} placeholder="Enter Nationality" />
+                                                    <input type="numeric" className="form-control" id="lunch_time" value={workingDayformValues.lunch_time} name="lunch_time" onChange={handleInputChange} placeholder="Break time" />
                                                     {errors.lunch_time && <span className='error' style={{ color: "red" }}>{errors.lunch_time}</span>}
                                                 </div>
                                             </div>
                                             <div className="col-md-3">
                                                 <div className="form_box mb-3">
                                                     <label htmlFor="exampleFormControlInput1" className="form-label" >Working off Days:(per week)<span className='req_text'>*</span>:</label>
-                                                    <input type="numeric" className="form-control" id="holiday_per_week" value={workingDayformValues.holiday_per_week} name="holiday_per_week" onChange={handleInputChange} placeholder="Enter Nationality" />
+                                                    <input type="numeric" className="form-control" id="holiday_per_week" value={workingDayformValues.holiday_per_week} name="holiday_per_week" onChange={handleInputChange} placeholder="Weak-off days" />
                                                     {errors.holiday_per_week && <span className='error' style={{ color: "red" }}>{errors.holiday_per_week}</span>}
                                                 </div>
                                             </div>
@@ -914,11 +919,11 @@ const ClientAdminSettings = () => {
                     </div>
 
                     <div className={showAddDepartment ? "rightpoup rightpoupopen" : "rightpoup"}>
-                        {showAddDepartment && <DialogClientAddDesignationDepartment onClose={(callUpdate) => { setShowAddDepartment(false);if(callUpdate){fetchData()} }} isDesignationAdd={false} editDataType={''} editID={-1} dataToEdit={''} />}
+                        {showAddDepartment && <DialogClientAddDesignationDepartment onClose={(callUpdate) => { setShowAddDepartment(false);if(callUpdate){fetchData()} }} isDesignationAdd={false} branchID= {''} editDataType={''} editID={-1} dataToEdit={''} />}
                     </div>
 
                     <div className={showAddDesignation ? "rightpoup rightpoupopen" : "rightpoup"}>
-                        {showAddDesignation && <DialogClientAddDesignationDepartment onClose={(callUpdate) => { setShowAddDesignation(false);if(callUpdate){fetchData()}}} isDesignationAdd={true} editDataType={''} editID={-1} dataToEdit={''} />}
+                        {showAddDesignation && <DialogClientAddDesignationDepartment onClose={(callUpdate) => { setShowAddDesignation(false);if(callUpdate){fetchData()}}} isDesignationAdd={true} branchID={''} editDataType={''} editID={-1} dataToEdit={''} />}
                     </div>
 
                     <div className={showEditHolidayYear ? "rightpoup rightpoupopen" : "rightpoup"}>
@@ -955,11 +960,11 @@ const ClientAdminSettings = () => {
                     }
 
                     <div className={showEditDepartment ? "rightpoup rightpoupopen" : "rightpoup"}>
-                        {showEditDepartment && <DialogClientAddDesignationDepartment onClose={(callUpdate) => { setShowEditDepartment(false) ;if(callUpdate){fetchData()}}} isDesignationAdd={false} editDataType={"Department"} editID={dataEditID} dataToEdit={dataEditDetail} />}
+                        {showEditDepartment && <DialogClientAddDesignationDepartment onClose={(callUpdate) => { setShowEditDepartment(false) ;if(callUpdate){fetchData()}}} isDesignationAdd={false} editDataType={"Department"} editID={dataEditID} branchID={dataEditDetailBranch} dataToEdit={dataEditDetail} />}
                     </div>
 
                     <div className={showEditDesignation ? "rightpoup rightpoupopen" : "rightpoup"}>
-                        {showEditDesignation && <DialogClientAddDesignationDepartment onClose={(callUpdate) => { setShowEditDesignation(false);if(callUpdate){fetchData()} }} isDesignationAdd={false} editDataType={"Designation"} editID={dataEditID} dataToEdit={dataEditDetail} />}
+                        {showEditDesignation && <DialogClientAddDesignationDepartment onClose={(callUpdate) => { setShowEditDesignation(false);if(callUpdate){fetchData()} }} isDesignationAdd={false} editDataType={"Designation"} editID={dataEditID} branchID={dataEditDetailBranch} dataToEdit={dataEditDetail} />}
                     </div>
                     
                     <div className={showAddBankComponent ? "rightpoup rightpoupopen" : "rightpoup"}>

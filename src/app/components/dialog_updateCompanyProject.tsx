@@ -173,8 +173,8 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
                         branchID: projectData[0].branch_id,
                         departmentID: projectData[0].leap_client_sub_projects[0].department_id,
                         start_date: formatDateYYYYMMDD(projectData[0].leap_client_sub_projects[0].start_date),
-                        end_date: formatDateYYYYMMDD(projectData[0].leap_client_sub_projects[0].start_date),
-                        project_details: projectData[0].project_details,
+                        end_date: formatDateYYYYMMDD(projectData[0].leap_client_sub_projects[0].end_date),
+                        project_details: projectData[0].leap_client_sub_projects[0].project_details,
                         project_status: projectData[0].project_status,
                         colorCode: projectData[0].project_color_code,
                         setDeleted: projectData[0].is_deleted,
@@ -199,6 +199,10 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
                     })
                 }
                 setManagerArray(extractManagers);
+                if(projectData[0].leap_client_sub_projects[0].tech_stacks.length>0){
+                setSelectedTechStacksArray(projectData[0].leap_client_sub_projects[0].tech_stacks.map((id: any) => Number(id)));
+                }
+
                 // const teamLeads = await getTeamLeads(contextClientID, projectData[0].branch_id);
                 // let extractTL: any[] = []
                 // for (let i = 0; i < teamLeads.length; i++) {
@@ -294,8 +298,10 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
         if (!formValues.projectTypeID) newErrors.projectTypeID = "required";
         if (!formValues.branchID) newErrors.branchID = "required";
         if (!formValues.managerID) newErrors.managerID = "required";
+        if (!formValues.departmentID) newErrors.managerID = "required";
+        
 
-        if (isSubProject && !formValues.teamLeadID) newErrors.teamLeadID = "required";
+        // if (isSubProject && !formValues.teamLeadID) newErrors.teamLeadID = "required";
 
 
         if (isSubProject && !formValues.start_date) newErrors.start_date = "required";
@@ -305,7 +311,8 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
         // if (!selectedTechStacksArray) newErrors.project_details = "required";
 
 
-
+        console.log(newErrors);
+        
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -369,10 +376,11 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
 
     };
     const handleCheckboxChange = (value: any) => {
-        let updatedValues = selectedTechStacksArray.includes(value)
-            ? selectedTechStacksArray.filter((item) => item !== value)
-            : [...selectedTechStacksArray, value];
-        setSelectedTechStacksArray(updatedValues);
+    const numericValue = Number(value);
+    let updatedValues = selectedTechStacksArray.includes(numericValue)
+        ? selectedTechStacksArray.filter((item) => item !== numericValue)
+        : [...selectedTechStacksArray, numericValue];
+    setSelectedTechStacksArray(updatedValues);
     };
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
         if (!date) return '';
@@ -382,6 +390,13 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
 
         return parsedDate.format('YYYY-MM-DD');
     };
+    const formatDateForInput = (dateString:any ) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const timezoneOffset = date.getTimezoneOffset() * 60000; // offset in ms
+  const localDate = new Date(date.getTime() - timezoneOffset);
+  return localDate.toISOString().split("T")[0];
+};
     const handleIconClick = () => {
         fileInputRef.current?.click();
     };
@@ -523,7 +538,7 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
                                         <option value={department.department_id} key={department.department_id}>{department.department_name}</option>
                                     ))}
                                 </select>
-                                {errors.teamLeadID && <span className="error" style={{ color: "red" }}>{errors.teamLeadID}</span>}
+                                {errors.departmentID && <span className="error" style={{ color: "red" }}>{errors.departmentID}</span>}
                             </div>
                             {/* } */}
                         </div>
@@ -555,7 +570,7 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
                         }
                         {isSubProject && <div className="col-md-6">
                             <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >End Date:  </label>
+                                <label htmlFor="exampleFormControlInput1" className="form-label" >End Date:</label>
                                 <input type="date" id="end_date" name="end_date" value={formValues.end_date} onChange={handleInputChange} />
                                 {/* {errors.end_date && <span className="error" style={{ color: "red" }}>{errors.end_date}</span>} */}
                             </div>
@@ -617,7 +632,7 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
                                             <input
                                                 type="checkbox"
                                                 value={option.id}
-                                                checked={selectedTechStacksArray.includes(option.id)}
+                                                checked={selectedTechStacksArray.includes(Number(option.id))}
                                                 onChange={() => handleCheckboxChange(option.id)}
                                                 className="h-5 w-5 accent-blue-500"
                                             />

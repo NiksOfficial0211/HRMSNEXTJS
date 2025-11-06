@@ -367,7 +367,7 @@ const DialogAddEditBankComponents = ({ isComponentAdd,componentValue, onClose }:
 
                         <div className="col-md-12">
                             <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >Branch:  </label>
+                                <label htmlFor="exampleFormControlInput1" className="form-label" >Branch<span className='req_text'>*</span> :  </label>
                                 <Select
                                     className="custom-select"
                                     classNamePrefix="custom"
@@ -389,14 +389,14 @@ const DialogAddEditBankComponents = ({ isComponentAdd,componentValue, onClose }:
                         </div>
                         <div className="col-md-12">
                             <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >{isComponentAdd?"Add Bank Component":"Update Bank Component"}:  </label>
+                                <label htmlFor="exampleFormControlInput1" className="form-label" >{isComponentAdd?"Add Bank Component":"Update Bank Component"}<span className='req_text'>*</span> :  </label>
                                 <input type="text" className="form-control" value={formValues.componentName} name="componentName" onChange={(e) => setFormValues((prev) => ({ ...prev, ['componentName']: e.target.value }))} id="componentName" />
                                 {errors.componentName && <span className="error" style={{color: "red"}}>{errors.componentName}</span>}
                             </div>
                         </div>
                         <div className="col-md-12">
                             <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" > Component Data Type: </label>
+                                <label htmlFor="exampleFormControlInput1" className="form-label" > Component Data Type<span className='req_text'>*</span> : </label>
                                 <div className="form_box mb-3">
                             <select id="componentDataType" name="componentDataType" value={formValues.componentDataType} onChange={(e) => setFormValues((prev) => ({ ...prev, ['componentDataType']: e.target.value }))}>
                                 <option value="">Select</option>

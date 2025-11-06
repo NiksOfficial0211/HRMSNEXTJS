@@ -172,7 +172,9 @@ const DeleteConfirmation = ({ onClose, id,deletionType,deleteDetail }: { onClose
                 method: "DELETE",
                 body: formData,
             });
-            setAlertStartContent("Designation deleted successfully");
+            console.log(deleteDataTypeDepartment);
+            
+            setAlertStartContent(deletionType==deleteDataTypeDepartment?"Department deleted successfully.":"Designation deleted successfully.");
         }
         const resJson= await response.json();
           if (response.ok && resJson.status==1) {

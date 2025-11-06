@@ -1068,7 +1068,7 @@ input:checked+.slider:before {
 }
 
 .document_name {
-  min-height: 40px;
+  min-height: 35px;
 }
 
 .document_list .red_button img {
@@ -1339,6 +1339,7 @@ flex-wrap: nowrap;
     scrollbar-color: #d4aa70 #e4e4e4 ;
 
 }
+
 
 /*----------------------Nikhil Declared CSS END------------------------------------ */
 

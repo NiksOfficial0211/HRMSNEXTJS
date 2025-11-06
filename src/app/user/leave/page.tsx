@@ -204,6 +204,7 @@ const EmployeeLeaveList = () => {
             key: 'selection'
         }
     ]);
+    
 
     const handleChange = (ranges: RangeKeyDict) => {
         const start = ranges.selection.startDate;

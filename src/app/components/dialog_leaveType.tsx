@@ -56,14 +56,15 @@ const LeaveTypeUpdate = ({ onClose, id }: { onClose: (callUpdate:any) => void, i
         const fetchData = async () => {
 
             try {
-                const formData = new FormData();
-                formData.append("client_id", contextClientID);
-                formData.append("branch_id", contaxtBranchID);
-                formData.append("leave_id", id);
+               
 
                 const res = await fetch("/api/users/showLeaveType", {
                     method: "POST",
-                    body: formData,
+                    body: JSON.stringify({
+                        "client_id": contextClientID,
+                        "branch_id": contaxtBranchID,
+                        "leave_id": id
+                    }),
                 });
                 console.log(res);
 
@@ -119,6 +120,7 @@ const LeaveTypeUpdate = ({ onClose, id }: { onClose: (callUpdate:any) => void, i
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
+        
         console.log("handle submit called");
         const formData = new FormData();
         formData.append("leave_id", id);
@@ -142,15 +144,28 @@ const LeaveTypeUpdate = ({ onClose, id }: { onClose: (callUpdate:any) => void, i
 
             });
             console.log(response);
-
-            if (response.ok) {
-                
+            const res = await response.json();
+            console.log(response);
+            if (response.ok && res.status==1) {
+                setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent(res.message);
+                setAlertForSuccess(1)
             } else {
-                alert("Failed to submit form.");
+                setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent(res.message);
+                setAlertForSuccess(2)
             }
         } catch (error) {
             console.log("Error submitting form:", error);
-            alert("An error occurred while submitting the form.");
+            setLoading(false);
+                setShowAlert(true);
+                setAlertTitle("Exception")
+                setAlertStartContent(ALERTMSG_exceptionString);
+                setAlertForSuccess(3)
         }
     }
 
@@ -173,7 +188,7 @@ const LeaveTypeUpdate = ({ onClose, id }: { onClose: (callUpdate:any) => void, i
             </div>
             <div className="row">
                 <div className="col-lg-12 mb-3 inner_heading25">
-                    Add Holiday Financial year
+                    Update Leave Type
                 </div>
             </div>
 
@@ -221,7 +236,8 @@ const LeaveTypeUpdate = ({ onClose, id }: { onClose: (callUpdate:any) => void, i
                     </div>
                     <div className="col-md-4">
                         <div className="form_box mb-3">
-                            <label htmlFor="exampleFormControlInput1" className="form-label" >Gender: (Applicable for) </label>
+                            <label htmlFor="exampleFormControlInput1" className="form-label d-inline-flex align-items-baseline gap-1" ><span>Gender:</span>
+      <span className="text-muted small">(Applicable for)</span> </label>
                             <select id="gender" name="gender" value={formValues.gender} onChange={(e) => setFormValues((prev) => ({ ...prev, ['gender']: e.target.value }))}>
                                 <option value="">--</option>
                                 <option value="All">All</option>

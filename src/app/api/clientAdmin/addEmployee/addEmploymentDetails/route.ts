@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
             client_id: formData.get('client_id'),
             customer_id: formData.get('customer_id'),
             branch_id: formData.get('branch_id'),
+            customer_branch: formData.get('customer_branch'),
             designation_id: formData.get('designation_id'),
             department_id: formData.get('department_id'),
             manager_id: formData.get('manager_id'),
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
 
         let query = supabase.from('leap_customer').update([
             {
-                branch_id: fdata.branch_id,
+                branch_id: fdata.customer_branch,
                 designation_id: fdata.designation_id,
                 department_id: fdata.department_id,
                 manager_id: fdata.manager_id,

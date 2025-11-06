@@ -220,8 +220,8 @@ const AddSalaryComponent = ({ title, branchID, onClose }: { title: any, branchID
                                 <label htmlFor="exampleFormControlInput1" className="form-label" >Enabled</label>
                                 <select id="enabled" name="enabled" onChange={handleFormValuesChange}>
                                     <option value="" >Select</option>
-                                    <option value="True" >True</option>
-                                    <option value="False" >False</option>
+                                    <option value="True" >Yes</option>
+                                    <option value="False" >No</option>
 
                                 </select>
                                 {errors.enabled && <span className="error" style={{ color: "red" }}>{errors.enabled}</span>}

@@ -847,7 +847,7 @@ export async function getDesignationSetUserRole(designation_id: any) {
   console.log("================" + "getDesignationSetUserRole" + "=================");
 
   let userRole = { role: 5, isMAnager: false, isTeamlead: false, isemployee: true }
-  const { data: Designation, error: desigError } = await supabase.from('leap_client_designations').select('*').eq('id', designation_id);
+  const { data: Designation, error: desigError } = await supabase.from('leap_client_designations').select('*').eq('designation_id', designation_id);
   console.log("this isthe designation got------", Designation);
   if (Designation && Designation.length > 0) {
     if (Designation[0].designation_name.toLowerCase().includes('manager')) {
@@ -938,8 +938,8 @@ export async function funGetMyLeaveBalance(clientId: any, branchId: any, custome
     let customerLeavePendingCount: LeaveTypeCount[] = [];
     const custJoiningDate = customerData[0].date_of_joining;
     const calcTotalWorkingSpan = calculateNumMonths(new Date(custJoiningDate), new Date());
-    
-    
+    const calcTotalWorkingYears=calcTotalWorkingSpan/12>1?calcTotalWorkingSpan/12:1;
+
     const calcCurrentYearSpan = calculateNumMonths(new Date(getFirstDateOfYearbyDate(new Date())), new Date());
 // console.log("this is the customer joining date", custJoiningDate);
 //     console.log("this is the calcTotalWorkingSpan", calcTotalWorkingSpan);
@@ -964,13 +964,23 @@ export async function funGetMyLeaveBalance(clientId: any, branchId: any, custome
         //     color_code: custleaveData[i].color_code
         //   })
         // } else
-           
+          
+          
           customerLeavePendingCount.push({
             leaveTypeId: custleaveData[i].leave_id,
             leaveType: custleaveData[i].leave_name,
-            leaveAllotedCount: calcTotalWorkingSpan!=0?calcTotalWorkingSpan * custleaveData[i].leave_count:custleaveData[i].leave_count,
+            leaveAllotedCount: custleaveData[i].leave_accrual.toLowerCase()=="yearly"? 
+                  calcTotalWorkingSpan!=0 ?
+                           calcTotalWorkingYears*custleaveData[i].leave_count
+                                    :custleaveData[i].leave_count
+                                            :calcTotalWorkingSpan!=0?calcTotalWorkingSpan * custleaveData[i].leave_count:custleaveData[i].leave_count,
             totalAppliedLeaveDays: 0,
-            leaveBalance: calcTotalWorkingSpan!=0?calcTotalWorkingSpan * custleaveData[i].leave_count:custleaveData[i].leave_count,
+            leaveBalance: custleaveData[i].leave_accrual.toLowerCase()=="yearly"? 
+                  calcTotalWorkingSpan!=0 ?
+                           calcTotalWorkingYears*custleaveData[i].leave_count
+                                    :custleaveData[i].leave_count
+                                            :calcTotalWorkingSpan!=0?calcTotalWorkingSpan * custleaveData[i].leave_count:custleaveData[i].leave_count,
+            
             isPaid: custleaveData[i].is_paid,
             color_code: custleaveData[i].color_code
           })
@@ -1358,5 +1368,17 @@ export async function funGetSubProjectType(type_num:any){
     return null;
   }else{
     return data.sub_project_name;
+  }
+}
+export async function funGetDocumentTypeName(type_num:any){
+  const { data, error } = await supabase
+  .from('leap_document_type')
+  .select('document_name')
+  .eq('id', type_num)
+  .single();
+  if(error){
+    return null;
+  }else{
+    return data.document_name;
   }
 }

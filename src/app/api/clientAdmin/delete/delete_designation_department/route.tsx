@@ -37,7 +37,7 @@ export async function DELETE(request: NextRequest) {
     const { error } = await query;
 
     if (error) {
-      return funSendApiErrorMessage(error, "Department Deletion Issue");
+      return funSendApiErrorMessage(error, "Deletion Issue");
     }
     return NextResponse.json(
       { status: 1, message: DepartmentDeletedSuccess },

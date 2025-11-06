@@ -53,8 +53,8 @@ export const authEmailfailure="Auth Email failed to update";
 export const personaldetailsSuccess="Personal details updated";
 export const updateAdrressFailure="Failed to update address";
 export const updateAdrressSuccess="Address updated successfully";
-export const updateEmployementFailure="Failed to update employement details";
-export const updateEmployementSuccess="Employement details updated";
+export const updateEmployementFailure="Failed to update employment details";
+export const updateEmployementSuccess="Employment details updated";
 
 export const updateBankFailure="Failed to update Bank details";
 export const updateSalaryFailure="Failed to update salary details";
@@ -292,4 +292,3 @@ export const table_LeapWebSidePanelMenu="30"
 export const table_LeapWorkingType="31"
 
 export const whatsapp_number="917888000375"
-

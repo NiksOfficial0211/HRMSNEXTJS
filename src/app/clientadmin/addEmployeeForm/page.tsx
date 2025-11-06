@@ -2455,7 +2455,7 @@ async function getBankFormComponents() {
 
     let query = supabase
         .from('leap_client_bank_details_components')
-        .select("id,component_name,data_type");
+        .select("id,component_name,data_type").eq("is_active",true);
 
     const { data, error } = await query;
     if (error) {

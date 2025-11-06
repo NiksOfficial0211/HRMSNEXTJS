@@ -237,7 +237,7 @@ interface FormValues {
 }
 
 
-const DialogClientAddDesignationDepartment = ({ isDesignationAdd,editDataType,editID,dataToEdit, onClose }: { onClose: (callUpdate:any) => void,editDataType:any,editID:any,dataToEdit:any, isDesignationAdd: boolean }) => {
+const DialogClientAddDesignationDepartment = ({ isDesignationAdd,editDataType,editID,dataToEdit,branchID, onClose }: { onClose: (callUpdate:any) => void,editDataType:any,editID:any,dataToEdit:any,branchID:any, isDesignationAdd: boolean }) => {
     const { contextClientID, contaxtBranchID } = useGlobalContext();
     const [formValues, setFormValues] = useState<FormValues>({
         branch_id: '',
@@ -258,8 +258,10 @@ const DialogClientAddDesignationDepartment = ({ isDesignationAdd,editDataType,ed
         const [alertvalue2, setAlertValue2] = useState('');
 
     useEffect(() => {
+        
+        
         setFormValues({
-            branch_id:'',
+            branch_id:branchID,
             des_depart_name:dataToEdit
         })
         fetchData();
@@ -277,6 +279,12 @@ const DialogClientAddDesignationDepartment = ({ isDesignationAdd,editDataType,ed
                 value: branch[i].id,
                 label: branch[i].branch_number,
             })
+            if(branchID && parseInt(branchID)==branch[i].id){
+            setSelectedBranch({
+                    value: branch[i].id,
+                    label: branch[i].branch_number,
+                });
+            }    
         }
 
         setBranchArray(extractBranch);
@@ -415,15 +423,16 @@ const DialogClientAddDesignationDepartment = ({ isDesignationAdd,editDataType,ed
 
                         <div className="col-md-12">
                             <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >Branch:  </label>
+                                <label htmlFor="exampleFormControlInput1" className="form-label" >Branch<span className='req_text'>*</span> :</label>
                                 <Select
                                     className="custom-select"
                                     classNamePrefix="custom"
                                     options={branchArray}
+                                    value={selectedBranch}
                                     onChange={(selectedOption) =>
                                         // handleEmployeeChange(selectedOption)
                                         {
-                                        
+                                        setSelectedBranch(selectedOption!);
                                         setFormValues((prev) => ({ ...prev, ['branch_id']: selectedOption?.value }))
                                         }
                                     }
@@ -434,7 +443,7 @@ const DialogClientAddDesignationDepartment = ({ isDesignationAdd,editDataType,ed
                         </div>
                         <div className="col-md-12">
                             <div className="form_box mb-3">
-                                <label htmlFor="exampleFormControlInput1" className="form-label" >{editID>0?editDataType:  isDesignationAdd?"Designation Name":"Department Name"}:  </label>
+                                <label htmlFor="exampleFormControlInput1" className="form-label" >{editID>0?editDataType:  isDesignationAdd?"Designation Name":"Department Name"}<span className='req_text'>*</span> :  </label>
                                 <input type="text" className="form-control" value={formValues.des_depart_name} name="des_depart_name" onChange={(e) => setFormValues((prev) => ({ ...prev, ['des_depart_name']: e.target.value }))} id="des_depart_name" />
                                 {errors.des_depart_name && <span className="error" style={{color: "red"}}>{errors.des_depart_name}</span>}
                             </div>

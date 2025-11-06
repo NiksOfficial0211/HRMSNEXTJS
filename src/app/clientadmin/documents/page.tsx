@@ -28,6 +28,7 @@ const OrganizationalDocuments = () => {
     const [showUploadDialog, setShowUploadDialog] = useState(false);
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [replaceDocID, setReplaceDocID] = useState(0);
+    const [replaceDocTypeID, setReplaceDocTypeID] = useState(0);
     const { contextClientID, contextCustomerID, contextRoleID } = useGlobalContext();
     const [documentsArray, setDocumentsArray] = useState<LeapClientDocuments[]>([]);
     // const [documentURL,setDocumentUrls]=useState<any[]>([]);
@@ -117,7 +118,7 @@ const OrganizationalDocuments = () => {
                             {showUploadDialog && <DialogUploadDocument onClose={() => {setShowUploadDialog(false);fetchData()}} docType={companyDocUpload} />}
                             </div>
                             <div className={showUpdateDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
-                            {showUpdateDialog && <DialogUpdateDocument onClose={() => { setShowUpdateDialog(false); fetchData() } } replaceType={companyDocUpload} edit_id={replaceDocID} />}
+                            {showUpdateDialog && <DialogUpdateDocument onClose={() => { setShowUpdateDialog(false); fetchData() } } replaceType={companyDocUpload} edit_id={replaceDocID} docTypeId={replaceDocTypeID} customerID={''}/>}
                             </div>
                             {documentsArray.length > 0 ?<div>
                             
@@ -141,7 +142,7 @@ const OrganizationalDocuments = () => {
                                                                 {doc.document_url.substring(doc.document_url.lastIndexOf('/') + 1)}
                                                             </div>
                                                             <div className="col-lg-12 mb-3">
-                                                                <a className='red_button filter_submit_btn ' onClick={()=>{setShowUpdateDialog(true),setReplaceDocID(doc.id)}} >
+                                                                <a className='red_button filter_submit_btn ' onClick={()=>{setShowUpdateDialog(true),setReplaceDocID(doc.id), setReplaceDocID(doc.document_type_id)}} >
                                                                     <img src={staticIconsBaseURL + "/images/replace_doc_icon.png"} className='img-fluid' /> Replace
                                                                 </a>&nbsp;&nbsp;
                                                                 <a className='red_button filter_submit_btn ' href={getImageApiURL+"/uploads/"+doc.document_url} download >

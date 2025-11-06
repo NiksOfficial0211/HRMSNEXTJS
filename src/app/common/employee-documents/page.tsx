@@ -15,6 +15,8 @@ import DialogUploadDocument from '@/app/components/dialog_addDocument'
 import { employeeDocUpload, getImageApiURL, staticIconsBaseURL } from '@/app/pro_utils/stringConstants'
 import Select from "react-select";
 import ShowAlertMessage from '@/app/components/alert'
+import DialogUpdateDocument from '@/app/components/dialog_updateDocument'
+import { fetchData } from 'pdfjs-dist/types/src/display/node_utils'
 
 interface AssetType {
     assetType: string
@@ -27,6 +29,9 @@ const OrganizationalDocuments = () => {
     const { contextClientID, contextCustomerID, contextRoleID } = useGlobalContext();
     const [empDocumentsArray, setEmpDocumentArray] = useState<LeapCustomerDocuments[]>([]);
     const [showUploadDialog, setShowUploadDialog] = useState(false);
+    const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+    const [replaceDocID, setReplaceDocID] = useState(0);
+    const [replaceDocTypeID, setReplaceDocTypeID] = useState(0);
     const [selectedCustomerID, setCustomerID] = useState(0);
     const [employeeName, setEmployeeNames] = useState([{ value: '', label: '' }]);
 
@@ -85,10 +90,8 @@ const OrganizationalDocuments = () => {
         setLoading(false);
 
     }
-    const handleEmpSelectChange = async (values: any) => {
-        setLoading(true)
-        setCustomerID(values.value);
-        const empDocs = await getEmployeeDocuments(contextClientID, values.value);
+    const fetchData = async (customerID:any)=>{
+const empDocs = await getEmployeeDocuments(contextClientID, customerID);
         if (empDocs.length > 0) {
             setLoading(false);
             setEmpDocumentArray(empDocs);
@@ -97,9 +100,15 @@ const OrganizationalDocuments = () => {
             setLoading(false);
             setShowAlert(true);
             setAlertTitle("Error")
-            setAlertStartContent(values.label+ " has no documents added");
+            setAlertStartContent(customerID+ " has no documents added");
             setAlertForSuccess(2)
         }
+    }
+    const handleEmpSelectChange = async (values: any) => {
+        setLoading(true)
+        setCustomerID(values.value);
+        fetchData(values.value)
+        
 
     };
     const getFileIcon = (type: string, url: string) => {
@@ -199,18 +208,27 @@ const OrganizationalDocuments = () => {
                                                             <div className="col-lg-12 mb-3">
                                                                 <div className='document_list_icon'>{getFileIcon(fileExt, doc.bucket_url)}</div>
                                                             </div>
-                                                            <div className="col-lg-12 mb-3 document_name" style={{ wordWrap: "break-word" }}>
+                                                            <div className="col-lg-12 mb-3 document_name" style={{
+                                                                        display: "-webkit-box",
+                                                                        WebkitLineClamp: 2,     // limits text to 2 lines
+                                                                        WebkitBoxOrient: "vertical",
+                                                                        overflow: "hidden",
+                                                                        textOverflow: "ellipsis",
+                                                                        wordBreak: "break-word",
+                                                                    }}>
                                                                 {doc.bucket_url.substring(doc.bucket_url.lastIndexOf('/') + 1)}
                                                             </div>
                                                             <div className="col-lg-12 mb-3">
-                                                                <a className='red_button filter_submit_btn'>
+                                                                <a className='red_button filter_submit_btn' onClick={()=>{setShowUpdateDialog(true),setReplaceDocID(doc.id),setReplaceDocTypeID(doc.doc_type_id)}}>
                                                                     <img src={staticIconsBaseURL + "/images/replace_doc_icon.png"} className='img-fluid' /> Replace
                                                                 </a>&nbsp;&nbsp;
                                                                 <a className='red_button filter_submit_btn' href={getImageApiURL+"/uploads/"+ doc.bucket_url} download >
                                                                     <img src={staticIconsBaseURL + "/images/download_doc_icon.png"} className='img-fluid' /> Download 
                                                                 </a>
                                                             </div>
-
+                                                        <div className={showUpdateDialog ? "rightpoup rightpoupopen" : "rightpoup"}>
+                                                                                    {showUpdateDialog && <DialogUpdateDocument onClose={async (update) => { setShowUpdateDialog(false);if(update==1){fetchData(selectedCustomerID)} } } replaceType={employeeDocUpload} edit_id={replaceDocID} docTypeId={replaceDocTypeID} customerID={selectedCustomerID} />}
+                                                                                    </div>
                                                         </div>
                                                         
                                                     </div>
@@ -247,7 +265,7 @@ async function getEmployeeDocuments(clientID: any, customer_id: any) {
 
     let query = supabase
         .from('leap_customer_documents')
-        .select().eq("customer_id", customer_id);
+        .select().eq("customer_id", customer_id).eq("isEnabled",true);
 
     const { data, error } = await query;
     if (error) {

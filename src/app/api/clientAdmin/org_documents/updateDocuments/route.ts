@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
         }
         let fileUploadResponse;
             if(files && files.file && files.file.length>0){
-                  fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"employee_documents")
+                  fileUploadResponse=await apiUploadDocs(files.file[0],fields.customer_id[0],fields.client_id[0],"employee_documents")
                   console.log("fileUploadResponse",fileUploadResponse);
                   
             }
@@ -42,9 +42,16 @@ export async function POST(request: NextRequest) {
               client_id: fields.client_id[0],
               document_type_id: fields.doc_type_id[0],
               document_url: fileUploadResponse?fileUploadResponse:"",
-              show_to_employees: fields.show_to_users[0],
+              show_to_employees: fields.show_to_users && fields.show_to_users.length>0?fields.show_to_users[0] : false,
             });
         } else {
+          const { data:setDisable, error: DisablingError} = await supabase.from("leap_customer_documents")
+            .update(
+              {
+                isEnabled: false,
+              }
+            ).eq("id",fields.doc_pk_id);
+
           query = supabase.from("leap_customer_documents")
             .insert(
               {

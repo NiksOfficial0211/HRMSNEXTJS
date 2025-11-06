@@ -212,6 +212,7 @@ const AddEmployeeEmployementDetails: React.FC = () => {
         const formData = new FormData();
         formData.append("client_id", contextClientID);
         formData.append("branch_id", contaxtBranchID);
+        formData.append("customer_branch", employmentForm.branchID);
         formData.append("customer_id", contextAddFormCustID);
         formData.append("designation_id", employmentForm.designationID);
         formData.append("department_id", employmentForm.departmentID);
@@ -243,7 +244,7 @@ const AddEmployeeEmployementDetails: React.FC = () => {
                 setIsLoading(false);
                 setShowAlert(true);
                 setAlertTitle("Success");
-                setAlertStartContent("Employement details added successfully.");
+                setAlertStartContent("Employment details added successfully.");
                 setAlertForSuccess(1);
                 
             } else {
@@ -251,7 +252,7 @@ const AddEmployeeEmployementDetails: React.FC = () => {
                 e.preventDefault();
                 setShowAlert(true);
                 setAlertTitle("Error");
-                setAlertStartContent("Failed to add employement details");
+                setAlertStartContent("Failed to add employment details");
                 setAlertForSuccess(2);
                 
             }

@@ -286,11 +286,11 @@ export const UserEmployement = () => {
         formData.append("work_mode", userData?.work_mode && userData?.work_mode.id > 0 ? userData?.work_mode.id + "" : "");
         formData.append("work_location", userData?.work_location + "");
         formData.append("date_of_joining", userData?.date_of_joining + "");
-        formData.append("email_id", userData?.email_id + "");
+        formData.append("email_id", userData?.email_id.trim() + "");
         if (newPassword.password) {
             formData.append("new_password", newPassword.password + "");
         }
-        formData.append("password", userData?.email_id + "");
+      
         formData.append("authUuid", userData.authUuid);
         try {
 
@@ -350,7 +350,7 @@ export const UserEmployement = () => {
                                 <div className="add_form_inner">
                                     <div className="row">
                                         <div className="col-lg-12 mb-4 inner_heading25">
-                                            Employement Details
+                                            Employment Details
                                         </div>
                                     </div>
 
@@ -485,8 +485,8 @@ export const UserEmployement = () => {
                                         <div className="col-md-4">
                                             <div className="form_box mb-3">
                                                 {/* <input type="text" className="form-control" id="" value={userData?.leap_client_branch_details.branch_number} name="work_location" onChange={(e)=>setUserData((prev) => ({ ...prev, ['designation_id']: parseInt(e.target.value) }))} /> */}
-                                                <select className='form-select' id="branch_id" name="branch_id" onChange={(e) => setUserData((prev) => ({ ...prev, ['branch_id']: parseInt(e.target.value) }))}>
-                                                    {!userData?.branch_id && <option value="" >Select Branch</option>}
+                                                <select className='form-select' id="branch_id" name="branch_id"  onChange={(e) => setUserData((prev) => ({ ...prev, ['branch_id']: parseInt(e.target.value) }))}>
+                                                     {branchesArray.some(branch => branch.id != userData?.branch_id) && <option value="" >Select Branch</option>}
                                                     {branchesArray.map((branch) => (
                                                         <option value={branch.id} key={branch.id} disabled={isReadonly()}>{branch.branch_number}</option>
                                                     ))}
@@ -709,7 +709,7 @@ async function getBranches(contextClientID: any) {
 
     let query = supabase
         .from('leap_client_branch_details')
-        .select().eq("client_id", contextClientID);
+        .select().eq("client_id", contextClientID).eq("is_active",true);
 
     const { data, error } = await query;
     if (error) {

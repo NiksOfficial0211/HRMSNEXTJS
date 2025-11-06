@@ -42,11 +42,44 @@ export async function POST(request: NextRequest) {
       console.log(error);
       return funSendApiErrorMessage(error, "Customer Apply Leave Insert Issue");
     }
-
+    
+    const leaveType = await funGetLeaveType(fields.leave_type[0]);
     (async () => {
-      let leaveType = "";
       try {
-        const leaveType = await funGetLeaveType(fields.leave_type[0]);
+        if (fields.contact_number[0]) {
+          const payload = {
+            apiKey: process.env.NEXT_PUBLIC_AISENSY_API_KEY,
+            campaignName: "hrms_success_msg",
+            destination: fields.contact_number[0],
+            userName: "$Name",
+            templateParams: ["applied for leave"],   //[leaveType],
+            source: "new-landing-page form",
+            media: {},
+            buttons: [],
+            carouselCards: [],
+            location: {},
+            attributes: {},
+            paramsFallbackValue: { FirstName: "user" }
+          };
+
+          const res = await fetch("https://backend.aisensy.com/campaign/t1/api/v2", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const body = await res.text();
+          // console.log("AiSensy response:", fields.contact_number[0], res.status, body);
+        }
+      } catch (err: any) {
+        console.log("AiSensy WhatsApp error:", err);
+        // await addErrorExceptionLog((fields.client_id[0]), (fields.customer_id[0]), "AiSensy WhatsApp error", { exception: err.toString(), ticketId, (fields.contact_number[0]) });
+      }
+    })();
+    
+    (async () => {
+      
+      try {
+        
         const addActivity = await addUserActivities(fields.client_id[0], fields.customer_id[0], fields.branch_id[0], "Leave", leaveType + " has been applied.", data[0].id, false);
         // console.log("throww error: ", addActivity);
         throw addActivity;

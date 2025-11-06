@@ -150,20 +150,30 @@ const EmployeeLeaveList = () => {
             };
 
             // Dynamic conditions
-            if (filterID == 1 || filters.approvedID.length > 0) {
-                payload.leave_status = (filters.approvedID.length > 0 && filters.approvedID == value) ? filters.approvedID : value;
+            if (filterID == 1) {
+                payload.leave_status = value;
+            }else if(filters.approvedID.length > 0){
+                payload.leave_status = filters.approvedID ;
             }
 
-            if (filterID == 2 || filters.customerID.length > 0) {
+            if (filterID == 2) {
                 payload.customer_id = (filters.customerID.length > 0 && filters.customerID == value) ? filters.customerID : value;
+            }else if(filters.customerID.length > 0){
+                payload.customer_id = filters.customerID ;
+
             }
 
-            if (startDate || filters.start_date) {
-                payload.start_date = formatDateYYYYMMDD(startDate || filters.start_date);
+            if (startDate) {
+                payload.start_date = formatDateYYYYMMDD(startDate );
+            }else if(filters.start_date){
+                payload.start_date = formatDateYYYYMMDD(filters.start_date);
             }
 
-            if (endDate || filters.end_date) {
-                payload.end_date = formatDateYYYYMMDD(endDate || filters.end_date);
+            if (endDate) {
+                payload.end_date = formatDateYYYYMMDD(endDate );
+            }else if(filters.end_date){
+                payload.start_date = formatDateYYYYMMDD(filters.end_date);
+
             }
 
             if (filterID == 3) {
@@ -262,18 +272,18 @@ const EmployeeLeaveList = () => {
     const [showCalendar, setShowCalendar] = useState(false);
     const ref = useRef(null);
     const [state, setState] = useState<Range[]>([
-        {
-            startDate: new Date() || null,
-            endDate: new Date() || null,
-            key: 'selection'
-        }
+        // {
+        //     startDate: new Date() || null,
+        //     endDate: new Date() || null,
+        //     key: 'selection'
+        // }
     ]);
     const handleChange = (ranges: RangeKeyDict) => {
         console.log(ranges);
 
         setState([ranges.selection]);
         setShowCalendar(false)
-        if (ranges.selection.startDate == ranges.selection.endDate) {
+        if (ranges.selection.startDate?.getTime() == ranges.selection.endDate?.getTime()) {
             setFilters((prev) => ({ ...prev, ['start_date']: ranges.selection.startDate }));
         } else {
             setFilters((prev) => ({ ...prev, ['start_date']: ranges.selection.startDate }));
@@ -282,7 +292,9 @@ const EmployeeLeaveList = () => {
         }
         fetchUsers(3, '', selectedPage, ranges.selection.startDate, ranges.selection.endDate);
     };
-    const formattedRange = state[0].startDate! == state[0].endDate! ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`;
+    const formattedRange = state! && state.length>0?
+         state[0].startDate!.getTime() == state[0].endDate!.getTime() ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`:"--";
+       
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
         if (!date) return '';
         const parsedDate = moment(date);

@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     //     { status: 401 }
     //   );
     // }
-    const { client_id, customer_id, task_status, branch_id, sub_project_id, task_type_id, total_hours, total_minutes, task_details, task_date } = await request.json();
+    const { client_id, customer_id, task_status, branch_id, sub_project_id, task_type_id, total_hours, total_minutes, task_details, task_date, contact_number } = await request.json();
 
     const { data: TaskData, error: taskError } = await supabase.from('leap_customer_project_task')
       .insert({
@@ -38,12 +38,43 @@ export async function POST(request: NextRequest) {
     if (taskError) {
       return funSendApiErrorMessage(taskError, "Failed to add task");
     }
-
+    const projectType = await funGetSubProjectType(sub_project_id);
     (async () => {
-      let projectType = "";
       try {
-        projectType = await funGetSubProjectType(sub_project_id);
-        const addActivity = await addUserActivities(client_id, customer_id, "", "Work task", "Task added for "+ projectType, TaskData[0].id, false);
+        if (contact_number) {
+          const payload = {
+            apiKey: process.env.NEXT_PUBLIC_AISENSY_API_KEY,
+            campaignName: "hrms_success_msg",
+            destination: contact_number,
+            userName: "$Name",
+            templateParams: ["added your task"], // [projectType],
+            source: "new-landing-page form",
+            media: {},
+            buttons: [],
+            carouselCards: [],
+            location: {},
+            attributes: {},
+            paramsFallbackValue: { FirstName: "user" }
+          };
+
+          const res = await fetch("https://backend.aisensy.com/campaign/t1/api/v2", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const body = await res.text();
+          // console.log("AiSensy response:", fields.contact_number[0], res.status, body);
+        }
+      } catch (err: any) {
+        console.log("AiSensy WhatsApp error:", err);
+        await addErrorExceptionLog(client_id, customer_id, "AiSensy WhatsApp error", { exception: err.toString(), projectType, contact_number });
+      }
+    })();
+    (async () => {
+      // let projectType = "";
+      try {
+
+        const addActivity = await addUserActivities(client_id, customer_id, "", "Work task", "Task added for " + projectType, TaskData[0].id, false);
         // console.log("throww error: ", addActivity);
         throw addActivity;
       } catch (err) {

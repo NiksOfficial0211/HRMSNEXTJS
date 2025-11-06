@@ -19,8 +19,9 @@ export async function POST(request: NextRequest) {
 
           if(leave_id){
             query = query.eq("leave_id", leave_id);
-        }
-        
+          }
+          console.log("-=-==-=-=-=-=-=-=-0009-0=-0=-0=-0=0900=-0=-0=-0=-0=-0=-0=-");
+          
           const {data:leaveData,error} = await query;
           
           if(error){
