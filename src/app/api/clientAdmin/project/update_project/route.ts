@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     
     console.log(fdata.isSubProject);
     
-    if(fdata.isSubProject=="true"){
+    // if(fdata.isSubProject=="true"){
         let techStackArray: number[]=[]
         if(fdata.techStacks && fdata.techStacks.toString().includes(',')){
             
@@ -63,22 +63,26 @@ export async function POST(request: NextRequest) {
             tech_stacks:techStackArray,
             is_deleted: fdata.isDeleted,
             
-        }).eq("subproject_id",fdata.update_project_id);
-    }
-    else{
+        }).eq("subproject_id",fdata.isSubProject);
+    // }
+    // else{
+
+        const {error } =await query;
+        if(error){
+            return funSendApiErrorMessage(error,"Failed to update sproject")
+        }
         let fileUploadResponse;
             if(files && files.file && files.file.length>0){
                   fileUploadResponse=await apiUploadDocs(files.file[0],fields.branch_id[0],fields.client_id,"client_project_logo")
               
             }
-        query =  supabase.from("leap_client_project")
+       let mainProjectquery =  supabase.from("leap_client_project")
         .update({
             client_id:fdata.client_id,
             branch_id:fdata.branch_id,
             project_name:fdata.projectName,
             project_client:fdata.clientName,
             project_manager_id:fdata.managerID,
-            team_lead_id:fdata.teamLeadID,
             project_status:fdata.project_status,
             project_logo:fileUploadResponse ? fileUploadResponse : "",
             project_color_code:fdata.project_color_code,
@@ -87,12 +91,12 @@ export async function POST(request: NextRequest) {
 
             
         }).eq("project_id",fdata.update_project_id); 
-    }
-    console.log(query);
+    // }
+    console.log(mainProjectquery);
     
-    const {error } =await query;
-    if(error){
-        return funSendApiErrorMessage(error,"Failed to add project")
+    const {error:mainProjectUpdateError } =await mainProjectquery;
+    if(mainProjectUpdateError){
+        return funSendApiErrorMessage(mainProjectUpdateError,"Failed to update project")
     }
 
         return NextResponse.json({status:1, message: clientUpdateProjectSuccess}, { status: apiStatusSuccessCode });

@@ -852,7 +852,7 @@ export async function getDesignationSetUserRole(designation_id: any) {
   if (Designation && Designation.length > 0) {
     if (Designation[0].designation_name.toLowerCase().includes('manager')) {
       userRole = { role: 4, isMAnager: true, isTeamlead: false, isemployee: false }
-    } else if (Designation[0].designation_name.toLowerCase().includes('team lead')) {
+    } else if (Designation[0].designation_name.toLowerCase().includes('team lead') || Designation[0].designation_name.toLowerCase().includes('lead')) {
       userRole = { role: 9, isMAnager: false, isTeamlead: true, isemployee: false }
     }
   }

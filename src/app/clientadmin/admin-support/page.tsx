@@ -164,11 +164,11 @@ const Support = () => {
     const [showCalendar, setShowCalendar] = useState(false);
     const ref = useRef(null);
     const [state, setState] = useState<Range[]>([
-        // {
-        //     startDate:  null,
-        //     endDate:  null,
-        //     key: 'selection'
-        // }
+        {
+            startDate:  new Date() || null,
+            endDate: new Date() || null,
+            key: 'selection'
+        }
     ]);
     const handleChange = (ranges: RangeKeyDict) => {
         setState([ranges.selection]);

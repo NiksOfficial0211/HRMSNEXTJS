@@ -35,14 +35,23 @@ export async function POST(request: NextRequest) {
             branch_id: formData.get('branch_id'),
             start_month: formData.get('start_month') as string,
             end_month: formData.get('end_month') as string,
-            emp_name: formData.get('emp_name'),
+            customer_id: formData.get('emp_name'),
         }
 
         const [start_year, start_month] = fdata.start_month!.split("-").map(Number);
         const [end_year, end_month] = fdata.end_month!.split("-").map(Number);
 
         const firstDay = new Date(start_year, start_month - 1, 1);
-        const lastDay = new Date(end_year, end_month, 0);
+        const now = new Date();
+        let lastDay: Date;
+
+        if (end_year === now.getFullYear() && end_month === now.getMonth() + 1) {
+            // ✅ Use today's date since the end month is ongoing
+            lastDay = now;
+        } else {
+            // ✅ Use the full month’s last day
+            lastDay = new Date(end_year, end_month, 0);
+        }
 
         let employeesQuery = supabase.from("leap_customer").select("emp_id,name,customer_id,branch_id")
             .eq("client_id", fdata.client_id).eq("employment_status", true);
@@ -50,9 +59,9 @@ export async function POST(request: NextRequest) {
         if (fdata.branch_id) {
             employeesQuery = employeesQuery.eq("branch_id", fdata.branch_id);
         }
-        // if (fdata.emp_name) {
-        //     employeesQuery = employeesQuery.like("name", "%"+fdata.emp_name+"%");
-        // }
+        if (fdata.customer_id) {
+            employeesQuery = employeesQuery.eq("customer_id", fdata.customer_id);
+        }
         
 
         const { data: emploeeRecords, error: getEmpError } = await employeesQuery;
@@ -153,7 +162,7 @@ export async function POST(request: NextRequest) {
             }
 // -------------------------------------- get the actual employee gorss salary for fetching the pay type           
             const { data: empGrossSalary, error: empGrossSalaryError } = await supabase.from("leap_employee_total_salary")
-                .select('*,leap_salary_payable_days(payable_time)').eq("customer_id", emploeeRecords[i].customer_id);
+                .select('*,leap_salary_payable_days(id,payable_time)').eq("customer_id", emploeeRecords[i].customer_id);
             if (empGrossSalaryError) {
                 console.log(empGrossSalaryError);
                 return funSendApiErrorMessage(empGrossSalaryError, "Failed to fetch attendance data");
@@ -182,10 +191,21 @@ export async function POST(request: NextRequest) {
 // Monthly paid employee depending upon the attendance get the number get days paid leaves and also the holidays
                     
                     const numWeekEndDays = numberOfWeeksInMonth * 2;
-                    const totalDays = attendanceRecords.length > 0 ? attendanceRecords.length + numWeekEndDays + holdayCountofMonth + totalPaidLeave : 0;
+                    const totalDays = attendanceRecords.length > 0 ? attendanceRecords.length  + holdayCountofMonth + totalPaidLeave : 0;
                     const totalDaysInMonth=getNumberOfDaysInMonth(start_year,start_month);
-                    const empPerDaySalBreakOut = empBasicPayAmount / totalDaysInMonth;
+                    const empPerDaySalBreakOut = empBasicPayAmount / (totalDaysInMonth-numWeekEndDays);
+                    console.log("##################################################################");
+                    console.log(empBasicPayAmount);
+                    
+                    console.log(numWeekEndDays);
+                    console.log(totalDays);
+                    console.log(totalDaysInMonth);
+                    console.log(empPerDaySalBreakOut);
+                    console.log("##################################################################");
+                    
+                    
                     empBasicSalary = empPerDaySalBreakOut * totalDays;
+                     console.log(empBasicSalary);
                 }
 
             }
@@ -199,7 +219,7 @@ export async function POST(request: NextRequest) {
                 emp_name: emploeeRecords[i].name,
                 actual_gross: empGrossSalary.length > 0 ? empGrossSalary[0].gross_salary : 0,
                 actual_net: empGrossSalary.length > 0 ? empGrossSalary[0]!.net_pay : 0,
-                actual_deductions: empGrossSalary.length > 0 ? empGrossSalary[0]!.total_deduction : 0,
+                actual_deductions: empGrossSalary.length > 0 && empGrossSalary[0]!.total_deduction ? empGrossSalary[0]!.total_deduction : 0,
                 basic_pay: empBasicSalary,
                 gross_salary: empBasicSalary + calc_employeeGross,
                 net_salary: empBasicSalary + calc_employeeGross + calc_employeeDeductions,
@@ -224,15 +244,15 @@ export async function POST(request: NextRequest) {
             }
         }
         let sortedList:PayrollResponseSendModel[]=[];
-        if(fdata.emp_name){
+        if(fdata.customer_id){
             for(let i=0;i<empPayrollResponse.length;i++){
-                if(empPayrollResponse[i].customer_id==fdata.emp_name){
+                if(empPayrollResponse[i].customer_id==fdata.customer_id){
                     sortedList.push(empPayrollResponse[i])
                 }
             }
         }
 
-        return NextResponse.json({ status: 1, message: payrollFetched, empPayrolls:fdata.emp_name?sortedList:empPayrollResponse, total: totalPayroll }, { status: apiStatusSuccessCode });
+        return NextResponse.json({ status: 1, message: payrollFetched, empPayrolls:fdata.customer_id?sortedList:empPayrollResponse, total: totalPayroll }, { status: apiStatusSuccessCode });
 
     } catch (error) {
         console.log(error);

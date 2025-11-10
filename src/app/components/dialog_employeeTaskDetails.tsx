@@ -106,18 +106,15 @@ const DialogEmployeeTaskData = ({ passedData, startDate, endDate, onClose }: { p
                 formData.append("customer_id", filterValues.subProjectID);
             }
             if (dataType == 2) {
-                formData.append("start_date", changedData)
+                formData.append("start_date", formatDateYYYYMMDD(changedData))
             } else {
-                formData.append("start_date", filterValues.startDate)
+                formData.append("start_date", formatDateYYYYMMDD(filterValues.startDate))
             }
             if (dataType == 3) {
-                formData.append("end_date", changedData)
+                formData.append("end_date", formatDateYYYYMMDD(changedData))
             } else {
-                formData.append("end_date", filterValues.endDate)
+                formData.append("end_date", formatDateYYYYMMDD(filterValues.endDate))
             }
-
-
-
 
             const res = await fetch(`/api/commonapi/getEmployeeTask`, {
                 method: "POST",

@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
         gross_salary: fdata.total_gross_salary,
         total_deduction: fdata.total_deduction,
         net_pay: fdata.net_payable_salary,
-        pay_acural_days:fdata.pay_accural_id,
+        pay_acural_days:"4",
 
       }
     ])

@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
             
           }
         
-          const { error:branchError } = await supabase.from('leap_client_branch_details').insert([
+          const {data:branchData, error:branchError } = await supabase.from('leap_client_branch_details').insert([
             { client_id: fdata.clientId,
                 branch_address: fdata.branchAddress,
                 branch_city:fdata.branchCity,
@@ -43,15 +43,30 @@ export async function POST(request: NextRequest) {
                 // id:fdata.id,
 
                 created_at: new Date(),
-            }]);
+            }]).select();
             
           if(branchError){
             return funSendApiErrorMessage(branchError,"Branch Insert Error");
           }
+          console.log(branchData);
           
-           else{
-            return NextResponse.json({ message: clientAddedSuccess ,status:1}, { status: apiStatusSuccessCode });
+          // Add basic salary component by default  when a new brach is added
+        const { error:salaryComp } = await supabase.from("leap_client_salary_components")
+        .insert({
+            client_id:fdata.clientId,
+            branch_id:branchData[0].id,
+            salary_component_id:2, // default basic salary component id
+            is_active:true,
+            pay_accural:4, // default monthly pay accural
+            created_at:new Date()
+        });
+
+          if(salaryComp){
+
           }
+           
+          return NextResponse.json({ message: clientAddedSuccess ,status:1}, { status: apiStatusSuccessCode });
+          
 
   
     }catch(error){

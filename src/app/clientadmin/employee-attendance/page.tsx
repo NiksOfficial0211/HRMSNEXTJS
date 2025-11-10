@@ -573,7 +573,7 @@ const EmpAttendancePage = () => {
         try {
             const formData = new FormData();
             formData.append("client_id", contextClientID);
-            formData.append("branch_id", contaxtBranchID);
+            formData.append("branch_id", '');
             formData.append('customer_id', filterValues.name );
 
             const response = await fetch("/api/clientAdmin/getAllEmployee", {

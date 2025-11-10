@@ -633,11 +633,21 @@ const EmployeeTaskListComponent = () => {
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [state, setState] = useState<Range[]>([
-        
+        {
+            startDate:  undefined,
+            endDate: undefined,
+            key: 'selection'
+        }
     ]);
-    const formattedRange = state! && state.length>0?
-             state[0].startDate!.getTime() == state[0].endDate!.getTime() ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`:"--";
-           
+    const formattedRange =
+  state &&
+  state.length > 0 &&
+  state[0].startDate &&
+  state[0].endDate
+    ? state[0].startDate.getTime() === state[0].endDate.getTime()
+      ? format(state[0].startDate, 'yyyy-MM-dd')
+      : `${format(state[0].startDate, 'yyyy-MM-dd')} to ${format(state[0].endDate, 'yyyy-MM-dd')}`
+    : "--";       
     const [filterValues, setFilterValues] = useState<FilterValues>({
         branchID: '',
         projectID: '',
@@ -893,7 +903,18 @@ const EmployeeTaskListComponent = () => {
                                                 editableDateInputs={true}
                                                 onChange={handleChange}
                                                 moveRangeOnFirstSelection={false}
-                                                ranges={state}
+                                                ranges={
+                                                                    state[0].startDate && state[0].endDate
+                                                                    ? state
+                                                                    : [
+                                                                        {
+                                                                            startDate: new Date(), // shown as current date marker
+                                                                            endDate: new Date(),
+                                                                            key: 'selection',
+                                                                            color: 'transparent', // hide highlight when no date selected
+                                                                        },
+                                                                        ]
+                                                                }
                                                 maxDate={new Date()}
                                             />
                                         </div>)}

@@ -174,7 +174,11 @@ const DialogAddCompanyProject = ({ projectID, projectName, isSubProject, onClose
 
             if (response.ok && res.status == 1) {
                 setLoading(false)
-                onClose();
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent("Project added successfully");
+                setAlertForSuccess(2)
+                
             } else {
                 setLoading(false)
                 setShowAlert(true);
@@ -215,7 +219,9 @@ const DialogAddCompanyProject = ({ projectID, projectName, isSubProject, onClose
             <LoadingDialog isLoading={isLoading} />
             {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
                             setShowAlert(false)
-
+                            if(alertForSuccess==1){
+                                onClose();
+                            }
                         }} onCloseClicked={function (): void {
                             setShowAlert(false)
                         }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}

@@ -31,7 +31,7 @@ const CompanyProjectList = () => {
     const [projectID, setProjectID] = useState(0);
     const [projectName, setProjectName] = useState("");
     const [isSubProjectAdd, setIsSubProjectAdd] = useState(false);
-    const [isSubProjectEdit, setisSubProjectEdit] = useState(true);
+    const [isSubProjectEdit, setisSubProjectEdit] = useState(false);
     const [isSubProjectDelete, setisSubProjectDelete] = useState(false);
     const { contextClientID, contaxtBranchID } = useGlobalContext();
     const [deleteProjectID, setDeleteProjectID] = useState(0);

@@ -632,7 +632,7 @@ export const UserBankDetails = () => {
             formData.append("role_id", contextRoleID);
 
 
-            const res = await fetch("/api/users/getProfile/getEmpSalaryDetails", {
+        const res = await fetch("/api/users/getProfile/getEmpSalaryDetails", {
                 method: "POST",
                 body: JSON.stringify({
                     "client_id": contextClientID,
@@ -729,6 +729,10 @@ export const UserBankDetails = () => {
                 formData.append("total_gross_salary", totalSalaryDetails?.gross_salary + '');
                 formData.append("total_deduction", totalSalaryDetails?.total_deduction + '');
                 formData.append("net_payable_salary", totalSalaryDetails?.net_pay + '');
+            }else{
+                formData.append("total_gross_salary", totalSalaryDetails?.gross_salary + '');
+                formData.append("total_deduction", totalSalaryDetails?.total_deduction + '');
+                formData.append("net_payable_salary", totalSalaryDetails?.net_pay + '');
             }
             const res = await fetch("/api/users/updateEmployee/updateEmpBankDetails", {
                 method: "POST",
@@ -775,12 +779,14 @@ export const UserBankDetails = () => {
                 totalDeduction = totalDeduction + parseFloat(String(salaryDetails[i].amount).length > 0 ? salaryDetails[i].amount : "0")
             }
         }
+        console.log(totalSalaryDetails);
+        
         setTotalSalaryDetails({
-            id: totalSalaryDetails.id,
+            id: totalSalaryDetails && totalSalaryDetails.id ? totalSalaryDetails!.id:0,
             gross_salary: totalGross,
             total_deduction: totalDeduction,
             net_pay: totalGross - totalDeduction,
-            customer_id: totalSalaryDetails.customer_id,
+            customer_id: totalSalaryDetails? totalSalaryDetails.customer_id : parseInt(contextSelectedCustId),
         })
 
 

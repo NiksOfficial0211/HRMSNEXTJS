@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useRef } from 'react'
 import LeapHeader from '@/app/components/header'
 import LeftPannel from '@/app/components/leftPannel'
 import Footer from '@/app/components/footer'
@@ -67,6 +67,7 @@ const CompanyPayroll = () => {
     const [alertValue1, setAlertValue1] = useState('');
     const [alertvalue2, setAlertValue2] = useState('');
 
+    const calendarRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         fetchFilters();
 
@@ -80,12 +81,29 @@ const CompanyPayroll = () => {
             }
         };
         window.addEventListener('scroll', handleScroll);
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+                setShowCalendar(false); // hide when clicked outside
+            }
+        };
+
+        if (showCalendar) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+        
         return () => {
 
             window.removeEventListener('scroll', handleScroll);
+            document.removeEventListener("mousedown", handleClickOutside);
         };
 
     }, [])
+        const handleCalendarToggle = () => {
+        setShowCalendar((prev) => !prev);
+    };
 
     const handleEmpSelectChange = async (values: any) => {
         console.log(values);
@@ -320,10 +338,10 @@ const CompanyPayroll = () => {
                                                     className="form-control"
                                                     value={formattedRange}
                                                     readOnly
-                                                    onClick={() => setShowCalendar(!showCalendar)}
+                                                    onClick={() => {setShowCalendar(!showCalendar),handleCalendarToggle}}
                                                 />
                                                 {showCalendar && (
-                                                    <div style={{ position: 'absolute', zIndex: 1000 }}>
+                                                    <div ref={calendarRef} style={{ position: 'absolute', zIndex: 1000 }}>
                                                         <DateRange
                                                             editableDateInputs={true}
                                                             onChange={handleChange}

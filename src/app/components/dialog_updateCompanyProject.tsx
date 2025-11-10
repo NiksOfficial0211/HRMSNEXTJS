@@ -9,11 +9,13 @@ import LoadingDialog from './PageLoader';
 import moment from 'moment';
 import { FaPen } from 'react-icons/fa';
 import { getImageApiURL, staticIconsBaseURL } from '../pro_utils/stringConstants';
+import ShowAlertMessage from './alert';
 
 
 interface interfaceFormData {
     projectName: string,
     mainprojectID: string,
+    subProjectID: string,
     clientName: string,
     projectTypeID: any,
     managerID: any,
@@ -38,6 +40,7 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
     const [formValues, setFormValues] = useState<interfaceFormData>({
         projectName: "",
         mainprojectID: "",
+        subProjectID: "",
         clientName: "",
         projectTypeID: '',
         managerID: '',
@@ -166,6 +169,7 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
                     {
                         projectName: projectData[0].project_name,
                         mainprojectID: projectData[0].project_id + '',
+                        subProjectID: projectData[0].leap_client_sub_projects[0].subproject_id + '',
                         clientName: projectData[0].project_client,
                         projectTypeID: projectData[0].project_type_id,
                         managerID: projectData[0].project_manager_id,
@@ -324,8 +328,9 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
         const formData = new FormData();
         formData.append("client_id", contextClientID);
         formData.append("branch_id", formValues.branchID);
-        formData.append("isSubProject", isSubProject + '');
+        formData.append("isSubProject", "false");// chnaged as dont have sub projects as of now
         formData.append("project_id", formValues.mainprojectID);
+        formData.append("subproject_id", formValues.subProjectID);
         formData.append("project_name", formValues.projectName);
         formData.append("clientName", formValues.clientName);
         formData.append("projectTypeID", formValues.projectTypeID);
@@ -353,15 +358,26 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
 
             if (response.ok && res.status == 1) {
                 setLoading(false)
-                onClose();
+                setShowAlert(true);
+                setAlertTitle("Success")
+                setAlertStartContent("Project details updated successfully");
+                setAlertForSuccess(1)
+                
             } else {
                 setLoading(false)
-                alert("Failed to submit form.");
+                setShowAlert(true);
+                setAlertTitle("Error")
+                setAlertStartContent("Failed to update project data");
+                setAlertForSuccess(2)
+                
             }
         } catch (e) {
             setLoading(false)
+            setShowAlert(true);
+                setAlertTitle("Exception")
+                setAlertStartContent("Somthing went wrong! Please try again.");
+                setAlertForSuccess(3)
             console.log(e);
-            alert("Somthing went wrong! Please try again.")
 
         }
     }
@@ -415,6 +431,14 @@ const DialogUpdateCompanyProject = ({ update_project_id, isSubProject, onClose, 
     return (
         <div >
             <LoadingDialog isLoading={isLoading} />
+            {showAlert && <ShowAlertMessage title={alertTitle} startContent={alertStartContent} midContent={alertMidContent && alertMidContent.length > 0 ? alertMidContent : ""} endContent={alertEndContent.length > 0 ? alertEndContent : ""} value1={alertValue1} value2={alertvalue2} onOkClicked={function (): void {
+                            setShowAlert(false)
+                            if(alertForSuccess==1){
+                                onClose();
+                            }
+                        }} onCloseClicked={function (): void {
+                            setShowAlert(false)
+                        }} showCloseButton={false} imageURL={''} successFailure={alertForSuccess} />}
             <div style={{ textAlign: "left" }}>
                 {/* <div className="row">
                     <div className="col-lg-12" style={{ textAlign: "right" }}>

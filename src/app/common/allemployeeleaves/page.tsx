@@ -272,11 +272,11 @@ const EmployeeLeaveList = () => {
     const [showCalendar, setShowCalendar] = useState(false);
     const ref = useRef(null);
     const [state, setState] = useState<Range[]>([
-        // {
-        //     startDate: new Date() || null,
-        //     endDate: new Date() || null,
-        //     key: 'selection'
-        // }
+        {
+            startDate:  undefined,
+            endDate:  undefined,
+            key: 'selection'
+        }
     ]);
     const handleChange = (ranges: RangeKeyDict) => {
         console.log(ranges);
@@ -292,9 +292,18 @@ const EmployeeLeaveList = () => {
         }
         fetchUsers(3, '', selectedPage, ranges.selection.startDate, ranges.selection.endDate);
     };
-    const formattedRange = state! && state.length>0?
-         state[0].startDate!.getTime() == state[0].endDate!.getTime() ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`:"--";
+    // const formattedRange = state! && state.length>0?
+    //      state[0].startDate!.getTime() == state[0].endDate!.getTime() ? format(state[0].startDate!, 'yyyy-MM-dd') : `${format(state[0].startDate!, 'yyyy-MM-dd')} to ${format(state[0].endDate!, 'yyyy-MM-dd')}`:"--";
        
+    const formattedRange =
+  state &&
+  state.length > 0 &&
+  state[0].startDate &&
+  state[0].endDate
+    ? state[0].startDate.getTime() === state[0].endDate.getTime()
+      ? format(state[0].startDate, 'yyyy-MM-dd')
+      : `${format(state[0].startDate, 'yyyy-MM-dd')} to ${format(state[0].endDate, 'yyyy-MM-dd')}`
+    : "--";
     const formatDateYYYYMMDD = (date: any, isTime = false) => {
         if (!date) return '';
         const parsedDate = moment(date);
@@ -382,7 +391,19 @@ const EmployeeLeaveList = () => {
                                                             editableDateInputs={true}
                                                             onChange={handleChange}
                                                             moveRangeOnFirstSelection={false}
-                                                            ranges={state}
+                                                            maxDate={new Date()}
+                                                            ranges={
+                                                                    state[0].startDate && state[0].endDate
+                                                                    ? state
+                                                                    : [
+                                                                        {
+                                                                            startDate: new Date(), // shown as current date marker
+                                                                            endDate: new Date(),
+                                                                            key: 'selection',
+                                                                            color: 'transparent', // hide highlight when no date selected
+                                                                        },
+                                                                        ]
+                                                                }
                                                         />
                                                     </div>
                                                 )}
